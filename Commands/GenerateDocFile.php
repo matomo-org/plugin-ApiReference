@@ -9,6 +9,9 @@
 
 namespace Piwik\Plugins\OpenApiDocs\Commands;
 
+use OpenApi\Generator;
+use Piwik\Container\StaticContainer;
+use Piwik\Log\LoggerInterface;
 use Piwik\Plugin\ConsoleCommand;
 
 /**
@@ -69,11 +72,15 @@ class GenerateDocFile extends ConsoleCommand
         $input = $this->getInput();
         $output = $this->getOutput();
 
-        $plugin = $input->getOption('plugin');
+        $plugin = $input->getOption('plugin') ?: 'Matomo';
 
         $message = sprintf('<info>Generating documentation for: %s</info>', $plugin);
 
         $output->writeln($message);
+
+        $openapi = (new Generator(StaticContainer::get(LoggerInterface::class)))->generate([__DIR__ . '../../' .$plugin]);
+        $generatedContent = $openapi->toJson();
+        $output->writeln($generatedContent);
 
         return self::SUCCESS;
     }

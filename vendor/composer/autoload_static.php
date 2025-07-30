@@ -20,7 +20,6 @@ class ComposerStaticInit594a82619565306e2b9ab5a1f27f9b53
         ),
         'P' => 
         array (
-            'Psr\\Log\\' => 8,
             'Psr\\Cache\\' => 10,
             'PhpParser\\' => 10,
         ),
@@ -47,10 +46,6 @@ class ComposerStaticInit594a82619565306e2b9ab5a1f27f9b53
         'Symfony\\Component\\Finder\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
-        ),
-        'Psr\\Log\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/log/src',
         ),
         'Psr\\Cache\\' => 
         array (

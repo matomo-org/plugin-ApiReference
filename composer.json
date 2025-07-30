@@ -6,6 +6,7 @@
         "symfony/finder": "^6.4"
     },
     "replace": {
-        "monolog/monolog": "*"
+        "monolog/monolog": "*",
+        "psr/log": "*"
     }
 }

@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-5.x-dev',
         'version' => 'dev-5.x-dev',
-        'reference' => '63e5cb4e8332203ccb8451fc1bd0fa622157e829',
+        'reference' => 'e23bb8485068528364088c7e6325778c67346766',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-5.x-dev',
             'version' => 'dev-5.x-dev',
-            'reference' => '63e5cb4e8332203ccb8451fc1bd0fa622157e829',
+            'reference' => 'e23bb8485068528364088c7e6325778c67346766',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -62,13 +62,10 @@
             'dev_requirement' => false,
         ),
         'psr/log' => array(
-            'pretty_version' => '3.0.2',
-            'version' => '3.0.2.0',
-            'reference' => 'f16e1d5863e37f8d8c2a01719f5b34baa2b714d3',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../psr/log',
-            'aliases' => array(),
             'dev_requirement' => false,
+            'replaced' => array(
+                0 => '*',
+            ),
         ),
         'symfony/deprecation-contracts' => array(
             'pretty_version' => 'v3.6.0',
