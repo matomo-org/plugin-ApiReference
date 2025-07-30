@@ -73,7 +73,7 @@ namespace Piwik\Plugins\OpenApiDocs;
  */
 class OpenApiDocs extends \Piwik\Plugin
 {
-    public function registerEvents(): array
+    public function registerEvents()
     {
         return [];
     }
