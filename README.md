@@ -2,4 +2,4 @@
 
 ## Description
 
-Add your plugin description here.
+Allow generating OpenAPI documentation for the Matomo public APIs.

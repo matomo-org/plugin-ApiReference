@@ -11,18 +11,18 @@ namespace Piwik\Plugins\OpenApiDocs;
 
 class OpenApiDocs extends \Piwik\Plugin
 {
-    public function registerEvents()
+    public function registerEvents(): array
     {
         return [
-            'CronArchive.getArchivingAPIMethodForPlugin' => 'getArchivingAPIMethodForPlugin',
+//            'CronArchive.getArchivingAPIMethodForPlugin' => 'getArchivingAPIMethodForPlugin',
         ];
     }
 
     // support archiving just this plugin via core:archive
-    public function getArchivingAPIMethodForPlugin(&$method, $plugin)
-    {
-        if ($plugin == 'OpenApiDocs') {
-            $method = 'OpenApiDocs.getExampleArchivedMetric';
-        }
-    }
+//    public function getArchivingAPIMethodForPlugin(&$method, $plugin)
+//    {
+//        if ($plugin == 'OpenApiDocs') {
+//            $method = 'OpenApiDocs.getExampleArchivedMetric';
+//        }
+//    }
 }
