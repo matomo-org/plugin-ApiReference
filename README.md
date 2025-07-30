@@ -1,1 +1,5 @@
-# plugin-OpenApiDocs
+# Matomo OpenApiDocs Plugin
+
+## Description
+
+Add your plugin description here.
