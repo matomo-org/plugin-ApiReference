@@ -1,7 +1,7 @@
 {
     "name": "OpenApiDocs",
     "description": "Generate API documentation for Matomo in the OpenAPI format.",
-    "version": "5.0.0",
+    "version": "5.0.0-b1",
     "theme": false,
     "keywords": [
         "API",
@@ -13,7 +13,7 @@
     "homepage": "https:\/\/matomo.org",
     "require": {
         "php": ">=8.1.0",
-        "matomo": ">=5.4.0-b3,<6.0.0-b1"
+        "matomo": ">=5.0.0-stable,<6.0.0-b1"
     },
     "authors": [
         {

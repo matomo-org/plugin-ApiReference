@@ -78,7 +78,7 @@ class GenerateDocFile extends ConsoleCommand
 
         $output->writeln($message);
 
-        $openapi = (new Generator(StaticContainer::get(LoggerInterface::class)))->generate([__DIR__ . '../../' .$plugin]);
+        $openapi = (new Generator(StaticContainer::get(LoggerInterface::class)))->generate([__DIR__ . '/../../' .$plugin . '/API.php']);
         $generatedContent = $openapi->toJson();
         $output->writeln($generatedContent);
 
