@@ -9,10 +9,16 @@
 
 namespace Piwik\Plugins\OpenApiDocs\Commands;
 
+use OpenApi\Annotations\ExternalDocumentation;
+use OpenApi\Annotations\OpenApi;
+use OpenApi\Context;
 use OpenApi\Generator;
+use Piwik\Config;
 use Piwik\Container\StaticContainer;
 use Piwik\Log\LoggerInterface;
 use Piwik\Plugin\ConsoleCommand;
+use Piwik\SettingsPiwik;
+use Piwik\Url;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on
@@ -54,6 +60,10 @@ class GenerateDocFile extends ConsoleCommand
      */
     protected function doInitialize(): void
     {
+        // Set the constant for the current instance's URL
+        if(!defined('LOCAL_MATOMO_SERVER_URL')) {
+            define('LOCAL_MATOMO_SERVER_URL', SettingsPiwik::getPiwikUrl());
+        }
     }
 
     /**
@@ -78,7 +88,13 @@ class GenerateDocFile extends ConsoleCommand
 
         $output->writeln($message);
 
-        $openapi = (new Generator(StaticContainer::get(LoggerInterface::class)))->generate([__DIR__ . '/../../' .$plugin . '/API.php']);
+        $generator = new Generator(StaticContainer::get(LoggerInterface::class));
+        $generator->setVersion(OpenApi::DEFAULT_VERSION);
+        $openapi = $generator->generate([
+            __DIR__ . '/../OpenApiDocs.php',
+            __DIR__ . '/../../' . $plugin . '/API.php',
+        ]);
+
         $generatedContent = $openapi->toJson();
         $output->writeln($generatedContent);
 
