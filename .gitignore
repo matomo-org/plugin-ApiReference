@@ -1,0 +1,15 @@
+vendor/**/tests
+vendor/**/.gitignore
+vendor/**/*.md
+vendor/**/.php_cs
+vendor/**/.gitattributes
+vendor/**/.github
+vendor/**/.editorconfig
+vendor/**/phpunit.xml*
+vendor/**/phpcs.xml*
+vendor/**/composer.json
+vendor/**/composer.lock
+/vue/dist/demo.html
+/vue/dist/*.common.js
+/vue/dist/*.map
+/vue/dist/*.development.*
