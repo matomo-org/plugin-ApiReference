@@ -26,11 +26,11 @@ class API extends \Piwik\Plugin\API
      * /index.php?module=API&method=OpenApiDocs.getGeneratedOpenApiSpec&plugin=CustomAlerts
      *
      * @param string $plugin Name of the plugin to get the JSON for. E.g. TagManager or CustomerAlerts
-     * @param string $format Optional format string to indicate JSON or YAML. Default is JSON
+     * @param string $format String to indicate JSON or YAML.
      * @return string | array
      * @throws \Exception
      */
-    public function getGeneratedOpenApiSpec(string $plugin, string $format = '')
+    public function getGeneratedOpenApiSpec(string $plugin, string $format)
     {
         Piwik::checkUserHasSomeViewAccess();
 
