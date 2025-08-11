@@ -9,7 +9,6 @@
 
 namespace Piwik\Plugins\OpenApiDocs;
 
-use Piwik\Common;
 use Piwik\Piwik;
 use Piwik\Plugins\OpenApiDocs\Generate\MatomoApiDocGenerator;
 
