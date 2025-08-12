@@ -10,7 +10,7 @@
 namespace Piwik\Plugins\OpenApiDocs\Commands;
 
 use Piwik\Plugin\ConsoleCommand;
-use Piwik\Plugins\OpenApiDocs\Generate\MatomoApiDocGenerator;
+use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on
@@ -19,7 +19,7 @@ use Piwik\Plugins\OpenApiDocs\Generate\MatomoApiDocGenerator;
  * As Matomo Console is based on the Symfony Console you might also want to have a look at
  * https://symfony.com/doc/current/components/console/index.html
  */
-class GenerateDocFile extends ConsoleCommand
+class GenerateAnnotations extends ConsoleCommand
 {
     /**
      * This method allows you to configure your command. Here you can define the name and description of your command
@@ -27,9 +27,10 @@ class GenerateDocFile extends ConsoleCommand
      */
     protected function configure()
     {
-        $this->setName('openapidocs:generate-doc-file');
-        $this->setDescription('Generate the OpenAPI documentation file for the Matomo APIs.');
-        $this->addRequiredValueOption('plugin', null, 'Name of the plugin to document');
+        $this->setName('openapidocs:generate-annotations');
+        $this->setDescription('Generate the annotations php-swagger uses to generate OpenAPI specs.');
+        $this->addRequiredValueOption('plugin', null, 'Name of the plugin to annotate');
+        $this->addNoValueOption('not-dry-run', null, 'Flag to allow writing to file instead of outputting a dry run.');
     }
 
     /**
@@ -63,7 +64,7 @@ class GenerateDocFile extends ConsoleCommand
      * Ideally, the actual command is quite short as it acts like a controller. It should only receive the input values,
      * execute the task by calling a method of another class and output any useful information.
      *
-     * Execute the command like: ./console openapidocs:generate-doc-file --plugin=TagManager
+     * Execute the command like: ./console openapidocs:generate-annotations --plugin=TagManager --not-dry-run
      */
     protected function doExecute(): int
     {
@@ -71,13 +72,20 @@ class GenerateDocFile extends ConsoleCommand
         $output = $this->getOutput();
 
         $plugin = $input->getOption('plugin') ?: 'Matomo';
+        $notDryRun = $input->getOption('not-dry-run') ?: false;
 
-        $message = sprintf('<info>Generating documentation for: %s</info>', $plugin);
+        $output->writeln(sprintf('<info>Generating annotations for: %s</info>', $plugin));
 
-        $output->writeln($message);
+        // TODO - Add handling for not-dry-run
 
-        $output->writeln((new MatomoApiDocGenerator())->generatePluginDoc($plugin));
+        $result = (new AnnotationGenerator())->generatePluginApiAnnotations($plugin);
 
-        return self::SUCCESS;
+        if (is_array($result)) {
+            foreach ($result as $annotation) {
+                $output->writeln($annotation);
+            }
+        }
+
+        return $result ? self::SUCCESS : self::FAILURE;
     }
 }

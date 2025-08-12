@@ -10,7 +10,7 @@
 namespace Piwik\Plugins\OpenApiDocs;
 
 use Piwik\Piwik;
-use Piwik\Plugins\OpenApiDocs\Generate\MatomoApiDocGenerator;
+use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 
 /**
  * API for plugin OpenApiDocs
@@ -44,7 +44,7 @@ class API extends \Piwik\Plugin\API
             );
         }
 
-        $docString = (new MatomoApiDocGenerator())->generatePluginDoc($plugin, $format);
+        $docString = (new SpecGenerator())->generatePluginDoc($plugin, $format);
         return strtolower($format) === 'json' ? json_decode($docString, true) : $docString;
     }
 }
