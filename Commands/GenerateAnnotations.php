@@ -71,6 +71,11 @@ class GenerateAnnotations extends ConsoleCommand
         $input = $this->getInput();
         $output = $this->getOutput();
 
+        if (!class_exists('PHPStan\PhpDocParser\Parser\PhpDocParser')) {
+            $output->writeln("<error>This command requires phpstan/phpdoc-parser. It should be available while running Matomo in development mode.</error>");
+            return self::FAILURE;
+        }
+
         $plugin = $input->getOption('plugin') ?: 'Matomo';
         $notDryRun = $input->getOption('not-dry-run') ?: false;
 

@@ -16,6 +16,12 @@ use Piwik\API\Request;
 use Piwik\Plugin\Manager;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
+use PHPStan\PhpDocParser\Parser\TypeParser;
+use PHPStan\PhpDocParser\Parser\ConstExprParser;
+use PHPStan\PhpDocParser\Parser\TokenIterator;
+use function Symfony\Component\String\s;
 
 class AnnotationGenerator
 {
@@ -69,13 +75,13 @@ class AnnotationGenerator
                 $methodName
             );
 
-            $paramRefs = $this->determineParameterReferences($rules, $pluginName, $methodName, $reflectionMethod);
+            $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
             $responses = $this->determineResponses($rules, $pluginName, $methodName);
 
             $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
                 && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
 
-            $annotations[] = $this->compileOperationLines($path, $opId, $pluginName, $methodName, $paramRefs, $responses, $isPost);
+            $annotations[] = $this->compileOperationLines($path, $opId, $pluginName, $methodName, $params, $responses, $isPost);
         }
 
         if (empty($annotations)) {
@@ -85,12 +91,32 @@ class AnnotationGenerator
         return $annotations;
     }
 
+    function getParamInfoFromDocBlock(string $docBlock): array {
+        $lexer  = new Lexer();
+        $tokens = $lexer->tokenize($docBlock);
+        $expressionParser = new ConstExprParser();
+        $parser = new PhpDocParser(new TypeParser($expressionParser), $expressionParser);
+        $node   = $parser->parse(new TokenIterator($tokens));
+
+        $params = [];
+        foreach ($node->getParamTagValues() as $param) {
+            $name = ltrim($param->parameterName, '$');
+            $params[$name] = [
+                'type'     => (string) $param->type,
+                'desc'     => $param->description,
+                'byRef'    => $param->isReference,
+                'variadic' => $param->isVariadic,
+            ];
+        }
+        return $params;
+    }
+
     function buildVirtualPath(string $virtualPathTemplate, string $plugin, string $method): string
     {
         return str_replace([ '{plugin}', '{method}' ], [ $plugin, $method ], $virtualPathTemplate);
     }
 
-    function determineParameterReferences(array $rules, string $plugin, string $method, \ReflectionMethod $rm): array
+    function determineParameters(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
     {
         $refs = [];
 
@@ -102,33 +128,73 @@ class AnnotationGenerator
             $refs = array_merge($refs, $rules['plugins'][$plugin]['paramRefsByMethod'][$method]);
         }
 
-        return array_values(array_unique($refs));
+        $paramsMetadata = Proxy::getInstance()->getParametersListWithTypes(Request::getClassNameAPI($plugin), $method);
+        $paramsInfo = $this->getParamInfoFromDocBlock($reflectionMethod->getDocComment());
+
+        $customParams = [];
+        foreach ($paramsMetadata as $name => $paramMetadata) {
+            $paramInfo = $paramsInfo[$name] ?? [];
+            // Skip references and variadic for now
+            // TODO - determine whether these can be handled automatically or if they have to be manual
+            if (!empty($paramInfo['byRef']) || !empty($paramInfo['variadic'])) {
+                continue;
+            }
+
+            $type = $paramMetadata['type'] ?? $paramInfo['type'] ?? '';
+            // TODO - Properly map the internal types to OpenAPI types
+            switch (strtolower($type)) {
+                case 'array':
+                    $type = 'array';
+                    break;
+                case 'int':
+                    $type = 'integer';
+                    break;
+                case 'bool':
+                case 'boolean':
+                    $type = 'boolean';
+                    break;
+                default:
+                    $type = 'string';
+            }
+
+            $customParams[] = [
+                'name' => $name,
+                'type' => $type,
+                'description' => $paramInfo['desc'] ?? '',
+                'required' => empty($paramMetadata['allowsNull']) ? 'true' : 'false',
+            ];
+        }
+
+        return [
+            'refs' => array_values(array_unique($refs)),
+            'custom' => $customParams,
+        ];
     }
 
     function determineResponses(array $rules, string $plugin, string $method): array
     {
-        $out = [];
+        $responses = [];
 
         $successRef = null;
         if (isset($rules['plugins'][$plugin]['successResponseByMethod'][$method])) {
             $successRef = $rules['plugins'][$plugin]['successResponseByMethod'][$method];
         }
         if ($successRef) {
-            $out[] = [ 'code' => 200, 'ref' => $successRef ];
+            $responses[] = [ 'code' => 200, 'ref' => $successRef ];
         } else {
-            $out[] = [ 'code' => 200, 'desc' => 'OK' ];
+            $responses[] = [ 'code' => 200 ];
         }
 
         if (!empty($rules['defaultErrorResponseRefs'])) {
-            foreach ($rules['defaultErrorResponseRefs'] as $err) {
-                $out[] = $err; // ['code'=>..., 'ref'=>...]
+            foreach ($rules['defaultErrorResponseRefs'] as $errorRef) {
+                $responses[] = $errorRef;
             }
         }
 
-        return $out;
+        return $responses;
     }
 
-    function compileOperationLines(string $path, string $opId, string $plugin, string $method, array $paramRefs, array $responses, bool $isPost = false): array
+    function compileOperationLines(string $path, string $opId, string $plugin, string $method, array $params, array $responses, bool $isPost = false): array
     {
         $httpMethod = $isPost ? 'Post' : 'Get';
         $lines = [];
@@ -137,8 +203,20 @@ class AnnotationGenerator
         $lines[] = '    operationId="' . $opId . '",';
         $lines[] = '    tags={"' . $plugin . '"},';
 
-        foreach ($paramRefs as $ref) {
+        foreach ($params['refs'] ?? [] as $ref) {
             $lines[] = '    @OA\Parameter(ref="' . $ref . '"),';
+        }
+
+        foreach ($params['custom'] ?? [] as $param) {
+            // TODO - Finish implementing this
+            $lines[] = '    @OA\Parameter(),';
+            $lines[] = '        name="' . $param['name'] . '",';
+            $lines[] = '        in="query",';
+            $lines[] = '        required="' . $param['required'] . '",';
+            $lines[] = '        @OA\Schema(';
+            $lines[] = '            type="' . $param['type'] . '",';
+            $lines[] = '        ),';
+            $lines[] = '    ),';
         }
 
         foreach ($responses as $response) {
