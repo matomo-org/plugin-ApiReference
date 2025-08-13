@@ -209,13 +209,13 @@ class AnnotationGenerator
 
         foreach ($params['custom'] ?? [] as $param) {
             // TODO - Finish implementing this
-            $lines[] = '    @OA\Parameter(),';
+            $lines[] = '    @OA\Parameter(';
             $lines[] = '        name="' . $param['name'] . '",';
             $lines[] = '        in="query",';
-            $lines[] = '        required="' . $param['required'] . '",';
+            $lines[] = "        required={$param['required']},";
             $lines[] = '        @OA\Schema(';
-            $lines[] = '            type="' . $param['type'] . '",';
-            $lines[] = '        ),';
+            $lines[] = '            type="' . $param['type'] . '"';
+            $lines[] = '        )';
             $lines[] = '    ),';
         }
 
