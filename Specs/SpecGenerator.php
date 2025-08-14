@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs\Generate;
+namespace Piwik\Plugins\OpenApiDocs\Specs;
 
 use OpenApi\Annotations\OpenApi;
 use OpenApi\Generator;
@@ -18,7 +18,7 @@ use Piwik\SettingsPiwik;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
 
-class MatomoApiDocGenerator
+class SpecGenerator
 {
     public function __construct()
     {
@@ -28,7 +28,8 @@ class MatomoApiDocGenerator
         }
     }
 
-    public function generatePluginDoc(string $pluginName, string $format = 'json'): string{
+    public function generatePluginDoc(string $pluginName, string $format = 'json'): string
+    {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
         Manager::getInstance()->checkIsPluginActivated($pluginName);
 
@@ -38,7 +39,7 @@ class MatomoApiDocGenerator
         $generator = new Generator(StaticContainer::get(LoggerInterface::class));
         $generator->setVersion(OpenApi::DEFAULT_VERSION);
         $openapi = $generator->generate([
-            $currentPluginDir . '/OpenApiDocs.php',
+            $currentPluginDir . '/Annotations/GlobalApiComponents.php',
             $pluginDir . '/API.php',
         ]);
 
