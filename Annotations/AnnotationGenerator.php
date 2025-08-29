@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Annotations;
 
+use Piwik\API\DocumentationGenerator;
+use Piwik\API\NoDefaultValue;
 use Piwik\API\Proxy;
 use Piwik\API\Request;
 use Piwik\Plugin\Manager;
@@ -21,12 +23,21 @@ use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TypeParser;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
-use function Symfony\Component\String\s;
 
 class AnnotationGenerator
 {
     /**
-     * Use reflection to generate the OpenAPI annotations to be used by php-swagger.
+     * @var DocumentationGenerator
+     */
+    protected $generator;
+
+    public function __construct(DocumentationGenerator $generator)
+    {
+        $this->generator = $generator;
+    }
+
+    /**
+     * Use reflection to generate the OpenAPI annotations to be used by swagger-php.
      * - Tries to use virtual paths and x-runtime to keep paths unique and allow actual path generation
      * - Uses config.php to set default values.
      * - Uses config.php from plugin to override default configs.
@@ -39,8 +50,11 @@ class AnnotationGenerator
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
         $rules = require $currentPluginDir . '/Annotations/config.php';
         $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
-        $pluginRules = require $pluginDir . '/OpenApi/Annotations/config.php';
-        $rules['plugins'] = [ $pluginName => $pluginRules ];
+        $pluginConfigPath = $pluginDir . '/OpenApi/Annotations/config.php';
+        if (is_file($pluginConfigPath)) {
+            $pluginRules = require $pluginDir . '/OpenApi/Annotations/config.php';
+        }
+        $rules['plugins'] = [ $pluginName => $pluginRules ?? [] ];
 
         $className = Request::getClassNameAPI($pluginName);
 
@@ -59,29 +73,12 @@ class AnnotationGenerator
                 continue;
             }
 
-            $reflectionMethod = $reflectionClass->getMethod($metadataMethod);
-            $existing = $reflectionMethod->getDocComment();
-            // Skip methods which have been marked as internal or auto annotations disabled
-            if ($existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
-                || stripos($existing, '@internal') !== false)) {
+            $methodAnnotations = $this->buildAnnotationForMethod($rules, $pluginName, $reflectionClass->getMethod($metadataMethod));
+            if (empty($methodAnnotations)) {
                 continue;
             }
 
-            $methodName = $reflectionMethod->getName();
-            $opId = Proxy::getInstance()->buildApiActionName($pluginName, $methodName);
-            $path = $this->buildVirtualPath(
-                $rules['virtualPathTemplate'] ?? '/' . $opId,
-                $pluginName,
-                $methodName
-            );
-
-            $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
-            $responses = $this->determineResponses($rules, $pluginName, $methodName);
-
-            $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
-                && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
-
-            $annotations[] = $this->compileOperationLines($path, $opId, $pluginName, $methodName, $params, $responses, $isPost);
+            $annotations[] = $methodAnnotations;
         }
 
         if (empty($annotations)) {
@@ -91,7 +88,33 @@ class AnnotationGenerator
         return $annotations;
     }
 
-    function getParamInfoFromDocBlock(string $docBlock): array {
+    protected function buildAnnotationForMethod(array $rules, string $pluginName, \ReflectionMethod $reflectionMethod): array
+    {
+        $existing = $reflectionMethod->getDocComment();
+        // Skip methods which have been marked as internal or auto annotations disabled
+        if ($existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
+                || stripos($existing, '@internal') !== false)) {
+            return [];
+        }
+
+        $methodName = $reflectionMethod->getName();
+        $opId = Proxy::getInstance()->buildApiActionName($pluginName, $methodName);
+        $path = $this->buildVirtualPath(
+            $rules['virtualPathTemplate'] ?? '/' . $opId,
+            $pluginName,
+            $methodName
+        );
+
+        $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
+        $responses = $this->determineResponses($rules, $pluginName, $methodName);
+
+        $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
+            && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
+
+        return $this->compileOperationLines($path, $opId, $pluginName, $methodName, $params, $responses, $isPost);
+    }
+
+    protected function getParamInfoFromDocBlock(string $docBlock): array {
         $lexer  = new Lexer();
         $tokens = $lexer->tokenize($docBlock);
         $expressionParser = new ConstExprParser();
@@ -111,12 +134,41 @@ class AnnotationGenerator
         return $params;
     }
 
-    function buildVirtualPath(string $virtualPathTemplate, string $plugin, string $method): string
+    protected function buildVirtualPath(string $virtualPathTemplate, string $plugin, string $method): string
     {
         return str_replace([ '{plugin}', '{method}' ], [ $plugin, $method ], $virtualPathTemplate);
     }
 
-    function determineParameters(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
+    protected function buildParameterAnnotation(string $paramName, array $paramMetadata, array $paramDocInfo): array
+    {
+        $docType = strtolower(trim($paramDocInfo['type'] ?? ''));
+        $metaType = strtolower(trim($paramMetadata['type'] ?? $docType));
+        $type = $metaType === 'string' && $docType !== 'string' ? $docType : $metaType;
+        $typesMap = [];
+        // Check for pipes and try to list possible types
+        foreach (explode('|', $type) as $typePart) {
+            $typePart = trim($typePart, ' ()');
+            $normalisedType = $this->getOpenApiTypeFromPhpType($typePart);
+            // If the type is array, check if there's a subType
+            $subType = null;
+            if ($normalisedType === 'array' && $typePart !== 'array' && strpos($typePart, '[]') !== false) {
+                $subType = substr($typePart, 0, strpos($typePart, '[]'));
+            }
+            $typesMap[$normalisedType] = $subType !== null ? $this->getOpenApiTypeFromPhpType($subType) : $subType;
+        }
+
+        $isRequired = !key_exists('default', $paramMetadata) || $paramMetadata['default'] instanceof NoDefaultValue;
+
+        return [
+            'name' => $paramName,
+            'types' => $typesMap,
+            'description' => $paramDocInfo['desc'] ?? '',
+            'required' => $isRequired ? 'true' : 'false',
+            'default' => !$isRequired ? json_encode($paramMetadata['default']) : '',
+        ];
+    }
+
+    protected function determineParameters(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
     {
         $refs = [];
 
@@ -140,29 +192,7 @@ class AnnotationGenerator
                 continue;
             }
 
-            $type = $paramMetadata['type'] ?? $paramInfo['type'] ?? '';
-            // TODO - Properly map the internal types to OpenAPI types
-            switch (strtolower($type)) {
-                case 'array':
-                    $type = 'array';
-                    break;
-                case 'int':
-                    $type = 'integer';
-                    break;
-                case 'bool':
-                case 'boolean':
-                    $type = 'boolean';
-                    break;
-                default:
-                    $type = 'string';
-            }
-
-            $customParams[] = [
-                'name' => $name,
-                'type' => $type,
-                'description' => $paramInfo['desc'] ?? '',
-                'required' => empty($paramMetadata['allowsNull']) ? 'true' : 'false',
-            ];
+            $customParams[] = $this->buildParameterAnnotation($name, $paramMetadata, $paramInfo);
         }
 
         return [
@@ -171,19 +201,126 @@ class AnnotationGenerator
         ];
     }
 
-    function determineResponses(array $rules, string $plugin, string $method): array
+    /**
+     * Map the PHP type to the OpenAPI type. The currently available types for v3.1.1 are the following: “null”,
+     * “boolean”, “object”, “array”, “number”, “string”, or “integer”.
+     *
+     * @link https://spec.openapis.org/oas/v3.1.1.html#data-types
+     *
+     * @param string $type The PHP type from the method signature or doc-block
+     * @return string The normalised Data Type to be used in the swagger-php annotation
+     */
+    protected function getOpenApiTypeFromPhpType(string $type): string
+    {
+        // TODO - Is there a good way to handle object type or should that always be ref?
+        // TODO - Eventually handle the Data Type Formats: https://spec.openapis.org/oas/v3.1.1.html#data-type-format
+        switch (strtolower($type)) {
+            case 'array':
+            case 'int[]':
+            case 'string[]':
+                $type = 'array';
+                break;
+            case 'int':
+            case 'integer':
+                $type = 'integer';
+                break;
+            case 'bool':
+            case 'boolean':
+                $type = 'boolean';
+                break;
+            case 'float':
+            case 'double':
+                $type = 'number';
+                break;
+            default:
+                $type = 'string';
+        }
+
+        return $type;
+    }
+
+    protected function getApplicableDemoExampleUrls(string $pluginName, string $methodName): array
+    {
+        // Get the example URLs for the success responses
+        $parametersToSet = [
+            'idSite' => 1,
+            'period' => 'day',
+            'date' => 'today'
+        ];
+        $className = Request::getClassNameAPI($pluginName);
+        $exampleUrl = $this->generator->getExampleUrl($className, $methodName, $parametersToSet);
+        if (empty($exampleUrl)) {
+            return [];
+        }
+
+        $exampleUrl = 'https://demo.matomo.cloud/' . $exampleUrl;
+        return [
+            'xml' => $exampleUrl . '&filter_limit=2&format=xml&token_auth=anonymous',
+            'json' => $exampleUrl . '&filter_limit=2&format=JSON&token_auth=anonymous',
+            'tsv' => $exampleUrl . '&filter_limit=2&format=Tsv&token_auth=anonymous',
+        ];
+    }
+
+    protected function getExampleIfAvailable(string $url): array
+    {
+        $ch = curl_init($url);
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT => 5,
+        ]);
+
+        $body   = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        // If the example didn't load or is too big, simply include the URL instead of the string value
+        if ($body === false || $status !== 200 || strlen($body) > 1000) {
+            return ['externalValue' => $url];
+        }
+
+        return ['value' => trim($body)];
+    }
+
+    protected function determineResponses(array $rules, string $plugin, string $method): array
     {
         $responses = [];
 
+        // TODO - Try to determine the success response using the return type and/or doc-block return type
+
         $successRef = null;
+        $successArray = ['code' => 200];
         if (isset($rules['plugins'][$plugin]['successResponseByMethod'][$method])) {
             $successRef = $rules['plugins'][$plugin]['successResponseByMethod'][$method];
         }
         if ($successRef) {
-            $responses[] = [ 'code' => 200, 'ref' => $successRef ];
-        } else {
-            $responses[] = [ 'code' => 200 ];
+            $successArray['ref'] = $successRef;
         }
+
+        $mediaTypes = [];
+        // This simply reuses the example URLs used by the current documentation, but some endpoints don't work because authentication is required
+        // TODO - Come up with a way to demo examples for endpoints which require authentication. E.g. hit a live endpoint server-side and replace any potentially sensitive data...
+        $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method);
+        foreach ($exampleUrls as $type => $url) {
+            $contentType = $type === 'json' ? 'application/json' : ($type === 'xml' ? 'text/xml' : 'application/vnd.ms-excel');
+            $exampleProperties = [
+                'example="' . $type . 'DemoLink"',
+                'summary="Example ' . $type . '"',
+            ];
+            $exampleValue = $this->getExampleIfAvailable($url);
+            $exampleProperties[] = array_key_first($exampleValue) . '="' . array_pop($exampleValue) . '"';
+            $mediaTypes[] = [
+                'mediaType="' . $contentType . '"',
+                '@OA\Examples' => $exampleProperties,
+            ];
+        }
+        if (!empty($mediaTypes)) {
+            $successArray['mediaTypes'] = $mediaTypes;
+        }
+
+        $responses[] = $successArray;
 
         if (!empty($rules['defaultErrorResponseRefs'])) {
             foreach ($rules['defaultErrorResponseRefs'] as $errorRef) {
@@ -194,45 +331,129 @@ class AnnotationGenerator
         return $responses;
     }
 
-    function compileOperationLines(string $path, string $opId, string $plugin, string $method, array $params, array $responses, bool $isPost = false): array
+    protected function removeTrailingCommaFromLastLine(&$lines): void
     {
-        $httpMethod = $isPost ? 'Post' : 'Get';
+        if (!empty($lines)) {
+            $last = array_pop($lines);
+            $lines[] = rtrim($last, ',');
+        }
+    }
+
+    protected function buildLinesForAnnotationObject(string $objectName, array $objectProperties, int $indent = 0): array
+    {
+        $indentString = str_repeat('    ', $indent);
+        $innerIndentString = str_repeat('    ', $indent + 1);
         $lines = [];
-        $lines[] = '@OA\\' . $httpMethod . '(';
-        $lines[] = '    path="' . $path . '",';
-        $lines[] = '    operationId="' . $opId . '",';
-        $lines[] = '    tags={"' . $plugin . '"},';
+        foreach ($objectProperties as $name => $property) {
+            if (is_string($property)) {
+                $lines[] = $innerIndentString . $property . (substr($property, -1) !== ',' ? ',' : '');
+                continue;
+            }
 
+            if (is_string($name)) {
+                $lines = array_merge($lines, $this->buildLinesForAnnotationObject($name, $property, $indent + 1));
+                continue;
+            }
+
+            // If it's not an object, then it's an array of similarly named objects, like parameters
+            foreach ($property as $subPropIndex => $subProperty) {
+                $lines = array_merge($lines, $this->buildLinesForAnnotationObject($subPropIndex, $subProperty, $indent + 1));
+            }
+        }
+
+        $this->removeTrailingCommaFromLastLine($lines);
+
+        // Default to parenthesis, but override when necessary
+        $openingCharacter = '(';
+        $closingCharacter = ')';
+        if (substr($objectName, -2) === '={') {
+            $openingCharacter = '';
+            $closingCharacter = '}';
+        }
+
+        // Return the compiled lines wrapped with the opening and closing parenthesis/braces
+        return array_merge([$indentString . $objectName . $openingCharacter], $lines, [$indentString . $closingCharacter . ',']);
+    }
+
+    protected function buildSchemaObjectArray(string $type, string $subType = '', string $default = ''): array
+    {
+        $schemaMap = ['type="' . $type . '"'];
+        $subTypeString = '';
+        if (!empty($subType)) {
+            $subTypeString = 'type="' . $subType . '"';
+        }
+        if ($type === 'array') {
+            $schemaMap[] = '@OA\Items(' . $subTypeString . ')';
+        }
+
+        if ($default !== '') {
+            // TODO - Add some logic to only add default if it matches the type. E.g. false isn't a good default for string
+            $schemaMap[] = 'default="' . $default . '"';
+        }
+
+        return ['@OA\Schema' => $schemaMap];
+    }
+
+    protected function buildSchemaObjectArrays(array $typesMap, string $default = ''): array
+    {
+        $schemas = [];
+        foreach ($typesMap as $type => $subType) {
+            $schemas[] = $this->buildSchemaObjectArray($type, $subType ?? '', $default);
+        }
+
+        if (count($schemas) === 1) {
+            return $schemas[0];
+        }
+
+        return ['@OA\Schema' => ['oneOf={' => $schemas]];
+    }
+
+    protected function compileOperationLines(string $path, string $opId, string $plugin, string $method, array $params, array $responses, bool $isPost = false): array
+    {
+        $operationValuesMap = [
+            'path="' . $path . '"',
+            'operationId="' . $opId . '"',
+            'tags={"' . $plugin . '"}',
+        ];
         foreach ($params['refs'] ?? [] as $ref) {
-            $lines[] = '    @OA\Parameter(ref="' . $ref . '"),';
+            $operationValuesMap[] = '@OA\Parameter(ref="' . $ref . '")';
         }
-
         foreach ($params['custom'] ?? [] as $param) {
-            // TODO - Finish implementing this
-            $lines[] = '    @OA\Parameter(';
-            $lines[] = '        name="' . $param['name'] . '",';
-            $lines[] = '        in="query",';
-            $lines[] = "        required={$param['required']},";
-            $lines[] = '        @OA\Schema(';
-            $lines[] = '            type="' . $param['type'] . '"';
-            $lines[] = '        )';
-            $lines[] = '    ),';
+            $paramMap = [
+                'name="' . $param['name'] . '"',
+                'in="query"',
+                'required=' . $param['required'],
+            ];
+            if (!empty($param['description'])) {
+                $paramMap[] = 'description="' . $param['description'] . '"';
+            }
+            $paramMap[] = $this->buildSchemaObjectArrays($param['types'], strval($param['default']));
+            $operationValuesMap[] = ['@OA\Parameter' => $paramMap];
         }
-
         foreach ($responses as $response) {
             if (isset($response['ref'])) {
                 $code = $response['code'];
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
-                $lines[] = '    @OA\Response(response=' . $codeFormatted . ', ref="' . $response['ref'] . '"),';
+                $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . ', ref="' . $response['ref'] . '")';
             } else {
-                $desc = $response['desc'] ?? 'OK';
-                $lines[] = '    @OA\Response(response=200, description="' . addcslashes($desc, '"') . '"),';
+                $responsePropertyArray = [
+                    'response=200',
+                    'description="' . ($response['desc'] ?? 'OK') . '"',
+                ];
+                if (isset($response['mediaTypes']) && is_array($response['mediaTypes'])) {
+                    foreach ($response['mediaTypes'] as $mediaType) {
+                        $responsePropertyArray[] = ['@OA\MediaType' => $mediaType];
+                    }
+                }
+                $operationValuesMap[] = ['@OA\Response' => $responsePropertyArray];
             }
         }
+        $operationValuesMap[] = 'x={"runtime"={"entry":"index.php","query":{"module":"API","method":"' . $plugin . '.' . $method . '"}}}';
 
-        $lines[] = '    x={"runtime"={"entry":"index.php","query":{"module":"API","method":"' . $plugin . '.' . $method . '"}}}';
-        $lines[] = ')';
-        
+        $lines = $this->buildLinesForAnnotationObject('@OA\\' . ($isPost ? 'Post' : 'Get'), $operationValuesMap);
+
+        // Trim the comma off the very last item at this level and return the array
+        $this->removeTrailingCommaFromLastLine($lines);
         return $lines;
     }
 }
