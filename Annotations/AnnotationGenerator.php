@@ -92,8 +92,10 @@ class AnnotationGenerator
     {
         $existing = $reflectionMethod->getDocComment();
         // Skip methods which have been marked as internal or auto annotations disabled
-        if ($existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
-                || stripos($existing, '@internal') !== false)) {
+        if (
+            $existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
+                || stripos($existing, '@internal') !== false)
+        ) {
             return [];
         }
 
@@ -114,7 +116,8 @@ class AnnotationGenerator
         return $this->compileOperationLines($path, $opId, $pluginName, $methodName, $params, $responses, $isPost);
     }
 
-    protected function getParamInfoFromDocBlock(string $docBlock): array {
+    protected function getParamInfoFromDocBlock(string $docBlock): array
+    {
         $lexer  = new Lexer();
         $tokens = $lexer->tokenize($docBlock);
         $expressionParser = new ConstExprParser();
