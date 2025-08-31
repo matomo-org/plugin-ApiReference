@@ -213,14 +213,18 @@ class AnnotationGenerator
      * @param string $type The PHP type from the method signature or doc-block
      * @return string The normalised Data Type to be used in the swagger-php annotation
      */
-    protected function getOpenApiTypeFromPhpType(string $type): string
+    public function getOpenApiTypeFromPhpType(string $type): string
     {
         // TODO - Is there a good way to handle object type or should that always be ref?
         // TODO - Eventually handle the Data Type Formats: https://spec.openapis.org/oas/v3.1.1.html#data-type-format
         switch (strtolower($type)) {
             case 'array':
+            case '[]':
             case 'int[]':
             case 'string[]':
+            case 'bool[]':
+            case 'float[]':
+            case 'double[]':
                 $type = 'array';
                 break;
             case 'int':
