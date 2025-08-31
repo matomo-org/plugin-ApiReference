@@ -8,6 +8,7 @@ parameters:
         - tests/*
         - vendor/*
         - github-action-tests
+        - scoper.inc.php
     bootstrapFiles:
         - ../../bootstrap-phpstan.php
     universalObjectCratesClasses:

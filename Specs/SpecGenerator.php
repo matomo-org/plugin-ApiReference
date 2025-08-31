@@ -43,6 +43,7 @@ class SpecGenerator
             $pluginDir . '/API.php',
         ]);
 
+        // @phpstan-ignore method.notFound, method.notFound
         return strtolower($format) === 'yaml' ? $openapi->toYaml() : $openapi->toJson();
     }
 }
