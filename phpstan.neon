@@ -6,6 +6,7 @@ parameters:
         - .
     excludePaths:
         - tests/*
+        - vendor/*
         - github-action-tests
     bootstrapFiles:
         - ../../bootstrap-phpstan.php
