@@ -9,6 +9,7 @@ parameters:
         - vendor/*
         - github-action-tests
         - scoper.inc.php
+        - Specs/SpecGenerator.php
     bootstrapFiles:
         - ../../bootstrap-phpstan.php
     universalObjectCratesClasses:
