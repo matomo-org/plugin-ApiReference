@@ -13,7 +13,9 @@ use OpenApi\Annotations\OpenApi;
 use OpenApi\Generator;
 use Piwik\Container\StaticContainer;
 use Piwik\Log\LoggerInterface;
+use Piwik\Log\NullLogger;
 use Piwik\Plugin\Manager;
+use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
 use Piwik\SettingsPiwik;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
@@ -36,12 +38,31 @@ class SpecGenerator
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
         $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
 
+        // Check if the API class has been annotated and use the generated annotations file if it hasn't
+        $pluginAnnotationsSource = $pluginDir . '/API.php';
+        $tempGenerator = new Generator(StaticContainer::get(NullLogger::class));
+        $openapi = $tempGenerator->generate([
+            $pluginAnnotationsSource,
+        ]);
+        if (trim($openapi->toYaml()) === 'openapi: ' . OpenApi::DEFAULT_VERSION) {
+            $pluginAnnotationDir = $pluginDir . '/OpenApi/Annotations';
+            $pluginAnnotationPath = $pluginAnnotationDir . '/GeneratedAnnotations.php';
+            $pluginAnnotationsSource = $pluginAnnotationPath;
+            // If the generated file doesn't exist yet, generate one
+            if (!is_dir($pluginAnnotationDir) || !file_exists($pluginAnnotationPath)) {
+                (StaticContainer::get(AnnotationGenerator::class))->generatePluginApiAnnotations($pluginName, true);
+            }
+        }
+
         $generator = new Generator(StaticContainer::get(LoggerInterface::class));
         $generator->setVersion(OpenApi::DEFAULT_VERSION);
+
         $openapi = $generator->generate([
             $currentPluginDir . '/Annotations/GlobalApiComponents.php',
-            $pluginDir . '/API.php',
+            $pluginAnnotationsSource,
         ]);
+
+        $openapi->info->title .= ' for ' . $pluginName . ' plugin';
 
         return strtolower($format) === 'yaml' ? $openapi->toYaml() : $openapi->toJson();
     }
