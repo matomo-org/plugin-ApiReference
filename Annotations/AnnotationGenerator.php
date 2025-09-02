@@ -23,7 +23,6 @@ use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TypeParser;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
-use function _PHPStan_3d4486d07\RingCentral\Psr7\str;
 
 class AnnotationGenerator
 {
@@ -123,8 +122,10 @@ class AnnotationGenerator
     {
         $existing = $reflectionMethod->getDocComment();
         // Skip methods which have been marked as internal or auto annotations disabled
-        if ($existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
-                || stripos($existing, '@internal') !== false)) {
+        if (
+            $existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
+                || stripos($existing, '@internal') !== false)
+        ) {
             return [];
         }
 
@@ -145,7 +146,8 @@ class AnnotationGenerator
         return $this->compileOperationLines($path, $opId, $pluginName, $methodName, $params, $responses, $isPost);
     }
 
-    protected function getParamInfoFromDocBlock(string $docBlock): array {
+    protected function getParamInfoFromDocBlock(string $docBlock): array
+    {
         $lexer  = new Lexer();
         $tokens = $lexer->tokenize($docBlock);
         $expressionParser = new ConstExprParser();
@@ -241,14 +243,18 @@ class AnnotationGenerator
      * @param string $type The PHP type from the method signature or doc-block
      * @return string The normalised Data Type to be used in the swagger-php annotation
      */
-    protected function getOpenApiTypeFromPhpType(string $type): string
+    public function getOpenApiTypeFromPhpType(string $type): string
     {
         // TODO - Is there a good way to handle object type or should that always be ref?
         // TODO - Eventually handle the Data Type Formats: https://spec.openapis.org/oas/v3.1.1.html#data-type-format
         switch (strtolower($type)) {
             case 'array':
+            case '[]':
             case 'int[]':
             case 'string[]':
+            case 'bool[]':
+            case 'float[]':
+            case 'double[]':
                 $type = 'array';
                 break;
             case 'int':

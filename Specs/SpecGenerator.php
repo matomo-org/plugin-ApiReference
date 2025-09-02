@@ -25,7 +25,7 @@ class SpecGenerator
     public function __construct()
     {
         // Set the constant for the current instance's URL
-        if(!defined('LOCAL_MATOMO_SERVER_URL')) {
+        if (!defined('LOCAL_MATOMO_SERVER_URL')) {
             define('LOCAL_MATOMO_SERVER_URL', SettingsPiwik::getPiwikUrl());
         }
     }
