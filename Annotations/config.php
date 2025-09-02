@@ -8,7 +8,7 @@
  */
 
 return [
-    'virtualPathTemplate' => '/{plugin}.{method}',
+    'virtualPathTemplate' => '/index.php?module=API&method={plugin}.{method}',
 
     'defaultParamRefs' => [
         '#/components/parameters/formatOptional',

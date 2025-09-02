@@ -23,6 +23,7 @@ use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TypeParser;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
+use function _PHPStan_3d4486d07\RingCentral\Psr7\str;
 
 class AnnotationGenerator
 {
@@ -42,7 +43,7 @@ class AnnotationGenerator
      * - Uses config.php to set default values.
      * - Uses config.php from plugin to override default configs.
      */
-    public function generatePluginApiAnnotations(string $pluginName)
+    public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false)
     {
         BaseValidator::check('plugin', $pluginName, [ new NotEmpty() ]);
         Manager::getInstance()->checkIsPluginActivated($pluginName);
@@ -50,11 +51,12 @@ class AnnotationGenerator
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
         $rules = require $currentPluginDir . '/Annotations/config.php';
         $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
-        $pluginConfigPath = $pluginDir . '/OpenApi/Annotations/config.php';
-        if (is_file($pluginConfigPath)) {
-            $pluginRules = require $pluginDir . '/OpenApi/Annotations/config.php';
+        $pluginAnnotationDir = $pluginDir . '/OpenApi/Annotations';
+        $pluginAnnotationPath = $pluginAnnotationDir . '/GeneratedAnnotations.php';
+        // If the directory doesn't exist yet, create it
+        if ($writeToFile && !is_dir($pluginAnnotationDir)) {
+            mkdir($pluginAnnotationDir, 0777, true);
         }
-        $rules['plugins'] = [ $pluginName => $pluginRules ?? [] ];
 
         $className = Request::getClassNameAPI($pluginName);
 
@@ -81,11 +83,40 @@ class AnnotationGenerator
             $annotations[] = $methodAnnotations;
         }
 
-        if (empty($annotations)) {
-            return false;
+        if ($writeToFile) {
+            $this->writeAnnotationsToFile($annotations, $pluginAnnotationPath, $pluginName);
         }
 
         return $annotations;
+    }
+
+    protected function writeAnnotationsToFile(array $annotations, string $filePath, string $pluginName): void
+    {
+        $output = '';
+        $lines = [
+            '<?php',
+            '',
+            'namespace Piwik\\Plugins\\' . $pluginName . '\\OpenApi\\Annotations;',
+            '',
+            '/**',
+        ];
+
+        foreach ($annotations as $annotation) {
+            foreach ($annotation as $line) {
+                $lines[] = ' * ' . $line;
+            }
+        }
+
+        $lines = array_merge($lines, [
+            ' */',
+            'class GeneratedAnnotations',
+            '{',
+            '',
+            '}',
+        ]);
+
+        // Create or overwrite the annotations file
+        file_put_contents($filePath, implode(PHP_EOL, $lines));
     }
 
     protected function buildAnnotationForMethod(array $rules, string $pluginName, \ReflectionMethod $reflectionMethod): array
@@ -270,6 +301,11 @@ class AnnotationGenerator
 
     protected function getExampleIfAvailable(string $url): array
     {
+        // Simply return the URL for TSV
+        if (stripos($url, 'format=tsv') !== false) {
+            return ['externalValue' => $url];
+        }
+
         $ch = curl_init($url);
 
         curl_setopt_array($ch, [
@@ -284,11 +320,22 @@ class AnnotationGenerator
         curl_close($ch);
 
         // If the example didn't load or is too big, simply include the URL instead of the string value
-        if ($body === false || $status !== 200 || strlen($body) > 1000) {
+        if ($body === false || $status !== 200 || strlen($body) > 1000 || strpos($body, 'Error: ') === 0) {
             return ['externalValue' => $url];
         }
 
-        return ['value' => trim($body)];
+        // Clean up XML formatting a bit
+        $body = trim($body);
+        if (stripos($url, 'format=xml') !== false) {
+            $body = str_replace(['<?xml version="1.0" encoding="utf-8" ?>', "\n", "\t", '"'], ['', '', '', '\"'], $body);
+        }
+
+        // The annotation expects an objects and not arrays
+        if (stripos($url, 'format=json') !== false && stripos($body, '[') === 0) {
+            $body = str_replace(['[', ']'], ['{', '}'], $body);
+        }
+
+        return ['value' => $body];
     }
 
     protected function determineResponses(array $rules, string $plugin, string $method): array
@@ -317,7 +364,13 @@ class AnnotationGenerator
                 'summary="Example ' . $type . '"',
             ];
             $exampleValue = $this->getExampleIfAvailable($url);
-            $exampleProperties[] = array_key_first($exampleValue) . '="' . array_pop($exampleValue) . '"';
+            $valueKey = array_key_first($exampleValue);
+            $value = '"' . array_pop($exampleValue) . '"';
+            // Remove the surrounding quotes for JSON values
+            if ($valueKey === 'value' && $type === 'json') {
+                $value = substr($value, 1, -1);
+            }
+            $exampleProperties[] = $valueKey . '=' . $value;
             $mediaTypes[] = [
                 'mediaType="' . $contentType . '"',
                 '@OA\Examples' => $exampleProperties,
@@ -391,6 +444,9 @@ class AnnotationGenerator
         }
         if ($type === 'array') {
             $schemaMap[] = '@OA\Items(' . $subTypeString . ')';
+            if ($default === '[]') {
+                $default = '{}';
+            }
         }
 
         if ($default !== '') {
