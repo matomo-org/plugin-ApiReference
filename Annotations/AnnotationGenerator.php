@@ -23,7 +23,6 @@ use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TypeParser;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
-use function _PHPStan_3d4486d07\RingCentral\Psr7\str;
 
 class AnnotationGenerator
 {
