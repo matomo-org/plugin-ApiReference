@@ -11,7 +11,6 @@ namespace Piwik\Plugins\OpenApiDocs\Renderer;
 
 use Piwik\API\ApiRenderer;
 use Piwik\Common;
-use Piwik\DataTable\Renderer;
 use Symfony\Component\Yaml\Yaml as SymfonyYaml;
 
 class Yaml extends ApiRenderer

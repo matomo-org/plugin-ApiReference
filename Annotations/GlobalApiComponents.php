@@ -345,5 +345,4 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  */
 class GlobalApiComponents
 {
-
 }

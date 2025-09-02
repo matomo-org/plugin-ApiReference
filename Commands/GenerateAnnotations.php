@@ -9,6 +9,7 @@
 
 namespace Piwik\Plugins\OpenApiDocs\Commands;
 
+use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
 use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
 
@@ -28,7 +29,7 @@ class GenerateAnnotations extends ConsoleCommand
     protected function configure()
     {
         $this->setName('openapidocs:generate-annotations');
-        $this->setDescription('Generate the annotations php-swagger uses to generate OpenAPI specs.');
+        $this->setDescription('Generate the annotations swagger-php uses to generate OpenAPI specs.');
         $this->addRequiredValueOption('plugin', null, 'Name of the plugin to annotate');
         $this->addNoValueOption('not-dry-run', null, 'Flag to allow writing to file instead of outputting a dry run.');
     }
@@ -81,9 +82,13 @@ class GenerateAnnotations extends ConsoleCommand
 
         $output->writeln(sprintf('<info>Generating annotations for: %s</info>', $plugin));
 
-        // TODO - Add handling for not-dry-run
+        $result = (StaticContainer::get(AnnotationGenerator::class))->generatePluginApiAnnotations($plugin, $notDryRun);
 
-        $result = (new AnnotationGenerator())->generatePluginApiAnnotations($plugin);
+        if ($notDryRun) {
+            $output->writeln('<info>Results written to ' . $plugin . ' plugin\'s /OpenApi/Annotations directory.</info>');
+
+            return $result ? self::SUCCESS : self::FAILURE;
+        }
 
         if (is_array($result)) {
             foreach ($result as $annotation) {
