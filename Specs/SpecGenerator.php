@@ -30,13 +30,19 @@ class SpecGenerator
         }
     }
 
-    public function generatePluginDoc(string $pluginName, string $format = 'json', bool $writeToFile = false): string
+    public function generatePluginDoc(string $pluginName, string $format = 'json', string $version = '1.0.0', bool $writeToFile = false): string
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
         Manager::getInstance()->checkIsPluginActivated($pluginName);
 
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
         $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
+        $pluginSpecDir = $pluginDir . '/OpenApi/Specs';
+        $pluginSpecPath = $pluginSpecDir . '/' . $pluginName . '_v' . $version . '.' . strtolower($format);
+        // If the directory doesn't exist yet, create it
+        if ($writeToFile && !is_dir($pluginSpecDir)) {
+            mkdir($pluginSpecDir, 0777, true);
+        }
 
         // Check if the API class has been annotated and use the generated annotations file if it hasn't
         $pluginAnnotationsSource = $pluginDir . '/API.php';
@@ -54,7 +60,6 @@ class SpecGenerator
         }
 
         $generator = new Generator(StaticContainer::get(LoggerInterface::class));
-        $generator->setVersion(OpenApi::DEFAULT_VERSION);
 
         $openapi = $generator->generate([
             $currentPluginDir . '/Annotations/GlobalApiComponents.php',
@@ -64,12 +69,19 @@ class SpecGenerator
         // Update title with plugin name
         $openapi->info->title .= ' for ' . $pluginName . ' plugin';
 
+        $openapi->info->version = $version ?: '1.0.0';
+
         // Remove the current server so that it isn't used when saving the spec file. It should only leave demo
         if ($writeToFile && is_array($openapi->servers) && count($openapi->servers) > 1) {
             unset($openapi->servers[0]);
             $openapi->servers = array_values($openapi->servers);
         }
 
-        return strtolower($format) === 'yaml' ? $openapi->toYaml() : $openapi->toJson();
+        $specContents = strtolower($format) === 'yaml' ? $openapi->toYaml() : $openapi->toJson();
+        if ($writeToFile) {
+            file_put_contents($pluginSpecPath, $specContents);
+        }
+
+        return $specContents;
     }
 }

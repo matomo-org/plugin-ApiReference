@@ -29,7 +29,10 @@ class GenerateSpecFile extends ConsoleCommand
     {
         $this->setName('openapidocs:generate-spec-file');
         $this->setDescription('Generate the OpenAPI documentation file for the Matomo APIs.');
-        $this->addRequiredValueOption('plugin', null, 'Name of the plugin to document');
+        $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to document');
+        $this->addRequiredValueOption('format', 'f', 'Format of the spec file (JSON or YAML). Default is JSON');
+        $this->addRequiredValueOption('api-version', null, 'Version of the spec file. Default is 1.0.0');
+        $this->addNoValueOption('not-dry-run', null, 'Flag to allow writing to file instead of outputting a dry run.');
     }
 
     /**
@@ -71,13 +74,24 @@ class GenerateSpecFile extends ConsoleCommand
         $output = $this->getOutput();
 
         $plugin = $input->getOption('plugin') ?: 'Matomo';
+        $format = $input->getOption('format') ?: 'json';
+        $version = $input->getOption('version') ?: '1.0.0';
+        $notDryRun = $input->getOption('not-dry-run') ?: false;
 
         $message = sprintf('<info>Generating documentation for: %s</info>', $plugin);
 
         $output->writeln($message);
 
-        $output->writeln((new SpecGenerator())->generatePluginDoc($plugin));
+        $result = (new SpecGenerator())->generatePluginDoc($plugin, $format, $version, $notDryRun);
 
-        return self::SUCCESS;
+        if ($notDryRun) {
+            $output->writeln('<info>Results written to ' . $plugin . ' plugin\'s /OpenApi/Specs directory.</info>');
+
+            return $result ? self::SUCCESS : self::FAILURE;
+        }
+
+        $output->writeln($result);
+
+        return $result ? self::SUCCESS : self::FAILURE;
     }
 }

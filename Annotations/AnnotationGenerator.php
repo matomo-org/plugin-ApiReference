@@ -510,7 +510,8 @@ class AnnotationGenerator
                 $operationValuesMap[] = ['@OA\Response' => $responsePropertyArray];
             }
         }
-        $operationValuesMap[] = 'x={"runtime"={"entry":"index.php","query":{"module":"API","method":"' . $plugin . '.' . $method . '"}}}';
+        // TODO - Remove this if it's determined that we won't ever use it
+        //$operationValuesMap[] = 'x={"runtime"={"entry":"index.php","query":{"module":"API","method":"' . $plugin . '.' . $method . '"}}}';
 
         $lines = $this->buildLinesForAnnotationObject('@OA\\' . ($isPost ? 'Post' : 'Get'), $operationValuesMap);
 

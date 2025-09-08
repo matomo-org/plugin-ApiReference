@@ -108,10 +108,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  * @OA\Response(
  *     response="Unauthorized",
  *     description="Authentication failed or missing token.",
- *     @OA\JsonContent(
- *         ref="#/components/schemas/Error",
- *         example={"result":"error","message":"You must be logged in to access this functionality."}
- *     ),
+ *     @OA\JsonContent(ref="#/components/schemas/Error"),
  *     @OA\XmlContent(ref="#/components/schemas/ErrorXml"),
  *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Error: You must be logged in to access this functionality."),
  *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="You must be logged in to access this functionality.")
@@ -204,7 +201,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     in="query",
  *     description="Always `API` for Reporting API requests.",
  *     required=true,
- *     @OA\Schema(type="string", default="API", example="API")
+ *     @OA\Schema(type="string", default="API")
  * )
  *
  * @OA\Parameter(
@@ -213,8 +210,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     in="query",
  *     description="API method, e.g. `VisitsSummary.get` or `CustomAlerts.getAlert`.",
  *     required=true,
- *     @OA\Schema(type="string"),
- *     example="CustomAlerts.getAlert"
+ *     @OA\Schema(type="string", example="CustomAlerts.getAlert")
  * )
  *
  * @OA\Parameter(
@@ -227,8 +223,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *          type="string",
  *          enum={"xml","json","csv","tsv","html","rss","original"},
  *          default="xml"
- *      ),
- *      example="xml"
+ *      )
  *  )
  *
  * @OA\Parameter(
@@ -241,8 +236,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *         type="string",
  *         enum={"xml","json","csv","tsv","html","rss","original"},
  *         default="xml"
- *     ),
- *     example="xml"
+ *     )
  * )
  *
  * Commonly used parameters. If there are parameters not required by every endpoint, it will be declared as both
@@ -253,8 +247,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     in="query",
  *     description="Matomo site ID.",
  *     required=true,
- *     @OA\Schema(type="integer"),
- *     example=1
+ *     @OA\Schema(type="integer", example=1)
  * )
  *
  * @OA\Parameter(
@@ -263,8 +256,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     in="query",
  *     description="Matomo site ID.",
  *     required=false,
- *     @OA\Schema(type="integer"),
- *     example=1
+ *     @OA\Schema(type="integer", example=1)
  * )
  *
  * @OA\Parameter(
@@ -273,8 +265,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     in="query",
  *     description="Reporting period.",
  *     required=true,
- *     @OA\Schema(type="string", enum={"day","week","month","year","range"}),
- *     example="day"
+ *     @OA\Schema(type="string", enum={"day","week","month","year","range"}, example="day")
  * )
  *
  * @OA\Parameter(
@@ -283,8 +274,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     in="query",
  *     description="Reporting period.",
  *     required=false,
- *     @OA\Schema(type="string", enum={"day","week","month","year","range"}),
- *     example="day"
+ *     @OA\Schema(type="string", enum={"day","week","month","year","range"}, example="day")
  * )
  *
  * @OA\Parameter(
@@ -293,8 +283,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     in="query",
  *     description="Date or range (e.g. `2025-08-01`, `yesterday`, `last30`, or `2025-08-01,2025-08-11`).",
  *     required=true,
- *     @OA\Schema(type="string"),
- *     example="yesterday"
+ *     @OA\Schema(type="string", example="today")
  * )
  *
  * @OA\Parameter(
@@ -303,8 +292,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     in="query",
  *     description="Date or range (e.g. `2025-08-01`, `yesterday`, `last30`, or `2025-08-01,2025-08-11`).",
  *     required=false,
- *     @OA\Schema(type="string"),
- *     example="yesterday"
+ *     @OA\Schema(type="string", example="today")
  * )
  *
  * @OA\Parameter(
@@ -328,14 +316,14 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  * Parameters specific to DataTables and Views
  * @OA\Parameter(parameter="flatOptional", name="flat", in="query",
  *     description="Flatten subtables into the parent table.", required=false,
- *     @OA\Schema(type="integer", enum={0,1}), example=0)
+ *     @OA\Schema(type="integer", enum={0,1}, example=0))
  *
  * @OA\Parameter(parameter="filter_patternOptional", name="filter_pattern", in="query",
  *     description="Regex to keep matching rows.", required=false, @OA\Schema(type="string"))
  *
  * @OA\Parameter(parameter="filter_columnOptional", name="filter_column", in="query",
  *     description="Column to apply the regex to (e.g., `label`).", required=false,
- *     @OA\Schema(type="string"), example="label")
+ *     @OA\Schema(type="string", example="label"))
  *
  * @OA\Parameter(parameter="filter_pattern_recursiveOptional", name="filter_pattern_recursive", in="query",
  *     description="Recursive regex filter.", required=false, @OA\Schema(type="string"))
@@ -348,14 +336,14 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *
  * @OA\Parameter(parameter="filter_excludelowpop_valueOptional", name="filter_excludelowpop_value", in="query",
  *     description="Minimum value threshold for `filter_excludelowpop`.", required=false,
- *     @OA\Schema(type="number"), example=0)
+ *     @OA\Schema(type="number", example=0))
  *
  * @OA\Parameter(parameter="filter_sort_columnOptional", name="filter_sort_column", in="query",
  *     description="Column to sort by.", required=false, @OA\Schema(type="string"))
  *
  * @OA\Parameter(parameter="filter_sort_orderOptional", name="filter_sort_order", in="query",
  *     description="Sort direction.", required=false,
- *     @OA\Schema(type="string", enum={"asc","desc"}), example="desc")
+ *     @OA\Schema(type="string", enum={"asc","desc"}, example="desc"))
  *
  * @OA\Parameter(parameter="filter_truncateOptional", name="filter_truncate", in="query",
  *     description="Row index after which rows are removed.", required=false, @OA\Schema(type="integer"))
@@ -368,15 +356,15 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *
  * @OA\Parameter(parameter="keep_summary_rowOptional", name="keep_summary_row", in="query",
  *     description="Keep the summary row.", required=false,
- *     @OA\Schema(type="integer", enum={0,1}), example=1)
+ *     @OA\Schema(type="integer", enum={0,1}, example=1))
  *
  * @OA\Parameter(parameter="disable_generic_filtersOptional", name="disable_generic_filters", in="query",
  *     description="Disable generic filters (those above).", required=false,
- *     @OA\Schema(type="integer", enum={0,1}), example=0)
+ *     @OA\Schema(type="integer", enum={0,1}, example=0))
  *
  * @OA\Parameter(parameter="disable_queued_filtersOptional", name="disable_queued_filters", in="query",
  *     description="Skip queued filters.", required=false,
- *     @OA\Schema(type="integer", enum={0,1}), example=0)
+ *     @OA\Schema(type="integer", enum={0,1}, example=0))
  *
  * @OA\Parameter(parameter="hideColumnsOptional", name="hideColumns", in="query",
  *     description="Comma-separated list of columns to hide.", required=false, @OA\Schema(type="string"))
