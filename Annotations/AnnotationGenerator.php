@@ -456,7 +456,8 @@ class AnnotationGenerator
         return ['@OA\Schema' => $schemaMap];
     }
 
-    protected function shouldIncludeDefault(string $type, string $default = NoDefaultValue::class): bool {
+    protected function shouldIncludeDefault(string $type, string $default = NoDefaultValue::class): bool
+    {
         if ($default === NoDefaultValue::class) {
             return false;
         }
