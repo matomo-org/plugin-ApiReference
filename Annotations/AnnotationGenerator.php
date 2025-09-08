@@ -300,8 +300,8 @@ class AnnotationGenerator
 
     protected function getExampleIfAvailable(string $url): array
     {
-        // Simply return the URL for TSV
-        if (stripos($url, 'format=tsv') !== false) {
+        // Simply return the URL for anything other than JSON until we figure out how to better format those examples
+        if (stripos($url, 'format=json') === false) {
             return ['externalValue' => $url];
         }
 

@@ -11,7 +11,9 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
 
 /**
  * Global components for generating OpenAPI specs for the Matomo Reporting API.
- *
+ */
+
+/**
  * @OA\OpenApi(
  *     openapi="3.1.0",
  *     security={{"MatomoToken": {}}},
@@ -51,14 +53,46 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *
  * Generic Error object
  * @OA\Schema(
+ *     schema="GenericSuccess",
+ *     type="object",
+ *     description="Generic Matomo success payload.",
+ *     required={"result","message"},
+ *     additionalProperties=true,
+ *     @OA\Property(property="result", type="string", enum={"success"}, example="success"),
+ *     @OA\Property(property="message", type="string", example="ok"),
+ *     @OA\Property(property="code", type="integer", nullable=true, default=null)
+ * )
+ *
+ * Generic Error object
+ * @OA\Schema(
  *     schema="Error",
  *     type="object",
  *     description="Generic Matomo error payload.",
  *     required={"result","message"},
  *     additionalProperties=true,
  *     @OA\Property(property="result", type="string", enum={"error"}, example="error"),
- *     @OA\Property(property="message", type="string", example="You can't access this resource"),
- *     @OA\Property(property="code", type="integer", nullable=true, example=401)
+ *     @OA\Property(property="message", type="string", example="There was an error"),
+ *     @OA\Property(property="code", type="integer", nullable=true, default=null)
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ErrorXml",
+ *     type="object",
+ *     description="Generic Matomo error payload in XML.",
+ *     @OA\Xml(
+ *         name="result"
+ *     ),
+ *     @OA\Property(
+ *         property="error",
+ *         type="object",
+ *         @OA\Xml(name="error"),
+ *         @OA\Property(
+ *             property="message",
+ *             type="string",
+ *             xml=@OA\Xml(attribute=true),
+ *             example="There was an error"
+ *         )
+ *     )
  * )
  *
  * Common responses which should be used by each API endpoint
@@ -66,60 +100,73 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     response="BadRequest",
  *     description="Bad request (validation or missing parameters).",
  *     @OA\JsonContent(ref="#/components/schemas/Error"),
- *     @OA\XmlContent(ref="#/components/schemas/Error"),
- *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string")),
- *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"))
+ *     @OA\XmlContent(ref="#/components/schemas/ErrorXml"),
+ *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Error: There was an error."),
+ *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="There was an error.")
  * )
  *
  * @OA\Response(
  *     response="Unauthorized",
  *     description="Authentication failed or missing token.",
- *     @OA\JsonContent(ref="#/components/schemas/Error"),
- *     @OA\XmlContent(ref="#/components/schemas/Error"),
- *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string")),
- *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"))
+ *     @OA\JsonContent(
+ *         ref="#/components/schemas/Error",
+ *         example={"result":"error","message":"You must be logged in to access this functionality."}
+ *     ),
+ *     @OA\XmlContent(ref="#/components/schemas/ErrorXml"),
+ *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Error: You must be logged in to access this functionality."),
+ *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="You must be logged in to access this functionality.")
  * )
  *
  * @OA\Response(
  *     response="Forbidden",
  *     description="Authenticated but not allowed to access the resource.",
  *     @OA\JsonContent(ref="#/components/schemas/Error"),
- *     @OA\XmlContent(ref="#/components/schemas/Error"),
- *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string")),
- *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"))
+ *     @OA\XmlContent(ref="#/components/schemas/ErrorXml"),
+ *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Error: Not authorised."),
+ *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="Not authorised.")
  * )
  *
  * @OA\Response(
  *     response="NotFound",
  *     description="Resource not found.",
  *     @OA\JsonContent(ref="#/components/schemas/Error"),
- *     @OA\XmlContent(ref="#/components/schemas/Error"),
- *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string")),
- *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"))
+ *     @OA\XmlContent(ref="#/components/schemas/ErrorXml"),
+ *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Error: The method is not available."),
+ *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="The method is not available.")
  * )
  *
  * @OA\Response(
  *     response="ServerError",
  *     description="Unexpected server error.",
  *     @OA\JsonContent(ref="#/components/schemas/Error"),
- *     @OA\XmlContent(ref="#/components/schemas/Error"),
- *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string")),
- *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"))
+ *     @OA\XmlContent(ref="#/components/schemas/ErrorXml"),
+ *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Error: There was an error."),
+ *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="There was an error.")
  * )
  *
  * @OA\Response(
  *     response="DefaultError",
  *     description="Default error response (any non-2xx).",
  *     @OA\JsonContent(ref="#/components/schemas/Error"),
- *     @OA\XmlContent(ref="#/components/schemas/Error"),
- *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string")),
- *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"))
+ *     @OA\XmlContent(ref="#/components/schemas/ErrorXml"),
+ *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Error: There was an error."),
+ *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="There was an error.")
+ * )
+ *
+ * Generic responses which can be used by endpoints
+ * @OA\Response(
+ *     response="GenericSuccessNoBody",
+ *     description="Generic 200 response with no body"
  * )
  *
  * Generic responses which can be used by endpoints
  * @OA\Response(
  *     response="GenericSuccess",
- *     description="Generic 200 response with no body"
+ *     description="Generic 200 response"
+ *     @OA\JsonContent(ref="#/components/schemas/GenericSuccess"),
+ *     @OA\XmlContent(ref="#/components/schemas/GenericSuccess"),
+ *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Result: success"),
+ *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="success")
  * )
  *
  * @OA\Response(
