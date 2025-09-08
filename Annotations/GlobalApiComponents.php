@@ -162,7 +162,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  * Generic responses which can be used by endpoints
  * @OA\Response(
  *     response="GenericSuccess",
- *     description="Generic 200 response"
+ *     description="Generic 200 response",
  *     @OA\JsonContent(ref="#/components/schemas/GenericSuccess"),
  *     @OA\XmlContent(ref="#/components/schemas/GenericSuccess"),
  *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Result: success"),
