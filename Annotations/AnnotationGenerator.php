@@ -159,7 +159,8 @@ class AnnotationGenerator
             $name = ltrim($param->parameterName, '$');
             $params[$name] = [
                 'type'     => (string) $param->type,
-                'desc'     => $param->description,
+                // Normalise the description. E.g. remove linebreaks and indentation
+                'desc'     => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
                 'byRef'    => $param->isReference,
                 'variadic' => $param->isVariadic,
             ];
@@ -169,7 +170,7 @@ class AnnotationGenerator
 
     protected function buildVirtualPath(string $virtualPathTemplate, string $plugin, string $method): string
     {
-        return str_replace([ '{plugin}', '{method}' ], [ $plugin, $method ], $virtualPathTemplate);
+        return str_replace(['{plugin}', '{method}'], [$plugin, $method], $virtualPathTemplate);
     }
 
     protected function buildParameterAnnotation(string $paramName, array $paramMetadata, array $paramDocInfo): array
@@ -197,7 +198,7 @@ class AnnotationGenerator
             'types' => $typesMap,
             'description' => $paramDocInfo['desc'] ?? '',
             'required' => $isRequired ? 'true' : 'false',
-            'default' => !$isRequired ? json_encode($paramMetadata['default']) : '',
+            'default' => !$isRequired ? json_encode($paramMetadata['default']) : NoDefaultValue::class,
         ];
     }
 
@@ -434,7 +435,7 @@ class AnnotationGenerator
         return array_merge([$indentString . $objectName . $openingCharacter], $lines, [$indentString . $closingCharacter . ',']);
     }
 
-    protected function buildSchemaObjectArray(string $type, string $subType = '', string $default = ''): array
+    protected function buildSchemaObjectArray(string $type, string $subType = '', string $default = NoDefaultValue::class): array
     {
         $schemaMap = ['type="' . $type . '"'];
         $subTypeString = '';
@@ -448,12 +449,24 @@ class AnnotationGenerator
             }
         }
 
-        if ($default !== '') {
-            // TODO - Add some logic to only add default if it matches the type. E.g. false isn't a good default for string
+        if ($this->shouldIncludeDefault($type, $default)) {
             $schemaMap[] = 'default="' . $default . '"';
         }
 
         return ['@OA\Schema' => $schemaMap];
+    }
+
+    protected function shouldIncludeDefault(string $type, string $default = NoDefaultValue::class): bool {
+        if ($default === NoDefaultValue::class) {
+            return false;
+        }
+
+        // Don't use true or false for default if it's not a boolean type
+        if ($type !== 'boolean' && in_array(strtolower($default), ['false', 'true'])) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function buildSchemaObjectArrays(array $typesMap, string $default = ''): array
