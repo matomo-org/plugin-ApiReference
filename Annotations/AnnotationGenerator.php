@@ -206,6 +206,10 @@ class AnnotationGenerator
         $docType = strtolower(trim($paramDocInfo['type'] ?? ''));
         $metaType = strtolower(trim($paramMetadata['type'] ?? $docType));
         $type = $metaType === 'string' && $docType !== 'string' ? $docType : $metaType;
+        // If the signature type is array, but the type hinting provides more, use that instead
+        if ($type === 'array' && strpos($docType, '[]') !== false && strpos($docType, '|') === false) {
+            $type = $docType;
+        }
         $typesMap = [];
         // Check for pipes and try to list possible types
         foreach (explode('|', $type) as $typePart) {
@@ -520,7 +524,12 @@ class AnnotationGenerator
         }
 
         if ($this->shouldIncludeDefault($type, $default)) {
-            $schemaMap[] = 'default="' . $default . '"';
+            $doubleQuote = '"';
+            // Don't wrap with quotes for certain values
+            if (in_array($default, ['{}', "{$doubleQuote}{$doubleQuote}"])) {
+                $doubleQuote = '';
+            }
+            $schemaMap[] = "default={$doubleQuote}{$default}{$doubleQuote}";
         }
 
         return ['@OA\Schema' => $schemaMap];
