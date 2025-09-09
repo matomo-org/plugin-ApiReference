@@ -138,7 +138,7 @@ class AnnotationGenerator
         );
 
         $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
-        $responses = $this->determineResponses($rules, $pluginName, $methodName);
+        $responses = $this->determineResponses($rules, $pluginName, $methodName, $reflectionMethod);
 
         $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
             && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
@@ -166,6 +166,34 @@ class AnnotationGenerator
             ];
         }
         return $params;
+    }
+
+    protected function getResponseInfoFromDocBlock(string $docBlock): array
+    {
+        $lexer  = new Lexer();
+        $tokens = $lexer->tokenize($docBlock);
+        $expressionParser = new ConstExprParser();
+        $parser = new PhpDocParser(new TypeParser($expressionParser), $expressionParser);
+        $node   = $parser->parse(new TokenIterator($tokens));
+
+        $responseInfo = ['type' => null];
+        $returnTags = $node->getReturnTagValues();
+        if (empty($returnTags)) {
+            return $responseInfo;
+        }
+
+        $returnTag = $returnTags[0];
+        $tagValue = strval($returnTag->type);
+        $responseInfo['type'] = $this->getOpenApiTypeFromPhpType($tagValue);
+        if ($responseInfo['type'] === 'string' && !empty($tagValue) && strtolower($tagValue) !== 'string') {
+            $responseInfo['type'] = '';
+            $responseInfo['description'] = 'Response of unknown type';
+        }
+        if (!empty($returnTag->description)) {
+            $responseInfo['description'] = $returnTag->description;
+        }
+
+        return $responseInfo;
     }
 
     protected function buildVirtualPath(string $virtualPathTemplate, string $plugin, string $method): string
@@ -320,14 +348,8 @@ class AnnotationGenerator
         curl_close($ch);
 
         // If the example didn't load or is too big, simply include the URL instead of the string value
-        if ($body === false || $status !== 200 || strlen($body) > 1000 || strpos($body, 'Error: ') === 0) {
+        if ($body === false || $status !== 200 || strlen($body) > 2000 || strpos($body, 'Error: ') === 0) {
             return ['externalValue' => $url];
-        }
-
-        // Clean up XML formatting a bit
-        $body = trim($body);
-        if (stripos($url, 'format=xml') !== false) {
-            $body = str_replace(['<?xml version="1.0" encoding="utf-8" ?>', "\n", "\t", '"'], ['', '', '', '\"'], $body);
         }
 
         // The annotation expects an objects and not arrays
@@ -338,20 +360,61 @@ class AnnotationGenerator
         return ['value' => $body];
     }
 
-    protected function determineResponses(array $rules, string $plugin, string $method): array
+    protected function determineResponses(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
     {
         $responses = [];
 
-        // TODO - Try to determine the success response using the return type and/or doc-block return type
+        // Try to determine the success response using the return type and/or doc-block return type
+        $returnType = $reflectionMethod->getReturnType();
+        $responseInfo = $this->getResponseInfoFromDocBlock($reflectionMethod->getDocComment());
+        $commentType = $responseInfo['type'];
+        if (!empty($returnType) && $returnType->isBuiltin()) {
+            $responseInfo['type'] = $this->getOpenApiTypeFromPhpType($returnType->getName());
+        }
 
         $successRef = null;
         $successArray = ['code' => 200];
         if (isset($rules['plugins'][$plugin]['successResponseByMethod'][$method])) {
             $successRef = $rules['plugins'][$plugin]['successResponseByMethod'][$method];
         }
+        // TODO - See if there's a way to auto-handle custom objects, especially common stuff like DataTable\DataTableInterface
         if ($successRef) {
             $successArray['ref'] = $successRef;
         }
+
+        // If the return type is void, use the generic response type
+        if (empty($successArray['ref']) && !empty($returnType) && $returnType->getName() === 'void') {
+            $successArray['ref'] = '#/components/responses/GenericSuccessNoBody';
+        }
+
+        // If it's a generic type and there's no custom description, use one of the global generic responses
+        if (empty($successArray['ref']) && !empty($responseInfo['type']) && empty($responseInfo['description'])) {
+            $ref = '';
+            switch ($responseInfo['type']) {
+                case 'array':
+                    $ref = '#/components/responses/GenericArray';
+                    break;
+                case 'integer':
+                    $ref = '#/components/responses/GenericInteger';
+                    break;
+                case 'boolean':
+                    $ref = '#/components/responses/GenericBoolean';
+                    break;
+                case 'string':
+                    $ref = '#/components/responses/GenericString';
+                    break;
+            }
+
+            if (!empty($ref)) {
+                $successArray['ref'] = $ref;
+            }
+        }
+
+        if (!empty($responseInfo['description'])) {
+            $successArray['desc'] = $responseInfo['description'];
+        }
+
+        $responseSchema = !empty($responseInfo['type']) ? $this->buildSchemaObjectArray($responseInfo['type']) : [];
 
         $mediaTypes = [];
         // This simply reuses the example URLs used by the current documentation, but some endpoints don't work because authentication is required
@@ -371,13 +434,21 @@ class AnnotationGenerator
                 $value = substr($value, 1, -1);
             }
             $exampleProperties[] = $valueKey . '=' . $value;
-            $mediaTypes[] = [
+            $mediaType = [
                 'mediaType="' . $contentType . '"',
                 '@OA\Examples' => $exampleProperties,
             ];
+            // If a type was found, add it as a schema to the media type
+            if (!empty($responseSchema)) {
+                $mediaType = array_merge($mediaType, $responseSchema);
+            }
+            $mediaTypes[] = $mediaType;
         }
         if (!empty($mediaTypes)) {
             $successArray['mediaTypes'] = $mediaTypes;
+        } else {
+            // Make sure the schema is included in there are no examples
+            $successArray['schema'] = $responseSchema;
         }
 
         $responses[] = $successArray;
@@ -507,7 +578,8 @@ class AnnotationGenerator
             $operationValuesMap[] = ['@OA\Parameter' => $paramMap];
         }
         foreach ($responses as $response) {
-            if (isset($response['ref'])) {
+            // Don't use the reference if there are media type examples
+            if (isset($response['ref']) && empty($response['mediaTypes'])) {
                 $code = $response['code'];
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
                 $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . ', ref="' . $response['ref'] . '")';
@@ -516,6 +588,9 @@ class AnnotationGenerator
                     'response=200',
                     'description="' . ($response['desc'] ?? 'OK') . '"',
                 ];
+                if (!empty($response['schema'])) {
+                    $responsePropertyArray = array_merge($responsePropertyArray, $response['schema']);
+                }
                 if (isset($response['mediaTypes']) && is_array($response['mediaTypes'])) {
                     foreach ($response['mediaTypes'] as $mediaType) {
                         $responsePropertyArray[] = ['@OA\MediaType' => $mediaType];

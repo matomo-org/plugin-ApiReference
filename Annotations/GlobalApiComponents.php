@@ -167,6 +167,15 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  * )
  *
  * @OA\Response(
+ *     response="GenericString",
+ *     description="Generic 200 response with only a string body",
+ *     @OA\JsonContent(type="string"),
+ *     @OA\XmlContent(type="string"),
+ *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Result: success"),
+ *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="success")
+ * )
+ *
+ * @OA\Response(
  *     response="GenericBoolean",
  *     description="Generic 200 response with only true or false as the body",
  *     @OA\JsonContent(type="boolean"),
