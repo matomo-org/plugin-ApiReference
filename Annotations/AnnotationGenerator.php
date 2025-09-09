@@ -367,9 +367,8 @@ class AnnotationGenerator
         // Try to determine the success response using the return type and/or doc-block return type
         $returnType = $reflectionMethod->getReturnType();
         $responseInfo = $this->getResponseInfoFromDocBlock($reflectionMethod->getDocComment());
-        $commentType = $responseInfo['type'];
         if (!empty($returnType) && $returnType->isBuiltin()) {
-            $responseInfo['type'] = $this->getOpenApiTypeFromPhpType($returnType->getName());
+            $responseInfo['type'] = $this->getOpenApiTypeFromPhpType(strval($returnType));
         }
 
         $successRef = null;
@@ -383,7 +382,7 @@ class AnnotationGenerator
         }
 
         // If the return type is void, use the generic response type
-        if (empty($successArray['ref']) && !empty($returnType) && $returnType->getName() === 'void') {
+        if (empty($successArray['ref']) && !empty($returnType) && strval($returnType) === 'void') {
             $successArray['ref'] = '#/components/responses/GenericSuccessNoBody';
         }
 
