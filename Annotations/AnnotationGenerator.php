@@ -526,7 +526,7 @@ class AnnotationGenerator
         if ($this->shouldIncludeDefault($type, $default)) {
             $doubleQuote = '"';
             // Don't wrap with quotes for certain values
-            if (in_array($default, ['{}', "{$doubleQuote}{$doubleQuote}"])) {
+            if (in_array($default, ['{}', 'false', 'true', "{$doubleQuote}{$doubleQuote}"])) {
                 $doubleQuote = '';
             }
             $schemaMap[] = "default={$doubleQuote}{$default}{$doubleQuote}";

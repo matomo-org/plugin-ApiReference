@@ -60,7 +60,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     additionalProperties=true,
  *     @OA\Property(property="result", type="string", enum={"success"}, example="success"),
  *     @OA\Property(property="message", type="string", example="ok"),
- *     @OA\Property(property="code", type="integer", nullable=true, default=null)
+ *     @OA\Property(property="code", type="integer", example="200")
  * )
  *
  * Generic Error object
@@ -72,7 +72,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     additionalProperties=true,
  *     @OA\Property(property="result", type="string", enum={"error"}, example="error"),
  *     @OA\Property(property="message", type="string", example="There was an error"),
- *     @OA\Property(property="code", type="integer", nullable=true, default=null)
+ *     @OA\Property(property="code", type="integer")
  * )
  *
  * @OA\Schema(
