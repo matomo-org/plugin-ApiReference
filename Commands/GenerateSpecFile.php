@@ -66,7 +66,7 @@ class GenerateSpecFile extends ConsoleCommand
      * Ideally, the actual command is quite short as it acts like a controller. It should only receive the input values,
      * execute the task by calling a method of another class and output any useful information.
      *
-     * Execute the command like: ./console openapidocs:generate-spec-file --plugin=TagManager
+     * Execute the command like: ./console openapidocs:generate-spec-file --plugin=TagManager --not-dry-run
      */
     protected function doExecute(): int
     {
