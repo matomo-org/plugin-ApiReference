@@ -138,7 +138,7 @@ class AnnotationGenerator
         );
 
         $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
-        $responses = $this->determineResponses($rules, $pluginName, $methodName);
+        $responses = $this->determineResponses($rules, $pluginName, $methodName, $reflectionMethod);
 
         $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
             && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
@@ -159,7 +159,8 @@ class AnnotationGenerator
             $name = ltrim($param->parameterName, '$');
             $params[$name] = [
                 'type'     => (string) $param->type,
-                'desc'     => $param->description,
+                // Normalise the description. E.g. remove linebreaks and indentation
+                'desc'     => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
                 'byRef'    => $param->isReference,
                 'variadic' => $param->isVariadic,
             ];
@@ -167,9 +168,37 @@ class AnnotationGenerator
         return $params;
     }
 
+    protected function getResponseInfoFromDocBlock(string $docBlock): array
+    {
+        $lexer  = new Lexer();
+        $tokens = $lexer->tokenize($docBlock);
+        $expressionParser = new ConstExprParser();
+        $parser = new PhpDocParser(new TypeParser($expressionParser), $expressionParser);
+        $node   = $parser->parse(new TokenIterator($tokens));
+
+        $responseInfo = ['type' => null];
+        $returnTags = $node->getReturnTagValues();
+        if (empty($returnTags)) {
+            return $responseInfo;
+        }
+
+        $returnTag = $returnTags[0];
+        $tagValue = strval($returnTag->type);
+        $responseInfo['type'] = $this->getOpenApiTypeFromPhpType($tagValue);
+        if ($responseInfo['type'] === 'string' && !empty($tagValue) && strtolower($tagValue) !== 'string') {
+            $responseInfo['type'] = '';
+            $responseInfo['description'] = 'Response of unknown type';
+        }
+        if (!empty($returnTag->description)) {
+            $responseInfo['description'] = $returnTag->description;
+        }
+
+        return $responseInfo;
+    }
+
     protected function buildVirtualPath(string $virtualPathTemplate, string $plugin, string $method): string
     {
-        return str_replace([ '{plugin}', '{method}' ], [ $plugin, $method ], $virtualPathTemplate);
+        return str_replace(['{plugin}', '{method}'], [$plugin, $method], $virtualPathTemplate);
     }
 
     protected function buildParameterAnnotation(string $paramName, array $paramMetadata, array $paramDocInfo): array
@@ -177,6 +206,10 @@ class AnnotationGenerator
         $docType = strtolower(trim($paramDocInfo['type'] ?? ''));
         $metaType = strtolower(trim($paramMetadata['type'] ?? $docType));
         $type = $metaType === 'string' && $docType !== 'string' ? $docType : $metaType;
+        // If the signature type is array, but the type hinting provides more, use that instead
+        if ($type === 'array' && strpos($docType, '[]') !== false && strpos($docType, '|') === false) {
+            $type = $docType;
+        }
         $typesMap = [];
         // Check for pipes and try to list possible types
         foreach (explode('|', $type) as $typePart) {
@@ -197,7 +230,7 @@ class AnnotationGenerator
             'types' => $typesMap,
             'description' => $paramDocInfo['desc'] ?? '',
             'required' => $isRequired ? 'true' : 'false',
-            'default' => !$isRequired ? json_encode($paramMetadata['default']) : '',
+            'default' => !$isRequired ? json_encode($paramMetadata['default']) : NoDefaultValue::class,
         ];
     }
 
@@ -300,8 +333,8 @@ class AnnotationGenerator
 
     protected function getExampleIfAvailable(string $url): array
     {
-        // Simply return the URL for TSV
-        if (stripos($url, 'format=tsv') !== false) {
+        // Simply return the URL for anything other than JSON until we figure out how to better format those examples
+        if (stripos($url, 'format=json') === false) {
             return ['externalValue' => $url];
         }
 
@@ -319,14 +352,8 @@ class AnnotationGenerator
         curl_close($ch);
 
         // If the example didn't load or is too big, simply include the URL instead of the string value
-        if ($body === false || $status !== 200 || strlen($body) > 1000 || strpos($body, 'Error: ') === 0) {
+        if ($body === false || $status !== 200 || strlen($body) > 2000 || strpos($body, 'Error: ') === 0) {
             return ['externalValue' => $url];
-        }
-
-        // Clean up XML formatting a bit
-        $body = trim($body);
-        if (stripos($url, 'format=xml') !== false) {
-            $body = str_replace(['<?xml version="1.0" encoding="utf-8" ?>', "\n", "\t", '"'], ['', '', '', '\"'], $body);
         }
 
         // The annotation expects an objects and not arrays
@@ -337,20 +364,60 @@ class AnnotationGenerator
         return ['value' => $body];
     }
 
-    protected function determineResponses(array $rules, string $plugin, string $method): array
+    protected function determineResponses(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
     {
         $responses = [];
 
-        // TODO - Try to determine the success response using the return type and/or doc-block return type
+        // Try to determine the success response using the return type and/or doc-block return type
+        $returnType = $reflectionMethod->getReturnType();
+        $responseInfo = $this->getResponseInfoFromDocBlock($reflectionMethod->getDocComment());
+        if (!empty($returnType) && $returnType->isBuiltin()) {
+            $responseInfo['type'] = $this->getOpenApiTypeFromPhpType(strval($returnType));
+        }
 
         $successRef = null;
         $successArray = ['code' => 200];
         if (isset($rules['plugins'][$plugin]['successResponseByMethod'][$method])) {
             $successRef = $rules['plugins'][$plugin]['successResponseByMethod'][$method];
         }
+        // TODO - See if there's a way to auto-handle custom objects, especially common stuff like DataTable\DataTableInterface
         if ($successRef) {
             $successArray['ref'] = $successRef;
         }
+
+        // If the return type is void, use the generic response type
+        if (empty($successArray['ref']) && !empty($returnType) && strval($returnType) === 'void') {
+            $successArray['ref'] = '#/components/responses/GenericSuccessNoBody';
+        }
+
+        // If it's a generic type and there's no custom description, use one of the global generic responses
+        if (empty($successArray['ref']) && !empty($responseInfo['type']) && empty($responseInfo['description'])) {
+            $ref = '';
+            switch ($responseInfo['type']) {
+                case 'array':
+                    $ref = '#/components/responses/GenericArray';
+                    break;
+                case 'integer':
+                    $ref = '#/components/responses/GenericInteger';
+                    break;
+                case 'boolean':
+                    $ref = '#/components/responses/GenericBoolean';
+                    break;
+                case 'string':
+                    $ref = '#/components/responses/GenericString';
+                    break;
+            }
+
+            if (!empty($ref)) {
+                $successArray['ref'] = $ref;
+            }
+        }
+
+        if (!empty($responseInfo['description'])) {
+            $successArray['desc'] = $responseInfo['description'];
+        }
+
+        $responseSchema = !empty($responseInfo['type']) ? $this->buildSchemaObjectArray($responseInfo['type']) : [];
 
         $mediaTypes = [];
         // This simply reuses the example URLs used by the current documentation, but some endpoints don't work because authentication is required
@@ -370,13 +437,21 @@ class AnnotationGenerator
                 $value = substr($value, 1, -1);
             }
             $exampleProperties[] = $valueKey . '=' . $value;
-            $mediaTypes[] = [
+            $mediaType = [
                 'mediaType="' . $contentType . '"',
                 '@OA\Examples' => $exampleProperties,
             ];
+            // If a type was found, add it as a schema to the media type
+            if (!empty($responseSchema)) {
+                $mediaType = array_merge($mediaType, $responseSchema);
+            }
+            $mediaTypes[] = $mediaType;
         }
         if (!empty($mediaTypes)) {
             $successArray['mediaTypes'] = $mediaTypes;
+        } else {
+            // Make sure the schema is included in there are no examples
+            $successArray['schema'] = $responseSchema;
         }
 
         $responses[] = $successArray;
@@ -434,7 +509,7 @@ class AnnotationGenerator
         return array_merge([$indentString . $objectName . $openingCharacter], $lines, [$indentString . $closingCharacter . ',']);
     }
 
-    protected function buildSchemaObjectArray(string $type, string $subType = '', string $default = ''): array
+    protected function buildSchemaObjectArray(string $type, string $subType = '', string $default = NoDefaultValue::class): array
     {
         $schemaMap = ['type="' . $type . '"'];
         $subTypeString = '';
@@ -448,12 +523,30 @@ class AnnotationGenerator
             }
         }
 
-        if ($default !== '') {
-            // TODO - Add some logic to only add default if it matches the type. E.g. false isn't a good default for string
-            $schemaMap[] = 'default="' . $default . '"';
+        if ($this->shouldIncludeDefault($type, $default)) {
+            $doubleQuote = '"';
+            // Don't wrap with quotes for certain values
+            if (in_array($default, ['{}', 'false', 'true', "{$doubleQuote}{$doubleQuote}"])) {
+                $doubleQuote = '';
+            }
+            $schemaMap[] = "default={$doubleQuote}{$default}{$doubleQuote}";
         }
 
         return ['@OA\Schema' => $schemaMap];
+    }
+
+    protected function shouldIncludeDefault(string $type, string $default = NoDefaultValue::class): bool
+    {
+        if ($default === NoDefaultValue::class) {
+            return false;
+        }
+
+        // Don't use true or false for default if it's not a boolean type
+        if ($type !== 'boolean' && in_array(strtolower($default), ['false', 'true'])) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function buildSchemaObjectArrays(array $typesMap, string $default = ''): array
@@ -493,7 +586,8 @@ class AnnotationGenerator
             $operationValuesMap[] = ['@OA\Parameter' => $paramMap];
         }
         foreach ($responses as $response) {
-            if (isset($response['ref'])) {
+            // Don't use the reference if there are media type examples
+            if (isset($response['ref']) && empty($response['mediaTypes'])) {
                 $code = $response['code'];
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
                 $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . ', ref="' . $response['ref'] . '")';
@@ -502,6 +596,9 @@ class AnnotationGenerator
                     'response=200',
                     'description="' . ($response['desc'] ?? 'OK') . '"',
                 ];
+                if (!empty($response['schema'])) {
+                    $responsePropertyArray = array_merge($responsePropertyArray, $response['schema']);
+                }
                 if (isset($response['mediaTypes']) && is_array($response['mediaTypes'])) {
                     foreach ($response['mediaTypes'] as $mediaType) {
                         $responsePropertyArray[] = ['@OA\MediaType' => $mediaType];
@@ -510,7 +607,8 @@ class AnnotationGenerator
                 $operationValuesMap[] = ['@OA\Response' => $responsePropertyArray];
             }
         }
-        $operationValuesMap[] = 'x={"runtime"={"entry":"index.php","query":{"module":"API","method":"' . $plugin . '.' . $method . '"}}}';
+        // TODO - Remove this if it's determined that we won't ever use it
+        //$operationValuesMap[] = 'x={"runtime"={"entry":"index.php","query":{"module":"API","method":"' . $plugin . '.' . $method . '"}}}';
 
         $lines = $this->buildLinesForAnnotationObject('@OA\\' . ($isPost ? 'Post' : 'Get'), $operationValuesMap);
 
