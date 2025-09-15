@@ -69,7 +69,7 @@ class AnnotationGenerator
         try {
             $reflectionClass = new \ReflectionClass($className);
         } catch (\ReflectionException $e) {
-            return false;
+            return [];
         }
 
         Proxy::getInstance()->registerClass($className);
