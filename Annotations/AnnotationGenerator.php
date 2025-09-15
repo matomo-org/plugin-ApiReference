@@ -29,7 +29,7 @@ use PHPStan\PhpDocParser\Parser\TokenIterator;
 
 class AnnotationGenerator
 {
-    const EXAMPLE_CHAR_LIMIT = 3000;
+    public const EXAMPLE_CHAR_LIMIT = 3000;
 
     /**
      * @var DocumentationGenerator
@@ -479,7 +479,8 @@ class AnnotationGenerator
         );
     }
 
-    protected function convertExampleXmlToObject(string $xml): array {
+    protected function convertExampleXmlToObject(string $xml): array
+    {
         $root = new \SimpleXMLElement($xml);
 
         $toArray = function (\SimpleXMLElement $node) use (&$toArray) {
@@ -684,8 +685,10 @@ class AnnotationGenerator
         $newRows = [];
         foreach ($rows as $row) {
             // Don't add the row if it would exceed the limit
-            if (strlen(json_encode($row)) > self::EXAMPLE_CHAR_LIMIT
-                || strlen(json_encode(array_merge($newRows, [$row]))) > self::EXAMPLE_CHAR_LIMIT) {
+            if (
+                strlen(json_encode($row)) > self::EXAMPLE_CHAR_LIMIT
+                || strlen(json_encode(array_merge($newRows, [$row]))) > self::EXAMPLE_CHAR_LIMIT
+            ) {
                 continue;
             }
 
@@ -734,7 +737,7 @@ class AnnotationGenerator
             }
 
             // Build the lines of descendents recursively
-            $childLines = $this->buildPropertyAnnotationFromJsonExample('', $values[0]);;
+            $childLines = $this->buildPropertyAnnotationFromJsonExample('', $values[0]);
             return [
                 '@OA\Property' => array_merge($propertyLines, ['@OA\Items' => array_merge([
                     'type="object",',
@@ -968,7 +971,7 @@ class AnnotationGenerator
             if (isset($response['ref']) && empty($response['mediaTypes'])) {
                 $code = $response['code'];
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
-                $description = !empty($response['desc'])&& strpos($response['desc'], 'Example links: [') !== false
+                $description = !empty($response['desc']) && strpos($response['desc'], 'Example links: [') !== false
                     ? ', description="' . $response['desc'] . '"' : '';
                 $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . $description . ', ref="' . $response['ref'] . '")';
             } else {
