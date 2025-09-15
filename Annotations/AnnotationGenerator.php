@@ -896,7 +896,7 @@ class AnnotationGenerator
         }
 
         if ($this->shouldIncludeDefault($type, $default)) {
-            $schemaMap[] = 'default='. $this->wrapStringWithQuotes($default, $type);
+            $schemaMap[] = 'default=' . $this->wrapStringWithQuotes($default, $type);
         }
 
         return ['@OA\Schema' => $schemaMap];
