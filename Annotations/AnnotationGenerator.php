@@ -431,6 +431,8 @@ class AnnotationGenerator
             || strpos($response['data'], 'Error: ') === 0
             || stripos(str_replace(["\n", "\t"], '', $response['data']), '<result><error message=') !== false
             || stripos($response['data'], '"result":"error"') !== false
+            || stripos($response['data'], '<result />') !== false
+            || trim($response['data']) === '[]'
         ) {
             return '';
         }
@@ -456,28 +458,32 @@ class AnnotationGenerator
                 continue;
             }
 
-            // We found a match and can stop looking
+            // Keep trying until we find a good match
             if ($metadata['module'] === $pluginName && $metadata['action'] === $methodName) {
-                $reportMetadata = $metadata;
-                break;
+                if (empty($metadata) || empty($metadata['imageGraphUrl'])) {
+                    continue;
+                }
+
+                $url = str_replace(
+                    [
+                        'ImageGraph.get',
+                        "&apiModule={$pluginName}&apiAction={$methodName}",
+                    ],
+                    [
+                        $pluginName . '.' . $methodName,
+                        '',
+                    ],
+                    $metadata['imageGraphUrl']
+                );
+
+                // If we get a valid response, return the URL
+                if (!empty($this->getExampleIfAvailable('https://demo.matomo.cloud/' . $url))) {
+                    return $url;
+                }
             }
         }
 
-        if (empty($reportMetadata) || empty($reportMetadata['imageGraphUrl'])) {
-            return '';
-        }
-
-        return str_replace(
-            [
-                'ImageGraph.get',
-                "&apiModule={$pluginName}&apiAction={$methodName}",
-            ],
-            [
-                $pluginName . '.' . $methodName,
-                '',
-            ],
-            $reportMetadata['imageGraphUrl']
-        );
+        return '';
     }
 
     protected function convertExampleXmlToObject(string $xml): array
