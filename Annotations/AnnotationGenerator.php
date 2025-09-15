@@ -48,11 +48,8 @@ class AnnotationGenerator
 
     /**
      * Use reflection to generate the OpenAPI annotations to be used by swagger-php.
-     * - Tries to use virtual paths and x-runtime to keep paths unique and allow actual path generation
-     * - Uses config.php to set default values.
-     * - Uses config.php from plugin to override default configs.
      */
-    public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false)
+    public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false, bool $useTmpDir = false): array
     {
         BaseValidator::check('plugin', $pluginName, [ new NotEmpty() ]);
         Manager::getInstance()->checkIsPluginActivated($pluginName);
@@ -60,7 +57,7 @@ class AnnotationGenerator
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
         $rules = require $currentPluginDir . '/Annotations/config.php';
         $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
-        $pluginAnnotationDir = $pluginDir . '/OpenApi/Annotations';
+        $pluginAnnotationDir = !$useTmpDir ? $pluginDir . '/OpenApi/Annotations' : PIWIK_INCLUDE_PATH . '/tmp/OpenApi/Annotations';
         $pluginAnnotationPath = $pluginAnnotationDir . '/GeneratedAnnotations.php';
         // If the directory doesn't exist yet, create it
         if ($writeToFile && !is_dir($pluginAnnotationDir)) {
@@ -342,8 +339,7 @@ class AnnotationGenerator
             'period' => 'day',
             'date' => 'today',
         ];
-        // Most parameters can be pulled from metadata, but this provides a workaround for those which can't
-//        Piwik::postEvent('Documentation.API.Example.Parameters', [&$parametersToSet, $pluginName, $methodName]);
+
         if (!empty($paramsData['custom'])) {
             foreach ($paramsData['custom'] as $customParam) {
                 if (isset($customParam['example']) && $customParam['example'] !== '') {
@@ -414,7 +410,7 @@ class AnnotationGenerator
             $response = Http::sendHttpRequestBy(
                 Http::getTransportMethod(),
                 $tempUrl,
-                $timeout = 5,
+                $timeout = 10,
                 $userAgent = null,
                 $destinationPath = null,
                 $file = null,
@@ -430,7 +426,12 @@ class AnnotationGenerator
         }
 
         // If the example didn't load or resulted in an error, simply return an empty string
-        if (empty($response['data']) || ($response['status'] ?? 1) !== 200 || strpos($response['data'], 'Error: ') === 0) {
+        if (
+            empty($response['data']) || ($response['status'] ?? 1) !== 200
+            || strpos($response['data'], 'Error: ') === 0
+            || stripos(str_replace(["\n", "\t"], '', $response['data']), '<result><error message=') !== false
+            || stripos($response['data'], '"result":"error"') !== false
+        ) {
             return '';
         }
         $body = $response['data'];
@@ -781,23 +782,18 @@ class AnnotationGenerator
             if (!is_array($value)) {
                 continue;
             }
-            $containsRows = false;
-            $result = $this->buildPropertyAnnotationFromXmlExample($key, $value, $containsRows);
-            if ($containsRows) {
-                $containsRows = true;
-                $lines = array_merge($lines, $result);
-            }
+
+            $lines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
         }
 
         return ['@OA\Schema' => $lines];
     }
 
-    protected function buildPropertyAnnotationFromXmlExample(string $propName, array $values, &$containsRows): array
+    protected function buildPropertyAnnotationFromXmlExample(string $propName, array $values): array
     {
         $type = 'object';
         if ($propName === 'row') {
             $type = 'array';
-            $containsRows = true;
             $values = is_array($values[0] ?? null) ? $values[0] : [];
         }
 
@@ -808,27 +804,31 @@ class AnnotationGenerator
         ];
 
         $childLines = [];
-        // Recursively check if any of the children contain rows
+        // Recursively check if any of the children are arrays
         foreach ($values as $key => $value) {
             // If it's not an array, skip
             if (!is_array($value)) {
                 continue;
             }
-            $childContainsRows = false;
-            $result = $this->buildPropertyAnnotationFromXmlExample($key, $value, $childContainsRows);
-            if ($childContainsRows) {
-                $containsRows = true;
-                $childLines = array_merge($childLines, $result);
-            }
+
+            $childLines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
         }
 
         // If the object is for row, merge any children with the items object
         if ($propName === 'row') {
-            $childLines = ['@OA\Items' => array_merge([
+            $itemProperties = [
                 'type="object",',
                 '@OA\Xml(name="row"),',
                 'additionalProperties=true,',
-            ], $childLines)];
+            ];
+
+            // Handle arrays of strings which don't have named properties
+            $keys = array_keys($values);
+            if (!is_string(reset($keys))) {
+                $itemProperties = ['type="string"'];
+            }
+
+            $childLines = ['@OA\Items' => array_merge($itemProperties, $childLines)];
         }
 
         return ['@OA\Property' => array_merge($propertyLines, $childLines)];
