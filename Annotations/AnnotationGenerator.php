@@ -452,7 +452,6 @@ class AnnotationGenerator
             return '';
         }
 
-        $reportMetadata = [];
         foreach ($metadataArray as $metadata) {
             if (empty($metadata['module']) || empty($metadata['action'])) {
                 continue;
@@ -505,8 +504,13 @@ class AnnotationGenerator
             }, $grouped);
         };
 
+        $result = $toArray($root);
+        if (!is_array($result)) {
+            return [$result];
+        }
+
         // Return the object that goes into example
-        return $toArray($root); // e.g., [ "row" => [ {...}, {...} ] ]
+        return $result; // e.g., [ "row" => [ {...}, {...} ] ]
     }
 
 
@@ -574,7 +578,11 @@ class AnnotationGenerator
             if ($type === 'tsv') {
                 $url .= '&convertToUnicode=0';
             }
-            $exampleValue = $this->getExampleIfAvailable($url);
+            try {
+                $exampleValue = $this->getExampleIfAvailable($url);
+            } catch (\Throwable $e) {
+                throw new \Exception('Error getting example from URL: ' . $url . PHP_EOL . $e, 0, $e);
+            }
             // If the example lookup failed, try making the same request locally
             $isLocalExample = false;
             if (empty($exampleValue)) {
@@ -789,6 +797,14 @@ class AnnotationGenerator
                 continue;
             }
 
+            if (count($value) === 1) {
+                $keys = array_keys($value);
+                // Skip if it's not a named property
+                if (!is_string(reset($keys)) && !is_array(reset($value))) {
+                    continue;
+                }
+            }
+
             $lines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
         }
 
@@ -815,6 +831,17 @@ class AnnotationGenerator
             // If it's not an array, skip
             if (!is_array($value)) {
                 continue;
+            }
+
+            // Handle nested arrays
+            if (!is_string($key)) {
+                if (!is_array(reset($value))) {
+                    continue;
+                }
+
+                $keys = array_keys($value);
+                $key = reset($keys);
+                $value = $value[$key];
             }
 
             $childLines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
