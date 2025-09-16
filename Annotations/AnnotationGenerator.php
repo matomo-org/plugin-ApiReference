@@ -19,6 +19,7 @@ use Piwik\Http;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
 use Piwik\SettingsPiwik;
+use Piwik\Url;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
 use PHPStan\PhpDocParser\Lexer\Lexer;
@@ -131,7 +132,8 @@ class AnnotationGenerator
         // Skip methods which have been marked as internal or auto annotations disabled
         if (
             $existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
-                || stripos($existing, '@internal') !== false)
+                || stripos($existing, '@internal') !== false
+                || stripos($existing, '@hide') !== false)
         ) {
             return [];
         }
@@ -167,7 +169,7 @@ class AnnotationGenerator
             $params[$name] = [
                 'type'     => (string) $param->type,
                 // Normalise the description. E.g. remove linebreaks and indentation
-                'desc'     => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
+                'description'     => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
                 'byRef'    => $param->isReference,
                 'variadic' => $param->isVariadic,
             ];
@@ -231,19 +233,18 @@ class AnnotationGenerator
         }
 
         $isRequired = !key_exists('default', $paramMetadata) || $paramMetadata['default'] instanceof NoDefaultValue;
-        $description = $paramDocInfo['desc'] ?? '';
+        $description = $paramDocInfo['description'] ?? '';
         $example = '';
         // Check the description for the example value
-        if (preg_match('/\[@example\s*=\s*(?:"([^"]+)"|([^\]]+))\]/', $description, $m)) {
-            // If it's quoted, group 1. Otherwise, group 2
+        if (preg_match('/\[@example\s*=\s*([^\n]+)\]/', $description, $m)) {
             if ($m[1] !== '') {
                 $example = $m[1];
-            } else {
-                $example = $m[2];
             }
             // Remove the example from the description and trim any excess whitespace
             $description = trim(str_replace($m[0], '', $description));
+            // Trim any excess whitespace and surrounding quotes from the example
             $example = trim($example);
+            $example = trim($example, '"');
         }
 
         return [
@@ -340,15 +341,42 @@ class AnnotationGenerator
             'date' => 'today',
         ];
 
+        $parametersToReplace = [];
         if (!empty($paramsData['custom'])) {
             foreach ($paramsData['custom'] as $customParam) {
+                $paramName = strval($customParam['name']);
                 if (isset($customParam['example']) && $customParam['example'] !== '') {
-                    $parametersToSet[$customParam['name']] = $customParam['example'];
+                    $example = $customParam['example'];
+
+                    $decodedExample = [];
+                    // If the type is array, try decoding it
+                    if (in_array('array', array_keys($customParam['types']))) {
+                        $decodedExample = json_decode($example, true);
+                    }
+
+                    // Check if the example is an array and needs special handling.
+                    $queryString = !empty($decodedExample) ? Http::buildQuery([$paramName => $decodedExample]) : '';
+                    if (stripos($queryString, urlencode($customParam['name'] . '[')) === 0) {
+                        // Mark the param to be replaced and change the value to a placeholder
+                        $parametersToReplace[$paramName] = $queryString;
+                        $example = 'PlaceholderValue';
+                    }
+
+                    // Add the URL encoded param and value to the collection
+                    $parametersToSet[$paramName] = urlencode($example);
                 }
             }
         }
         $className = Request::getClassNameAPI($pluginName);
         $exampleUrl = $this->generator->getExampleUrl($className, $methodName, $parametersToSet);
+
+        // Replace the placeholders with the actual array params now that we have an example URL
+        if (!empty($exampleUrl) && !empty($parametersToReplace)) {
+            foreach ($parametersToReplace as $name => $encodedValue) {
+                $exampleUrl = str_replace('&' . $name . '=PlaceholderValue', '&' . $encodedValue, $exampleUrl);
+            }
+        }
+
         if (empty($exampleUrl)) {
             // If we couldn't get an example URL from the generator, try getting one from metadata
             $exampleUrl = $this->getReportExampleUrlFromMetadata($pluginName, $methodName);
@@ -526,7 +554,7 @@ class AnnotationGenerator
         }
 
         $successRef = null;
-        $successArray = ['code' => 200, 'desc' => ''];
+        $successArray = ['code' => 200, 'description' => ''];
         if (isset($rules['plugins'][$plugin]['successResponseByMethod'][$method])) {
             $successRef = $rules['plugins'][$plugin]['successResponseByMethod'][$method];
         }
@@ -564,7 +592,7 @@ class AnnotationGenerator
         }
 
         if (!empty($responseInfo['description'])) {
-            $successArray['desc'] = $responseInfo['description'];
+            $successArray['description'] = $responseInfo['description'];
         }
 
         $responseSchema = !empty($responseInfo['type']) ? $this->buildSchemaObjectArray($responseInfo['type']) : [];
@@ -636,8 +664,8 @@ class AnnotationGenerator
             $successArray['mediaTypes'] = $mediaTypes;
 
             // If there are media types we shouldn't need the unknown type description
-            if (!empty($successArray['desc']) && $successArray['desc'] === 'Response of unknown type') {
-                $successArray['desc'] = '';
+            if (!empty($successArray['description']) && $successArray['description'] === 'Response of unknown type') {
+                $successArray['description'] = '';
             }
         } else {
             // Make sure the schema is included in there are no examples
@@ -652,7 +680,7 @@ class AnnotationGenerator
         $descriptionLinks = !empty($descriptionLinks) ? 'Example links: ' . $descriptionLinks : $descriptionLinks;
 
         // Append the links to the description with a prefix linebreak. If there's no description, skip the break
-        $successArray['desc'] .= (!empty($successArray['desc']) && !empty($descriptionLinks) ? '</br>' : '') . $descriptionLinks;
+        $successArray['description'] .= (!empty($successArray['description']) && !empty($descriptionLinks) ? '</br>' : '') . $descriptionLinks;
 
         $responses[] = $successArray;
 
@@ -937,7 +965,7 @@ class AnnotationGenerator
 
     protected function wrapStringWithQuotes(string $string, string $type, string $quoteCharacter = '"'): string
     {
-        if (in_array($type, ['integer', 'boolean'])) {
+        if (in_array($type, ['integer', 'boolean', 'array'])) {
             return $string;
         }
 
@@ -996,7 +1024,14 @@ class AnnotationGenerator
             if (!empty($param['description'])) {
                 $paramMap[] = 'description="' . $param['description'] . '"';
             }
-            $paramMap[] = $this->buildSchemaObjectArrays($param['types'], strval($param['default']), strval($param['example']));
+            $exampleString = $param['example'];
+            if (in_array('array', array_keys($param['types']))) {
+                // The annotation expects example objects and not arrays, so replace [] with {}
+                $exampleString = str_replace(['[', ']'], ['{', '}'], $exampleString);
+                // Escape quotes differently for the annotation examples
+                $exampleString = str_replace('\"', '""', $exampleString);
+            }
+            $paramMap[] = $this->buildSchemaObjectArrays($param['types'], strval($param['default']), strval($exampleString));
             $operationValuesMap[] = ['@OA\Parameter' => $paramMap];
         }
         foreach ($responses as $response) {
@@ -1004,13 +1039,13 @@ class AnnotationGenerator
             if (isset($response['ref']) && empty($response['mediaTypes'])) {
                 $code = $response['code'];
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
-                $description = !empty($response['desc']) && strpos($response['desc'], 'Example links: [') !== false
-                    ? ', description="' . $response['desc'] . '"' : '';
+                $description = !empty($response['description']) && strpos($response['description'], 'Example links: [') !== false
+                    ? ', description="' . $response['description'] . '"' : '';
                 $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . $description . ', ref="' . $response['ref'] . '")';
             } else {
                 $responsePropertyArray = [
                     'response=200',
-                    'description="' . ($response['desc'] ?? 'OK') . '"',
+                    'description="' . ($response['description'] ?? 'OK') . '"',
                 ];
                 if (!empty($response['schema'])) {
                     $responsePropertyArray = array_merge($responsePropertyArray, $response['schema']);
