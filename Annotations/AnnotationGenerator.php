@@ -793,7 +793,7 @@ class AnnotationGenerator
         foreach ($values as $key => $value) {
             // If it's not an array, add a simple property string and skip to the next child
             if (!is_array($value)) {
-                $typesString = '"string", "number", "integer", "boolean", "array", "object", "null"';
+                $typesString = '{"string", "number", "integer", "boolean", "array", "object", "null"}';
                 if (is_string($value)) {
                     $typesString = '"string"';
                 } elseif (is_int($value)) {
@@ -801,7 +801,7 @@ class AnnotationGenerator
                 } elseif (is_bool($value)) {
                     $typesString = '"boolean"';
                 }
-                $childLines[] = sprintf('@OA\Property(property="%s", type={%s})', $key, $typesString);
+                $childLines[] = sprintf('@OA\Property(property="%s", type=%s)', $key, $typesString);
                 continue;
             }
 
