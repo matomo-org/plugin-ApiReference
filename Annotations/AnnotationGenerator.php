@@ -15,7 +15,10 @@ use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\API\Proxy;
 use Piwik\API\Request;
+use Piwik\Http;
+use Piwik\Piwik;
 use Piwik\Plugin\Manager;
+use Piwik\SettingsPiwik;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
 use PHPStan\PhpDocParser\Lexer\Lexer;
@@ -26,10 +29,17 @@ use PHPStan\PhpDocParser\Parser\TokenIterator;
 
 class AnnotationGenerator
 {
+    public const EXAMPLE_CHAR_LIMIT = 3000;
+
     /**
      * @var DocumentationGenerator
      */
     protected $generator;
+
+    /**
+     * @var array[]
+     */
+    protected $reportMetadata;
 
     public function __construct(DocumentationGenerator $generator)
     {
@@ -38,11 +48,8 @@ class AnnotationGenerator
 
     /**
      * Use reflection to generate the OpenAPI annotations to be used by swagger-php.
-     * - Tries to use virtual paths and x-runtime to keep paths unique and allow actual path generation
-     * - Uses config.php to set default values.
-     * - Uses config.php from plugin to override default configs.
      */
-    public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false)
+    public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false, bool $useTmpDir = false): array
     {
         BaseValidator::check('plugin', $pluginName, [ new NotEmpty() ]);
         Manager::getInstance()->checkIsPluginActivated($pluginName);
@@ -50,7 +57,7 @@ class AnnotationGenerator
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
         $rules = require $currentPluginDir . '/Annotations/config.php';
         $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
-        $pluginAnnotationDir = $pluginDir . '/OpenApi/Annotations';
+        $pluginAnnotationDir = !$useTmpDir ? $pluginDir . '/OpenApi/Annotations' : PIWIK_INCLUDE_PATH . '/tmp/OpenApi/Annotations';
         $pluginAnnotationPath = $pluginAnnotationDir . '/GeneratedAnnotations.php';
         // If the directory doesn't exist yet, create it
         if ($writeToFile && !is_dir($pluginAnnotationDir)) {
@@ -62,7 +69,7 @@ class AnnotationGenerator
         try {
             $reflectionClass = new \ReflectionClass($className);
         } catch (\ReflectionException $e) {
-            return false;
+            return [];
         }
 
         Proxy::getInstance()->registerClass($className);
@@ -124,7 +131,8 @@ class AnnotationGenerator
         // Skip methods which have been marked as internal or auto annotations disabled
         if (
             $existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
-                || stripos($existing, '@internal') !== false)
+                || stripos($existing, '@internal') !== false
+                || stripos($existing, '@hide') !== false)
         ) {
             return [];
         }
@@ -138,7 +146,7 @@ class AnnotationGenerator
         );
 
         $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
-        $responses = $this->determineResponses($rules, $pluginName, $methodName, $reflectionMethod);
+        $responses = $this->determineResponses($rules, $pluginName, $methodName, $reflectionMethod, $params);
 
         $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
             && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
@@ -160,7 +168,7 @@ class AnnotationGenerator
             $params[$name] = [
                 'type'     => (string) $param->type,
                 // Normalise the description. E.g. remove linebreaks and indentation
-                'desc'     => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
+                'description'     => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
                 'byRef'    => $param->isReference,
                 'variadic' => $param->isVariadic,
             ];
@@ -201,7 +209,7 @@ class AnnotationGenerator
         return str_replace(['{plugin}', '{method}'], [$plugin, $method], $virtualPathTemplate);
     }
 
-    protected function buildParameterAnnotation(string $paramName, array $paramMetadata, array $paramDocInfo): array
+    protected function buildParameterAnnotationData(string $paramName, array $paramMetadata, array $paramDocInfo): array
     {
         $docType = strtolower(trim($paramDocInfo['type'] ?? ''));
         $metaType = strtolower(trim($paramMetadata['type'] ?? $docType));
@@ -224,13 +232,27 @@ class AnnotationGenerator
         }
 
         $isRequired = !key_exists('default', $paramMetadata) || $paramMetadata['default'] instanceof NoDefaultValue;
+        $description = $paramDocInfo['description'] ?? '';
+        $example = '';
+        // Check the description for the example value
+        if (preg_match('/\[@example\s*=\s*([^\n]+)\]/', $description, $m)) {
+            if ($m[1] !== '') {
+                $example = $m[1];
+            }
+            // Remove the example from the description and trim any excess whitespace
+            $description = trim(str_replace($m[0], '', $description));
+            // Trim any excess whitespace and surrounding quotes from the example
+            $example = trim($example);
+            $example = trim($example, '"');
+        }
 
         return [
             'name' => $paramName,
             'types' => $typesMap,
-            'description' => $paramDocInfo['desc'] ?? '',
+            'description' => $description,
             'required' => $isRequired ? 'true' : 'false',
             'default' => !$isRequired ? json_encode($paramMetadata['default']) : NoDefaultValue::class,
+            'example' => $example,
         ];
     }
 
@@ -258,7 +280,7 @@ class AnnotationGenerator
                 continue;
             }
 
-            $customParams[] = $this->buildParameterAnnotation($name, $paramMetadata, $paramInfo);
+            $customParams[] = $this->buildParameterAnnotationData($name, $paramMetadata, $paramInfo);
         }
 
         return [
@@ -309,62 +331,217 @@ class AnnotationGenerator
         return $type;
     }
 
-    protected function getApplicableDemoExampleUrls(string $pluginName, string $methodName): array
+    protected function getApplicableDemoExampleUrls(string $pluginName, string $methodName, array $paramsData): array
     {
         // Get the example URLs for the success responses
         $parametersToSet = [
             'idSite' => 1,
             'period' => 'day',
-            'date' => 'today'
+            'date' => 'today',
         ];
+
+        $parametersToReplace = [];
+        if (!empty($paramsData['custom'])) {
+            foreach ($paramsData['custom'] as $customParam) {
+                $paramName = strval($customParam['name']);
+                if (isset($customParam['example']) && $customParam['example'] !== '') {
+                    $example = $customParam['example'];
+
+                    $decodedExample = [];
+                    // If the type is array, try decoding it
+                    if (in_array('array', array_keys($customParam['types']))) {
+                        $decodedExample = json_decode($example, true);
+                    }
+
+                    // Check if the example is an array and needs special handling.
+                    $queryString = !empty($decodedExample) ? Http::buildQuery([$paramName => $decodedExample]) : '';
+                    if (stripos($queryString, urlencode($customParam['name'] . '[')) === 0) {
+                        // Mark the param to be replaced and change the value to a placeholder
+                        $parametersToReplace[$paramName] = $queryString;
+                        $example = 'PlaceholderValue';
+                    }
+
+                    // Add the URL encoded param and value to the collection
+                    $parametersToSet[$paramName] = urlencode($example);
+                }
+            }
+        }
         $className = Request::getClassNameAPI($pluginName);
         $exampleUrl = $this->generator->getExampleUrl($className, $methodName, $parametersToSet);
+
+        // Replace the placeholders with the actual array params now that we have an example URL
+        if (!empty($exampleUrl) && !empty($parametersToReplace)) {
+            foreach ($parametersToReplace as $name => $encodedValue) {
+                $exampleUrl = str_replace('&' . $name . '=PlaceholderValue', '&' . $encodedValue, $exampleUrl);
+            }
+        }
+
         if (empty($exampleUrl)) {
-            return [];
+            // If we couldn't get an example URL from the generator, try getting one from metadata
+            $exampleUrl = $this->getReportExampleUrlFromMetadata($pluginName, $methodName);
+
+            if (empty($exampleUrl)) {
+                return [];
+            }
         }
 
         $exampleUrl = 'https://demo.matomo.cloud/' . $exampleUrl;
         return [
-            'xml' => $exampleUrl . '&filter_limit=2&format=xml&token_auth=anonymous',
-            'json' => $exampleUrl . '&filter_limit=2&format=JSON&token_auth=anonymous',
-            'tsv' => $exampleUrl . '&filter_limit=2&format=Tsv&token_auth=anonymous',
+            'xml' => $exampleUrl . '&format=xml&token_auth=anonymous',
+            'json' => $exampleUrl . '&format=JSON&token_auth=anonymous',
+            'tsv' => $exampleUrl . '&format=Tsv&token_auth=anonymous',
         ];
     }
 
-    protected function getExampleIfAvailable(string $url): array
+    protected function getDemoReportMetadata(): array
     {
-        // Simply return the URL for anything other than JSON until we figure out how to better format those examples
-        if (stripos($url, 'format=json') === false) {
-            return ['externalValue' => $url];
+        if (is_array($this->reportMetadata) && count($this->reportMetadata)) {
+            return $this->reportMetadata;
         }
 
-        $ch = curl_init($url);
+        $url = 'https://demo.matomo.cloud/index.php?module=API&method=API.getReportMetadata&format=JSON&idSite=1&hideMetricsDoc=0&showSubtableReports=0&filter_limit=-1&period=day';
+        $response = Http::sendHttpRequestBy(
+            Http::getTransportMethod(),
+            $url,
+            $timeout = 10,
+            $userAgent = null,
+            $destinationPath = null,
+            $file = null,
+            $followDepth = 0,
+            $acceptLanguage = false,
+            $acceptInvalidSslCertificate = true,
+            $byteRange = false,
+            $getExtendedInfo = true,
+            $httpMethod = 'GET'
+        );
 
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_CONNECTTIMEOUT => 3,
-            CURLOPT_TIMEOUT => 5,
-        ]);
-
-        $body   = curl_exec($ch);
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        // If the example didn't load or is too big, simply include the URL instead of the string value
-        if ($body === false || $status !== 200 || strlen($body) > 2000 || strpos($body, 'Error: ') === 0) {
-            return ['externalValue' => $url];
+        if (empty($response['data']) || ($response['status'] ?? 1) !== 200 || strpos($response['data'], 'Error: ') === 0) {
+            return [];
         }
 
-        // The annotation expects an objects and not arrays
-        if (stripos($url, 'format=json') !== false && stripos($body, '[') === 0) {
-            $body = str_replace(['[', ']'], ['{', '}'], $body);
-        }
+        $this->reportMetadata = json_decode($response['data'], true) ?? [];
 
-        return ['value' => $body];
+        return $this->reportMetadata;
     }
 
-    protected function determineResponses(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
+    protected function getExampleIfAvailable(string $url, bool $useLocalToken = false): string
+    {
+        // If the flag to use a temp token is set, get a token and update the request URL
+        $tempUrl = $url . '&hideIdSubDatable=1';
+        if ($useLocalToken) {
+            $token = Piwik::requestTemporarySystemAuthToken('OpenApiDocs', 24);
+            $tempUrl = str_replace('&token_auth=anonymous', '&token_auth=' . $token, $tempUrl);
+            $tempUrl = str_replace('https://demo.matomo.cloud/', SettingsPiwik::getPiwikUrl(), $tempUrl);
+        }
+        try {
+            $response = Http::sendHttpRequestBy(
+                Http::getTransportMethod(),
+                $tempUrl,
+                $timeout = 10,
+                $userAgent = null,
+                $destinationPath = null,
+                $file = null,
+                $followDepth = 0,
+                $acceptLanguage = false,
+                $acceptInvalidSslCertificate = true,
+                $byteRange = false,
+                $getExtendedInfo = true,
+                $httpMethod = 'GET'
+            );
+        } catch (\Throwable $e) {
+            throw $e;
+        }
+
+        // If the example didn't load or resulted in an error, simply return an empty string
+        if (
+            empty($response['data']) || ($response['status'] ?? 1) !== 200
+            || strpos($response['data'], 'Error: ') === 0
+            || stripos(str_replace(["\n", "\t"], '', $response['data']), '<result><error message=') !== false
+            || stripos($response['data'], '"result":"error"') !== false
+            || stripos($response['data'], '<result />') !== false
+            || trim($response['data']) === '[]'
+        ) {
+            return '';
+        }
+        $body = $response['data'];
+
+        if (stripos($url, 'format=xml') !== false) {
+            $body = json_encode($this->convertExampleXmlToObject($body));
+        }
+
+        return $body;
+    }
+
+    protected function getReportExampleUrlFromMetadata(string $pluginName, string $methodName): string
+    {
+        $metadataArray = $this->getDemoReportMetadata();
+        if (empty($metadataArray)) {
+            return '';
+        }
+
+        foreach ($metadataArray as $metadata) {
+            if (empty($metadata['module']) || empty($metadata['action'])) {
+                continue;
+            }
+
+            // Keep trying until we find a good match
+            if ($metadata['module'] === $pluginName && $metadata['action'] === $methodName) {
+                if (empty($metadata) || empty($metadata['imageGraphUrl'])) {
+                    continue;
+                }
+
+                $url = str_replace(
+                    [
+                        'ImageGraph.get',
+                        "&apiModule={$pluginName}&apiAction={$methodName}",
+                    ],
+                    [
+                        $pluginName . '.' . $methodName,
+                        '',
+                    ],
+                    $metadata['imageGraphUrl']
+                );
+
+                // If we get a valid response, return the URL
+                if (!empty($this->getExampleIfAvailable('https://demo.matomo.cloud/' . $url))) {
+                    return $url;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    protected function convertExampleXmlToObject(string $xml): array
+    {
+        $root = new \SimpleXMLElement($xml);
+
+        $toArray = function (\SimpleXMLElement $node) use (&$toArray) {
+            if (!count($node->children())) {
+                return trim((string)$node);
+            }
+            // Group children by tag name; repeated names become arrays
+            $grouped = [];
+            foreach ($node->children() as $child) {
+                $name = $child->getName();
+                $grouped[$name][] = $toArray($child);
+            }
+            return array_map(function ($items) {
+                return (count($items) === 1) ? $items[0] : $items;
+            }, $grouped);
+        };
+
+        $result = $toArray($root);
+        if (!is_array($result)) {
+            return [$result];
+        }
+
+        // Return the object that goes into example
+        return $result; // e.g., [ "row" => [ {...}, {...} ] ]
+    }
+
+
+    protected function determineResponses(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod, array $paramsData): array
     {
         $responses = [];
 
@@ -376,7 +553,7 @@ class AnnotationGenerator
         }
 
         $successRef = null;
-        $successArray = ['code' => 200];
+        $successArray = ['code' => 200, 'description' => ''];
         if (isset($rules['plugins'][$plugin]['successResponseByMethod'][$method])) {
             $successRef = $rules['plugins'][$plugin]['successResponseByMethod'][$method];
         }
@@ -414,7 +591,7 @@ class AnnotationGenerator
         }
 
         if (!empty($responseInfo['description'])) {
-            $successArray['desc'] = $responseInfo['description'];
+            $successArray['description'] = $responseInfo['description'];
         }
 
         $responseSchema = !empty($responseInfo['type']) ? $this->buildSchemaObjectArray($responseInfo['type']) : [];
@@ -422,37 +599,87 @@ class AnnotationGenerator
         $mediaTypes = [];
         // This simply reuses the example URLs used by the current documentation, but some endpoints don't work because authentication is required
         // TODO - Come up with a way to demo examples for endpoints which require authentication. E.g. hit a live endpoint server-side and replace any potentially sensitive data...
-        $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method);
+        $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method, $paramsData);
         foreach ($exampleUrls as $type => $url) {
             $contentType = $type === 'json' ? 'application/json' : ($type === 'xml' ? 'text/xml' : 'application/vnd.ms-excel');
-            $exampleProperties = [
-                'example="' . $type . 'DemoLink"',
-                'summary="Example ' . $type . '"',
-            ];
-            $exampleValue = $this->getExampleIfAvailable($url);
-            $valueKey = array_key_first($exampleValue);
-            $value = '"' . array_pop($exampleValue) . '"';
-            // Remove the surrounding quotes for JSON values
-            if ($valueKey === 'value' && $type === 'json') {
-                $value = substr($value, 1, -1);
+            if ($type === 'tsv') {
+                $url .= '&convertToUnicode=0';
             }
-            $exampleProperties[] = $valueKey . '=' . $value;
+            try {
+                $exampleValue = $this->getExampleIfAvailable($url);
+            } catch (\Throwable $e) {
+                throw new \Exception('Error getting example from URL: ' . $url . PHP_EOL . $e, 0, $e);
+            }
+            // If the example lookup failed, try making the same request locally
+            $isLocalExample = false;
+            if (empty($exampleValue)) {
+                $exampleValue = $this->getExampleIfAvailable($url, true);
+                $isLocalExample = true;
+            }
+            if (strlen($exampleValue) > self::EXAMPLE_CHAR_LIMIT) {
+                $exampleValue = $this->cutExampleCloseToCharLimit($exampleValue, $type);
+            }
+            $jsonSchema = $type === 'json' ? $this->buildSchemaAnnotationFromJsonExample(json_decode($exampleValue, true) ?? []) : [];
+            $xmlSchema = $type === 'xml' ? $this->buildSchemaAnnotationFromXmlExample(json_decode($exampleValue, true) ?? []) : [];
+            // Make sure that the local example doesn't have anything bad in it
+            if ($isLocalExample) {
+                // TODO - Obfuscate any potentially sensitive data
+            }
+
+            if (in_array($type, ['json', 'xml'])) {
+                // The annotation expects objects and not arrays, so replace [] with {}
+                $exampleValue = str_replace(['[', ']'], ['{', '}'], $exampleValue);
+                // Escape quotes differently for the annotation examples
+                $exampleValue = str_replace('\"', '""', $exampleValue);
+            }
+
+            // Skip if there was no example response
+            if (empty($exampleValue)) {
+                continue;
+            }
+
             $mediaType = [
                 'mediaType="' . $contentType . '"',
-                '@OA\Examples' => $exampleProperties,
             ];
+            if ($type !== 'tsv') {
+                $mediaType[] = 'example=' . $exampleValue;
+            }
             // If a type was found, add it as a schema to the media type
-            if (!empty($responseSchema)) {
+            if ($type === 'json') {
+                $responseSchema = !empty($jsonSchema) ? $jsonSchema : ($responseSchema ?: []);
                 $mediaType = array_merge($mediaType, $responseSchema);
+            }
+            if ($type === 'tsv') {
+                // Escape quotes differently for the annotation examples
+                $exampleValue = str_replace('"', '""', $exampleValue);
+                $mediaType[] = 'example="' . $exampleValue . '"';
+            }
+            if ($type === 'xml') {
+                $mediaType = array_merge($mediaType, $xmlSchema);
             }
             $mediaTypes[] = $mediaType;
         }
         if (!empty($mediaTypes)) {
             $successArray['mediaTypes'] = $mediaTypes;
+
+            // If there are media types we shouldn't need the unknown type description
+            if (!empty($successArray['description']) && $successArray['description'] === 'Response of unknown type') {
+                $successArray['description'] = '';
+            }
         } else {
             // Make sure the schema is included in there are no examples
             $successArray['schema'] = $responseSchema;
         }
+
+        $tsvExampleLink = 'TSV (N/A)';
+        if (count($mediaTypes) > 2) {
+            $tsvExampleLink = "[TSV (Excel)]({$exampleUrls['tsv']})";
+        }
+        $descriptionLinks = empty($exampleUrls) ? '' : "[XML]({$exampleUrls['xml']}), [JSON]({$exampleUrls['json']}), $tsvExampleLink";
+        $descriptionLinks = !empty($descriptionLinks) ? 'Example links: ' . $descriptionLinks : $descriptionLinks;
+
+        // Append the links to the description with a prefix linebreak. If there's no description, skip the break
+        $successArray['description'] .= (!empty($successArray['description']) && !empty($descriptionLinks) ? '</br>' : '') . $descriptionLinks;
 
         $responses[] = $successArray;
 
@@ -463,6 +690,208 @@ class AnnotationGenerator
         }
 
         return $responses;
+    }
+
+    protected function cutExampleCloseToCharLimit(string $exampleValue, string $type): string
+    {
+        if (empty($exampleValue)) {
+            return '';
+        }
+
+        // Special handling for TSV
+        if ($type === 'tsv') {
+            $finalExample = '';
+            foreach (explode("\n", $exampleValue) as $row) {
+                // Don't add the row if it would exceed the limit
+                if (
+                    strlen($row) > self::EXAMPLE_CHAR_LIMIT
+                    || strlen($finalExample . $row) > self::EXAMPLE_CHAR_LIMIT
+                ) {
+                    continue;
+                }
+
+                $finalExample .= $row . "\n";
+            }
+
+            return rtrim($finalExample);
+        }
+
+        $decodedRows = $rows = json_decode($exampleValue, true);
+        if (!is_array($decodedRows) || count($decodedRows) === 0) {
+            return '';
+        }
+
+        if (!empty($decodedRows['row']) && is_array($decodedRows['row'])) {
+            $rows = $decodedRows['row'];
+        }
+        $newRows = [];
+        foreach ($rows as $row) {
+            // Don't add the row if it would exceed the limit
+            if (
+                strlen(json_encode($row)) > self::EXAMPLE_CHAR_LIMIT
+                || strlen(json_encode(array_merge($newRows, [$row]))) > self::EXAMPLE_CHAR_LIMIT
+            ) {
+                continue;
+            }
+
+            $newRows[] = $row;
+        }
+
+        if (empty($newRows)) {
+            return '';
+        }
+
+        if (!empty($decodedRows['row'])) {
+            $decodedRows['row'] = $newRows;
+        } else {
+            $decodedRows = $newRows;
+        }
+
+        return json_encode($decodedRows);
+    }
+
+    protected function buildSchemaAnnotationFromJsonExample(array $jsonArrayObject): array
+    {
+        // Since the schema is pretty much the same as the property, let's just build a property and replace the key
+        $propertyLines = $this->buildPropertyAnnotationFromJsonExample('', $jsonArrayObject);
+
+        return ['@OA\Schema' => $propertyLines['@OA\Property']];
+    }
+
+    protected function buildPropertyAnnotationFromJsonExample(string $propName, array $values): array
+    {
+        $type = 'object';
+        // If the first key isn't a string, it's an array
+        $keys = array_keys($values);
+        if (!is_string(reset($keys))) {
+            $type = 'array';
+        }
+
+        // Set the common properties
+        $propertyLines = !empty($propName) ? [sprintf('property="%s",', $propName)] : [];
+        $propertyLines[] = sprintf('type="%s",', $type);
+
+        // If it's an array, we only care about the structure of the first element since they should be the same
+        if ($type === 'array') {
+            // Just show as generic items if it's not an object (array)
+            if (!is_array($values[0] ?? null)) {
+                return ['@OA\Property' => array_merge($propertyLines, ['@OA\Items()'])];
+            }
+
+            // Build the lines of descendents recursively
+            $childLines = $this->buildPropertyAnnotationFromJsonExample('', $values[0]);
+            return [
+                '@OA\Property' => array_merge($propertyLines, ['@OA\Items' => array_merge([
+                    'type="object",',
+                    'additionalProperties=true,',
+                ], $childLines)]),
+            ];
+        }
+
+        $childLines = [];
+        // Since this is an object, build properties for each child, recursively if any children are arrays/objects
+        foreach ($values as $key => $value) {
+            // If it's not an array, add a simple property string and skip to the next child
+            if (!is_array($value)) {
+                $typesString = '"string", "number", "integer", "boolean", "array", "object", "null"';
+                if (is_string($value)) {
+                    $typesString = '"string"';
+                } elseif (is_int($value)) {
+                    $typesString = '"integer"';
+                } elseif (is_bool($value)) {
+                    $typesString = '"boolean"';
+                }
+                $childLines[] = sprintf('@OA\Property(property="%s", type={%s})', $key, $typesString);
+                continue;
+            }
+
+            $childLines = array_merge($childLines, $this->buildPropertyAnnotationFromJsonExample($key, $value));
+        }
+
+        return ['@OA\Property' => array_merge($propertyLines, $childLines)];
+    }
+
+    protected function buildSchemaAnnotationFromXmlExample(array $xmlArrayObject, string $root = 'result'): array
+    {
+        $lines = [
+            'type="object",',
+            sprintf('@OA\Xml(name="%s"),', $root),
+        ];
+
+        foreach ($xmlArrayObject as $key => $value) {
+            // If the value is not an array, skip
+            if (!is_array($value)) {
+                continue;
+            }
+
+            if (count($value) === 1) {
+                $keys = array_keys($value);
+                // Skip if it's not a named property
+                if (!is_string(reset($keys)) && !is_array(reset($value))) {
+                    continue;
+                }
+            }
+
+            $lines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
+        }
+
+        return ['@OA\Schema' => $lines];
+    }
+
+    protected function buildPropertyAnnotationFromXmlExample(string $propName, array $values): array
+    {
+        $type = 'object';
+        if ($propName === 'row') {
+            $type = 'array';
+            $values = is_array($values[0] ?? null) ? $values[0] : [];
+        }
+
+        // Set the common properties
+        $propertyLines = [
+            sprintf('property="%s",', $propName),
+            sprintf('type="%s",', $type),
+        ];
+
+        $childLines = [];
+        // Recursively check if any of the children are arrays
+        foreach ($values as $key => $value) {
+            // If it's not an array, skip
+            if (!is_array($value)) {
+                continue;
+            }
+
+            // Handle nested arrays
+            if (!is_string($key)) {
+                if (!is_array(reset($value))) {
+                    continue;
+                }
+
+                $keys = array_keys($value);
+                $key = reset($keys);
+                $value = $value[$key];
+            }
+
+            $childLines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
+        }
+
+        // If the object is for row, merge any children with the items object
+        if ($propName === 'row') {
+            $itemProperties = [
+                'type="object",',
+                '@OA\Xml(name="row"),',
+                'additionalProperties=true,',
+            ];
+
+            // Handle arrays of strings which don't have named properties
+            $keys = array_keys($values);
+            if (!is_string(reset($keys))) {
+                $itemProperties = ['type="string"'];
+            }
+
+            $childLines = ['@OA\Items' => array_merge($itemProperties, $childLines)];
+        }
+
+        return ['@OA\Property' => array_merge($propertyLines, $childLines)];
     }
 
     protected function removeTrailingCommaFromLastLine(&$lines): void
@@ -509,9 +938,12 @@ class AnnotationGenerator
         return array_merge([$indentString . $objectName . $openingCharacter], $lines, [$indentString . $closingCharacter . ',']);
     }
 
-    protected function buildSchemaObjectArray(string $type, string $subType = '', string $default = NoDefaultValue::class): array
+    protected function buildSchemaObjectArray(string $type, string $subType = '', string $default = NoDefaultValue::class, string $example = ''): array
     {
         $schemaMap = ['type="' . $type . '"'];
+        if (($example) !== '') {
+            $schemaMap[] = 'example=' . $this->wrapStringWithQuotes($example, $type);
+        }
         $subTypeString = '';
         if (!empty($subType)) {
             $subTypeString = 'type="' . $subType . '"';
@@ -524,15 +956,24 @@ class AnnotationGenerator
         }
 
         if ($this->shouldIncludeDefault($type, $default)) {
-            $doubleQuote = '"';
-            // Don't wrap with quotes for certain values
-            if (in_array($default, ['{}', 'false', 'true', "{$doubleQuote}{$doubleQuote}"])) {
-                $doubleQuote = '';
-            }
-            $schemaMap[] = "default={$doubleQuote}{$default}{$doubleQuote}";
+            $schemaMap[] = 'default=' . $this->wrapStringWithQuotes($default, $type);
         }
 
         return ['@OA\Schema' => $schemaMap];
+    }
+
+    protected function wrapStringWithQuotes(string $string, string $type, string $quoteCharacter = '"'): string
+    {
+        if (in_array($type, ['integer', 'boolean', 'array'])) {
+            return $string;
+        }
+
+        // If it's an object or empty string, there's no need to wrap with quotes
+        if (in_array($string, ['{}', "''", '""'])) {
+            $quoteCharacter = '';
+        }
+
+        return "{$quoteCharacter}{$string}{$quoteCharacter}";
     }
 
     protected function shouldIncludeDefault(string $type, string $default = NoDefaultValue::class): bool
@@ -549,11 +990,11 @@ class AnnotationGenerator
         return true;
     }
 
-    protected function buildSchemaObjectArrays(array $typesMap, string $default = ''): array
+    protected function buildSchemaObjectArrays(array $typesMap, string $default = '', string $example = ''): array
     {
         $schemas = [];
         foreach ($typesMap as $type => $subType) {
-            $schemas[] = $this->buildSchemaObjectArray($type, $subType ?? '', $default);
+            $schemas[] = $this->buildSchemaObjectArray($type, $subType ?? '', $default, $example);
         }
 
         if (count($schemas) === 1) {
@@ -582,7 +1023,14 @@ class AnnotationGenerator
             if (!empty($param['description'])) {
                 $paramMap[] = 'description="' . $param['description'] . '"';
             }
-            $paramMap[] = $this->buildSchemaObjectArrays($param['types'], strval($param['default']));
+            $exampleString = $param['example'];
+            if (in_array('array', array_keys($param['types']))) {
+                // The annotation expects example objects and not arrays, so replace [] with {}
+                $exampleString = str_replace(['[', ']'], ['{', '}'], $exampleString);
+                // Escape quotes differently for the annotation examples
+                $exampleString = str_replace('\"', '""', $exampleString);
+            }
+            $paramMap[] = $this->buildSchemaObjectArrays($param['types'], strval($param['default']), strval($exampleString));
             $operationValuesMap[] = ['@OA\Parameter' => $paramMap];
         }
         foreach ($responses as $response) {
@@ -590,11 +1038,13 @@ class AnnotationGenerator
             if (isset($response['ref']) && empty($response['mediaTypes'])) {
                 $code = $response['code'];
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
-                $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . ', ref="' . $response['ref'] . '")';
+                $description = !empty($response['description']) && strpos($response['description'], 'Example links: [') !== false
+                    ? ', description="' . $response['description'] . '"' : '';
+                $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . $description . ', ref="' . $response['ref'] . '")';
             } else {
                 $responsePropertyArray = [
                     'response=200',
-                    'description="' . ($response['desc'] ?? 'OK') . '"',
+                    'description="' . ($response['description'] ?? 'OK') . '"',
                 ];
                 if (!empty($response['schema'])) {
                     $responsePropertyArray = array_merge($responsePropertyArray, $response['schema']);
