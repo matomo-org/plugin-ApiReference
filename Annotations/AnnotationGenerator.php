@@ -19,7 +19,6 @@ use Piwik\Http;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
 use Piwik\SettingsPiwik;
-use Piwik\Url;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
 use PHPStan\PhpDocParser\Lexer\Lexer;
