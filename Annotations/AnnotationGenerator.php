@@ -58,7 +58,7 @@ class AnnotationGenerator
      * directory if it doesn't already exist. This is useful if we just want a temp file for comparison. like during
      * testing.
      *
-     * @return string[] The collection of all the lines which make up the generated annotations for the public API
+     * @return string[]|array[] The collection of all the lines which make up the generated annotations for the public API
      * endpoints defined by the plugin.
      * @throws \Piwik\Exception\PluginDeactivatedException If the plugin is not activated. It should be loaded.
      * @throws \Throwable
@@ -225,7 +225,7 @@ class AnnotationGenerator
      *
      * @param string $docBlock The comment block from a method, which hopefully contains the return annotation.
      *
-     * @return string[] The collection of key information about the method's return type if any is found.
+     * @return array The collection of key information about the method's return type if any is found.
      * E.g. ['type' => 'integer', 'description' => 'The ID of the newly created report.'] or ['type' => null] if no
      * return annotation is present.
      */
