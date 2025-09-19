@@ -477,6 +477,14 @@ class AnnotationGenerator
             'date' => 'today',
         ];
 
+        // Don't build example URLs for anything that isn't the R in CRUD. E.g. No create, update, or delete.
+        $notAllowedExampleUrlOperations = ['create', 'add', 'save', 'set', 'update', 'delete', 'remove', 'copy', 'duplicate'];
+        foreach ($notAllowedExampleUrlOperations as $operation) {
+            if (stripos($methodName, $operation) === 0) {
+                return [];
+            }
+        }
+
         $parametersToReplace = [];
         if (!empty($paramsData['custom'])) {
             foreach ($paramsData['custom'] as $customParam) {
@@ -908,7 +916,7 @@ class AnnotationGenerator
      * none of the base properties are small enough, we simply return an empty string.
      *
      * @param string $exampleValue The example response received from the demo or other server.
-     * @param string $type The type of the parameter. E.g. string, integer, number, boolean, array, ...
+     * @param string $type The type of the parameter. E.g. xml, json, or tsv
      *
      * @return string A new example string within a reasonable variation from the limit. If no row of the example fits
      * within the limit, the result is an empty string.
@@ -946,7 +954,7 @@ class AnnotationGenerator
             $rows = $decodedRows['row'];
         }
         $newRows = [];
-        foreach ($rows as $row) {
+        foreach ($rows as $key => $row) {
             // Don't add the row if it would exceed the limit
             if (
                 strlen(json_encode($row)) > self::EXAMPLE_CHAR_LIMIT
@@ -955,6 +963,13 @@ class AnnotationGenerator
                 continue;
             }
 
+            // If it's a named element, add it back by name
+            if (is_string($key)) {
+                $newRows[$key] = $row;
+                continue;
+            }
+
+            // Since it wasn't a named row, it must be an array can simply be added back
             $newRows[] = $row;
         }
 
@@ -962,7 +977,7 @@ class AnnotationGenerator
             return '';
         }
 
-        if (!empty($decodedRows['row'])) {
+        if (!empty($decodedRows['row']) && is_array($decodedRows['row'])) {
             $decodedRows['row'] = $newRows;
         } else {
             $decodedRows = $newRows;

@@ -1,0 +1,5 @@
+label	nb_uniq_visitors	nb_visits	nb_actions	nb_users	max_actions	sum_visit_length	bounce_count	nb_visits_converted	goals_idgoal=ecommerceOrder_nb_conversions	goals_idgoal=ecommerceOrder_nb_visits_converted	goals_idgoal=ecommerceOrder_revenue	goals_idgoal=ecommerceOrder_revenue_subtotal	goals_idgoal=ecommerceOrder_revenue_tax	goals_idgoal=ecommerceOrder_revenue_shipping	goals_idgoal=ecommerceOrder_revenue_discount	goals_idgoal=ecommerceOrder_items	goals_idgoal=1_nb_conversions	goals_idgoal=1_nb_visits_converted	goals_idgoal=1_revenue	nb_conversions	revenue	metadata_segment
+more	1	2	12	1	8	5	0	2	1	1	232.56	204	38.76	10.2	20.4	3	1	1	0	2	232.56	campaignKeyword==more
+learnmore	1	1	1	1	1	0	1	0														campaignKeyword==learnmore
+ordernow	1	1	6	0	6	1	0	0														campaignKeyword==ordernow
+www.facebook.com	1	1	1	1	1	0	1	0														campaignKeyword==www.facebook.com

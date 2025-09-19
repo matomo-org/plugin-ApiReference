@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+    <row>
+        <severity/>
+        <tag/>
+        <datetime/>
+        <requestId/>
+        <message/>
+    </row>
+    <row>
+        <severity>ERROR</severity>
+        <tag>API</tag>
+        <datetime>2025-09-19 07:55:22 UTC</datetime>
+        <requestId>1bc99</requestId>
+        <message>#17 {main} [Query: ?module=API&amp;method=LogViewer.getLogConfig&amp;format=Tsv&amp;token_auth=removed&amp;
+            convertToUnicode=0&amp;hideIdSubDatable=1, CLI mode: 0]
+        </message>
+    </row>
+    <row>
+        <severity>ERROR</severity>
+        <tag>API</tag>
+        <datetime>2025-09-19 07:55:22 UTC</datetime>
+        <requestId>1bc99</requestId>
+        <message>#16 /index.php(25): require_once('...')</message>
+    </row>
+    <row>
+        <severity>ERROR</severity>
+        <tag>API</tag>
+        <datetime>2025-09-19 07:55:22 UTC</datetime>
+        <requestId>1bc99</requestId>
+        <message>#15 /core/dispatch.php(33): Piwik\FrontController->dispatch()</message>
+    </row>
+    <row>
+        <severity>ERROR</severity>
+        <tag>API</tag>
+        <datetime>2025-09-19 07:55:22 UTC</datetime>
+        <requestId>1bc99</requestId>
+        <message>#14 /core/FrontController.php(170): Piwik\FrontController->doDispatch()</message>
+    </row>
+    <row>
+        <severity>ERROR</severity>
+        <tag>API</tag>
+        <datetime>2025-09-19 07:55:22 UTC</datetime>
+        <requestId>1bc99</requestId>
+        <message>#13 /core/FrontController.php(646): call_user_func_array()</message>
+    </row>
+    <row>
+        <severity>ERROR</severity>
+        <tag>API</tag>
+        <datetime>2025-09-19 07:55:22 UTC</datetime>
+        <requestId>1bc99</requestId>
+        <message>#12 [internal function]: Piwik\Plugins\API\Controller->index()</message>
+    </row>
+    <row>
+        <severity>ERROR</severity>
+        <tag>API</tag>
+        <datetime>2025-09-19 07:55:22 UTC</datetime>
+        <requestId>1bc99</requestId>
+        <message>#11 /plugins/API/Controller.php(48): Piwik\API\Request->process()</message>
+    </row>
+    <row>
+        <severity>ERROR</severity>
+        <tag>API</tag>
+        <datetime>2025-09-19 07:55:22 UTC</datetime>
+        <requestId>1bc99</requestId>
+        <message>#10 /core/API/Request.php(282): Piwik\Context::executeWithQueryParameters()</message>
+    </row>
+    <row>
+        <severity>ERROR</severity>
+        <tag>API</tag>
+        <datetime>2025-09-19 07:55:22 UTC</datetime>
+        <requestId>1bc99</requestId>
+        <message>#9 /core/Context.php(29): Piwik\API\Request->{closure:Piwik\API\Request::process():282}()</message>
+    </row>
+</result>

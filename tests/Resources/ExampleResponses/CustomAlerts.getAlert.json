@@ -1,0 +1,23 @@
+{
+  "idalert": 1,
+  "name": "Test Alert",
+  "login": "someUserName",
+  "period": "day",
+  "report": "VisitsSummary_get",
+  "report_condition": null,
+  "report_matched": null,
+  "report_mediums": [
+    "email"
+  ],
+  "metric": "nb_uniq_visitors",
+  "metric_condition": "greater_than",
+  "metric_matched": 500,
+  "compared_to": 7,
+  "email_me": 1,
+  "additional_emails": [],
+  "phone_numbers": [],
+  "slack_channel_id": null,
+  "id_sites": [
+    1
+  ]
+}

@@ -1,0 +1,3 @@
+value	name	numSlotsAvailable	numSlotsUsed	numSlotsLeft	supportsExtractions
+visit	Visit	15	1	14	0
+action	Action	15	5	10	1

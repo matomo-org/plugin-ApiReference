@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<log_writers>
+		<row>screen</row>
+		<row>file</row>
+	</log_writers>
+	<log_level>WARN</log_level>
+	<logger_file_path>tmp/logs/matomo.log</logger_file_path>
+	<logger_syslog_ident>matomo</logger_syslog_ident>
+</result>

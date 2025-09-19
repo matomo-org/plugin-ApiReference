@@ -1,0 +1,2 @@
+label	nb_uniq_visitors	nb_visits	nb_actions	max_actions	sum_visit_length	bounce_count	nb_visits_converted	goals_idgoal=6_nb_conversions	goals_idgoal=6_nb_visits_converted	goals_idgoal=6_revenue	goals_idgoal=7_nb_conversions	goals_idgoal=7_nb_visits_converted	goals_idgoal=7_revenue	goals_idgoal=8_nb_conversions	goals_idgoal=8_nb_visits_converted	goals_idgoal=8_revenue	nb_conversions	revenue	avg_time_on_site	bounce_rate	nb_actions_per_visit	metadata_segment
+guest	140	140	307	29	17864	97	11	1	1	2	8	8	8	3	3	0	12	10	128	69%	2.2	dimension1==guest

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<row>
+		<idcustomdimension>1</idcustomdimension>
+		<idsite>1</idsite>
+		<name>User Type</name>
+		<index>1</index>
+		<scope>visit</scope>
+		<active>1</active>
+		<extractions>
+		</extractions>
+		<case_sensitive>1</case_sensitive>
+	</row>
+	<row>
+		<idcustomdimension>2</idcustomdimension>
+		<idsite>1</idsite>
+		<name>Page Author</name>
+		<index>1</index>
+		<scope>action</scope>
+		<active>1</active>
+		<extractions>
+			<row>
+				<dimension>url</dimension>
+				<pattern />
+			</row>
+		</extractions>
+		<case_sensitive>1</case_sensitive>
+	</row>
+	<row>
+		<idcustomdimension>3</idcustomdimension>
+		<idsite>1</idsite>
+		<name>Page Age</name>
+		<index>2</index>
+		<scope>action</scope>
+		<active>0</active>
+		<extractions>
+			<row>
+				<dimension>url</dimension>
+				<pattern />
+			</row>
+		</extractions>
+		<case_sensitive>1</case_sensitive>
+	</row>
+	<row>
+		<idcustomdimension>4</idcustomdimension>
+		<idsite>1</idsite>
+		<name>Page Location</name>
+		<index>3</index>
+		<scope>action</scope>
+		<active>1</active>
+		<extractions>
+			<row>
+				<dimension>url</dimension>
+				<pattern />
+			</row>
+		</extractions>
+		<case_sensitive>1</case_sensitive>
+	</row>
+	<row>
+		<idcustomdimension>5</idcustomdimension>
+		<idsite>1</idsite>
+		<name>Page Type</name>
+		<index>4</index>
+		<scope>action</scope>
+		<active>1</active>
+		<extractions>
+			<row>
+				<dimension>url</dimension>
+				<pattern />
+			</row>
+		</extractions>
+		<case_sensitive>1</case_sensitive>
+	</row>
+	<row>
+		<idcustomdimension>6</idcustomdimension>
+		<idsite>1</idsite>
+		<name>Diving Rating</name>
+		<index>5</index>
+		<scope>action</scope>
+		<active>0</active>
+		<extractions>
+			<row>
+				<dimension>url</dimension>
+				<pattern />
+			</row>
+		</extractions>
+		<case_sensitive>1</case_sensitive>
+	</row>
+</result>

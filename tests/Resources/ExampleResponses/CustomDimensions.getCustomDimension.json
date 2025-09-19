@@ -1,0 +1,35 @@
+[
+  {
+    "label": "guest",
+    "nb_uniq_visitors": "140",
+    "nb_visits": "140",
+    "nb_actions": "307",
+    "max_actions": 29,
+    "sum_visit_length": "17864",
+    "bounce_count": "97",
+    "nb_visits_converted": "11",
+    "goals": {
+      "idgoal=6": {
+        "nb_conversions": 1,
+        "nb_visits_converted": 1,
+        "revenue": 2
+      },
+      "idgoal=7": {
+        "nb_conversions": 8,
+        "nb_visits_converted": 8,
+        "revenue": 8
+      },
+      "idgoal=8": {
+        "nb_conversions": 3,
+        "nb_visits_converted": 3,
+        "revenue": 0
+      }
+    },
+    "nb_conversions": 12,
+    "revenue": 10,
+    "avg_time_on_site": 128,
+    "bounce_rate": "69%",
+    "nb_actions_per_visit": 2.2,
+    "segment": "dimension1==guest"
+  }
+]
