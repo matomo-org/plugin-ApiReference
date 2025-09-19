@@ -115,13 +115,11 @@ class AnnotationGenerator
      *
      * @param array[] $annotations Collection of generated annotations. It's an array of arrays containing the lines
      * which make up all the annotations which need to be written to file.
-     * @param string $filePath Full path of the file to be overwritten with the annotations.
      * @param string $pluginName Name of the plugin. E.g. TagManager
      *
-     * @return false|int Indicating how much was written to file.
-     * @see file_put_contents To explain the return value.
+     * @return string The full string content of the generated annotations file.
      */
-    public function writeAnnotationsToFile(array $annotations, string $filePath, string $pluginName)
+    public function getContentForGeneratedAnnotationsFile(array $annotations, string $pluginName): string
     {
         $lines = [
             '<?php',
@@ -145,8 +143,25 @@ class AnnotationGenerator
             '}',
         ]);
 
+        // Return the fully assembled content for the generated annotations file
+        return implode(PHP_EOL, $lines);
+    }
+
+    /**
+     * Write the collection of annotation lines to file, overwriting the file if it already exists.
+     *
+     * @param array[] $annotations Collection of generated annotations. It's an array of arrays containing the lines
+     * which make up all the annotations which need to be written to file.
+     * @param string $filePath Full path of the file to be overwritten with the annotations.
+     * @param string $pluginName Name of the plugin. E.g. TagManager
+     *
+     * @return false|int Indicating how much was written to file.
+     * @see file_put_contents To explain the return value.
+     */
+    protected function writeAnnotationsToFile(array $annotations, string $filePath, string $pluginName)
+    {
         // Create or overwrite the annotations file
-        return file_put_contents($filePath, implode(PHP_EOL, $lines));
+        return file_put_contents($filePath, $this->getContentForGeneratedAnnotationsFile($annotations, $pluginName));
     }
 
     /**
@@ -369,7 +384,11 @@ class AnnotationGenerator
         }
 
         $paramsMetadata = Proxy::getInstance()->getParametersListWithTypes(Request::getClassNameAPI($plugin), $method);
-        $paramsInfo = $this->getParamInfoFromDocBlock($reflectionMethod->getDocComment());
+        $paramsInfo = [];
+        $docBlock = $reflectionMethod->getDocComment();
+        if (!empty($docBlock)) {
+            $paramsInfo = $this->getParamInfoFromDocBlock($docBlock);
+        }
 
         $customParams = [];
         foreach ($paramsMetadata as $name => $paramMetadata) {
@@ -609,6 +628,7 @@ class AnnotationGenerator
             || stripos($response['data'], '"result":"error"') !== false
             || stripos($response['data'], '<result />') !== false
             || trim($response['data']) === '[]'
+            || (stripos($url, 'format=tsv') !== false && trim($response['data']) === 'No data available')
         ) {
             return '';
         }
@@ -735,7 +755,11 @@ class AnnotationGenerator
 
         // Try to determine the success response using the return type and/or doc-block return type
         $returnType = $reflectionMethod->getReturnType();
-        $responseInfo = $this->getResponseInfoFromDocBlock($reflectionMethod->getDocComment());
+        $responseInfo = [];
+        $docBlock = $reflectionMethod->getDocComment();
+        if (!empty($docBlock)) {
+            $responseInfo = $this->getResponseInfoFromDocBlock($docBlock);
+        }
         if (!empty($returnType) && $returnType->isBuiltin()) {
             $responseInfo['type'] = $this->getOpenApiTypeFromPhpType(strval($returnType));
         }
