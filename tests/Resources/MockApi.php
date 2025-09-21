@@ -55,6 +55,7 @@ class MockApi extends \Piwik\Plugin\API
     {
     }
 
+    // TODO - Try to replace the below methods with more generic ones instead of copying from existing plugins
     /**
      * Fetch a report for the given idDimension. Only reports for active dimensions can be fetched. Requires at least
      * view access.
@@ -363,21 +364,6 @@ class MockApi extends \Piwik\Plugin\API
     {
         return new DataTable();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Get summary metrics for a specific funnel like the number of conversions, the conversion rate, the number of
