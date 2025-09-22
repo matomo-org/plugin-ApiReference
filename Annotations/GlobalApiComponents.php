@@ -323,6 +323,15 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  * )
  *
  * Parameters specific to DataTables and Views
+ * @OA\Parameter(parameter="expandedOptional", name="expanded", in="query",
+ *     description="If true, loads all subtables.", required=false,
+ *     @OA\Schema(type="integer", enum={0,1}, example=0, default=0))
+ *
+ * @OA\Parameter(parameter="idSubtableOptional", name="idSubtable", in="query",
+ *     description="An in-database subtable ID.", required=false,
+ *     @OA\Schema(type="integer"))
+ *
+ * Parameters specific to DataTables and Views
  * @OA\Parameter(parameter="flatOptional", name="flat", in="query",
  *     description="Flatten subtables into the parent table.", required=false,
  *     @OA\Schema(type="integer", enum={0,1}, example=0))
@@ -358,7 +367,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     description="Row index after which rows are removed.", required=false, @OA\Schema(type="integer"))
  *
  * @OA\Parameter(parameter="filter_limitOptional", name="filter_limit", in="query",
- *     description="Maximum rows to return.", required=false, @OA\Schema(type="integer"))
+ *     description="Maximum number of rows to return.", required=false, @OA\Schema(type="integer"))
  *
  * @OA\Parameter(parameter="filter_offsetOptional", name="filter_offset", in="query",
  *     description="Row offset.", required=false, @OA\Schema(type="integer"))
@@ -384,8 +393,11 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  * @OA\Parameter(parameter="labelOptional", name="label", in="query",
  *     description="Keep only rows with these label(s). Supports path via '>' and arrays.", required=false, @OA\Schema(type="string"))
  *
+ * @OA\Parameter(parameter="idGoalRequired", name="idGoal", in="query",
+ *     description="The ID of a configured goal.", required=true, @OA\Schema(type="integer"))
+ *
  * @OA\Parameter(parameter="idGoalOptional", name="idGoal", in="query",
- *     description="Goal ID or special values (overview/minimal/full table).", required=false, @OA\Schema(type="string"))
+ *     description="The ID of a configured goal.", required=false, @OA\Schema(type="integer"))
  */
 class GlobalApiComponents
 {

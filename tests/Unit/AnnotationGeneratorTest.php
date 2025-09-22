@@ -262,7 +262,7 @@ class AnnotationGeneratorTest extends TestCase
      */
     public function testBuildParameterAnnotationData(string $paramName, array $paramMetadata, array $paramDocInfo, array $expected): void
     {
-        $this->assertEquals($expected, $this->annotationGenerator->buildParameterAnnotationData($paramName, $paramMetadata, $paramDocInfo));
+        $this->assertEquals($expected, $this->annotationGenerator->buildParameterAnnotationData('someMethodName', $paramName, $paramMetadata, $paramDocInfo));
     }
 
     /**

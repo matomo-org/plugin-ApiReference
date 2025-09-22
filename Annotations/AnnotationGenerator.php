@@ -31,6 +31,34 @@ class AnnotationGenerator
 {
     public const EXAMPLE_CHAR_LIMIT = 3000;
 
+    public const GLOBAL_PARAMETER_NAMES = [
+        'idSite',
+        'period',
+        'date',
+        'segment',
+        'expanded',
+        'idSubtable',
+        'flat',
+        'filter_pattern',
+        'filter_column',
+        'filter_pattern_recursive',
+        'filter_column_recursive',
+        'filter_excludelowpop',
+        'filter_excludelowpop_value',
+        'filter_sort_column',
+        'filter_sort_order',
+        'filter_truncate',
+        'filter_limit',
+        'filter_offset',
+        'keep_summary_row',
+        'disable_generic_filters',
+        'disable_queued_filters',
+        'hideColumns',
+        'showColumns',
+        'label',
+        'idGoal',
+    ];
+
     /**
      * @var DocumentationGenerator
      */
@@ -41,9 +69,15 @@ class AnnotationGenerator
      */
     protected $reportMetadata;
 
+    /**
+     * @var array[]
+     */
+    protected $missingImportantDataWarnings;
+
     public function __construct(DocumentationGenerator $generator)
     {
         $this->generator = $generator;
+        $this->missingImportantDataWarnings = [];
     }
 
     /**
@@ -65,7 +99,7 @@ class AnnotationGenerator
      */
     public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false, bool $useTmpDir = false): array
     {
-        BaseValidator::check('plugin', $pluginName, [ new NotEmpty() ]);
+        BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
         Manager::getInstance()->checkIsPluginActivated($pluginName);
 
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
@@ -107,7 +141,28 @@ class AnnotationGenerator
             $this->writeAnnotationsToFile($annotations, $pluginAnnotationPath, $pluginName);
         }
 
-        return $annotations;
+        if (count($this->missingImportantDataWarnings) === 0) {
+            return $annotations;
+        }
+
+        $lines = [];
+        foreach ($this->missingImportantDataWarnings as $methodName => $warnings) {
+            if (empty($warnings)) {
+                continue;
+            }
+
+            $lines[] = $methodName . ' has the following warnings:';
+            foreach ($warnings as $paramName => $warningLines) {
+                if (empty($warningLines)) {
+                    continue;
+                }
+
+                $lines[] = '- ' . $paramName . ':';
+                $lines[] = "   - " . implode("\n   - ", $warningLines);
+            }
+        }
+
+        return $lines;
     }
 
     /**
@@ -215,18 +270,18 @@ class AnnotationGenerator
      */
     public function getParamInfoFromDocBlock(string $docBlock): array
     {
-        $lexer  = new Lexer();
+        $lexer = new Lexer();
         $tokens = $lexer->tokenize($docBlock);
         $expressionParser = new ConstExprParser();
         $parser = new PhpDocParser(new TypeParser($expressionParser), $expressionParser);
-        $node   = $parser->parse(new TokenIterator($tokens));
+        $node = $parser->parse(new TokenIterator($tokens));
 
         $params = [];
         foreach ($node->getParamTagValues() as $param) {
             $name = ltrim($param->parameterName, '$');
             $params[$name] = [
-                'type' => (string) $param->type,
-                 // Normalise the description. E.g. remove linebreaks and indentation
+                'type' => (string)$param->type,
+                // Normalise the description. E.g. remove linebreaks and indentation
                 'description' => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
                 'byRef' => $param->isReference,
                 'variadic' => $param->isVariadic,
@@ -246,11 +301,11 @@ class AnnotationGenerator
      */
     public function getResponseInfoFromDocBlock(string $docBlock): array
     {
-        $lexer  = new Lexer();
+        $lexer = new Lexer();
         $tokens = $lexer->tokenize($docBlock);
         $expressionParser = new ConstExprParser();
         $parser = new PhpDocParser(new TypeParser($expressionParser), $expressionParser);
-        $node   = $parser->parse(new TokenIterator($tokens));
+        $node = $parser->parse(new TokenIterator($tokens));
 
         $responseInfo = ['type' => null];
         $returnTags = $node->getReturnTagValues();
@@ -293,6 +348,7 @@ class AnnotationGenerator
      * Build the key data for the specified parameter. This should be all the data necessary to create an OA\Parameter
      * annotation object.
      *
+     * @param string $methodName The name of the method. E.g. getAlert
      * @param string $paramName The name of the parameter. E.g. idSite or period
      * @param array $paramMetadata The collection of metadata from the old DocumentationGenerator class. Things like
      * whether the parameter is typed, is required, or has a default value.
@@ -312,9 +368,12 @@ class AnnotationGenerator
      *     'example' => 1,
      * ]
      */
-    public function buildParameterAnnotationData(string $paramName, array $paramMetadata, array $paramDocInfo): array
+    public function buildParameterAnnotationData(string $methodName, string $paramName, array $paramMetadata, array $paramDocInfo): array
     {
         $docType = strtolower(trim($paramDocInfo['type'] ?? ''));
+        if (empty($docType)) {
+            $this->addMissingImportantDataWarning($methodName, $paramName, 'Type is not specified in comment block.');
+        }
         $metaType = strtolower(trim($paramMetadata['type'] ?? $docType));
         $type = $metaType === 'string' && $docType !== 'string' ? $docType : $metaType;
         // If the signature type is array, but the type hinting provides more, use that instead
@@ -336,6 +395,9 @@ class AnnotationGenerator
 
         $isRequired = !key_exists('default', $paramMetadata) || $paramMetadata['default'] instanceof NoDefaultValue;
         $description = $paramDocInfo['description'] ?? '';
+        if (empty($description)) {
+            $this->addMissingImportantDataWarning($methodName, $paramName, 'Description is not specified in comment block.');
+        }
         $example = '';
         // Check the description for the example value
         if (preg_match('/\[@example\s*=\s*([^\n]+)\]/', $description, $m)) {
@@ -349,6 +411,10 @@ class AnnotationGenerator
             $example = trim($example, '"');
         }
 
+        // Clean up the descriptions a little more like removing linebreaks and escaping double-quotes
+        $description = str_replace("\n", ' ', $description);
+        $description = str_replace('"', '""', $description);
+
         return [
             'name' => $paramName,
             'types' => $typesMap,
@@ -357,6 +423,48 @@ class AnnotationGenerator
             'default' => !$isRequired ? json_encode($paramMetadata['default']) : NoDefaultValue::class,
             'example' => $example,
         ];
+    }
+
+    /**
+     * Add an entry to the map of warnings about missing important information, like type and description of parameters
+     * and returns.
+     *
+     * @param string $methodName Name of the method to more easily identify where in the code needs adjustment.
+     * @param string $paramName Name of the parameter or "return" for the response. E.g. idSite, period, return, ...
+     * @param string $message Message indicating what is missing. E.g. "Type is not specified in comment block."
+     *
+     * @return void
+     */
+    protected function addMissingImportantDataWarning(string $methodName, string $paramName, string $message): void
+    {
+        // Make sure that the inner arrays have been initialised and then add the message to the warning map
+        $this->missingImportantDataWarnings[$methodName] = $this->missingImportantDataWarnings[$methodName] ?? [];
+        $this->missingImportantDataWarnings[$methodName][$paramName] = $this->missingImportantDataWarnings[$methodName][$paramName] ?? [];
+        $this->missingImportantDataWarnings[$methodName][$paramName][] = $message;
+    }
+
+    /**
+     * Remove a warning from the collection. This is useful when it's determined after the fact that a parameter has
+     * a global component which can be used, like idSite or period.
+     *
+     * @param string $methodName Name of the method.
+     * @param string $paramName Name of the parameter or "return" for the response. E.g. idSite, period, return, ...
+     *
+     * @return void
+     */
+    protected function removeMissingImportantDataWarning(string $methodName, string $paramName): void
+    {
+        if (empty($this->missingImportantDataWarnings[$methodName][$paramName])) {
+            return;
+        }
+
+        // If it's the only param in the collection for the method, remove the method
+        if (count($this->missingImportantDataWarnings[$methodName]) === 1) {
+            unset($this->missingImportantDataWarnings[$methodName]);
+            return;
+        }
+
+        unset($this->missingImportantDataWarnings[$methodName][$paramName]);
     }
 
     /**
@@ -399,7 +507,16 @@ class AnnotationGenerator
                 continue;
             }
 
-            $customParams[] = $this->buildParameterAnnotationData($name, $paramMetadata, $paramInfo);
+            // If the parameter doesn't have a description and matches a global, use a reference to the global instead.
+            $customParamData = $this->buildParameterAnnotationData($method, $name, $paramMetadata, $paramInfo);
+            if (empty($customParamData['description']) && in_array($name, self::GLOBAL_PARAMETER_NAMES)) {
+                $globalParamSuffix = $customParamData['required'] === 'true' ? 'Required' : 'Optional';
+                $refs[] = '#/components/parameters/' . $name . $globalParamSuffix;
+                $this->removeMissingImportantDataWarning($method, $name);
+                continue;
+            }
+
+            $customParams[] = $customParamData;
         }
 
         return [
@@ -415,6 +532,7 @@ class AnnotationGenerator
      * @link https://spec.openapis.org/oas/v3.1.1.html#data-types
      *
      * @param string $type The PHP type from the method signature or doc-block
+     *
      * @return string The normalised Data Type to be used in the swagger-php annotation
      */
     public function getOpenApiTypeFromPhpType(string $type): string
@@ -812,6 +930,8 @@ class AnnotationGenerator
 
         if (!empty($responseInfo['description'])) {
             $successArray['description'] = $responseInfo['description'];
+        } elseif (empty($successArray['ref'])) {
+            $this->addMissingImportantDataWarning($method, 'return', 'Description is not specified in comment block.');
         }
 
         $responseSchema = !empty($responseInfo['type']) ? $this->buildSchemaObjectArray($responseInfo['type']) : [];
@@ -883,7 +1003,7 @@ class AnnotationGenerator
                 $successArray['description'] = '';
             }
         } else {
-            // Make sure the schema is included in there are no examples
+            // Make sure the schema is included if there are no examples
             $successArray['schema'] = $responseSchema;
         }
 
@@ -896,6 +1016,10 @@ class AnnotationGenerator
 
         // Append the links to the description with a prefix linebreak. If there's no description, skip the break
         $successArray['description'] .= (!empty($successArray['description']) && !empty($descriptionLinks) ? '</br>' : '') . $descriptionLinks;
+
+        if (empty($successArray['ref']) && empty($descriptionLinks) && empty($successArray['schema'])) {
+            $this->addMissingImportantDataWarning($method, 'return', 'Type could not be determined via comment block or example.');
+        }
 
         $responses[] = $successArray;
 
