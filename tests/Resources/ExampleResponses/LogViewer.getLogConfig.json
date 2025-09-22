@@ -1,0 +1,9 @@
+{
+  "log_writers": [
+    "screen",
+    "file"
+  ],
+  "log_level": "WARN",
+  "logger_file_path": "tmp\/logs\/matomo.log",
+  "logger_syslog_ident": "matomo"
+}

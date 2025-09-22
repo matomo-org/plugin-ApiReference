@@ -1,0 +1,45 @@
+[
+  {
+    "label": "email-nov2011",
+    "nb_uniq_visitors": 3,
+    "nb_visits": 4,
+    "nb_actions": 19,
+    "nb_users": 2,
+    "max_actions": 8,
+    "sum_visit_length": 6,
+    "bounce_count": 1,
+    "nb_visits_converted": 2,
+    "goals": {
+      "idgoal=ecommerceOrder": {
+        "nb_conversions": 1,
+        "nb_visits_converted": 1,
+        "revenue": 232.56,
+        "revenue_subtotal": 204,
+        "revenue_tax": 38.76,
+        "revenue_shipping": 10.2,
+        "revenue_discount": 20.4,
+        "items": 3
+      },
+      "idgoal=1": {
+        "nb_conversions": 1,
+        "nb_visits_converted": 1,
+        "revenue": 0
+      }
+    },
+    "nb_conversions": 2,
+    "revenue": 232.56,
+    "segment": "campaignName==email-nov2011"
+  },
+  {
+    "label": "google-ads-campaign",
+    "nb_uniq_visitors": 2,
+    "nb_visits": 2,
+    "nb_actions": 2,
+    "nb_users": 2,
+    "max_actions": 1,
+    "sum_visit_length": 0,
+    "bounce_count": 2,
+    "nb_visits_converted": 0,
+    "segment": "campaignName==google-ads-campaign"
+  }
+]

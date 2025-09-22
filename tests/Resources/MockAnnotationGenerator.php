@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * Matomo - free/libre analytics platform
+ *
+ * @link    https://matomo.org
+ * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
+ */
+
+declare(strict_types=1);
+
+namespace Piwik\Plugins\OpenApiDocs\tests\Resources;
+
+use Piwik\API\DocumentationGenerator;
+use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
+
+class MockAnnotationGenerator extends AnnotationGenerator
+{
+    public function __construct(DocumentationGenerator $generator)
+    {
+        parent::__construct($generator);
+
+        // TODO - Extend the constructor behaviour
+    }
+
+    // TODO - Refactor the methods below to use dependency injection so that they can more easily be tested
+
+    /**
+     * @inheritDoc
+     */
+    public function buildAnnotationForMethod(array $rules, string $pluginName, \ReflectionMethod $reflectionMethod): array
+    {
+        return parent::buildAnnotationForMethod($rules, $pluginName, $reflectionMethod);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function determineParameters(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
+    {
+        return parent::determineParameters($rules, $plugin, $method, $reflectionMethod);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getApplicableDemoExampleUrls(string $pluginName, string $methodName, array $paramsData): array
+    {
+        return parent::getApplicableDemoExampleUrls($pluginName, $methodName, $paramsData);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDemoReportMetadata(): array
+    {
+        return parent::getDemoReportMetadata();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getExampleIfAvailable(string $url, bool $useLocalToken = false): string
+    {
+        return parent::getExampleIfAvailable($url, $useLocalToken);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getReportExampleUrlFromMetadata(string $pluginName, string $methodName): string
+    {
+        return parent::getReportExampleUrlFromMetadata($pluginName, $methodName);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function determineResponses(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod, array $paramsData): array
+    {
+        return parent::determineResponses($rules, $plugin, $method, $reflectionMethod, $paramsData);
+    }
+}

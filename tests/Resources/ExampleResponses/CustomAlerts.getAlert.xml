@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<idalert>1</idalert>
+	<name>Test Alert</name>
+	<login>someUserName</login>
+	<period>day</period>
+	<report>VisitsSummary_get</report>
+	<report_condition />
+	<report_matched />
+	<report_mediums>
+		<row>email</row>
+	</report_mediums>
+	<metric>nb_uniq_visitors</metric>
+	<metric_condition>greater_than</metric_condition>
+	<metric_matched>500</metric_matched>
+	<compared_to>7</compared_to>
+	<email_me>1</email_me>
+	<additional_emails>
+	</additional_emails>
+	<phone_numbers>
+	</phone_numbers>
+	<slack_channel_id />
+	<id_sites>
+		<row>1</row>
+	</id_sites>
+</result>

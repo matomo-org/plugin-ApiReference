@@ -1,0 +1,14 @@
+[
+  {
+    "value": "url",
+    "name": "Page URL"
+  },
+  {
+    "value": "urlparam",
+    "name": "Page URL Parameter"
+  },
+  {
+    "value": "action_name",
+    "name": "Page Title"
+  }
+]

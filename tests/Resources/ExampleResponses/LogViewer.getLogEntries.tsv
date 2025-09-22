@@ -1,0 +1,11 @@
+severity	tag	datetime	requestId	message
+
+ERROR	API	2025-09-19 08:04:51 UTC	2904f	"#17 {main} [Query: ?module=API&method=LogViewer.getLogConfig&format=Tsv&token_auth=removed&convertToUnicode=0&hideIdSubDatable=1, CLI mode: 0]"
+ERROR	API	2025-09-19 08:04:51 UTC	2904f	#16 /index.php(25): require_once('...')
+ERROR	API	2025-09-19 08:04:51 UTC	2904f	#15 /core/dispatch.php(33): Piwik\FrontController->dispatch()
+ERROR	API	2025-09-19 08:04:51 UTC	2904f	#14 /core/FrontController.php(170): Piwik\FrontController->doDispatch()
+ERROR	API	2025-09-19 08:04:51 UTC	2904f	#13 /core/FrontController.php(646): call_user_func_array()
+ERROR	API	2025-09-19 08:04:51 UTC	2904f	#12 [internal function]: Piwik\Plugins\API\Controller->index()
+ERROR	API	2025-09-19 08:04:51 UTC	2904f	#11 /plugins/API/Controller.php(48): Piwik\API\Request->process()
+ERROR	API	2025-09-19 08:04:51 UTC	2904f	#10 /core/API/Request.php(282): Piwik\Context::executeWithQueryParameters()
+ERROR	API	2025-09-19 08:04:51 UTC	2904f	#9 /core/Context.php(29): Piwik\API\Request->{closure:Piwik\API\Request::process():282}()

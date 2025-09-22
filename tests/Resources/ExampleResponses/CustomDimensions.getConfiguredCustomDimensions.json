@@ -1,0 +1,87 @@
+[
+  {
+    "idcustomdimension": "1",
+    "idsite": "1",
+    "name": "User Type",
+    "index": "1",
+    "scope": "visit",
+    "active": true,
+    "extractions": [],
+    "case_sensitive": true
+  },
+  {
+    "idcustomdimension": "2",
+    "idsite": "1",
+    "name": "Page Author",
+    "index": "1",
+    "scope": "action",
+    "active": true,
+    "extractions": [
+      {
+        "dimension": "url",
+        "pattern": ""
+      }
+    ],
+    "case_sensitive": true
+  },
+  {
+    "idcustomdimension": "3",
+    "idsite": "1",
+    "name": "Page Age",
+    "index": "2",
+    "scope": "action",
+    "active": false,
+    "extractions": [
+      {
+        "dimension": "url",
+        "pattern": ""
+      }
+    ],
+    "case_sensitive": true
+  },
+  {
+    "idcustomdimension": "4",
+    "idsite": "1",
+    "name": "Page Location",
+    "index": "3",
+    "scope": "action",
+    "active": true,
+    "extractions": [
+      {
+        "dimension": "url",
+        "pattern": ""
+      }
+    ],
+    "case_sensitive": true
+  },
+  {
+    "idcustomdimension": "5",
+    "idsite": "1",
+    "name": "Page Type",
+    "index": "4",
+    "scope": "action",
+    "active": true,
+    "extractions": [
+      {
+        "dimension": "url",
+        "pattern": ""
+      }
+    ],
+    "case_sensitive": true
+  },
+  {
+    "idcustomdimension": "6",
+    "idsite": "1",
+    "name": "Diving Rating",
+    "index": "5",
+    "scope": "action",
+    "active": false,
+    "extractions": [
+      {
+        "dimension": "url",
+        "pattern": ""
+      }
+    ],
+    "case_sensitive": true
+  }
+]

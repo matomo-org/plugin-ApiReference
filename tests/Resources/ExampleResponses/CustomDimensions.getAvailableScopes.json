@@ -1,0 +1,18 @@
+[
+  {
+    "value": "visit",
+    "name": "Visit",
+    "numSlotsAvailable": 15,
+    "numSlotsUsed": 1,
+    "numSlotsLeft": 14,
+    "supportsExtractions": false
+  },
+  {
+    "value": "action",
+    "name": "Action",
+    "numSlotsAvailable": 15,
+    "numSlotsUsed": 5,
+    "numSlotsLeft": 10,
+    "supportsExtractions": true
+  }
+]

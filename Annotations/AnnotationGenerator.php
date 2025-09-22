@@ -31,6 +31,34 @@ class AnnotationGenerator
 {
     public const EXAMPLE_CHAR_LIMIT = 3000;
 
+    public const GLOBAL_PARAMETER_NAMES = [
+        'idSite',
+        'period',
+        'date',
+        'segment',
+        'expanded',
+        'idSubtable',
+        'flat',
+        'filter_pattern',
+        'filter_column',
+        'filter_pattern_recursive',
+        'filter_column_recursive',
+        'filter_excludelowpop',
+        'filter_excludelowpop_value',
+        'filter_sort_column',
+        'filter_sort_order',
+        'filter_truncate',
+        'filter_limit',
+        'filter_offset',
+        'keep_summary_row',
+        'disable_generic_filters',
+        'disable_queued_filters',
+        'hideColumns',
+        'showColumns',
+        'label',
+        'idGoal',
+    ];
+
     /**
      * @var DocumentationGenerator
      */
@@ -41,17 +69,37 @@ class AnnotationGenerator
      */
     protected $reportMetadata;
 
+    /**
+     * @var array[]
+     */
+    protected $missingImportantDataWarnings;
+
     public function __construct(DocumentationGenerator $generator)
     {
         $this->generator = $generator;
+        $this->missingImportantDataWarnings = [];
     }
 
     /**
-     * Use reflection to generate the OpenAPI annotations to be used by swagger-php.
+     * Generate all the annotations for a plugin's public API endpoints and return them as an array of strings. A string
+     * for each line to be output or written to file.
+     *
+     * @param string $pluginName The name of the plugin. E.g. TagManager
+     * @param bool $writeToFile Indicate whether the results should be written to file. Default is false so that a dry
+     * run won't affect the file-system.
+     * @param bool $useTmpDir Indicate whether the file should be written in Matomo's tmp/ directory. The default is
+     * false, meaning that it will be written in the OpenApi/Annotations/ directory of the plugin, creating the
+     * directory if it doesn't already exist. This is useful if we just want a temp file for comparison. like during
+     * testing.
+     *
+     * @return string[]|array[] The collection of all the lines which make up the generated annotations for the public API
+     * endpoints defined by the plugin.
+     * @throws \Piwik\Exception\PluginDeactivatedException If the plugin is not activated. It should be loaded.
+     * @throws \Throwable
      */
     public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false, bool $useTmpDir = false): array
     {
-        BaseValidator::check('plugin', $pluginName, [ new NotEmpty() ]);
+        BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
         Manager::getInstance()->checkIsPluginActivated($pluginName);
 
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
@@ -93,12 +141,41 @@ class AnnotationGenerator
             $this->writeAnnotationsToFile($annotations, $pluginAnnotationPath, $pluginName);
         }
 
-        return $annotations;
+        if (count($this->missingImportantDataWarnings) === 0) {
+            return $annotations;
+        }
+
+        $lines = [];
+        foreach ($this->missingImportantDataWarnings as $methodName => $warnings) {
+            if (empty($warnings)) {
+                continue;
+            }
+
+            $lines[] = $methodName . ' has the following warnings:';
+            foreach ($warnings as $paramName => $warningLines) {
+                if (empty($warningLines)) {
+                    continue;
+                }
+
+                $lines[] = '- ' . $paramName . ':';
+                $lines[] = "   - " . implode("\n   - ", $warningLines);
+            }
+        }
+
+        return $lines;
     }
 
-    protected function writeAnnotationsToFile(array $annotations, string $filePath, string $pluginName): void
+    /**
+     * Write the collection of annotation lines to file, overwriting the file if it already exists.
+     *
+     * @param array[] $annotations Collection of generated annotations. It's an array of arrays containing the lines
+     * which make up all the annotations which need to be written to file.
+     * @param string $pluginName Name of the plugin. E.g. TagManager
+     *
+     * @return string The full string content of the generated annotations file.
+     */
+    public function getContentForGeneratedAnnotationsFile(array $annotations, string $pluginName): string
     {
-        $output = '';
         $lines = [
             '<?php',
             '',
@@ -121,10 +198,38 @@ class AnnotationGenerator
             '}',
         ]);
 
-        // Create or overwrite the annotations file
-        file_put_contents($filePath, implode(PHP_EOL, $lines));
+        // Return the fully assembled content for the generated annotations file
+        return implode(PHP_EOL, $lines);
     }
 
+    /**
+     * Write the collection of annotation lines to file, overwriting the file if it already exists.
+     *
+     * @param array[] $annotations Collection of generated annotations. It's an array of arrays containing the lines
+     * which make up all the annotations which need to be written to file.
+     * @param string $filePath Full path of the file to be overwritten with the annotations.
+     * @param string $pluginName Name of the plugin. E.g. TagManager
+     *
+     * @return false|int Indicating how much was written to file.
+     * @see file_put_contents To explain the return value.
+     */
+    protected function writeAnnotationsToFile(array $annotations, string $filePath, string $pluginName)
+    {
+        // Create or overwrite the annotations file
+        return file_put_contents($filePath, $this->getContentForGeneratedAnnotationsFile($annotations, $pluginName));
+    }
+
+    /**
+     * Build the full array of lines for an OA operation, like OA\Get or OA\Post. This pulls data from various sources,
+     * including making API calls to get example responses.
+     *
+     * @param array $rules An array of configs determining which responses to include by default.
+     * @param string $pluginName Name of the plugin. E.g. TagManager.
+     * @param \ReflectionMethod $reflectionMethod The reflective representation of the method to provide metadata.
+     *
+     * @return array
+     * @throws \Throwable
+     */
     protected function buildAnnotationForMethod(array $rules, string $pluginName, \ReflectionMethod $reflectionMethod): array
     {
         $existing = $reflectionMethod->getDocComment();
@@ -151,38 +256,56 @@ class AnnotationGenerator
         $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
             && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
 
-        return $this->compileOperationLines($path, $opId, $pluginName, $methodName, $params, $responses, $isPost);
+        return $this->compileOperationLines($path, $opId, $pluginName, $params, $responses, $isPost);
     }
 
-    protected function getParamInfoFromDocBlock(string $docBlock): array
+    /**
+     * Try to extract the list of parameters and key information about them from the method's doc block string.
+     *
+     * @param string $docBlock The comment block from a method, which hopefully contains the param annotations.
+     *
+     * @return array Of each param provided in the comment block and key information about them like the type and
+     * description, if available. The array can be empty if there are no param annotations present. E.g.
+     * ['idSite' => ['type' => 'integer', 'description' => 'Site ID'], 'date' => ['type' => 'string', 'description' => '']]
+     */
+    public function getParamInfoFromDocBlock(string $docBlock): array
     {
-        $lexer  = new Lexer();
+        $lexer = new Lexer();
         $tokens = $lexer->tokenize($docBlock);
         $expressionParser = new ConstExprParser();
         $parser = new PhpDocParser(new TypeParser($expressionParser), $expressionParser);
-        $node   = $parser->parse(new TokenIterator($tokens));
+        $node = $parser->parse(new TokenIterator($tokens));
 
         $params = [];
         foreach ($node->getParamTagValues() as $param) {
             $name = ltrim($param->parameterName, '$');
             $params[$name] = [
-                'type'     => (string) $param->type,
+                'type' => (string)$param->type,
                 // Normalise the description. E.g. remove linebreaks and indentation
-                'description'     => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
-                'byRef'    => $param->isReference,
+                'description' => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
+                'byRef' => $param->isReference,
                 'variadic' => $param->isVariadic,
             ];
         }
         return $params;
     }
 
-    protected function getResponseInfoFromDocBlock(string $docBlock): array
+    /**
+     * Try to extract the response-type of a method from the doc block string.
+     *
+     * @param string $docBlock The comment block from a method, which hopefully contains the return annotation.
+     *
+     * @return array The collection of key information about the method's return type if any is found.
+     * E.g. ['type' => 'integer', 'description' => 'The ID of the newly created report.'] or ['type' => null] if no
+     * return annotation is present.
+     */
+    public function getResponseInfoFromDocBlock(string $docBlock): array
     {
-        $lexer  = new Lexer();
+        $lexer = new Lexer();
         $tokens = $lexer->tokenize($docBlock);
         $expressionParser = new ConstExprParser();
         $parser = new PhpDocParser(new TypeParser($expressionParser), $expressionParser);
-        $node   = $parser->parse(new TokenIterator($tokens));
+        $node = $parser->parse(new TokenIterator($tokens));
 
         $responseInfo = ['type' => null];
         $returnTags = $node->getReturnTagValues();
@@ -204,14 +327,53 @@ class AnnotationGenerator
         return $responseInfo;
     }
 
-    protected function buildVirtualPath(string $virtualPathTemplate, string $plugin, string $method): string
+    /**
+     * This is a helper method for building the path used for an operation annotation. It takes a path template, like
+     * the one from the config array and populates it with the plugin name and API method name.
+     *
+     * @param string $virtualPathTemplate The template of what the path should be.
+     * E.g. /index.php?module=API&method={plugin}.{method}
+     * @param string $plugin The name of the plugin. E.g. TagManager
+     * @param string $method The name of the API method. E.g. getCustomReport
+     *
+     * @return string The finalised path to be used in an operation annotation.
+     * E.g. /index.php?module=API&method=CustomReports.getConfiguredReport
+     */
+    public function buildVirtualPath(string $virtualPathTemplate, string $plugin, string $method): string
     {
         return str_replace(['{plugin}', '{method}'], [$plugin, $method], $virtualPathTemplate);
     }
 
-    protected function buildParameterAnnotationData(string $paramName, array $paramMetadata, array $paramDocInfo): array
+    /**
+     * Build the key data for the specified parameter. This should be all the data necessary to create an OA\Parameter
+     * annotation object.
+     *
+     * @param string $methodName The name of the method. E.g. getAlert
+     * @param string $paramName The name of the parameter. E.g. idSite or period
+     * @param array $paramMetadata The collection of metadata from the old DocumentationGenerator class. Things like
+     * whether the parameter is typed, is required, or has a default value.
+     * @param array $paramDocInfo The collection of parameter information built from the method doc block. This is
+     * especially useful when the metadata wasn't able to determine the type. We can check the param annotation for the
+     * type and description.
+     *
+     * @return array The array of key information about the parameter like the type (types if more than one is hinted),
+     * the name, whether it's required, default value, and example. Since there may be more than one type from the doc
+     * block, the type is specified as a 'types' array even if there's only one type. E.g.
+     * [
+     *     'name' => 'idSite',
+     *     'types' => ['integer', 'string'],
+     *     'description' => 'The ID of the site.',
+     *     'required' => 'true', // It's a string here, but gets converted to boolean in the annotation.
+     *     'default' => '\Piwik\API\NoDefaultValue', // This class name indicates no default value since falsy values might be valid.
+     *     'example' => 1,
+     * ]
+     */
+    public function buildParameterAnnotationData(string $methodName, string $paramName, array $paramMetadata, array $paramDocInfo): array
     {
         $docType = strtolower(trim($paramDocInfo['type'] ?? ''));
+        if (empty($docType)) {
+            $this->addMissingImportantDataWarning($methodName, $paramName, 'Type is not specified in comment block.');
+        }
         $metaType = strtolower(trim($paramMetadata['type'] ?? $docType));
         $type = $metaType === 'string' && $docType !== 'string' ? $docType : $metaType;
         // If the signature type is array, but the type hinting provides more, use that instead
@@ -233,6 +395,9 @@ class AnnotationGenerator
 
         $isRequired = !key_exists('default', $paramMetadata) || $paramMetadata['default'] instanceof NoDefaultValue;
         $description = $paramDocInfo['description'] ?? '';
+        if (empty($description)) {
+            $this->addMissingImportantDataWarning($methodName, $paramName, 'Description is not specified in comment block.');
+        }
         $example = '';
         // Check the description for the example value
         if (preg_match('/\[@example\s*=\s*([^\n]+)\]/', $description, $m)) {
@@ -246,6 +411,10 @@ class AnnotationGenerator
             $example = trim($example, '"');
         }
 
+        // Clean up the descriptions a little more like removing linebreaks and escaping double-quotes
+        $description = str_replace("\n", ' ', $description);
+        $description = str_replace('"', '""', $description);
+
         return [
             'name' => $paramName,
             'types' => $typesMap,
@@ -256,6 +425,60 @@ class AnnotationGenerator
         ];
     }
 
+    /**
+     * Add an entry to the map of warnings about missing important information, like type and description of parameters
+     * and returns.
+     *
+     * @param string $methodName Name of the method to more easily identify where in the code needs adjustment.
+     * @param string $paramName Name of the parameter or "return" for the response. E.g. idSite, period, return, ...
+     * @param string $message Message indicating what is missing. E.g. "Type is not specified in comment block."
+     *
+     * @return void
+     */
+    protected function addMissingImportantDataWarning(string $methodName, string $paramName, string $message): void
+    {
+        // Make sure that the inner arrays have been initialised and then add the message to the warning map
+        $this->missingImportantDataWarnings[$methodName] = $this->missingImportantDataWarnings[$methodName] ?? [];
+        $this->missingImportantDataWarnings[$methodName][$paramName] = $this->missingImportantDataWarnings[$methodName][$paramName] ?? [];
+        $this->missingImportantDataWarnings[$methodName][$paramName][] = $message;
+    }
+
+    /**
+     * Remove a warning from the collection. This is useful when it's determined after the fact that a parameter has
+     * a global component which can be used, like idSite or period.
+     *
+     * @param string $methodName Name of the method.
+     * @param string $paramName Name of the parameter or "return" for the response. E.g. idSite, period, return, ...
+     *
+     * @return void
+     */
+    protected function removeMissingImportantDataWarning(string $methodName, string $paramName): void
+    {
+        if (empty($this->missingImportantDataWarnings[$methodName][$paramName])) {
+            return;
+        }
+
+        // If it's the only param in the collection for the method, remove the method
+        if (count($this->missingImportantDataWarnings[$methodName]) === 1) {
+            unset($this->missingImportantDataWarnings[$methodName]);
+            return;
+        }
+
+        unset($this->missingImportantDataWarnings[$methodName][$paramName]);
+    }
+
+    /**
+     * Build the collection of parameters and key information about them for the specified method.
+     *
+     * @param array $rules An array of configs determining which responses to include by default.
+     * @param string $plugin Name of the plugin. E.g. TagManager.
+     * @param string $method The name of the method being annotated.
+     * @param \ReflectionMethod $reflectionMethod The reflective representation of the method to provide metadata.
+     *
+     * @return array List of each method parameter and key data points like the data type, whether it's required,
+     * default value, and example value.
+     * @see self::buildParameterAnnotationData() where the parameter data is built.
+     */
     protected function determineParameters(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
     {
         $refs = [];
@@ -269,7 +492,11 @@ class AnnotationGenerator
         }
 
         $paramsMetadata = Proxy::getInstance()->getParametersListWithTypes(Request::getClassNameAPI($plugin), $method);
-        $paramsInfo = $this->getParamInfoFromDocBlock($reflectionMethod->getDocComment());
+        $paramsInfo = [];
+        $docBlock = $reflectionMethod->getDocComment();
+        if (!empty($docBlock)) {
+            $paramsInfo = $this->getParamInfoFromDocBlock($docBlock);
+        }
 
         $customParams = [];
         foreach ($paramsMetadata as $name => $paramMetadata) {
@@ -280,7 +507,16 @@ class AnnotationGenerator
                 continue;
             }
 
-            $customParams[] = $this->buildParameterAnnotationData($name, $paramMetadata, $paramInfo);
+            // If the parameter doesn't have a description and matches a global, use a reference to the global instead.
+            $customParamData = $this->buildParameterAnnotationData($method, $name, $paramMetadata, $paramInfo);
+            if (empty($customParamData['description']) && in_array($name, self::GLOBAL_PARAMETER_NAMES)) {
+                $globalParamSuffix = $customParamData['required'] === 'true' ? 'Required' : 'Optional';
+                $refs[] = '#/components/parameters/' . $name . $globalParamSuffix;
+                $this->removeMissingImportantDataWarning($method, $name);
+                continue;
+            }
+
+            $customParams[] = $customParamData;
         }
 
         return [
@@ -296,6 +532,7 @@ class AnnotationGenerator
      * @link https://spec.openapis.org/oas/v3.1.1.html#data-types
      *
      * @param string $type The PHP type from the method signature or doc-block
+     *
      * @return string The normalised Data Type to be used in the swagger-php annotation
      */
     public function getOpenApiTypeFromPhpType(string $type): string
@@ -331,6 +568,24 @@ class AnnotationGenerator
         return $type;
     }
 
+    /**
+     * Try to build example URLs for a specific API method. This uses the old DocumentationGenerator to build the same
+     * example URLs which have been available on the API documentation page for a long time. E.g. XML, JSON, and TSV.
+     * Unlike the old documentation, this only includes URLs if a valid response was received from the demo server or
+     * local Matomo instance. For example, some endpoints respond that the data structure is not TSV compatible and the
+     * old documentation would still include the link. This shows 'TSV (N/A)' in those instances.
+     *
+     * @param string $pluginName The name of the plugin. E.g. TagManager.
+     * @param string $methodName The name of the plugin specific API method. E.g. getCustomReport.
+     * @param array[] $paramsData The collection of parameter data compiled using reflection and metadata. This includes
+     * types, default values, and examples. It can be used to build URLs using required parameters which aren't globals,
+     * like idSite and period which have established example values.
+     *
+     * @return array The example URLs with only the required query parameters and only if a valid example responses were
+     * received when the URL was queried. Empty string if no URL could be determined or no valid response was received.
+     * E.g. ['xml => 'https://demo...&format=xml', 'json' => 'https://demo...&format=JSON', 'tsv' => 'https://demo...&format=Tsv']
+     * @throws \Throwable
+     */
     protected function getApplicableDemoExampleUrls(string $pluginName, string $methodName, array $paramsData): array
     {
         // Get the example URLs for the success responses
@@ -339,6 +594,14 @@ class AnnotationGenerator
             'period' => 'day',
             'date' => 'today',
         ];
+
+        // Don't build example URLs for anything that isn't the R in CRUD. E.g. No create, update, or delete.
+        $notAllowedExampleUrlOperations = ['create', 'add', 'save', 'set', 'update', 'delete', 'remove', 'copy', 'duplicate'];
+        foreach ($notAllowedExampleUrlOperations as $operation) {
+            if (stripos($methodName, $operation) === 0) {
+                return [];
+            }
+        }
 
         $parametersToReplace = [];
         if (!empty($paramsData['custom'])) {
@@ -393,6 +656,17 @@ class AnnotationGenerator
         ];
     }
 
+    /**
+     * Query demo.matomo.cloud for report metadata which can later be used to help determine good example URLs for
+     * specific API endpoints. This method is only used when the example URL can't be determined using the default
+     * method. This only works for endpoints associated with reports and have metadata provided by the containing
+     * plugin. The response is cached as a property so the request is only made once regardless of how many times this
+     * method is called. The exception is if a valid response wasn't received. In that case, it will keep making the
+     * request until a non-empty response is received.
+     *
+     * @return array|array[] The decoded JSON array of all the report metadata from the demo server.
+     * @throws \Exception
+     */
     protected function getDemoReportMetadata(): array
     {
         if (is_array($this->reportMetadata) && count($this->reportMetadata)) {
@@ -400,20 +674,25 @@ class AnnotationGenerator
         }
 
         $url = 'https://demo.matomo.cloud/index.php?module=API&method=API.getReportMetadata&format=JSON&idSite=1&hideMetricsDoc=0&showSubtableReports=0&filter_limit=-1&period=day';
-        $response = Http::sendHttpRequestBy(
-            Http::getTransportMethod(),
-            $url,
-            $timeout = 10,
-            $userAgent = null,
-            $destinationPath = null,
-            $file = null,
-            $followDepth = 0,
-            $acceptLanguage = false,
-            $acceptInvalidSslCertificate = true,
-            $byteRange = false,
-            $getExtendedInfo = true,
-            $httpMethod = 'GET'
-        );
+        try {
+            $response = Http::sendHttpRequestBy(
+                Http::getTransportMethod(),
+                $url,
+                $timeout = 30, // We can use a somewhat longer timeout for this request since it's cached afterward.
+                $userAgent = null,
+                $destinationPath = null,
+                $file = null,
+                $followDepth = 0,
+                $acceptLanguage = false,
+                $acceptInvalidSslCertificate = true,
+                $byteRange = false,
+                $getExtendedInfo = true,
+                $httpMethod = 'GET'
+            );
+        } catch (\Exception $e) {
+            // Add a little bit more context for troubleshooting the failed request
+            throw new \Exception('Error getting report metadata from URL: ' . $url . PHP_EOL . $e, 0, $e);
+        }
 
         if (empty($response['data']) || ($response['status'] ?? 1) !== 200 || strpos($response['data'], 'Error: ') === 0) {
             return [];
@@ -424,6 +703,20 @@ class AnnotationGenerator
         return $this->reportMetadata;
     }
 
+    /**
+     * Take the example URL and query the endpoint for an example response, hiding subtables. If a response isn't
+     * received from demo.matomo.cloud, it can try using a temporary token to make the request against the current
+     * instance of Matomo.
+     *
+     * @param string $url The full example URL. E.g.
+     * https://demo.matomo.cloud/?module=API&method=CustomReports.getConfiguredReports&idSite=1&format=xml&token_auth=anonymous
+     * @param bool $useLocalToken A boolean indicating whether to get a temporary token and try the request against the
+     * currently running Matomo instance.
+     *
+     * @return string The response received from the API endpoint if no error was received or the response wasn't empty.
+     * An empty string is returned by default.
+     * @throws \Throwable
+     */
     protected function getExampleIfAvailable(string $url, bool $useLocalToken = false): string
     {
         // If the flag to use a temp token is set, get a token and update the request URL
@@ -449,7 +742,8 @@ class AnnotationGenerator
                 $httpMethod = 'GET'
             );
         } catch (\Throwable $e) {
-            throw $e;
+            // Add a little bit more context for troubleshooting the failed request
+            throw new \Exception('Error getting example from URL: ' . $url . PHP_EOL . $e, 0, $e);
         }
 
         // If the example didn't load or resulted in an error, simply return an empty string
@@ -460,11 +754,13 @@ class AnnotationGenerator
             || stripos($response['data'], '"result":"error"') !== false
             || stripos($response['data'], '<result />') !== false
             || trim($response['data']) === '[]'
+            || (stripos($url, 'format=tsv') !== false && trim($response['data']) === 'No data available')
         ) {
             return '';
         }
         $body = $response['data'];
 
+        // Convert the XML responses into a JSON object and then encode it into a string. This is helpful for building schemas.
         if (stripos($url, 'format=xml') !== false) {
             $body = json_encode($this->convertExampleXmlToObject($body));
         }
@@ -472,6 +768,19 @@ class AnnotationGenerator
         return $body;
     }
 
+    /**
+     * Try to build an example URL for a specific API method using report metadata. This queries the demo server for
+     * report metadata to get examples of existing reports which can be used as example URLS. If no metadata matches the
+     * provided plugin and method, an empty string is returned. Likewise, when no valid response is received for the
+     * URL. NOTE: This should only be used if the old DocumentationGenerator didn't provide example URLs.
+     *
+     * @param string $pluginName The name of the plugin. E.g. TagManager.
+     * @param string $methodName The name of the plugin specific API method. E.g. getCustomReport.
+     *
+     * @return string The example URL with only the required query parameters and only if a valid example response was
+     * received when the URL was queried. Empty string if no URL could be determined or no valid response was received.
+     * @throws \Throwable
+     */
     protected function getReportExampleUrlFromMetadata(string $pluginName, string $methodName): string
     {
         $metadataArray = $this->getDemoReportMetadata();
@@ -486,7 +795,7 @@ class AnnotationGenerator
 
             // Keep trying until we find a good match
             if ($metadata['module'] === $pluginName && $metadata['action'] === $methodName) {
-                if (empty($metadata) || empty($metadata['imageGraphUrl'])) {
+                if (empty($metadata['imageGraphUrl'])) {
                     continue;
                 }
 
@@ -512,7 +821,19 @@ class AnnotationGenerator
         return '';
     }
 
-    protected function convertExampleXmlToObject(string $xml): array
+    /**
+     * Take an XML string, deserialise it, and convert it into a JSON object structured correctly for an XML schema
+     * example. E.g. <result><row>Value1</row><row>Value2</row></result> to ["row" => ["Value1","Value2"]] or
+     * <result><row><child>Value1</child></row><row><child>Value2</child></row></result> to
+     * ["row" => [{"child":"Value1"},{"child":"Value2"}]]
+     *
+     * @param string $xml The XML string of an example response for an API endpoint.
+     *
+     * @return array The array representation of the JSON object example structured correctly for an XML schema. E.g.
+     * ["row" => [{"child":"Value1"},{"child":"Value2"}]]
+     * @throws \Exception
+     */
+    public function convertExampleXmlToObject(string $xml): array
     {
         $root = new \SimpleXMLElement($xml);
 
@@ -536,18 +857,35 @@ class AnnotationGenerator
             return [$result];
         }
 
-        // Return the object that goes into example
-        return $result; // e.g., [ "row" => [ {...}, {...} ] ]
+        return $result;
     }
 
-
+    /**
+     * Build the array of potential responses for the API method. E.g. a response for 200, 400, 401, etc.
+     *
+     * @param array $rules An array of configs determining which responses to include by default.
+     * @param string $plugin Name of the plugin. E.g. TagManager.
+     * @param string $method The name of the method being annotated.
+     * @param \ReflectionMethod $reflectionMethod The reflective representation of the method to provide metadata.
+     * @param array $paramsData An array of already built method parameter data. This is used while building example
+     * URLs because the generator doesn't know what value to use for non-global parameters like idSite and period. We
+     * check the paramsData to see if an example value was provided for all the required parameters so that an example
+     * can be queried.
+     *
+     * @return array A collection of annotation lines for each of the expected potential responses for the method.
+     * @throws \Throwable
+     */
     protected function determineResponses(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod, array $paramsData): array
     {
         $responses = [];
 
         // Try to determine the success response using the return type and/or doc-block return type
         $returnType = $reflectionMethod->getReturnType();
-        $responseInfo = $this->getResponseInfoFromDocBlock($reflectionMethod->getDocComment());
+        $responseInfo = [];
+        $docBlock = $reflectionMethod->getDocComment();
+        if (!empty($docBlock)) {
+            $responseInfo = $this->getResponseInfoFromDocBlock($docBlock);
+        }
         if (!empty($returnType) && $returnType->isBuiltin()) {
             $responseInfo['type'] = $this->getOpenApiTypeFromPhpType(strval($returnType));
         }
@@ -592,6 +930,8 @@ class AnnotationGenerator
 
         if (!empty($responseInfo['description'])) {
             $successArray['description'] = $responseInfo['description'];
+        } elseif (empty($successArray['ref'])) {
+            $this->addMissingImportantDataWarning($method, 'return', 'Description is not specified in comment block.');
         }
 
         $responseSchema = !empty($responseInfo['type']) ? $this->buildSchemaObjectArray($responseInfo['type']) : [];
@@ -605,11 +945,7 @@ class AnnotationGenerator
             if ($type === 'tsv') {
                 $url .= '&convertToUnicode=0';
             }
-            try {
-                $exampleValue = $this->getExampleIfAvailable($url);
-            } catch (\Throwable $e) {
-                throw new \Exception('Error getting example from URL: ' . $url . PHP_EOL . $e, 0, $e);
-            }
+            $exampleValue = $this->getExampleIfAvailable($url);
             // If the example lookup failed, try making the same request locally
             $isLocalExample = false;
             if (empty($exampleValue)) {
@@ -667,7 +1003,7 @@ class AnnotationGenerator
                 $successArray['description'] = '';
             }
         } else {
-            // Make sure the schema is included in there are no examples
+            // Make sure the schema is included if there are no examples
             $successArray['schema'] = $responseSchema;
         }
 
@@ -681,6 +1017,10 @@ class AnnotationGenerator
         // Append the links to the description with a prefix linebreak. If there's no description, skip the break
         $successArray['description'] .= (!empty($successArray['description']) && !empty($descriptionLinks) ? '</br>' : '') . $descriptionLinks;
 
+        if (empty($successArray['ref']) && empty($descriptionLinks) && empty($successArray['schema'])) {
+            $this->addMissingImportantDataWarning($method, 'return', 'Type could not be determined via comment block or example.');
+        }
+
         $responses[] = $successArray;
 
         if (!empty($rules['defaultErrorResponseRefs'])) {
@@ -692,7 +1032,20 @@ class AnnotationGenerator
         return $responses;
     }
 
-    protected function cutExampleCloseToCharLimit(string $exampleValue, string $type): string
+    /**
+     * Take a string example and make sure that it is close to the max char limit. There's a little wiggle room due to
+     * wrapping elements and whitespace characters, but it should be within 100 characters of the limit. To do this, we
+     * deserialise the example based on type and iterate over the first-level properties and append them to a new
+     * example string. If a single property exceeds the limit or will if added to the newly built string, we skip it. If
+     * none of the base properties are small enough, we simply return an empty string.
+     *
+     * @param string $exampleValue The example response received from the demo or other server.
+     * @param string $type The type of the parameter. E.g. xml, json, or tsv
+     *
+     * @return string A new example string within a reasonable variation from the limit. If no row of the example fits
+     * within the limit, the result is an empty string.
+     */
+    public function cutExampleCloseToCharLimit(string $exampleValue, string $type): string
     {
         if (empty($exampleValue)) {
             return '';
@@ -725,7 +1078,7 @@ class AnnotationGenerator
             $rows = $decodedRows['row'];
         }
         $newRows = [];
-        foreach ($rows as $row) {
+        foreach ($rows as $key => $row) {
             // Don't add the row if it would exceed the limit
             if (
                 strlen(json_encode($row)) > self::EXAMPLE_CHAR_LIMIT
@@ -734,6 +1087,13 @@ class AnnotationGenerator
                 continue;
             }
 
+            // If it's a named element, add it back by name
+            if (is_string($key)) {
+                $newRows[$key] = $row;
+                continue;
+            }
+
+            // Since it wasn't a named row, it must be an array can simply be added back
             $newRows[] = $row;
         }
 
@@ -741,7 +1101,7 @@ class AnnotationGenerator
             return '';
         }
 
-        if (!empty($decodedRows['row'])) {
+        if (!empty($decodedRows['row']) && is_array($decodedRows['row'])) {
             $decodedRows['row'] = $newRows;
         } else {
             $decodedRows = $newRows;
@@ -750,7 +1110,14 @@ class AnnotationGenerator
         return json_encode($decodedRows);
     }
 
-    protected function buildSchemaAnnotationFromJsonExample(array $jsonArrayObject): array
+    /**
+     * Take the deserialised structure of an JSON object and build the lines of an OA\Schema annotation object for it.
+     *
+     * @param array $jsonArrayObject Nested array of properties of the JSON object.
+     *
+     * @return array Collection of potentially nested arrays representing an OA\Property annotation object.
+     */
+    public function buildSchemaAnnotationFromJsonExample(array $jsonArrayObject): array
     {
         // Since the schema is pretty much the same as the property, let's just build a property and replace the key
         $propertyLines = $this->buildPropertyAnnotationFromJsonExample('', $jsonArrayObject);
@@ -758,7 +1125,15 @@ class AnnotationGenerator
         return ['@OA\Schema' => $propertyLines['@OA\Property']];
     }
 
-    protected function buildPropertyAnnotationFromJsonExample(string $propName, array $values): array
+    /**
+     * Take the deserialised structure of an JSON object and build the lines of an OA\Property annotation object for it.
+     *
+     * @param string $propName Name of the JSON property.
+     * @param array $values Nested array of properties of the JSON property.
+     *
+     * @return array Collection of potentially nested arrays representing an OA\Property annotation object.
+     */
+    public function buildPropertyAnnotationFromJsonExample(string $propName, array $values): array
     {
         $type = 'object';
         // If the first key isn't a string, it's an array
@@ -793,7 +1168,7 @@ class AnnotationGenerator
         foreach ($values as $key => $value) {
             // If it's not an array, add a simple property string and skip to the next child
             if (!is_array($value)) {
-                $typesString = '"string", "number", "integer", "boolean", "array", "object", "null"';
+                $typesString = '{"string", "number", "integer", "boolean", "array", "object", "null"}';
                 if (is_string($value)) {
                     $typesString = '"string"';
                 } elseif (is_int($value)) {
@@ -801,7 +1176,7 @@ class AnnotationGenerator
                 } elseif (is_bool($value)) {
                     $typesString = '"boolean"';
                 }
-                $childLines[] = sprintf('@OA\Property(property="%s", type={%s})', $key, $typesString);
+                $childLines[] = sprintf('@OA\Property(property="%s", type=%s)', $key, $typesString);
                 continue;
             }
 
@@ -811,7 +1186,15 @@ class AnnotationGenerator
         return ['@OA\Property' => array_merge($propertyLines, $childLines)];
     }
 
-    protected function buildSchemaAnnotationFromXmlExample(array $xmlArrayObject, string $root = 'result'): array
+    /**
+     * Take the deserialised structure of an XML node and build the lines of an OA\Schema annotation object for it.
+     *
+     * @param array $xmlArrayObject Nested array of properties of the XML node.
+     * @param string $root Name of the root element. The default is 'result'.
+     *
+     * @return array Collection of potentially nested arrays representing an OA\Property annotation object.
+     */
+    public function buildSchemaAnnotationFromXmlExample(array $xmlArrayObject, string $root = 'result'): array
     {
         $lines = [
             'type="object",',
@@ -838,7 +1221,15 @@ class AnnotationGenerator
         return ['@OA\Schema' => $lines];
     }
 
-    protected function buildPropertyAnnotationFromXmlExample(string $propName, array $values): array
+    /**
+     * Take the deserialised structure of an XML node and build the lines of an OA\Property annotation object for it.
+     *
+     * @param string $propName Name of the XML node.
+     * @param array $values Nested array of properties of the XML node.
+     *
+     * @return array Collection of potentially nested arrays representing an OA\Property annotation object.
+     */
+    public function buildPropertyAnnotationFromXmlExample(string $propName, array $values): array
     {
         $type = 'object';
         if ($propName === 'row') {
@@ -894,7 +1285,14 @@ class AnnotationGenerator
         return ['@OA\Property' => array_merge($propertyLines, $childLines)];
     }
 
-    protected function removeTrailingCommaFromLastLine(&$lines): void
+    /**
+     * Take a list of lines and remove the trailing comma from the last line.
+     *
+     * @param string[] $lines List of lines for an annotation passed by reference.
+     *
+     * @return void
+     */
+    public function removeTrailingCommaFromLastLine(array &$lines): void
     {
         if (!empty($lines)) {
             $last = array_pop($lines);
@@ -902,7 +1300,18 @@ class AnnotationGenerator
         }
     }
 
-    protected function buildLinesForAnnotationObject(string $objectName, array $objectProperties, int $indent = 0): array
+    /**
+     * Generic method for building the array of lines for an annotation object. It handles adding the indent based on
+     * the level. For example, if it's nested under 3 other objects, the indent will be 12 spaces (3 x 4-space tabs).
+     *
+     * @param string $objectName The type of object. E.g. OA\Schema or OA\Property
+     * @param array $objectProperties A nested array of the properties of the object. E.g. type, example, OA\Schema, ...
+     * @param int $indent The count of indents/tabs based on the nesting the object. E.g. 0 = none & 2 = indented twice.
+     *
+     * @return array The lines of the annotation object with correct opening/closing characters (usually parenthesis),
+     * and proper indentation for each line.
+     */
+    public function buildLinesForAnnotationObject(string $objectName, array $objectProperties, int $indent = 0): array
     {
         $indentString = str_repeat('    ', $indent);
         $innerIndentString = str_repeat('    ', $indent + 1);
@@ -938,7 +1347,17 @@ class AnnotationGenerator
         return array_merge([$indentString . $objectName . $openingCharacter], $lines, [$indentString . $closingCharacter . ',']);
     }
 
-    protected function buildSchemaObjectArray(string $type, string $subType = '', string $default = NoDefaultValue::class, string $example = ''): array
+    /**
+     * Build the array of lines for the OA\Schema annotation object for a single type.
+     *
+     * @param string $type The type of the parameter. E.g. string, integer, number, boolean, array, ...
+     * @param string $subType This can specify the subtype for arrays. E.g. integer for int[] or string for string[].
+     * @param string $default The optional default value for the type. Default is no value.
+     * @param string $example The optional example value for the type. Default is empty string which indicated no value.
+     *
+     * @return array[]
+     */
+    public function buildSchemaObjectArray(string $type, string $subType = '', string $default = NoDefaultValue::class, string $example = ''): array
     {
         $schemaMap = ['type="' . $type . '"'];
         if (($example) !== '') {
@@ -962,7 +1381,17 @@ class AnnotationGenerator
         return ['@OA\Schema' => $schemaMap];
     }
 
-    protected function wrapStringWithQuotes(string $string, string $type, string $quoteCharacter = '"'): string
+    /**
+     * Wrap an example of default value string with quotes. E.g. "exampleValue". Depending on the type and the value,
+     * the quotes may be omitted.
+     *
+     * @param string $string Value for the example or default.
+     * @param string $type The type of the parameter. E.g. string, integer, number, boolean, array, ...
+     * @param string $quoteCharacter What to wrap the value with, if it should be wrapped. The default is double quote.
+     *
+     * @return string
+     */
+    public function wrapStringWithQuotes(string $string, string $type, string $quoteCharacter = '"'): string
     {
         if (in_array($type, ['integer', 'boolean', 'array'])) {
             return $string;
@@ -976,7 +1405,15 @@ class AnnotationGenerator
         return "{$quoteCharacter}{$string}{$quoteCharacter}";
     }
 
-    protected function shouldIncludeDefault(string $type, string $default = NoDefaultValue::class): bool
+    /**
+     * Indicates whether a specific parameter should include a default value in its annotation.
+     *
+     * @param string $type The type of the parameter. E.g. string, integer, number, boolean, array, ...
+     * @param string $default The default value from reflection or doc block.
+     *
+     * @return bool Whether a default value should be included or not.
+     */
+    public function shouldIncludeDefault(string $type, string $default = NoDefaultValue::class): bool
     {
         if ($default === NoDefaultValue::class) {
             return false;
@@ -990,7 +1427,21 @@ class AnnotationGenerator
         return true;
     }
 
-    protected function buildSchemaObjectArrays(array $typesMap, string $default = '', string $example = ''): array
+    /**
+     * Build the array for the OA\Schema annotation object for one or more types.
+     *
+     * @param array $typesMap The array of types where the keys are the types and the values are the subtypes, if any.
+     * E.g. ['string' => null, 'array' => 'integer'] for idSites which can be an array or comma-separated-string of IDs.
+     * The string key has a value of null because it has no subtype while the array has 'integer' because values should
+     * be int IDs.
+     * @param string $default The value to use as the default property of the schema. If it's an empty string, no
+     * default is set.
+     * @param string $example The value to use as the example property of the schema. If it's an empty string, no
+     * example is set.
+     *
+     * @return array[] The collection of lines which make up the schema annotation object.
+     */
+    public function buildSchemaObjectArrays(array $typesMap, string $default = '', string $example = ''): array
     {
         $schemas = [];
         foreach ($typesMap as $type => $subType) {
@@ -1004,7 +1455,20 @@ class AnnotationGenerator
         return ['@OA\Schema' => ['oneOf={' => $schemas]];
     }
 
-    protected function compileOperationLines(string $path, string $opId, string $plugin, string $method, array $params, array $responses, bool $isPost = false): array
+    /**
+     * Build the full array of lines for an OA operation. E.g. OA\Get or OA\Post
+     *
+     * @param string $path The operation path. E.g. /index.php?module=API&method=CustomReports.getConfiguredReport
+     * @param string $opId The string which uniquely identifies the operation across the entire OpenAPI spec. In order
+     * to avoid potential duplicates, we use the plugin name and method name. E.g. CustomReports.getConfiguredReport
+     * @param string $plugin The name of the plugin. E.g. CustomReports
+     * @param array $params The compiled list of method parameters and key information about them, like type.
+     * @param array $responses compiled list of method expected responses and key information about them, like type.
+     * @param bool $isPost Indicates whether the operation is a POST. The default is false, meaning it's GET.
+     *
+     * @return string[] The array of all the lines of the operation annotation object.
+     */
+    public function compileOperationLines(string $path, string $opId, string $plugin, array $params, array $responses, bool $isPost = false): array
     {
         $operationValuesMap = [
             'path="' . $path . '"',
@@ -1057,8 +1521,6 @@ class AnnotationGenerator
                 $operationValuesMap[] = ['@OA\Response' => $responsePropertyArray];
             }
         }
-        // TODO - Remove this if it's determined that we won't ever use it
-        //$operationValuesMap[] = 'x={"runtime"={"entry":"index.php","query":{"module":"API","method":"' . $plugin . '.' . $method . '"}}}';
 
         $lines = $this->buildLinesForAnnotationObject('@OA\\' . ($isPost ? 'Post' : 'Get'), $operationValuesMap);
 

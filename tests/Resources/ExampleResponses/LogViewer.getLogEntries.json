@@ -1,0 +1,72 @@
+[
+  {
+    "severity": "",
+    "tag": "",
+    "datetime": "",
+    "requestId": "",
+    "message": ""
+  },
+  {
+    "severity": "ERROR",
+    "tag": "API",
+    "datetime": "2025-09-19 07:55:22 UTC",
+    "requestId": "1bc99",
+    "message": "#17 {main} [Query: ?module=API&method=LogViewer.getLogConfig&format=Tsv&token_auth=removed&convertToUnicode=0&hideIdSubDatable=1, CLI mode: 0]"
+  },
+  {
+    "severity": "ERROR",
+    "tag": "API",
+    "datetime": "2025-09-19 07:55:22 UTC",
+    "requestId": "1bc99",
+    "message": "#16 \/index.php(25): require_once('...')"
+  },
+  {
+    "severity": "ERROR",
+    "tag": "API",
+    "datetime": "2025-09-19 07:55:22 UTC",
+    "requestId": "1bc99",
+    "message": "#15 \/core\/dispatch.php(33): Piwik\\FrontController->dispatch()"
+  },
+  {
+    "severity": "ERROR",
+    "tag": "API",
+    "datetime": "2025-09-19 07:55:22 UTC",
+    "requestId": "1bc99",
+    "message": "#14 \/core\/FrontController.php(170): Piwik\\FrontController->doDispatch()"
+  },
+  {
+    "severity": "ERROR",
+    "tag": "API",
+    "datetime": "2025-09-19 07:55:22 UTC",
+    "requestId": "1bc99",
+    "message": "#13 \/core\/FrontController.php(646): call_user_func_array()"
+  },
+  {
+    "severity": "ERROR",
+    "tag": "API",
+    "datetime": "2025-09-19 07:55:22 UTC",
+    "requestId": "1bc99",
+    "message": "#12 [internal function]: Piwik\\Plugins\\API\\Controller->index()"
+  },
+  {
+    "severity": "ERROR",
+    "tag": "API",
+    "datetime": "2025-09-19 07:55:22 UTC",
+    "requestId": "1bc99",
+    "message": "#11 \/plugins\/API\/Controller.php(48): Piwik\\API\\Request->process()"
+  },
+  {
+    "severity": "ERROR",
+    "tag": "API",
+    "datetime": "2025-09-19 07:55:22 UTC",
+    "requestId": "1bc99",
+    "message": "#10 \/core\/API\/Request.php(282): Piwik\\Context::executeWithQueryParameters()"
+  },
+  {
+    "severity": "ERROR",
+    "tag": "API",
+    "datetime": "2025-09-19 07:55:22 UTC",
+    "requestId": "1bc99",
+    "message": "#9 \/core\/Context.php(29): Piwik\\API\\Request->{closure:Piwik\\API\\Request::process():282}()"
+  }
+]

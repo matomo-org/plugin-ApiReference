@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<row>
+		<idtriggered>1</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-09-13 01:55:48</ts_triggered>
+		<ts_last_sent>2024-09-13 01:58:54</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>2</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-09-13 01:58:48</ts_triggered>
+		<ts_last_sent>2024-09-13 01:58:54</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>3</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-09-13 02:00:39</ts_triggered>
+		<ts_last_sent>2024-09-13 02:00:46</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>4</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-09-13 02:55:47</ts_triggered>
+		<ts_last_sent>2024-09-13 02:55:53</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>5</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-09-16 23:33:41</ts_triggered>
+		<ts_last_sent />
+		<value_old>500.000</value_old>
+		<value_new>36.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>6</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-09-18 03:21:11</ts_triggered>
+		<ts_last_sent>2024-09-18 03:23:05</ts_last_sent>
+		<value_old>36.000</value_old>
+		<value_new>1.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>9</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-09-18 22:18:55</ts_triggered>
+		<ts_last_sent>2024-09-18 22:19:02</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>12</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-09-26 01:18:30</ts_triggered>
+		<ts_last_sent />
+		<value_old>2.000</value_old>
+		<value_new>1.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>13</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-10-11 02:26:50</ts_triggered>
+		<ts_last_sent />
+		<value_old>1190.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>14</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2024-11-28 20:34:14</ts_triggered>
+		<ts_last_sent />
+		<value_old>2.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>15</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-03-27 03:39:26</ts_triggered>
+		<ts_last_sent>2025-03-27 03:39:26</ts_last_sent>
+		<value_old>4.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>16</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-04-03 20:59:07</ts_triggered>
+		<ts_last_sent>2025-04-03 20:59:07</ts_last_sent>
+		<value_old>243.000</value_old>
+		<value_new>110.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>17</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-05-04 11:31:47</ts_triggered>
+		<ts_last_sent>2025-05-04 11:31:47</ts_last_sent>
+		<value_old>330.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>18</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-05-10 11:31:23</ts_triggered>
+		<ts_last_sent>2025-05-10 11:31:24</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>19</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-05-16 11:31:19</ts_triggered>
+		<ts_last_sent>2025-05-16 11:31:19</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>20</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-05-18 11:31:24</ts_triggered>
+		<ts_last_sent>2025-05-18 11:31:24</ts_last_sent>
+		<value_old>2.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>21</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-05-22 11:31:19</ts_triggered>
+		<ts_last_sent>2025-05-22 11:31:19</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>22</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-05-25 11:31:24</ts_triggered>
+		<ts_last_sent>2025-05-25 11:31:25</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>23</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-05-28 11:31:26</ts_triggered>
+		<ts_last_sent>2025-05-28 11:31:27</ts_last_sent>
+		<value_old>304.000</value_old>
+		<value_new>3.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>24</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-05-29 11:31:25</ts_triggered>
+		<ts_last_sent>2025-05-29 11:31:25</ts_last_sent>
+		<value_old>3.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>25</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-07-06 11:31:34</ts_triggered>
+		<ts_last_sent>2025-07-06 11:31:34</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>26</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-07-16 11:31:35</ts_triggered>
+		<ts_last_sent>2025-07-16 11:31:36</ts_last_sent>
+		<value_old>357.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>27</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-08-02 11:31:41</ts_triggered>
+		<ts_last_sent>2025-08-02 11:31:41</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+	<row>
+		<idtriggered>28</idtriggered>
+		<idalert>2</idalert>
+		<idsite>1</idsite>
+		<ts_triggered>2025-08-09 11:31:44</ts_triggered>
+		<ts_last_sent>2025-08-09 11:31:45</ts_last_sent>
+		<value_old>1.000</value_old>
+		<value_new>0.000</value_new>
+		<name>Test Visit Drop Previous Day</name>
+		<login>someUserName</login>
+		<period>day</period>
+		<report>VisitsSummary_get</report>
+		<report_condition />
+		<report_matched />
+		<report_mediums>
+			<row>email</row>
+		</report_mediums>
+		<metric>nb_uniq_visitors</metric>
+		<metric_condition>percentage_decrease_more_than</metric_condition>
+		<metric_matched>20</metric_matched>
+		<compared_to>1</compared_to>
+		<email_me>1</email_me>
+		<additional_emails>
+		</additional_emails>
+		<phone_numbers>
+		</phone_numbers>
+		<slack_channel_id />
+		<id_sites>
+			<row>1</row>
+		</id_sites>
+	</row>
+</result>

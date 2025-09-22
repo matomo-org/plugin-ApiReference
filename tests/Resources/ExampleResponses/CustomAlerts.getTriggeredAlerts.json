@@ -1,0 +1,698 @@
+[
+  {
+    "idtriggered": 1,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-09-13 01:55:48",
+    "ts_last_sent": "2024-09-13 01:58:54",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 2,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-09-13 01:58:48",
+    "ts_last_sent": "2024-09-13 01:58:54",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 3,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-09-13 02:00:39",
+    "ts_last_sent": "2024-09-13 02:00:46",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 4,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-09-13 02:55:47",
+    "ts_last_sent": "2024-09-13 02:55:53",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 5,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-09-16 23:33:41",
+    "ts_last_sent": null,
+    "value_old": "500.000",
+    "value_new": "36.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 6,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-09-18 03:21:11",
+    "ts_last_sent": "2024-09-18 03:23:05",
+    "value_old": "36.000",
+    "value_new": "1.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 9,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-09-18 22:18:55",
+    "ts_last_sent": "2024-09-18 22:19:02",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 12,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-09-26 01:18:30",
+    "ts_last_sent": null,
+    "value_old": "2.000",
+    "value_new": "1.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 13,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-10-11 02:26:50",
+    "ts_last_sent": null,
+    "value_old": "1190.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 14,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2024-11-28 20:34:14",
+    "ts_last_sent": null,
+    "value_old": "2.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 15,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-03-27 03:39:26",
+    "ts_last_sent": "2025-03-27 03:39:26",
+    "value_old": "4.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 16,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-04-03 20:59:07",
+    "ts_last_sent": "2025-04-03 20:59:07",
+    "value_old": "243.000",
+    "value_new": "110.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 17,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-05-04 11:31:47",
+    "ts_last_sent": "2025-05-04 11:31:47",
+    "value_old": "330.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 18,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-05-10 11:31:23",
+    "ts_last_sent": "2025-05-10 11:31:24",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 19,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-05-16 11:31:19",
+    "ts_last_sent": "2025-05-16 11:31:19",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 20,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-05-18 11:31:24",
+    "ts_last_sent": "2025-05-18 11:31:24",
+    "value_old": "2.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 21,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-05-22 11:31:19",
+    "ts_last_sent": "2025-05-22 11:31:19",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 22,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-05-25 11:31:24",
+    "ts_last_sent": "2025-05-25 11:31:25",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 23,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-05-28 11:31:26",
+    "ts_last_sent": "2025-05-28 11:31:27",
+    "value_old": "304.000",
+    "value_new": "3.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 24,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-05-29 11:31:25",
+    "ts_last_sent": "2025-05-29 11:31:25",
+    "value_old": "3.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 25,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-07-06 11:31:34",
+    "ts_last_sent": "2025-07-06 11:31:34",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 26,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-07-16 11:31:35",
+    "ts_last_sent": "2025-07-16 11:31:36",
+    "value_old": "357.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 27,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-08-02 11:31:41",
+    "ts_last_sent": "2025-08-02 11:31:41",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  },
+  {
+    "idtriggered": 28,
+    "idalert": 2,
+    "idsite": 1,
+    "ts_triggered": "2025-08-09 11:31:44",
+    "ts_last_sent": "2025-08-09 11:31:45",
+    "value_old": "1.000",
+    "value_new": "0.000",
+    "name": "Test Visit Drop Previous Day",
+    "login": "someUserName",
+    "period": "day",
+    "report": "VisitsSummary_get",
+    "report_condition": null,
+    "report_matched": null,
+    "report_mediums": [
+      "email"
+    ],
+    "metric": "nb_uniq_visitors",
+    "metric_condition": "percentage_decrease_more_than",
+    "metric_matched": 20,
+    "compared_to": 1,
+    "email_me": 1,
+    "additional_emails": [],
+    "phone_numbers": [],
+    "slack_channel_id": null,
+    "id_sites": [
+      1
+    ]
+  }
+]
