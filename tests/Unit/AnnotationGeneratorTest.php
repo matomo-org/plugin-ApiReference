@@ -661,8 +661,16 @@ class AnnotationGeneratorTest extends TestCase
 
     public function testBuildSchemaAnnotationFromXmlExample(): void
     {
-        // TODO - buildSchemaAnnotationFromXmlExample method
-        $this->expectNotToPerformAssertions();
+        $normalisedMap = $this->getExampleResponsesMap();
+        $schemasMap = $this->getExampleResponsesMap(true);
+        foreach (self::EXAMPLE_API_ENDPOINTS as $endpoint) {
+            $normalisedString = $normalisedMap[$endpoint]['xml'] ?? '';
+            $this->assertNotEmpty($normalisedString, 'The normalised example response should not be empty for endpoint: ' . $endpoint);
+            $normalisedObject = json_decode($normalisedString, true) ?? [];
+            $this->assertNotEmpty($normalisedObject, 'The decoded example response should not be empty for endpoint: ' . $endpoint);
+            $expected = json_decode($schemasMap[$endpoint]['xml'] ?? '', true) ?? [];
+            $this->assertEquals($expected, $this->annotationGenerator->buildSchemaAnnotationFromXmlExample($normalisedObject), "The XML schema was not as expected for endpoint $endpoint.");
+        }
     }
 
     public function testBuildPropertyAnnotationFromXmlExample(): void
