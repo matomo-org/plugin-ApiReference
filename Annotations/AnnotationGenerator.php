@@ -1275,7 +1275,7 @@ class AnnotationGenerator
 
             // Handle arrays of strings which don't have named properties
             $keys = array_keys($values);
-            if (!is_string(reset($keys))) {
+            if (!is_string(reset($keys)) && !is_array($values)) {
                 $itemProperties = ['type="string"'];
             }
 

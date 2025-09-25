@@ -12,5 +12,9 @@
     "xml": "{\"row\":[{\"value\":\"visit\",\"name\":\"Visit\",\"numSlotsAvailable\":\"15\",\"numSlotsUsed\":\"1\",\"numSlotsLeft\":\"14\",\"supportsExtractions\":\"0\"},{\"value\":\"action\",\"name\":\"Action\",\"numSlotsAvailable\":\"15\",\"numSlotsUsed\":\"5\",\"numSlotsLeft\":\"10\",\"supportsExtractions\":\"1\"}]}",
     "json": "[{\"value\":\"visit\",\"name\":\"Visit\",\"numSlotsAvailable\":15,\"numSlotsUsed\":1,\"numSlotsLeft\":14,\"supportsExtractions\":false},{\"value\":\"action\",\"name\":\"Action\",\"numSlotsAvailable\":15,\"numSlotsUsed\":5,\"numSlotsLeft\":10,\"supportsExtractions\":true}]",
     "tsv": "value\tname\tnumSlotsAvailable\tnumSlotsUsed\tnumSlotsLeft\tsupportsExtractions\nvisit\tVisit\t15\t1\t14\t0\naction\tAction\t15\t5\t10\t1"
+  },
+  "Funnels.testUrlMatchesSteps": {
+    "xml": "{\"url\":\"https:\\/\\/www.example.com\\/path\\/dir\",\"tests\":{\"row\":{\"matches\":\"1\",\"pattern_type\":\"path_contains\",\"pattern\":\"path\\/dir\"}}}",
+    "json": "{\"url\":\"https:\\/\\/www.example.com\\/path\\/dir\",\"tests\":[{\"matches\":true,\"pattern_type\":\"path_contains\",\"pattern\":\"path\\/dir\"}]}"
   }
 }
