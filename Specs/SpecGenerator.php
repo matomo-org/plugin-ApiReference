@@ -41,7 +41,7 @@ class SpecGenerator
         $pluginSpecPath = $pluginSpecDir . '/' . $pluginName . '_v' . $version . '.' . strtolower($format);
         // If the directory doesn't exist yet, create it
         if ($writeToFile && !is_dir($pluginSpecDir)) {
-            mkdir($pluginSpecDir, 0777, true);
+            mkdir($pluginSpecDir, 0775, true);
         }
 
         // Check if the API class has been annotated and use the generated annotations file if it hasn't

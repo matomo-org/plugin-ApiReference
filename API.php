@@ -17,7 +17,7 @@ use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
  *
  * @method static \Piwik\Plugins\OpenApiDocs\API getInstance()
  */
-class API extends \Piwik\Plugin\APICloud.NetPromoterScoreBanner
+class API extends \Piwik\Plugin\API
 {
     /**
      * Get the generated API documentation data for the specified plugin.
