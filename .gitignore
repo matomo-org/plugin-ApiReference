@@ -17,4 +17,5 @@ vendor/**/composer.lock
 !/tmp/specs/.gitkeep
 /tmp/annotations/*
 !/tmp/annotations/.gitkeep
+/tmp/responses/*
 !/tmp/responses/.gitkeep

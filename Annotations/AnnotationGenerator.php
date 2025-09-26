@@ -20,6 +20,8 @@ use Piwik\Piwik;
 use Piwik\Plugin\Manager;
 use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 use Piwik\SettingsPiwik;
+use Piwik\Url;
+use Piwik\UrlHelper;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
 use PHPStan\PhpDocParser\Lexer\Lexer;
@@ -732,13 +734,36 @@ class AnnotationGenerator
      * https://demo.matomo.cloud/?module=API&method=CustomReports.getConfiguredReports&idSite=1&format=xml&token_auth=anonymous
      * @param bool $useLocalToken A boolean indicating whether to get a temporary token and try the request against the
      * currently running Matomo instance.
+     * @param bool $ignoreCached A boolean indicating whether the cached response file should be ignored. Default is
+     * false. This is simply in case we want to replace the existing responses with new ones.
      *
      * @return string The response received from the API endpoint if no error was received or the response wasn't empty.
      * An empty string is returned by default.
      * @throws \Throwable
      */
-    protected function getExampleIfAvailable(string $url, bool $useLocalToken = false): string
+    protected function getExampleIfAvailable(string $url, bool $useLocalToken = false, bool $ignoreCached = false): string
     {
+        $queryString = Url::getQueryStringFromUrl($url);
+        $queryParams = UrlHelper::getArrayFromQueryString($queryString);
+        if (empty($queryParams['method']) || empty($queryParams['format'])) {
+            throw new \Exception('Missing method or format in URL: ' . $url);
+        }
+        $method = $queryParams['method'];
+        $format = strtolower($queryParams['format']);
+        $exampleFilePath = $this->currentPluginDir . OpenApiDocs::EXAMPLE_RESPONSES_PATH . $method . '.' . $format;
+        // If there's already a file, use that instead of making a new server call. Ignore the file when the flag is set.
+        if (!$ignoreCached && file_exists($exampleFilePath)) {
+            $exampleContents = file_get_contents($exampleFilePath);
+            if (!$exampleContents) {
+                throw new \Exception('Error reading example file: ' . $exampleFilePath);
+            }
+
+            if ($format === 'xml') {
+                $exampleContents = json_encode($this->convertExampleXmlToObject($exampleContents));
+            }
+            return $exampleContents;
+        }
+
         // If the flag to use a temp token is set, get a token and update the request URL
         $tempUrl = $url . '&hideIdSubDatable=1';
         if ($useLocalToken) {
@@ -780,8 +805,11 @@ class AnnotationGenerator
         }
         $body = $response['data'];
 
+        // Write the example response to file as a cache and reference.
+        file_put_contents($exampleFilePath, $body);
+
         // Convert the XML responses into a JSON object and then encode it into a string. This is helpful for building schemas.
-        if (stripos($url, 'format=xml') !== false) {
+        if ($format === 'xml') {
             $body = json_encode($this->convertExampleXmlToObject($body));
         }
 
@@ -831,8 +859,8 @@ class AnnotationGenerator
                     $metadata['imageGraphUrl']
                 );
 
-                // If we get a valid response, return the URL
-                if (!empty($this->getExampleIfAvailable('https://demo.matomo.cloud/' . $url))) {
+                // Use the JSON format for the test. If we get a valid response, return the URL without format.
+                if (!empty($this->getExampleIfAvailable('https://demo.matomo.cloud/' . $url . '&format=JSON'))) {
                     return $url;
                 }
             }
