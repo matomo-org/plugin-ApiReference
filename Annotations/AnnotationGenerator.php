@@ -18,6 +18,7 @@ use Piwik\API\Request;
 use Piwik\Http;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
+use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 use Piwik\SettingsPiwik;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
@@ -60,6 +61,11 @@ class AnnotationGenerator
     ];
 
     /**
+     * @var string
+     */
+    protected $currentPluginDir;
+
+    /**
      * @var DocumentationGenerator
      */
     protected $generator;
@@ -78,6 +84,7 @@ class AnnotationGenerator
     {
         $this->generator = $generator;
         $this->missingImportantDataWarnings = [];
+        $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
     }
 
     /**
@@ -87,30 +94,20 @@ class AnnotationGenerator
      * @param string $pluginName The name of the plugin. E.g. TagManager
      * @param bool $writeToFile Indicate whether the results should be written to file. Default is false so that a dry
      * run won't affect the file-system.
-     * @param bool $useTmpDir Indicate whether the file should be written in Matomo's tmp/ directory. The default is
-     * false, meaning that it will be written in the OpenApi/Annotations/ directory of the plugin, creating the
-     * directory if it doesn't already exist. This is useful if we just want a temp file for comparison. like during
-     * testing.
      *
      * @return string[]|array[] The collection of all the lines which make up the generated annotations for the public API
      * endpoints defined by the plugin.
      * @throws \Piwik\Exception\PluginDeactivatedException If the plugin is not activated. It should be loaded.
      * @throws \Throwable
      */
-    public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false, bool $useTmpDir = false): array
+    public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false): array
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
         Manager::getInstance()->checkIsPluginActivated($pluginName);
 
-        $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
-        $rules = require $currentPluginDir . '/Annotations/config.php';
-        $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
-        $pluginAnnotationDir = !$useTmpDir ? $pluginDir . '/OpenApi/Annotations' : PIWIK_INCLUDE_PATH . '/tmp/OpenApi/Annotations';
-        $pluginAnnotationPath = $pluginAnnotationDir . '/GeneratedAnnotations.php';
-        // If the directory doesn't exist yet, create it
-        if ($writeToFile && !is_dir($pluginAnnotationDir)) {
-            mkdir($pluginAnnotationDir, 0777, true);
-        }
+        $rules = require $this->currentPluginDir . '/Annotations/config.php';
+        $pluginAnnotationDir = $this->currentPluginDir . OpenApiDocs::GENERATED_ANNOTATIONS_PATH;
+        $pluginAnnotationPath = $pluginAnnotationDir . "/{$pluginName}GeneratedAnnotations.php";
 
         $className = Request::getClassNameAPI($pluginName);
 
@@ -123,7 +120,17 @@ class AnnotationGenerator
         Proxy::getInstance()->registerClass($className);
         $pluginMetadata = Proxy::getInstance()->getMetadata()[$className] ?? [];
 
-        $annotations = [];
+        $annotations = [[sprintf('@OA\Tag(name="%s")', $pluginName)]];
+        // I decided to not include the description in the tag annotation so that it automatically pulls the API class comment as the description.
+//        if (!empty($pluginMetadata['__documentation'])) {
+//            $tagLines = $this->buildLinesForAnnotationObject('@OA\Tag', [
+//                sprintf('name="%s"', $pluginName),
+//                sprintf('description="%s"', $this->normaliseDescriptionText($pluginMetadata['__documentation'])),
+//            ]);
+//            $this->removeTrailingCommaFromLastLine($tagLines);
+//            $annotations[] = $tagLines;
+//        }
+
         foreach (array_keys($pluginMetadata) as $metadataMethod) {
             if (!$reflectionClass->hasMethod($metadataMethod)) {
                 continue;
@@ -179,7 +186,7 @@ class AnnotationGenerator
         $lines = [
             '<?php',
             '',
-            'namespace Piwik\\Plugins\\' . $pluginName . '\\OpenApi\\Annotations;',
+            'namespace Piwik\\Plugins\\OpenApiDocs\\tmp\\annotations;',
             '',
             '/**',
         ];
@@ -192,7 +199,7 @@ class AnnotationGenerator
 
         $lines = array_merge($lines, [
             ' */',
-            'class GeneratedAnnotations',
+            "class {$pluginName}GeneratedAnnotations",
             '{',
             '',
             '}',
@@ -412,8 +419,7 @@ class AnnotationGenerator
         }
 
         // Clean up the descriptions a little more like removing linebreaks and escaping double-quotes
-        $description = str_replace("\n", ' ', $description);
-        $description = str_replace('"', '""', $description);
+        $description = $this->normaliseDescriptionText($description);
 
         return [
             'name' => $paramName,
@@ -423,6 +429,20 @@ class AnnotationGenerator
             'default' => !$isRequired ? json_encode($paramMetadata['default']) : NoDefaultValue::class,
             'example' => $example,
         ];
+    }
+
+    /**
+     * Take description text and normalise it. This includes trimming surrounding whitespace, removing newlines and
+     * escaping double-quote characters.
+     *
+     * @param string $description
+     *
+     * @return string
+     */
+    protected function normaliseDescriptionText(string $description): string
+    {
+        $description = str_replace("\n", ' ', trim($description));
+        return str_replace('"', '""', $description);
     }
 
     /**

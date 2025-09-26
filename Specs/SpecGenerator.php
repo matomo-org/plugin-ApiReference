@@ -30,6 +30,17 @@ class SpecGenerator
         }
     }
 
+    /**
+     * Generate an OpenAPI spec for a single plugin.
+     *
+     * @param string $pluginName
+     * @param string $format
+     * @param string $version
+     * @param bool $writeToFile
+     *
+     * @return string
+     * @throws \Exception
+     */
     public function generatePluginDoc(string $pluginName, string $format = 'json', string $version = OpenApiDocs::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
@@ -37,6 +48,19 @@ class SpecGenerator
         return $this->generateSpec(explode(',', $pluginName), $format, $version, $writeToFile);
     }
 
+    /**
+     * Generate an OpenAPI spec for one or more plugins.
+     *
+     * @param array $pluginNames
+     * @param string $format
+     * @param string $version
+     * @param bool $writeToFile
+     *
+     * @return string
+     * @throws \Piwik\Exception\DI\DependencyException
+     * @throws \Piwik\Exception\DI\NotFoundException
+     * @throws \Piwik\Exception\PluginDeactivatedException
+     */
     public function generateSpec(array $pluginNames, string $format = 'json', string $version = OpenApiDocs::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
     {
         BaseValidator::check('pluginNames', $pluginNames, [new NotEmpty()]);
