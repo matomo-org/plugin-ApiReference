@@ -752,16 +752,18 @@ class AnnotationGenerator
         $format = strtolower($queryParams['format']);
         $exampleFilePath = $this->currentPluginDir . OpenApiDocs::EXAMPLE_RESPONSES_PATH . $method . '.' . $format;
         // If there's already a file, use that instead of making a new server call. Ignore the file when the flag is set.
-        if (!$ignoreCached && file_exists($exampleFilePath)) {
-            $exampleContents = file_get_contents($exampleFilePath);
-            if (!$exampleContents) {
-                throw new \Exception('Error reading example file: ' . $exampleFilePath);
+        if (!$ignoreCached) {
+            // If an example file is found, return its contents instead of making the server call.
+            [$pluginName, $methodName] = explode('.', $method);
+            $exampleContents = $this->getCachedExampleResponseFile($pluginName, $methodName, $format);
+            if (!empty($exampleContents)) {
+                return $exampleContents;
             }
+        }
 
-            if ($format === 'xml') {
-                $exampleContents = json_encode($this->convertExampleXmlToObject($exampleContents));
-            }
-            return $exampleContents;
+        // Include a specific parameter for the TSV requests.
+        if ($format === 'tsv') {
+            $url .= '&convertToUnicode=0';
         }
 
         // If the flag to use a temp token is set, get a token and update the request URL
@@ -814,6 +816,46 @@ class AnnotationGenerator
         }
 
         return $body;
+    }
+
+    /**
+     * Try looking up the cached example response file for a specific plugin and method. If not found, it returns an
+     * empty string.
+     *
+     * @param string $pluginName The name of the plugin. E.g. TagManager.
+     * @param string $methodName The name of the plugin specific API method. E.g. getCustomReport.
+     * @param string $format The format of the file. E.g. json, xml, or tsv
+     * @param bool $rawResult Optional flag to indicate whether to return the raw file contents or do some processing.
+     * The default is false. If false and XML format, the content will be converted into a JSON string.
+     * @param bool $applyMaxLength Optional flag to indicate whether to truncate the example if it exceeds the max
+     * characters allowed. The default is true. It only applies if rawResult is false.
+     *
+     * @return string The contents of the example file or empty if it wasn't found.
+     * @throws \Exception
+     */
+    protected function getCachedExampleResponseFile(string $pluginName, string $methodName, string $format, bool $rawResult = false, bool $applyMaxLength = true): string
+    {
+        $exampleFilePath = $this->currentPluginDir . OpenApiDocs::EXAMPLE_RESPONSES_PATH . $pluginName . '.' . $methodName . '.' . $format;
+        // If there's already a file, use that instead of making a new server call. Ignore the file when the flag is set.
+        if (!file_exists($exampleFilePath)) {
+            return '';
+        }
+
+        $exampleContents = file_get_contents($exampleFilePath);
+        if (!$exampleContents) {
+            throw new \Exception('Error reading example file: ' . $exampleFilePath);
+        }
+
+        if (!$rawResult && $format === 'xml') {
+            $exampleContents = json_encode($this->convertExampleXmlToObject($exampleContents));
+        }
+
+        // Unless set otherwise, make sure that the example is around the max allowed characters. If raw, don't bother.
+        if (!$rawResult && $applyMaxLength && strlen($exampleContents) > self::EXAMPLE_CHAR_LIMIT) {
+            $exampleContents = $this->cutExampleCloseToCharLimit($exampleContents, $format);
+        }
+
+        return $exampleContents;
     }
 
     /**
@@ -986,35 +1028,15 @@ class AnnotationGenerator
 
         $mediaTypes = [];
         // This simply reuses the example URLs used by the current documentation, but some endpoints don't work because authentication is required
-        // TODO - Come up with a way to demo examples for endpoints which require authentication. E.g. hit a live endpoint server-side and replace any potentially sensitive data...
         $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method, $paramsData);
         foreach ($exampleUrls as $type => $url) {
-            $contentType = $type === 'json' ? 'application/json' : ($type === 'xml' ? 'text/xml' : 'application/vnd.ms-excel');
-            if ($type === 'tsv') {
-                $url .= '&convertToUnicode=0';
-            }
             $exampleValue = $this->getExampleIfAvailable($url);
-            // If the example lookup failed, try making the same request locally
-            $isLocalExample = false;
+            // If the example lookup failed, try making the same request locally using a temporary token.
             if (empty($exampleValue)) {
                 $exampleValue = $this->getExampleIfAvailable($url, true);
-                $isLocalExample = true;
             }
             if (strlen($exampleValue) > self::EXAMPLE_CHAR_LIMIT) {
                 $exampleValue = $this->cutExampleCloseToCharLimit($exampleValue, $type);
-            }
-            $jsonSchema = $type === 'json' ? $this->buildSchemaAnnotationFromJsonExample(json_decode($exampleValue, true) ?? []) : [];
-            $xmlSchema = $type === 'xml' ? $this->buildSchemaAnnotationFromXmlExample(json_decode($exampleValue, true) ?? []) : [];
-            // Make sure that the local example doesn't have anything bad in it
-            if ($isLocalExample) {
-                // TODO - Obfuscate any potentially sensitive data
-            }
-
-            if (in_array($type, ['json', 'xml'])) {
-                // The annotation expects objects and not arrays, so replace [] with {}
-                $exampleValue = str_replace(['[', ']'], ['{', '}'], $exampleValue);
-                // Escape quotes differently for the annotation examples
-                $exampleValue = str_replace('\"', '""', $exampleValue);
             }
 
             // Skip if there was no example response
@@ -1022,27 +1044,25 @@ class AnnotationGenerator
                 continue;
             }
 
-            $mediaType = [
-                'mediaType="' . $contentType . '"',
-            ];
-            if ($type !== 'tsv') {
-                $mediaType[] = 'example=' . $exampleValue;
-            }
-            // If a type was found, add it as a schema to the media type
-            if ($type === 'json') {
-                $responseSchema = !empty($jsonSchema) ? $jsonSchema : ($responseSchema ?: []);
-                $mediaType = array_merge($mediaType, $responseSchema);
-            }
-            if ($type === 'tsv') {
-                // Escape quotes differently for the annotation examples
-                $exampleValue = str_replace('"', '""', $exampleValue);
-                $mediaType[] = 'example="' . $exampleValue . '"';
-            }
-            if ($type === 'xml') {
-                $mediaType = array_merge($mediaType, $xmlSchema);
-            }
-            $mediaTypes[] = $mediaType;
+            $mediaTypes[] = $this->buildMediaTypePropertiesArray($type, $exampleValue, $responseSchema);
         }
+
+        // Check if any example files exist even though there aren't any example URLs
+        if (empty($mediaTypes)) {
+            $jsonExample = $this->getCachedExampleResponseFile($plugin, $method, 'json');
+            $xmlExample = $this->getCachedExampleResponseFile($plugin, $method, 'xml');
+            $jsonType = $this->buildMediaTypePropertiesArray('json', $jsonExample, $responseSchema);
+            $xmlType = $this->buildMediaTypePropertiesArray('xml', $xmlExample, $responseSchema);
+
+            // Check and add XML first since it's added first everywhere else
+            if (!empty($xmlExample) && !empty($xmlType)) {
+                $mediaTypes[] = $xmlType;
+            }
+            if (!empty($jsonExample) && !empty($jsonType)) {
+                $mediaTypes[] = $jsonType;
+            }
+        }
+
         if (!empty($mediaTypes)) {
             $successArray['mediaTypes'] = $mediaTypes;
 
@@ -1078,6 +1098,43 @@ class AnnotationGenerator
         }
 
         return $responses;
+    }
+
+    protected function buildMediaTypePropertiesArray(string $format, string $exampleValue, array $responseSchema = []): array
+    {
+        $contentType = $format === 'json' ? 'application/json' : ($format === 'xml' ? 'text/xml' : 'application/vnd.ms-excel');
+
+        $jsonSchema = $format === 'json' ? $this->buildSchemaAnnotationFromJsonExample(json_decode($exampleValue, true) ?? []) : [];
+        $xmlSchema = $format === 'xml' ? $this->buildSchemaAnnotationFromXmlExample(json_decode($exampleValue, true) ?? []) : [];
+
+        if (in_array($format, ['json', 'xml'])) {
+            // The annotation expects objects and not arrays, so replace [] with {}
+            $exampleValue = str_replace(['[', ']'], ['{', '}'], $exampleValue);
+            // Escape quotes differently for the annotation examples
+            $exampleValue = str_replace('\"', '""', $exampleValue);
+        }
+
+        $mediaType = [
+            'mediaType="' . $contentType . '"',
+        ];
+        if ($format !== 'tsv') {
+            $mediaType[] = 'example=' . $exampleValue;
+        }
+        // If a type was found, add it as a schema to the media type
+        if ($format === 'json') {
+            $responseSchema = !empty($jsonSchema) ? $jsonSchema : ($responseSchema ?: []);
+            $mediaType = array_merge($mediaType, $responseSchema);
+        }
+        if ($format === 'tsv') {
+            // Escape quotes differently for the annotation examples
+            $exampleValue = str_replace('"', '""', $exampleValue);
+            $mediaType[] = 'example="' . $exampleValue . '"';
+        }
+        if ($format === 'xml') {
+            $mediaType = array_merge($mediaType, $xmlSchema);
+        }
+
+        return $mediaType;
     }
 
     /**
@@ -1323,7 +1380,7 @@ class AnnotationGenerator
 
             // Handle arrays of strings which don't have named properties
             $keys = array_keys($values);
-            if (!is_string(reset($keys)) && !is_array($values)) {
+            if (!is_string(reset($keys)) && count($values) === 1) {
                 $itemProperties = ['type="string"'];
             }
 
