@@ -1100,6 +1100,16 @@ class AnnotationGenerator
         return $responses;
     }
 
+    /**
+     * Build the array of properties making up a media type annotation object to be included in a response annotation
+     * object. The is for when we can provide examples for specific formats, like XML, JSON, and TSV.
+     *
+     * @param string $format The format of the example. E.g. xml, json, or tsv.
+     * @param string $exampleValue The example value, which can be a JSON string.
+     * @param array $responseSchema The default schema, like GenericArray or GenericInteger responses.
+     *
+     * @return string[]
+     */
     protected function buildMediaTypePropertiesArray(string $format, string $exampleValue, array $responseSchema = []): array
     {
         $contentType = $format === 'json' ? 'application/json' : ($format === 'xml' ? 'text/xml' : 'application/vnd.ms-excel');
