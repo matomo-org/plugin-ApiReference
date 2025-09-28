@@ -533,7 +533,7 @@ class AnnotationGenerator
             $customParamData = $this->buildParameterAnnotationData($method, $name, $paramMetadata, $paramInfo);
             if (empty($customParamData['description']) && in_array($name, self::GLOBAL_PARAMETER_NAMES)) {
                 $globalParamSuffix = $customParamData['required'] === 'true' ? 'Required' : 'Optional';
-                $refs[] = '#/components/parameters/' . $name . $globalParamSuffix;
+                $customParams[] = '#/components/parameters/' . $name . $globalParamSuffix;
                 $this->removeMissingImportantDataWarning($method, $name);
                 continue;
             }
@@ -628,6 +628,11 @@ class AnnotationGenerator
         $parametersToReplace = [];
         if (!empty($paramsData['custom'])) {
             foreach ($paramsData['custom'] as $customParam) {
+                // Skip any which might be references.
+                if (!is_array($customParam)) {
+                    continue;
+                }
+
                 $paramName = strval($customParam['name']);
                 if (isset($customParam['example']) && $customParam['example'] !== '') {
                     $example = $customParam['example'];
@@ -1594,6 +1599,15 @@ class AnnotationGenerator
             $operationValuesMap[] = '@OA\Parameter(ref="' . $ref . '")';
         }
         foreach ($params['custom'] ?? [] as $param) {
+            if (!is_array($param)) {
+                if (!is_string($param) || stripos($param, '#/components/parameters/') === false) {
+                    throw new \Exception('Invalid custom param: ' . strval($param));
+                }
+
+                $operationValuesMap[] = '@OA\Parameter(ref="' . $param . '")';
+                continue;
+            }
+
             $paramMap = [
                 'name="' . $param['name'] . '"',
                 'in="query"',
