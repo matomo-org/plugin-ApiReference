@@ -533,8 +533,13 @@ class AnnotationGenerator
             $customParamData = $this->buildParameterAnnotationData($method, $name, $paramMetadata, $paramInfo);
             if (empty($customParamData['description']) && in_array($name, self::GLOBAL_PARAMETER_NAMES)) {
                 $globalParamSuffix = $customParamData['required'] === 'true' ? 'Required' : 'Optional';
-                $customParams[] = '#/components/parameters/' . $name . $globalParamSuffix;
+                $paramRef = '#/components/parameters/' . $name . $globalParamSuffix;
+                $customParams[] = $paramRef;
                 $this->removeMissingImportantDataWarning($method, $name);
+                // Remove any duplicates from the global references array.
+                if (count($refs) > 0 && in_array($paramRef, $refs)) {
+                    $refs = array_diff($refs, [$paramRef]);
+                }
                 continue;
             }
 
