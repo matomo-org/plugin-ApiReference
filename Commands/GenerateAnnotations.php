@@ -77,7 +77,10 @@ class GenerateAnnotations extends ConsoleCommand
             return self::FAILURE;
         }
 
-        $plugin = $input->getOption('plugin') ?: 'Matomo';
+        $plugin = $input->getOption('plugin');
+        if (empty($plugin)) {
+            throw new \RuntimeException('Please specify a plugin name.');
+        }
         $notDryRun = $input->getOption('not-dry-run') ?: false;
 
         $output->writeln(sprintf('<info>Generating annotations for: %s</info>', $plugin));
@@ -85,7 +88,7 @@ class GenerateAnnotations extends ConsoleCommand
         $result = (StaticContainer::get(AnnotationGenerator::class))->generatePluginApiAnnotations($plugin, $notDryRun);
 
         if ($notDryRun) {
-            $output->writeln('<info>Results written to ' . $plugin . ' plugin\'s /OpenApi/Annotations directory.</info>');
+            $output->writeln('<info>Results written to plugins/OpenApiDocs/tmp/annotations/ directory.</info>');
 
             return $result ? self::SUCCESS : self::FAILURE;
         }
