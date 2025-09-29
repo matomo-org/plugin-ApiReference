@@ -73,7 +73,10 @@ class GenerateSpecFile extends ConsoleCommand
         $input = $this->getInput();
         $output = $this->getOutput();
 
-        $plugin = $input->getOption('plugin') ?: 'Matomo';
+        $plugin = $input->getOption('plugin');
+        if (empty($plugin)) {
+            throw new \RuntimeException('Please specify a plugin name.');
+        }
         $format = $input->getOption('format') ?: 'json';
         $version = $input->getOption('version') ?: '1.0.0';
         $notDryRun = $input->getOption('not-dry-run') ?: false;
@@ -85,7 +88,7 @@ class GenerateSpecFile extends ConsoleCommand
         $result = (new SpecGenerator())->generatePluginDoc($plugin, $format, $version, $notDryRun);
 
         if ($notDryRun) {
-            $output->writeln('<info>Results written to ' . $plugin . ' plugin\'s /OpenApi/Specs directory.</info>');
+            $output->writeln('<info>Results written to plugins/OpenApiDocs/tmp/specs/ directory.</info>');
 
             return $result ? self::SUCCESS : self::FAILURE;
         }
