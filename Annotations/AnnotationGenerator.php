@@ -393,7 +393,9 @@ class AnnotationGenerator
         }
         $typesMap = [];
         // Check for pipes and try to list possible types
-        $typeHints = array_map(function ($typeHint) { return trim($typeHint); }, explode('|', $type));
+        $typeHints = array_map(function ($typeHint) {
+            return trim($typeHint);
+        }, explode('|', $type));
         // If there's more than 1 type hinted and one is bool, remove bool. This is because many params default to false regardless of expected type
         if (count($typeHints) > 1 && in_array('bool', $typeHints)) {
             $typeHints = array_diff($typeHints, ['bool']);

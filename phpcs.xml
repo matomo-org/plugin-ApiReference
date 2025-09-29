@@ -9,6 +9,7 @@
 
     <exclude-pattern>tests/javascript/*</exclude-pattern>
     <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/tmp/*</exclude-pattern>
 
     <rule ref="Matomo"></rule>
 
