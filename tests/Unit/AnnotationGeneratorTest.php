@@ -442,6 +442,56 @@ class AnnotationGeneratorTest extends TestCase
             'default' => 'Piwik\API\NoDefaultValue',
             'example' => '',
         ]];
+        yield 'should show one type when docInfo has two types and one is bool' => ['someParam', [], [
+            'type' => 'string|bool',
+        ], [
+            'name' => 'someParam',
+            'types' => ['string' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
+        yield 'should remove bool type when docInfo has more than 2 types and one is bool' => ['someParam', [], [
+            'type' => 'string|int|bool',
+        ], [
+            'name' => 'someParam',
+            'types' => ['string' => null, 'integer' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
+        yield 'should remove bool type regardless of spacing around pipe' => ['someParam', [], [
+            'type' => 'string | int | bool',
+        ], [
+            'name' => 'someParam',
+            'types' => ['string' => null, 'integer' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
+        yield 'should remove bool type regardless of spacing and order' => ['someParam', [], [
+            'type' => 'bool | string',
+        ], [
+            'name' => 'someParam',
+            'types' => ['string' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
+        yield 'should remove bool type even when type hints are wrapped by parenthesis' => ['someParam', [], [
+            'type' => '(bool | string)',
+        ], [
+            'name' => 'someParam',
+            'types' => ['string' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
         yield 'should allow multiple types when metadata type is string' => ['someParam', [
             'type' => 'string',
         ], [
@@ -452,6 +502,31 @@ class AnnotationGeneratorTest extends TestCase
             'description' => '',
             'required' => 'true',
             'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
+        yield 'should allow multiple types when metadata type is bool and doc type is piped' => ['someParam', [
+            'type' => 'bool',
+        ], [
+            'type' => 'string|int|bool',
+        ], [
+            'name' => 'someParam',
+            'types' => ['string' => null, 'integer' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
+        yield 'should allow multiple types when metadata type is bool and doc type is piped even if default is bool' => ['someParam', [
+            'type' => 'bool',
+            'default' => false,
+        ], [
+            'type' => 'string|int|bool',
+        ], [
+            'name' => 'someParam',
+            'types' => ['string' => null, 'integer' => null],
+            'description' => '',
+            'required' => 'false',
+            'default' => 'false',
             'example' => '',
         ]];
         yield 'should not allow multiple types when metadata type is specified' => ['someParam', [

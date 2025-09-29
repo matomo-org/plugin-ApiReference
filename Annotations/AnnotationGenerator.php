@@ -370,7 +370,7 @@ class AnnotationGenerator
      * block, the type is specified as a 'types' array even if there's only one type. E.g.
      * [
      *     'name' => 'idSite',
-     *     'types' => ['integer', 'string'],
+     *     'types' => ['integer' => null, 'string' => null],
      *     'description' => 'The ID of the site.',
      *     'required' => 'true', // It's a string here, but gets converted to boolean in the annotation.
      *     'default' => '\Piwik\API\NoDefaultValue', // This class name indicates no default value since falsy values might be valid.
@@ -384,14 +384,21 @@ class AnnotationGenerator
             $this->addMissingImportantDataWarning($methodName, $paramName, 'Type is not specified in comment block.');
         }
         $metaType = strtolower(trim($paramMetadata['type'] ?? $docType));
-        $type = $metaType === 'string' && $docType !== 'string' ? $docType : $metaType;
+        $type = in_array($metaType, ['string', 'bool']) && !empty($docType) && $docType !== $metaType ? $docType : $metaType;
+        // Sometimes, doc-block can wrap type hinting with parenthesis. Remove them.
+        $type = trim($type, '()');
         // If the signature type is array, but the type hinting provides more, use that instead
         if ($type === 'array' && strpos($docType, '[]') !== false && strpos($docType, '|') === false) {
             $type = $docType;
         }
         $typesMap = [];
         // Check for pipes and try to list possible types
-        foreach (explode('|', $type) as $typePart) {
+        $typeHints = array_map(function ($typeHint) { return trim($typeHint); }, explode('|', $type));
+        // If there's more than 1 type hinted and one is bool, remove bool. This is because many params default to false regardless of expected type
+        if (count($typeHints) > 1 && in_array('bool', $typeHints)) {
+            $typeHints = array_diff($typeHints, ['bool']);
+        }
+        foreach ($typeHints as $typePart) {
             $typePart = trim($typePart, ' ()');
             $normalisedType = $this->getOpenApiTypeFromPhpType($typePart);
             // If the type is array, check if there's a subType
@@ -846,7 +853,7 @@ class AnnotationGenerator
     protected function getCachedExampleResponseFile(string $pluginName, string $methodName, string $format, bool $rawResult = false, bool $applyMaxLength = true): string
     {
         $exampleFilePath = $this->currentPluginDir . OpenApiDocs::EXAMPLE_RESPONSES_PATH . $pluginName . '.' . $methodName . '.' . $format;
-        // If there's already a file, use that instead of making a new server call. Ignore the file when the flag is set.
+        // Simply return an empty string if the file doesn't exist yet.
         if (!file_exists($exampleFilePath)) {
             return '';
         }
