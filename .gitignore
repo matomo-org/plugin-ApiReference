@@ -13,3 +13,9 @@ vendor/**/composer.lock
 /vue/dist/*.common.js
 /vue/dist/*.map
 /vue/dist/*.development.*
+/tmp/specs/*
+!/tmp/specs/.gitkeep
+/tmp/annotations/*
+!/tmp/annotations/.gitkeep
+/tmp/responses/*
+!/tmp/responses/.gitkeep

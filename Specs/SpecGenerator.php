@@ -15,7 +15,7 @@ use Piwik\Container\StaticContainer;
 use Piwik\Log\LoggerInterface;
 use Piwik\Log\NullLogger;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
+use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 use Piwik\SettingsPiwik;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
@@ -30,46 +30,72 @@ class SpecGenerator
         }
     }
 
-    public function generatePluginDoc(string $pluginName, string $format = 'json', string $version = '1.0.0', bool $writeToFile = false): string
+    /**
+     * Generate an OpenAPI spec for a single plugin.
+     *
+     * @param string $pluginName
+     * @param string $format
+     * @param string $version
+     * @param bool $writeToFile
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function generatePluginDoc(string $pluginName, string $format = 'json', string $version = OpenApiDocs::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
-        Manager::getInstance()->checkIsPluginActivated($pluginName);
 
+        return $this->generateSpec(explode(',', $pluginName), $format, $version, $writeToFile);
+    }
+
+    /**
+     * Generate an OpenAPI spec for one or more plugins.
+     *
+     * @param array $pluginNames
+     * @param string $format
+     * @param string $version
+     * @param bool $writeToFile
+     *
+     * @return string
+     * @throws \Piwik\Exception\DI\DependencyException
+     * @throws \Piwik\Exception\DI\NotFoundException
+     * @throws \Piwik\Exception\PluginDeactivatedException
+     */
+    public function generateSpec(array $pluginNames, string $format = 'json', string $version = OpenApiDocs::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
+    {
+        BaseValidator::check('pluginNames', $pluginNames, [new NotEmpty()]);
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
-        $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
-        $pluginSpecDir = $pluginDir . '/OpenApi/Specs';
-        $pluginSpecPath = $pluginSpecDir . '/' . $pluginName . '_v' . $version . '.' . strtolower($format);
-        // If the directory doesn't exist yet, create it
-        if ($writeToFile && !is_dir($pluginSpecDir)) {
-            mkdir($pluginSpecDir, 0777, true);
-        }
 
-        // Check if the API class has been annotated and use the generated annotations file if it hasn't
-        $pluginAnnotationsSource = $pluginDir . '/API.php';
-        $openapi = (new Generator(StaticContainer::get(NullLogger::class)))->generate([
-            $pluginAnnotationsSource,
-        ]);
-        if (trim($openapi->toYaml()) === 'openapi: ' . OpenApi::DEFAULT_VERSION) {
-            $pluginAnnotationDir = $pluginDir . '/OpenApi/Annotations';
-            $pluginAnnotationPath = $pluginAnnotationDir . '/GeneratedAnnotations.php';
-            $pluginAnnotationsSource = $pluginAnnotationPath;
-            // If the generated file doesn't exist yet, generate one
-            if (!is_dir($pluginAnnotationDir) || !file_exists($pluginAnnotationPath)) {
-                (StaticContainer::get(AnnotationGenerator::class))->generatePluginApiAnnotations($pluginName, true);
+        $pluginDirs = [];
+        foreach ($pluginNames as $pluginName) {
+            BaseValidator::check('pluginName', $pluginName, [new NotEmpty()]);
+            Manager::getInstance()->checkIsPluginActivated($pluginName);
+
+            $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
+            $pluginAnnotationsSource = $pluginDir . '/API.php';
+            $openapi = (new Generator(StaticContainer::get(NullLogger::class)))->generate([
+                $pluginAnnotationsSource,
+            ]);
+            if (trim($openapi->toYaml()) === 'openapi: ' . OpenApi::DEFAULT_VERSION) {
+                throw new \Exception("The $pluginName plugin's API class does not appear to be annotated yet.");
             }
+            $pluginDirs[$pluginName] = $pluginAnnotationsSource;
         }
 
         $generator = new Generator(StaticContainer::get(LoggerInterface::class));
-
-        $openapi = $generator->generate([
+        $openapi = $generator->generate(array_merge([
             $currentPluginDir . '/Annotations/GlobalApiComponents.php',
-            $pluginAnnotationsSource,
-        ]);
+        ], $pluginDirs));
 
-        // Update title with plugin name
-        $openapi->info->title .= ' for ' . $pluginName . ' plugin';
+        $specFileBaseName = 'matomo';
+        // If there's only one plugin, name the spec after the plugin
+        if (count($pluginNames) === 1) {
+            // Update title with plugin name
+            $openapi->info->title .= ' for ' . $pluginNames[0] . ' plugin';
+            $specFileBaseName = $pluginNames[0];
+        }
 
-        $openapi->info->version = $version ?: '1.0.0';
+        $openapi->info->version = $version ?: OpenApiDocs::DEFAULT_SPEC_VERSION;
 
         // Remove the current server so that it isn't used when saving the spec file. It should only leave demo
         if ($writeToFile && is_array($openapi->servers) && count($openapi->servers) > 1) {
@@ -77,8 +103,10 @@ class SpecGenerator
             $openapi->servers = array_values($openapi->servers);
         }
 
-        $specContents = strtolower($format) === 'yaml' ? $openapi->toYaml() : $openapi->toJson();
+        $lowercaseFormat = strtolower($format);
+        $specContents = $lowercaseFormat === 'yaml' ? $openapi->toYaml() : $openapi->toJson();
         if ($writeToFile) {
+            $pluginSpecPath = $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . $specFileBaseName . '_openapi_spec_v' . $version . '.' . $lowercaseFormat;
             file_put_contents($pluginSpecPath, $specContents);
         }
 

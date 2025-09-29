@@ -18,7 +18,10 @@ use Piwik\API\Request;
 use Piwik\Http;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
+use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 use Piwik\SettingsPiwik;
+use Piwik\Url;
+use Piwik\UrlHelper;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
 use PHPStan\PhpDocParser\Lexer\Lexer;
@@ -60,6 +63,11 @@ class AnnotationGenerator
     ];
 
     /**
+     * @var string
+     */
+    protected $currentPluginDir;
+
+    /**
      * @var DocumentationGenerator
      */
     protected $generator;
@@ -78,6 +86,7 @@ class AnnotationGenerator
     {
         $this->generator = $generator;
         $this->missingImportantDataWarnings = [];
+        $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
     }
 
     /**
@@ -87,30 +96,20 @@ class AnnotationGenerator
      * @param string $pluginName The name of the plugin. E.g. TagManager
      * @param bool $writeToFile Indicate whether the results should be written to file. Default is false so that a dry
      * run won't affect the file-system.
-     * @param bool $useTmpDir Indicate whether the file should be written in Matomo's tmp/ directory. The default is
-     * false, meaning that it will be written in the OpenApi/Annotations/ directory of the plugin, creating the
-     * directory if it doesn't already exist. This is useful if we just want a temp file for comparison. like during
-     * testing.
      *
      * @return string[]|array[] The collection of all the lines which make up the generated annotations for the public API
      * endpoints defined by the plugin.
      * @throws \Piwik\Exception\PluginDeactivatedException If the plugin is not activated. It should be loaded.
      * @throws \Throwable
      */
-    public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false, bool $useTmpDir = false): array
+    public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false): array
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
         Manager::getInstance()->checkIsPluginActivated($pluginName);
 
-        $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
-        $rules = require $currentPluginDir . '/Annotations/config.php';
-        $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
-        $pluginAnnotationDir = !$useTmpDir ? $pluginDir . '/OpenApi/Annotations' : PIWIK_INCLUDE_PATH . '/tmp/OpenApi/Annotations';
-        $pluginAnnotationPath = $pluginAnnotationDir . '/GeneratedAnnotations.php';
-        // If the directory doesn't exist yet, create it
-        if ($writeToFile && !is_dir($pluginAnnotationDir)) {
-            mkdir($pluginAnnotationDir, 0777, true);
-        }
+        $rules = require $this->currentPluginDir . '/Annotations/config.php';
+        $pluginAnnotationDir = $this->currentPluginDir . OpenApiDocs::GENERATED_ANNOTATIONS_PATH;
+        $pluginAnnotationPath = $pluginAnnotationDir . "/{$pluginName}GeneratedAnnotations.php";
 
         $className = Request::getClassNameAPI($pluginName);
 
@@ -123,7 +122,17 @@ class AnnotationGenerator
         Proxy::getInstance()->registerClass($className);
         $pluginMetadata = Proxy::getInstance()->getMetadata()[$className] ?? [];
 
-        $annotations = [];
+        $annotations = [[sprintf('@OA\Tag(name="%s")', $pluginName)]];
+        // I decided to not include the description in the tag annotation so that it automatically pulls the API class comment as the description.
+//        if (!empty($pluginMetadata['__documentation'])) {
+//            $tagLines = $this->buildLinesForAnnotationObject('@OA\Tag', [
+//                sprintf('name="%s"', $pluginName),
+//                sprintf('description="%s"', $this->normaliseDescriptionText($pluginMetadata['__documentation'])),
+//            ]);
+//            $this->removeTrailingCommaFromLastLine($tagLines);
+//            $annotations[] = $tagLines;
+//        }
+
         foreach (array_keys($pluginMetadata) as $metadataMethod) {
             if (!$reflectionClass->hasMethod($metadataMethod)) {
                 continue;
@@ -179,7 +188,7 @@ class AnnotationGenerator
         $lines = [
             '<?php',
             '',
-            'namespace Piwik\\Plugins\\' . $pluginName . '\\OpenApi\\Annotations;',
+            'namespace Piwik\\Plugins\\OpenApiDocs\\tmp\\annotations;',
             '',
             '/**',
         ];
@@ -192,7 +201,7 @@ class AnnotationGenerator
 
         $lines = array_merge($lines, [
             ' */',
-            'class GeneratedAnnotations',
+            "class {$pluginName}GeneratedAnnotations",
             '{',
             '',
             '}',
@@ -361,7 +370,7 @@ class AnnotationGenerator
      * block, the type is specified as a 'types' array even if there's only one type. E.g.
      * [
      *     'name' => 'idSite',
-     *     'types' => ['integer', 'string'],
+     *     'types' => ['integer' => null, 'string' => null],
      *     'description' => 'The ID of the site.',
      *     'required' => 'true', // It's a string here, but gets converted to boolean in the annotation.
      *     'default' => '\Piwik\API\NoDefaultValue', // This class name indicates no default value since falsy values might be valid.
@@ -375,14 +384,23 @@ class AnnotationGenerator
             $this->addMissingImportantDataWarning($methodName, $paramName, 'Type is not specified in comment block.');
         }
         $metaType = strtolower(trim($paramMetadata['type'] ?? $docType));
-        $type = $metaType === 'string' && $docType !== 'string' ? $docType : $metaType;
+        $type = in_array($metaType, ['string', 'bool']) && !empty($docType) && $docType !== $metaType ? $docType : $metaType;
+        // Sometimes, doc-block can wrap type hinting with parenthesis. Remove them.
+        $type = trim($type, '()');
         // If the signature type is array, but the type hinting provides more, use that instead
         if ($type === 'array' && strpos($docType, '[]') !== false && strpos($docType, '|') === false) {
             $type = $docType;
         }
         $typesMap = [];
         // Check for pipes and try to list possible types
-        foreach (explode('|', $type) as $typePart) {
+        $typeHints = array_map(function ($typeHint) {
+            return trim($typeHint);
+        }, explode('|', $type));
+        // If there's more than 1 type hinted and one is bool, remove bool. This is because many params default to false regardless of expected type
+        if (count($typeHints) > 1 && in_array('bool', $typeHints)) {
+            $typeHints = array_diff($typeHints, ['bool']);
+        }
+        foreach ($typeHints as $typePart) {
             $typePart = trim($typePart, ' ()');
             $normalisedType = $this->getOpenApiTypeFromPhpType($typePart);
             // If the type is array, check if there's a subType
@@ -412,8 +430,7 @@ class AnnotationGenerator
         }
 
         // Clean up the descriptions a little more like removing linebreaks and escaping double-quotes
-        $description = str_replace("\n", ' ', $description);
-        $description = str_replace('"', '""', $description);
+        $description = $this->normaliseDescriptionText($description);
 
         return [
             'name' => $paramName,
@@ -423,6 +440,20 @@ class AnnotationGenerator
             'default' => !$isRequired ? json_encode($paramMetadata['default']) : NoDefaultValue::class,
             'example' => $example,
         ];
+    }
+
+    /**
+     * Take description text and normalise it. This includes trimming surrounding whitespace, removing newlines and
+     * escaping double-quote characters.
+     *
+     * @param string $description
+     *
+     * @return string
+     */
+    protected function normaliseDescriptionText(string $description): string
+    {
+        $description = str_replace("\n", ' ', trim($description));
+        return str_replace('"', '""', $description);
     }
 
     /**
@@ -511,8 +542,13 @@ class AnnotationGenerator
             $customParamData = $this->buildParameterAnnotationData($method, $name, $paramMetadata, $paramInfo);
             if (empty($customParamData['description']) && in_array($name, self::GLOBAL_PARAMETER_NAMES)) {
                 $globalParamSuffix = $customParamData['required'] === 'true' ? 'Required' : 'Optional';
-                $refs[] = '#/components/parameters/' . $name . $globalParamSuffix;
+                $paramRef = '#/components/parameters/' . $name . $globalParamSuffix;
+                $customParams[] = $paramRef;
                 $this->removeMissingImportantDataWarning($method, $name);
+                // Remove any duplicates from the global references array.
+                if (count($refs) > 0 && in_array($paramRef, $refs)) {
+                    $refs = array_diff($refs, [$paramRef]);
+                }
                 continue;
             }
 
@@ -606,6 +642,11 @@ class AnnotationGenerator
         $parametersToReplace = [];
         if (!empty($paramsData['custom'])) {
             foreach ($paramsData['custom'] as $customParam) {
+                // Skip any which might be references.
+                if (!is_array($customParam)) {
+                    continue;
+                }
+
                 $paramName = strval($customParam['name']);
                 if (isset($customParam['example']) && $customParam['example'] !== '') {
                     $example = $customParam['example'];
@@ -712,13 +753,38 @@ class AnnotationGenerator
      * https://demo.matomo.cloud/?module=API&method=CustomReports.getConfiguredReports&idSite=1&format=xml&token_auth=anonymous
      * @param bool $useLocalToken A boolean indicating whether to get a temporary token and try the request against the
      * currently running Matomo instance.
+     * @param bool $ignoreCached A boolean indicating whether the cached response file should be ignored. Default is
+     * false. This is simply in case we want to replace the existing responses with new ones.
      *
      * @return string The response received from the API endpoint if no error was received or the response wasn't empty.
      * An empty string is returned by default.
      * @throws \Throwable
      */
-    protected function getExampleIfAvailable(string $url, bool $useLocalToken = false): string
+    protected function getExampleIfAvailable(string $url, bool $useLocalToken = false, bool $ignoreCached = false): string
     {
+        $queryString = Url::getQueryStringFromUrl($url);
+        $queryParams = UrlHelper::getArrayFromQueryString($queryString);
+        if (empty($queryParams['method']) || empty($queryParams['format'])) {
+            throw new \Exception('Missing method or format in URL: ' . $url);
+        }
+        $method = $queryParams['method'];
+        $format = strtolower($queryParams['format']);
+        $exampleFilePath = $this->currentPluginDir . OpenApiDocs::EXAMPLE_RESPONSES_PATH . $method . '.' . $format;
+        // If there's already a file, use that instead of making a new server call. Ignore the file when the flag is set.
+        if (!$ignoreCached) {
+            // If an example file is found, return its contents instead of making the server call.
+            [$pluginName, $methodName] = explode('.', $method);
+            $exampleContents = $this->getCachedExampleResponseFile($pluginName, $methodName, $format);
+            if (!empty($exampleContents)) {
+                return $exampleContents;
+            }
+        }
+
+        // Include a specific parameter for the TSV requests.
+        if ($format === 'tsv') {
+            $url .= '&convertToUnicode=0';
+        }
+
         // If the flag to use a temp token is set, get a token and update the request URL
         $tempUrl = $url . '&hideIdSubDatable=1';
         if ($useLocalToken) {
@@ -760,12 +826,55 @@ class AnnotationGenerator
         }
         $body = $response['data'];
 
+        // Write the example response to file as a cache and reference.
+        file_put_contents($exampleFilePath, $body);
+
         // Convert the XML responses into a JSON object and then encode it into a string. This is helpful for building schemas.
-        if (stripos($url, 'format=xml') !== false) {
+        if ($format === 'xml') {
             $body = json_encode($this->convertExampleXmlToObject($body));
         }
 
         return $body;
+    }
+
+    /**
+     * Try looking up the cached example response file for a specific plugin and method. If not found, it returns an
+     * empty string.
+     *
+     * @param string $pluginName The name of the plugin. E.g. TagManager.
+     * @param string $methodName The name of the plugin specific API method. E.g. getCustomReport.
+     * @param string $format The format of the file. E.g. json, xml, or tsv
+     * @param bool $rawResult Optional flag to indicate whether to return the raw file contents or do some processing.
+     * The default is false. If false and XML format, the content will be converted into a JSON string.
+     * @param bool $applyMaxLength Optional flag to indicate whether to truncate the example if it exceeds the max
+     * characters allowed. The default is true. It only applies if rawResult is false.
+     *
+     * @return string The contents of the example file or empty if it wasn't found.
+     * @throws \Exception
+     */
+    protected function getCachedExampleResponseFile(string $pluginName, string $methodName, string $format, bool $rawResult = false, bool $applyMaxLength = true): string
+    {
+        $exampleFilePath = $this->currentPluginDir . OpenApiDocs::EXAMPLE_RESPONSES_PATH . $pluginName . '.' . $methodName . '.' . $format;
+        // Simply return an empty string if the file doesn't exist yet.
+        if (!file_exists($exampleFilePath)) {
+            return '';
+        }
+
+        $exampleContents = file_get_contents($exampleFilePath);
+        if (!$exampleContents) {
+            throw new \Exception('Error reading example file: ' . $exampleFilePath);
+        }
+
+        if (!$rawResult && $format === 'xml') {
+            $exampleContents = json_encode($this->convertExampleXmlToObject($exampleContents));
+        }
+
+        // Unless set otherwise, make sure that the example is around the max allowed characters. If raw, don't bother.
+        if (!$rawResult && $applyMaxLength && strlen($exampleContents) > self::EXAMPLE_CHAR_LIMIT) {
+            $exampleContents = $this->cutExampleCloseToCharLimit($exampleContents, $format);
+        }
+
+        return $exampleContents;
     }
 
     /**
@@ -811,8 +920,8 @@ class AnnotationGenerator
                     $metadata['imageGraphUrl']
                 );
 
-                // If we get a valid response, return the URL
-                if (!empty($this->getExampleIfAvailable('https://demo.matomo.cloud/' . $url))) {
+                // Use the JSON format for the test. If we get a valid response, return the URL without format.
+                if (!empty($this->getExampleIfAvailable('https://demo.matomo.cloud/' . $url . '&format=JSON'))) {
                     return $url;
                 }
             }
@@ -938,35 +1047,15 @@ class AnnotationGenerator
 
         $mediaTypes = [];
         // This simply reuses the example URLs used by the current documentation, but some endpoints don't work because authentication is required
-        // TODO - Come up with a way to demo examples for endpoints which require authentication. E.g. hit a live endpoint server-side and replace any potentially sensitive data...
         $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method, $paramsData);
         foreach ($exampleUrls as $type => $url) {
-            $contentType = $type === 'json' ? 'application/json' : ($type === 'xml' ? 'text/xml' : 'application/vnd.ms-excel');
-            if ($type === 'tsv') {
-                $url .= '&convertToUnicode=0';
-            }
             $exampleValue = $this->getExampleIfAvailable($url);
-            // If the example lookup failed, try making the same request locally
-            $isLocalExample = false;
+            // If the example lookup failed, try making the same request locally using a temporary token.
             if (empty($exampleValue)) {
                 $exampleValue = $this->getExampleIfAvailable($url, true);
-                $isLocalExample = true;
             }
             if (strlen($exampleValue) > self::EXAMPLE_CHAR_LIMIT) {
                 $exampleValue = $this->cutExampleCloseToCharLimit($exampleValue, $type);
-            }
-            $jsonSchema = $type === 'json' ? $this->buildSchemaAnnotationFromJsonExample(json_decode($exampleValue, true) ?? []) : [];
-            $xmlSchema = $type === 'xml' ? $this->buildSchemaAnnotationFromXmlExample(json_decode($exampleValue, true) ?? []) : [];
-            // Make sure that the local example doesn't have anything bad in it
-            if ($isLocalExample) {
-                // TODO - Obfuscate any potentially sensitive data
-            }
-
-            if (in_array($type, ['json', 'xml'])) {
-                // The annotation expects objects and not arrays, so replace [] with {}
-                $exampleValue = str_replace(['[', ']'], ['{', '}'], $exampleValue);
-                // Escape quotes differently for the annotation examples
-                $exampleValue = str_replace('\"', '""', $exampleValue);
             }
 
             // Skip if there was no example response
@@ -974,27 +1063,25 @@ class AnnotationGenerator
                 continue;
             }
 
-            $mediaType = [
-                'mediaType="' . $contentType . '"',
-            ];
-            if ($type !== 'tsv') {
-                $mediaType[] = 'example=' . $exampleValue;
-            }
-            // If a type was found, add it as a schema to the media type
-            if ($type === 'json') {
-                $responseSchema = !empty($jsonSchema) ? $jsonSchema : ($responseSchema ?: []);
-                $mediaType = array_merge($mediaType, $responseSchema);
-            }
-            if ($type === 'tsv') {
-                // Escape quotes differently for the annotation examples
-                $exampleValue = str_replace('"', '""', $exampleValue);
-                $mediaType[] = 'example="' . $exampleValue . '"';
-            }
-            if ($type === 'xml') {
-                $mediaType = array_merge($mediaType, $xmlSchema);
-            }
-            $mediaTypes[] = $mediaType;
+            $mediaTypes[] = $this->buildMediaTypePropertiesArray($type, $exampleValue, $responseSchema);
         }
+
+        // Check if any example files exist even though there aren't any example URLs
+        if (empty($mediaTypes)) {
+            $jsonExample = $this->getCachedExampleResponseFile($plugin, $method, 'json');
+            $xmlExample = $this->getCachedExampleResponseFile($plugin, $method, 'xml');
+            $jsonType = $this->buildMediaTypePropertiesArray('json', $jsonExample, $responseSchema);
+            $xmlType = $this->buildMediaTypePropertiesArray('xml', $xmlExample, $responseSchema);
+
+            // Check and add XML first since it's added first everywhere else
+            if (!empty($xmlExample) && !empty($xmlType)) {
+                $mediaTypes[] = $xmlType;
+            }
+            if (!empty($jsonExample) && !empty($jsonType)) {
+                $mediaTypes[] = $jsonType;
+            }
+        }
+
         if (!empty($mediaTypes)) {
             $successArray['mediaTypes'] = $mediaTypes;
 
@@ -1030,6 +1117,53 @@ class AnnotationGenerator
         }
 
         return $responses;
+    }
+
+    /**
+     * Build the array of properties making up a media type annotation object to be included in a response annotation
+     * object. The is for when we can provide examples for specific formats, like XML, JSON, and TSV.
+     *
+     * @param string $format The format of the example. E.g. xml, json, or tsv.
+     * @param string $exampleValue The example value, which can be a JSON string.
+     * @param array $responseSchema The default schema, like GenericArray or GenericInteger responses.
+     *
+     * @return string[]
+     */
+    protected function buildMediaTypePropertiesArray(string $format, string $exampleValue, array $responseSchema = []): array
+    {
+        $contentType = $format === 'json' ? 'application/json' : ($format === 'xml' ? 'text/xml' : 'application/vnd.ms-excel');
+
+        $jsonSchema = $format === 'json' ? $this->buildSchemaAnnotationFromJsonExample(json_decode($exampleValue, true) ?? []) : [];
+        $xmlSchema = $format === 'xml' ? $this->buildSchemaAnnotationFromXmlExample(json_decode($exampleValue, true) ?? []) : [];
+
+        if (in_array($format, ['json', 'xml'])) {
+            // The annotation expects objects and not arrays, so replace [] with {}
+            $exampleValue = str_replace(['[', ']'], ['{', '}'], $exampleValue);
+            // Escape quotes differently for the annotation examples
+            $exampleValue = str_replace('\"', '""', $exampleValue);
+        }
+
+        $mediaType = [
+            'mediaType="' . $contentType . '"',
+        ];
+        if ($format !== 'tsv') {
+            $mediaType[] = 'example=' . $exampleValue;
+        }
+        // If a type was found, add it as a schema to the media type
+        if ($format === 'json') {
+            $responseSchema = !empty($jsonSchema) ? $jsonSchema : ($responseSchema ?: []);
+            $mediaType = array_merge($mediaType, $responseSchema);
+        }
+        if ($format === 'tsv') {
+            // Escape quotes differently for the annotation examples
+            $exampleValue = str_replace('"', '""', $exampleValue);
+            $mediaType[] = 'example="' . $exampleValue . '"';
+        }
+        if ($format === 'xml') {
+            $mediaType = array_merge($mediaType, $xmlSchema);
+        }
+
+        return $mediaType;
     }
 
     /**
@@ -1275,7 +1409,7 @@ class AnnotationGenerator
 
             // Handle arrays of strings which don't have named properties
             $keys = array_keys($values);
-            if (!is_string(reset($keys))) {
+            if (!is_string(reset($keys)) && count($values) === 1) {
                 $itemProperties = ['type="string"'];
             }
 
@@ -1479,6 +1613,15 @@ class AnnotationGenerator
             $operationValuesMap[] = '@OA\Parameter(ref="' . $ref . '")';
         }
         foreach ($params['custom'] ?? [] as $param) {
+            if (!is_array($param)) {
+                if (!is_string($param) || stripos($param, '#/components/parameters/') === false) {
+                    throw new \Exception('Invalid custom param: ' . strval($param));
+                }
+
+                $operationValuesMap[] = '@OA\Parameter(ref="' . $param . '")';
+                continue;
+            }
+
             $paramMap = [
                 'name="' . $param['name'] . '"',
                 'in="query"',
