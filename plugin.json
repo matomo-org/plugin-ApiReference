@@ -12,7 +12,6 @@
     "license": "GPL v3+",
     "homepage": "https:\/\/matomo.org",
     "require": {
-        "php": ">=8.1.0",
         "matomo": ">=5.0.0-stable,<6.0.0-b1"
     },
     "authors": [

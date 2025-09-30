@@ -6,10 +6,9 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit90dbd33beaf3a1c9a0c815781114b7ea
 {
-    public static $files = array (
-        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
-        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-    );
+    public static $files = array(
+);
+
 
     public static $prefixLengthsPsr4 = array (
         'S' => 
@@ -20,17 +19,11 @@ class ComposerStaticInit90dbd33beaf3a1c9a0c815781114b7ea
         ),
         'P' => 
         array (
-            'Psr\\Cache\\' => 10,
             'PhpParser\\' => 10,
         ),
         'O' => 
         array (
             'OpenApi\\' => 8,
-        ),
-        'D' => 
-        array (
-            'Doctrine\\Common\\Lexer\\' => 22,
-            'Doctrine\\Common\\Annotations\\' => 28,
         ),
     );
 
@@ -47,10 +40,6 @@ class ComposerStaticInit90dbd33beaf3a1c9a0c815781114b7ea
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
         ),
-        'Psr\\Cache\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/cache/src',
-        ),
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
@@ -58,14 +47,6 @@ class ComposerStaticInit90dbd33beaf3a1c9a0c815781114b7ea
         'OpenApi\\' => 
         array (
             0 => __DIR__ . '/..' . '/zircote/swagger-php/src',
-        ),
-        'Doctrine\\Common\\Lexer\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/doctrine/lexer/src',
-        ),
-        'Doctrine\\Common\\Annotations\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations',
         ),
     );
 
