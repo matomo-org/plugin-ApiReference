@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit132d040fab428c85c099cbf235197aea
+class ComposerStaticInit46e93b8f7623c9124c551d4ca8162993
 {
     public static $files = array (
         '66cfd3a7190309803b5cc0fea03a4cdc' => __DIR__ . '/../..' . '/symfony/deprecation-contracts/function.php',
@@ -13,6 +13,27 @@ class ComposerStaticInit132d040fab428c85c099cbf235197aea
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\Annotation' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\AnnotationException' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/AnnotationException.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\AnnotationReader' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/AnnotationReader.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\AnnotationRegistry' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/AnnotationRegistry.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\Annotation\\Attribute' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation/Attribute.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\Annotation\\Attributes' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation/Attributes.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\Annotation\\Enum' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation/Enum.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\Annotation\\IgnoreAnnotation' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation/IgnoreAnnotation.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\Annotation\\NamedArgumentConstructor' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation/NamedArgumentConstructor.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\Annotation\\Required' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation/Required.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\Annotation\\Target' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation/Target.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\DocLexer' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/DocLexer.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\DocParser' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/DocParser.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\ImplicitlyIgnoredAnnotationNames' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/ImplicitlyIgnoredAnnotationNames.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\IndexedReader' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/IndexedReader.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\PhpParser' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/PhpParser.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\PsrCachedReader' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/PsrCachedReader.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\Reader' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/Reader.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\TokenParser' => __DIR__ . '/../..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations/TokenParser.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Lexer\\AbstractLexer' => __DIR__ . '/../..' . '/doctrine/lexer/src/AbstractLexer.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Lexer\\Token' => __DIR__ . '/../..' . '/doctrine/lexer/src/Token.php',
         'Matomo\\Dependencies\\OpenApiDocs\\OpenApi\\Analysers\\AnalyserInterface' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Analysers/AnalyserInterface.php',
         'Matomo\\Dependencies\\OpenApiDocs\\OpenApi\\Analysers\\AnnotationFactoryInterface' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Analysers/AnnotationFactoryInterface.php',
         'Matomo\\Dependencies\\OpenApiDocs\\OpenApi\\Analysers\\AttributeAnnotationFactory' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Analysers/AttributeAnnotationFactory.php',
@@ -412,6 +433,10 @@ class ComposerStaticInit132d040fab428c85c099cbf235197aea
         'Matomo\\Dependencies\\OpenApiDocs\\PhpParser\\PrettyPrinterAbstract' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/PrettyPrinterAbstract.php',
         'Matomo\\Dependencies\\OpenApiDocs\\PhpParser\\PrettyPrinter\\Standard' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/PrettyPrinter/Standard.php',
         'Matomo\\Dependencies\\OpenApiDocs\\PhpParser\\Token' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Token.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Psr\\Cache\\CacheException' => __DIR__ . '/../..' . '/psr/cache/src/CacheException.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Psr\\Cache\\CacheItemInterface' => __DIR__ . '/../..' . '/psr/cache/src/CacheItemInterface.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Psr\\Cache\\CacheItemPoolInterface' => __DIR__ . '/../..' . '/psr/cache/src/CacheItemPoolInterface.php',
+        'Matomo\\Dependencies\\OpenApiDocs\\Psr\\Cache\\InvalidArgumentException' => __DIR__ . '/../..' . '/psr/cache/src/InvalidArgumentException.php',
         'Matomo\\Dependencies\\OpenApiDocs\\Symfony\\Component\\Finder\\Comparator\\Comparator' => __DIR__ . '/../..' . '/symfony/finder/Comparator/Comparator.php',
         'Matomo\\Dependencies\\OpenApiDocs\\Symfony\\Component\\Finder\\Comparator\\DateComparator' => __DIR__ . '/../..' . '/symfony/finder/Comparator/DateComparator.php',
         'Matomo\\Dependencies\\OpenApiDocs\\Symfony\\Component\\Finder\\Comparator\\NumberComparator' => __DIR__ . '/../..' . '/symfony/finder/Comparator/NumberComparator.php',
@@ -453,7 +478,7 @@ class ComposerStaticInit132d040fab428c85c099cbf235197aea
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit132d040fab428c85c099cbf235197aea::$classMap;
+            $loader->classMap = ComposerStaticInit46e93b8f7623c9124c551d4ca8162993::$classMap;
 
         }, null, ClassLoader::class);
     }

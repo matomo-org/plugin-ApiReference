@@ -82,14 +82,13 @@ class SpecGenerator
                 throw new \Exception('There was an error testing the API annotations for plugin ' . $pluginName, 0, $e);
             }
             if (trim($openapi->toYaml()) === 'openapi: ' . OpenApi::DEFAULT_VERSION) {
-                var_dump($openapi->toYaml());
                 throw new \Exception("The $pluginName plugin's API class does not appear to be annotated yet.");
             }
             $pluginDirs[$pluginName] = $pluginAnnotationsSource;
         }
 
         $generator = new Generator(StaticContainer::get(LoggerInterface::class));
-        $openapi = $generator->generate(array_merge([
+        $openapi = $generator->setVersion(OpenApi::VERSION_3_1_0)->generate(array_merge([
             $currentPluginDir . '/Annotations/GlobalApiComponents.php',
         ], $pluginDirs));
 

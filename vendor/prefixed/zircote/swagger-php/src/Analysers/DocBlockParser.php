@@ -6,7 +6,7 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers;
 
-use Doctrine\Common\Annotations\DocParser;
+use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\DocParser;
 use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
 use Matomo\Dependencies\OpenApiDocs\OpenApi\Context;
 use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
@@ -16,7 +16,7 @@ use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
 class DocBlockParser
 {
     /**
-     * @var \Doctrine\Common\Annotations\DocParser
+     * @var \Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\DocParser
      */
     protected $docParser;
     /**
@@ -36,7 +36,7 @@ class DocBlockParser
      */
     public static function isEnabled() : bool
     {
-        return class_exists('Doctrine\\Common\\Annotations\\DocParser');
+        return class_exists('Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\DocParser');
     }
     /**
      * @param array<string, class-string> $aliases

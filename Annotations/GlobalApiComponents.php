@@ -15,7 +15,6 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
 
 /**
  * @OA\OpenApi(
- *     openapi="3.1.0",
  *     security={{"MatomoToken": {}}},
  *     @OA\ExternalDocumentation(
  *         description="Matomo Reporting API developer page",
@@ -58,7 +57,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     description="Generic Matomo success payload.",
  *     required={"result","message"},
  *     additionalProperties=true,
- *     @OA\Property(property="result", type="string", enum={"success"}, example="success"),
+ *     @OA\Property(property="result", type="string", example="success"),
  *     @OA\Property(property="message", type="string", example="ok"),
  *     @OA\Property(property="code", type="integer", example="200")
  * )
@@ -70,7 +69,7 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     description="Generic Matomo error payload.",
  *     required={"result","message"},
  *     additionalProperties=true,
- *     @OA\Property(property="result", type="string", enum={"error"}, example="error"),
+ *     @OA\Property(property="result", type="string", example="error"),
  *     @OA\Property(property="message", type="string", example="There was an error"),
  *     @OA\Property(property="code", type="integer")
  * )

@@ -56,7 +56,26 @@ return [
     'force-no-global-alias' => $forceNoGlobalAlias,
     'prefix' => 'Matomo\\Dependencies\\' . $pluginName,
     'finders' => $finders,
-    'patchers' => [],
+    'patchers' => [
+        // Patcher for making sure that AbstractAnnotation is looking for the correct root
+        static function (string $filePath, string $prefix, string $content) use ($isRenamingReferences): string {
+            if ($isRenamingReferences) {
+                return $content;
+            }
+
+            // Fix the string reference of a scoped dependency in the Math lib
+            $escapedPrefix = str_replace('\\', '\\\\', $prefix);
+            if ($filePath === __DIR__ . '/vendor/zircote/swagger-php/src/Annotations/AbstractAnnotation.php') {
+                $content = str_replace(
+                    'OpenApi\\\\Annotations\\\\',
+                    "{$escapedPrefix}\\\\OpenApi\\\\Annotations\\\\",
+                    $content
+                );
+            }
+
+            return $content;
+        },
+    ],
     'include-namespaces' => $namespacesToIncludeRegexes,
     'exclude-namespaces' => $namespacesToExclude,
     'exclude-constants' => [

@@ -601,7 +601,7 @@ abstract class AbstractAnnotation implements \JsonSerializable
     {
         $class = get_class($this);
         do {
-            if (0 === strpos($class, 'OpenApi\\Annotations\\')) {
+            if (0 === strpos($class, 'Matomo\\Dependencies\\OpenApiDocs\\OpenApi\\Annotations\\')) {
                 break;
             }
         } while ($class = get_parent_class($class));
