@@ -63,7 +63,7 @@ return [
                 return $content;
             }
 
-            // Fix the string reference of a scoped dependency in the Math lib
+            // Fix the string reference of a scoped dependency in the AbstractAnnotation class
             $escapedPrefix = str_replace('\\', '\\\\', $prefix);
             if ($filePath === __DIR__ . '/vendor/zircote/swagger-php/src/Annotations/AbstractAnnotation.php') {
                 $content = str_replace(
