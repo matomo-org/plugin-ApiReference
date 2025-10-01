@@ -217,7 +217,7 @@ class TokenStream
         for ($pos = $from; $pos < $to; $pos++) {
             $token = $tokens[$pos];
             $id = $token->id;
-            $text = is_array($token) ? $token[1] : $token;
+            $text = $token->text;
             if ($id === \T_CONSTANT_ENCAPSED_STRING || $id === \T_ENCAPSED_AND_WHITESPACE) {
                 $result .= $text;
             } else {
@@ -245,11 +245,11 @@ class TokenStream
         foreach ($this->tokens as $i => $token) {
             $indentMap[] = $indent;
             if ($token->id === \T_WHITESPACE) {
-                $content = is_array($token) ? $token[1] : $token;
+                $content = $token->text;
                 $newlinePos = \strrpos($content, "\n");
                 if (\false !== $newlinePos) {
                     $indent = $this->getIndent(\substr($content, $newlinePos + 1), $tabWidth);
-                } elseif ($i === 1 && $this->tokens[0]->id === \T_OPEN_TAG && (is_array($this->tokens[0]) ? $this->tokens[0][1] : $this->tokens[0])[\strlen(is_array($this->tokens[0]) ? $this->tokens[0][1] : $this->tokens[0]) - 1] === "\n") {
+                } elseif ($i === 1 && $this->tokens[0]->id === \T_OPEN_TAG && $this->tokens[0]->text[\strlen($this->tokens[0]->text) - 1] === "\n") {
                     // Special case: Newline at the end of opening tag followed by whitespace.
                     $indent = $this->getIndent($content, $tabWidth);
                 }

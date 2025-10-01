@@ -25,7 +25,7 @@ abstract class KeywordEmulator extends TokenEmulator
     {
         $keywordString = $this->getKeywordString();
         foreach ($tokens as $i => $token) {
-            if ($token->id === \T_STRING && strtolower(is_array($token) ? $token[1] : $token) === $keywordString && $this->isKeywordContext($tokens, $i)) {
+            if ($token->id === \T_STRING && strtolower($token->text) === $keywordString && $this->isKeywordContext($tokens, $i)) {
                 $token->id = $this->getKeywordToken();
             }
         }

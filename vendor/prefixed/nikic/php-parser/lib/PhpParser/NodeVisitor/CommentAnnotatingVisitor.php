@@ -45,11 +45,11 @@ class CommentAnnotatingVisitor extends NodeVisitorAbstract
             while (--$pos >= $oldPos) {
                 $token = $this->tokens[$pos];
                 if ($token->id === \T_DOC_COMMENT) {
-                    $comments[] = new Comment\Doc(is_array($token) ? $token[1] : $token, $token->line, $token->pos, $pos, $token->getEndLine(), $token->getEndPos() - 1, $pos);
+                    $comments[] = new Comment\Doc($token->text, $token->line, $token->pos, $pos, $token->getEndLine(), $token->getEndPos() - 1, $pos);
                     continue;
                 }
                 if ($token->id === \T_COMMENT) {
-                    $comments[] = new Comment(is_array($token) ? $token[1] : $token, $token->line, $token->pos, $pos, $token->getEndLine(), $token->getEndPos() - 1, $pos);
+                    $comments[] = new Comment($token->text, $token->line, $token->pos, $pos, $token->getEndLine(), $token->getEndPos() - 1, $pos);
                     continue;
                 }
                 if ($token->id !== \T_WHITESPACE) {

@@ -20,7 +20,11 @@ return static function (RectorConfig $rectorConfig): void {
     ]);
 
     $rectorConfig->skip([
-        \Rector\DowngradePhp80\Rector\Class_\DowngradeAttributeToAnnotationRector::class
+        \Rector\DowngradePhp80\Rector\Class_\DowngradeAttributeToAnnotationRector::class,
+        // Skip downgrading Token for php-parser since it already provides a polyfill
+        \Rector\DowngradePhp80\Rector\StaticCall\DowngradePhpTokenRector::class => [
+            '*/vendor/prefixed/nikic/php-parser/*',
+        ],
     ]);
 };
 ```

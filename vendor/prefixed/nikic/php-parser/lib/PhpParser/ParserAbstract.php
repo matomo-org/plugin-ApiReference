@@ -225,7 +225,7 @@ abstract class ParserAbstract implements Parser
                         $tokenId = $token->id;
                     } while (isset($this->dropTokens[$tokenId]));
                     // Map the lexer token id to the internally used symbols.
-                    $tokenValue = is_array($token) ? $token[1] : $token;
+                    $tokenValue = $token->text;
                     if (!isset($this->phpTokenToSymbol[$tokenId])) {
                         throw new \RangeException(sprintf('The lexer returned an invalid token (id=%d, value=%s)', $tokenId, $tokenValue));
                     }
@@ -769,7 +769,7 @@ abstract class ParserAbstract implements Parser
     protected function createCommentFromToken(Token $token, int $tokenPos) : Comment
     {
         assert($token->id === \T_COMMENT || $token->id == \T_DOC_COMMENT);
-        return \T_DOC_COMMENT === $token->id ? new Comment\Doc(is_array($token) ? $token[1] : $token, $token->line, $token->pos, $tokenPos, $token->getEndLine(), $token->getEndPos() - 1, $tokenPos) : new Comment(is_array($token) ? $token[1] : $token, $token->line, $token->pos, $tokenPos, $token->getEndLine(), $token->getEndPos() - 1, $tokenPos);
+        return \T_DOC_COMMENT === $token->id ? new Comment\Doc($token->text, $token->line, $token->pos, $tokenPos, $token->getEndLine(), $token->getEndPos() - 1, $tokenPos) : new Comment($token->text, $token->line, $token->pos, $tokenPos, $token->getEndLine(), $token->getEndPos() - 1, $tokenPos);
     }
     /**
      * Get last comment before the given token position, if any
@@ -815,7 +815,7 @@ abstract class ParserAbstract implements Parser
         $nextToken = $this->tokens[$this->tokenPos + 1];
         $this->tokenPos = \count($this->tokens) - 2;
         // Return text after __halt_compiler.
-        return $nextToken->id === \T_INLINE_HTML ? is_array($nextToken) ? $nextToken[1] : $nextToken : '';
+        return $nextToken->id === \T_INLINE_HTML ? $nextToken->text : '';
     }
     protected function inlineHtmlHasLeadingNewline(int $stackPos) : bool
     {
@@ -825,7 +825,7 @@ abstract class ParserAbstract implements Parser
         if ($tokenPos > 0) {
             $prevToken = $this->tokens[$tokenPos - 1];
             assert($prevToken->id == \T_CLOSE_TAG);
-            return \false !== strpos(is_array($prevToken) ? $prevToken[1] : $prevToken, "\n") || \false !== strpos(is_array($prevToken) ? $prevToken[1] : $prevToken, "\r");
+            return \false !== strpos($prevToken->text, "\n") || \false !== strpos($prevToken->text, "\r");
         }
         return \true;
     }

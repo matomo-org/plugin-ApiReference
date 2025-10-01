@@ -19,29 +19,29 @@ class VoidCastEmulator extends TokenEmulator
     {
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
-            if ((is_array($token) ? $token[1] : $token) !== '(') {
+            if ($token->text !== '(') {
                 continue;
             }
             $numTokens = 1;
             $text = '(';
             $j = $i + 1;
-            if ($j < $c && $tokens[$j]->id === \T_WHITESPACE && preg_match('/[ \\t]+/', is_array($tokens[$j]) ? $tokens[$j][1] : $tokens[$j])) {
-                $text .= is_array($tokens[$j]) ? $tokens[$j][1] : $tokens[$j];
+            if ($j < $c && $tokens[$j]->id === \T_WHITESPACE && preg_match('/[ \\t]+/', $tokens[$j]->text)) {
+                $text .= $tokens[$j]->text;
                 $numTokens++;
                 $j++;
             }
-            if ($j >= $c || $tokens[$j]->id !== \T_STRING || \strtolower(is_array($tokens[$j]) ? $tokens[$j][1] : $tokens[$j]) !== 'void') {
+            if ($j >= $c || $tokens[$j]->id !== \T_STRING || \strtolower($tokens[$j]->text) !== 'void') {
                 continue;
             }
-            $text .= is_array($tokens[$j]) ? $tokens[$j][1] : $tokens[$j];
+            $text .= $tokens[$j]->text;
             $numTokens++;
             $k = $j + 1;
-            if ($k < $c && $tokens[$k]->id === \T_WHITESPACE && preg_match('/[ \\t]+/', is_array($tokens[$k]) ? $tokens[$k][1] : $tokens[$k])) {
-                $text .= is_array($tokens[$k]) ? $tokens[$k][1] : $tokens[$k];
+            if ($k < $c && $tokens[$k]->id === \T_WHITESPACE && preg_match('/[ \\t]+/', $tokens[$k]->text)) {
+                $text .= $tokens[$k]->text;
                 $numTokens++;
                 $k++;
             }
-            if ($k >= $c || (is_array($tokens[$k]) ? $tokens[$k][1] : $tokens[$k]) !== ')') {
+            if ($k >= $c || $tokens[$k]->text !== ')') {
                 continue;
             }
             $text .= ')';
@@ -58,7 +58,7 @@ class VoidCastEmulator extends TokenEmulator
             if ($token->id !== \Matomo\Dependencies\OpenApiDocs\T_VOID_CAST) {
                 continue;
             }
-            if (!preg_match('/^\\(([ \\t]*)(void)([ \\t]*)\\)$/i', is_array($token) ? $token[1] : $token, $match)) {
+            if (!preg_match('/^\\(([ \\t]*)(void)([ \\t]*)\\)$/i', $token->text, $match)) {
                 throw new \LogicException('Unexpected T_VOID_CAST contents');
             }
             $newTokens = [];

@@ -21,8 +21,8 @@ final class AsymmetricVisibilityTokenEmulator extends TokenEmulator
         $map = [\T_PUBLIC => \Matomo\Dependencies\OpenApiDocs\T_PUBLIC_SET, \T_PROTECTED => \Matomo\Dependencies\OpenApiDocs\T_PROTECTED_SET, \T_PRIVATE => \Matomo\Dependencies\OpenApiDocs\T_PRIVATE_SET];
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
-            if (isset($map[$token->id]) && $i + 3 < $c && (is_array($tokens[$i + 1]) ? $tokens[$i + 1][1] : $tokens[$i + 1]) === '(' && $tokens[$i + 2]->id === \T_STRING && \strtolower(is_array($tokens[$i + 2]) ? $tokens[$i + 2][1] : $tokens[$i + 2]) === 'set' && (is_array($tokens[$i + 3]) ? $tokens[$i + 3][1] : $tokens[$i + 3]) === ')' && $this->isKeywordContext($tokens, $i)) {
-                array_splice($tokens, $i, 4, [new Token($map[$token->id], (is_array($token) ? $token[1] : $token) . '(' . (is_array($tokens[$i + 2]) ? $tokens[$i + 2][1] : $tokens[$i + 2]) . ')', $token->line, $token->pos)]);
+            if (isset($map[$token->id]) && $i + 3 < $c && $tokens[$i + 1]->text === '(' && $tokens[$i + 2]->id === \T_STRING && \strtolower($tokens[$i + 2]->text) === 'set' && $tokens[$i + 3]->text === ')' && $this->isKeywordContext($tokens, $i)) {
+                array_splice($tokens, $i, 4, [new Token($map[$token->id], $token->text . '(' . $tokens[$i + 2]->text . ')', $token->line, $token->pos)]);
                 $c -= 3;
             }
         }
@@ -33,7 +33,7 @@ final class AsymmetricVisibilityTokenEmulator extends TokenEmulator
         $reverseMap = [\Matomo\Dependencies\OpenApiDocs\T_PUBLIC_SET => \T_PUBLIC, \Matomo\Dependencies\OpenApiDocs\T_PROTECTED_SET => \T_PROTECTED, \Matomo\Dependencies\OpenApiDocs\T_PRIVATE_SET => \T_PRIVATE];
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
-            if (isset($reverseMap[$token->id]) && \preg_match('/(public|protected|private)\\((set)\\)/i', is_array($token) ? $token[1] : $token, $matches)) {
+            if (isset($reverseMap[$token->id]) && \preg_match('/(public|protected|private)\\((set)\\)/i', $token->text, $matches)) {
                 [, $modifier, $set] = $matches;
                 $modifierLen = \strlen($modifier);
                 array_splice($tokens, $i, 1, [new Token($reverseMap[$token->id], $modifier, $token->line, $token->pos), new Token(\ord('('), '(', $token->line, $token->pos + $modifierLen), new Token(\T_STRING, $set, $token->line, $token->pos + $modifierLen + 1), new Token(\ord(')'), ')', $token->line, $token->pos + $modifierLen + 4)]);

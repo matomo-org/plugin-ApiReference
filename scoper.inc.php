@@ -28,7 +28,7 @@ if ($isRenamingReferences) {
             ->exclude('lang')
             ->exclude('javascripts')
             ->exclude('vue')
-            ->notName(['scoper.inc.php', 'Controller.php'])
+            ->notName(['scoper.inc.php'])
             ->filter(function (\SplFileInfo $file) {
                 return !($file->isLink() && $file->isDir());
             })

@@ -9,8 +9,8 @@
 
 namespace Piwik\Plugins\OpenApiDocs\Specs;
 
-use OpenApi\Annotations\OpenApi;
-use OpenApi\Generator;
+use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations\OpenApi;
+use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
 use Piwik\Container\StaticContainer;
 use Piwik\Log\LoggerInterface;
 use Piwik\Log\NullLogger;
@@ -60,6 +60,7 @@ class SpecGenerator
      * @throws \Piwik\Exception\DI\DependencyException
      * @throws \Piwik\Exception\DI\NotFoundException
      * @throws \Piwik\Exception\PluginDeactivatedException
+     * @throws \Exception
      */
     public function generateSpec(array $pluginNames, string $format = 'json', string $version = OpenApiDocs::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
     {
@@ -73,10 +74,15 @@ class SpecGenerator
 
             $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
             $pluginAnnotationsSource = $pluginDir . '/API.php';
-            $openapi = (new Generator(StaticContainer::get(NullLogger::class)))->generate([
-                $pluginAnnotationsSource,
-            ]);
+            try {
+                $openapi = (new Generator(StaticContainer::get(NullLogger::class)))->generate([
+                    $pluginAnnotationsSource,
+                ]);
+            } catch (\Throwable $e) {
+                throw new \Exception('There was an error testing the API annotations for plugin ' . $pluginName, 0, $e);
+            }
             if (trim($openapi->toYaml()) === 'openapi: ' . OpenApi::DEFAULT_VERSION) {
+                var_dump($openapi->toYaml());
                 throw new \Exception("The $pluginName plugin's API class does not appear to be annotated yet.");
             }
             $pluginDirs[$pluginName] = $pluginAnnotationsSource;

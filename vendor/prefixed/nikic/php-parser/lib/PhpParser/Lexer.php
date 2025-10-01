@@ -28,7 +28,7 @@ class Lexer
             $errorHandler = new ErrorHandler\Throwing();
         }
         $scream = ini_set('xdebug.scream', '0');
-        $tokens = @token_get_all($code);
+        $tokens = @Token::tokenize($code);
         $this->postprocessTokens($tokens, $errorHandler);
         if (\false !== $scream) {
             ini_set('xdebug.scream', $scream);
@@ -37,7 +37,7 @@ class Lexer
     }
     private function handleInvalidCharacter(Token $token, ErrorHandler $errorHandler) : void
     {
-        $chr = is_array($token) ? $token[1] : $token;
+        $chr = $token->text;
         if ($chr === "\x00") {
             // PHP cuts error message after null byte, so need special case
             $errorMsg = 'Unexpected null byte';
@@ -48,7 +48,7 @@ class Lexer
     }
     private function isUnterminatedComment(Token $token) : bool
     {
-        return $token->is([\T_COMMENT, \T_DOC_COMMENT]) && substr(is_array($token) ? $token[1] : $token, 0, 2) === '/*' && substr(is_array($token) ? $token[1] : $token, -2) !== '*/';
+        return $token->is([\T_COMMENT, \T_DOC_COMMENT]) && substr($token->text, 0, 2) === '/*' && substr($token->text, -2) !== '*/';
     }
     /**
      * @param list<Token> $tokens
