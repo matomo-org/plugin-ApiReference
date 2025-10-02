@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_blocked_robots</id>
+		<documentation>URLs currently blocked by your site’s robots.txt.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_code_2xx</id>
+		<documentation>These codes appear when the server serves a page successfully</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_code_301</id>
+		<documentation>These codes appear when you have permanently moved content from one location (URL) to another.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_code_303</id>
+		<documentation>These codes appear when you have temporarily moved content from one location (URL) to another.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_code_4xx</id>
+		<documentation>These codes appear when there was a likely an error in the request which prevented the server from being able to process it.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_code_5xx</id>
+		<documentation>These codes appear when the server failed to fulfill an apparently valid request.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_crawledpages</id>
+		<documentation>Number of pages the Bing crawler requested.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_dnsfail</id>
+		<documentation>This issue type catalogs recent errors encountered trying to communicate with the DNS server when the bot tried to access your pages. Possibly your server was down, or there was a misconfiguration that prevented DNS routing, for example TTL was set to 0.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_errors</id>
+		<documentation>Number of errors occured for the Bing crawler.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_inindex</id>
+		<documentation>Total number of pages available in Bing index</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_inlinks</id>
+		<documentation>Inbound links Bing is aware of, pointed at URLs on your website. These are links, from websites external of your own, that have been pointed towards your content.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_malware</id>
+		<documentation>Any page URLs that Bing found that are infected or associated with malware will be grouped in this section.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_other_codes</id>
+		<documentation>Groups all other codes that are not matched by any other value (such as 1xx or informational codes).</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_bing_crawlstats_timeout</id>
+		<documentation>This number represents recent occurences when Bing could not access your site due to connection errors. This could be a temporary issue but you should check your server logs to see if you are accidentally dropping requests.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_yandex_crawlstats_appeared</id>
+		<documentation>Pages that were newly added to Yandex search index</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_yandex_crawlstats_code_2xx</id>
+		<documentation>Crawled Pages with a 2xx code</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_yandex_crawlstats_code_3xx</id>
+		<documentation>Crawled Pages with a 3xx code</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_yandex_crawlstats_code_4xx</id>
+		<documentation>Crawled Pages with a 4xx code</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_yandex_crawlstats_code_5xx</id>
+		<documentation>Crawled Pages with a 5xx code</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_yandex_crawlstats_crawledpages</id>
+		<documentation>Number of pages the Yandex crawler requested.</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_yandex_crawlstats_errors</id>
+		<documentation>Crawled paged that failed for any other reason</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_yandex_crawlstats_inindex</id>
+		<documentation>Total number of pages available in Yandex search index</documentation>
+	</row>
+	<row>
+		<name />
+		<id>SearchEngineKeywordsPerformance_yandex_crawlstats_removed</id>
+		<documentation>Pages that were removed from Yandex search index</documentation>
+	</row>
+	<row>
+		<name>&quot;Goal Liveaboard.com click&quot; conversion rate</name>
+		<id>goal_7_conversion_uniq_visitors_rate</id>
+		<documentation>The ratio of &quot;Conversions goal &quot;Liveaboard.com click&quot; (ID 7 )&quot; out of all &quot;Visitors&quot;.</documentation>
+	</row>
+	<row>
+		<name>Actions</name>
+		<id>nb_actions</id>
+		<documentation>The number of actions performed by your visitors. Actions can be page views, internal site searches, downloads or outlinks.</documentation>
+	</row>
+	<row>
+		<name>Actions per Visit</name>
+		<id>nb_actions_per_visit</id>
+		<documentation>The average number of actions (page views, site searches, downloads or outlinks) that were performed during the visits.</documentation>
+	</row>
+	<row>
+		<name>Amendments</name>
+		<id>nb_field_amendments</id>
+		<documentation>The number of times your visitors amended this field in total. An amendment is counted when a visitor changes this field (for example types something into a form field or selects a value), then moves on to another field and comes back to this field to change it again. An amendment is also counted when a visitor changes this field, submits the form, and then changes it again to correct a form validation error.</documentation>
+	</row>
+	<row>
+		<name>Average value</name>
+		<id>avg_event_value</id>
+		<documentation>The average of all values for this event</documentation>
+	</row>
+	<row>
+		<name>Avg. Completion</name>
+		<id>avg_completion_rate</id>
+		<documentation>The percentage of how much visitors have watched of a video. This metric may show more than 100% if many visitors spent more time on the video than the media length. This can be especially the case when the media is played in a loop.</documentation>
+	</row>
+	<row>
+		<name>Avg. DOM completion time</name>
+		<id>avg_time_dom_completion</id>
+		<documentation>Average time (in seconds) it takes for the browser to load media and execute any Javascript code listening for the DOMContentLoaded event after the webpage was loaded and the user can already interact with it.</documentation>
+	</row>
+	<row>
+		<name>Avg. DOM processing time</name>
+		<id>avg_time_dom_processing</id>
+		<documentation>Average time (in seconds) the browser spends loading the webpage after the response was fully received and before the user can start interacting with it.</documentation>
+	</row>
+	<row>
+		<name>Avg. Media Length</name>
+		<id>avg_media_length</id>
+		<documentation>The average length of a video or audio media file. This number may vary for example if the media is a stream or if the media resource changes over time.</documentation>
+	</row>
+	<row>
+		<name>Avg. Time On Dimension</name>
+		<id>avg_time_on_dimension</id>
+		<documentation>Avg. Time on custom action dimension is the average time visitors spent on a specific custom action before moving to another tracked action. Calculated by summing the time spent on the action across all visits and dividing it by the number of times the action was performed.</documentation>
+	</row>
+	<row>
+		<name>Avg. Time To Play</name>
+		<id>avg_time_to_play</id>
+		<documentation>The average amount of time it took a visitor to start playing the media since the page was loaded.</documentation>
+	</row>
+	<row>
+		<name>Avg. Time on Website</name>
+		<id>avg_time_on_site</id>
+		<documentation>The average duration of a visit.</documentation>
+	</row>
+	<row>
+		<name>Avg. field size</name>
+		<id>avg_field_size</id>
+		<documentation>The average field size of this text field. Also includes text sizes of visitors that did not submit the form. Blank text fields (size 0) are ignored in the average calculation.</documentation>
+	</row>
+	<row>
+		<name>Avg. field size on conversion</name>
+		<id>avg_field_size_converted</id>
+		<documentation>The average field size of this text field when a visitor entered some text, submitted the form afterwards, and converted it.</documentation>
+	</row>
+	<row>
+		<name>Avg. field size on submit</name>
+		<id>avg_field_size_submitted</id>
+		<documentation>The average field size of this text field when a visitor entered some text and submitted the form afterwards.</documentation>
+	</row>
+	<row>
+		<name>Avg. field size when unsubmitted</name>
+		<id>avg_field_size_unsubmitted</id>
+		<documentation>The average field size of this text field when a visitor entered some text but did not submit the form afterwards.</documentation>
+	</row>
+	<row>
+		<name>Avg. generation time</name>
+		<id>avg_time_generation</id>
+		<documentation>The average time it took to generate the page. This metric includes the time it took the server to generate the web page, plus the time it took for the visitor to download the response from the server. A lower 'Avg. generation time' means a faster website for your visitors!</documentation>
+	</row>
+	<row>
+		<name>Avg. hesitation time</name>
+		<id>avg_field_hesitation_time</id>
+		<documentation>The average amount of time a visitor hesitated to start filling out this field. The time is measured from the moment a visitor focuses this field until they make the first change.</documentation>
+	</row>
+	<row>
+		<name>Avg. network time</name>
+		<id>avg_time_network</id>
+		<documentation>Average time (in seconds) it takes to connect to the server. This includes the time needed to lookup DNS and establish a TCP connection. This value might be 0 after the first request to a domain as the browser might cache the connection.</documentation>
+	</row>
+	<row>
+		<name>Avg. on load time</name>
+		<id>avg_time_on_load</id>
+		<documentation>Average time (in seconds) it takes the browser to execute Javascript code waiting for the window.load event. This event is triggered once the DOM has completely rendered.</documentation>
+	</row>
+	<row>
+		<name>Avg. page load time</name>
+		<id>avg_page_load_time</id>
+		<documentation>Average time (in seconds) it takes from requesting a page until the page is fully rendered within the browser</documentation>
+	</row>
+	<row>
+		<name>Avg. position</name>
+		<id>position</id>
+		<documentation>Average position of your website in the search engine results list (for this keyword).</documentation>
+	</row>
+	<row>
+		<name>Avg. server time</name>
+		<id>avg_time_server</id>
+		<documentation>Average time (in seconds) it takes the server to generate the page. This is the time between the server receiving the request and starting to serve the response.</documentation>
+	</row>
+	<row>
+		<name>Avg. time on page</name>
+		<id>avg_time_on_page</id>
+		<documentation>The average amount of time visitors spent on this page (only the page, not the entire website).</documentation>
+	</row>
+	<row>
+		<name>Avg. time spent</name>
+		<id>avg_field_time_spent</id>
+		<documentation>The average amount of time spent on this field when a visitor interacted with it. The time is measured from the moment a visitor focuses this field until they make the last change or until they leave the field again. If a visitor interacts with this field several time before submitting or leaving the form, all time spent on this field will be summed. The time spent includes the hesitation time.</documentation>
+	</row>
+	<row>
+		<name>Avg. time spent</name>
+		<id>avg_time_watched</id>
+		<documentation>The average amount of time a visitor spent watching or listening to a media.</documentation>
+	</row>
+	<row>
+		<name>Avg. transfer time</name>
+		<id>avg_time_transfer</id>
+		<documentation>Average time (in seconds) it takes the browser to download the response from the server. This is the time from receiving the first byte till the response is complete.</documentation>
+	</row>
+	<row>
+		<name>Bounce Rate</name>
+		<id>bounce_rate</id>
+		<documentation>The percentage of visits that only had a single pageview. This means, that the visitor left the website directly from the entrance page.</documentation>
+	</row>
+	<row>
+		<name>Bounces</name>
+		<id>entry_bounce_count</id>
+		<documentation>Number of visits that started and ended on this page. This means that the visitor left the website after viewing only this page.</documentation>
+	</row>
+	<row>
+		<name>CTR</name>
+		<id>ctr</id>
+		<documentation>Clickthrough rate: A ratio showing how often people who see a search engine results page with a link to your website, end up clicking it.</documentation>
+	</row>
+	<row>
+		<name>Changes</name>
+		<id>nb_field_changes</id>
+		<documentation>The number of times a visitor has changed this field. A first change is counted as soon as a visitor for example types something into a text field or selects a value. Further changes are only counted when the visitor moves on to another field and comes back to this field to change it again.</documentation>
+	</row>
+	<row>
+		<name>Clicked in search results</name>
+		<id>nb_hits_following_search</id>
+		<documentation>The number of times this Page was visited after a visitor did a search on your website, and clicked on this page in the search results.</documentation>
+	</row>
+	<row>
+		<name>Clicks</name>
+		<id>nb_clicks</id>
+		<documentation>A click is counted each time someone clicks on a link pointing to your website on a search engine results page.</documentation>
+	</row>
+	<row>
+		<name>Content Interactions</name>
+		<id>nb_interactions</id>
+		<documentation>The number of times a content block was interacted with (eg, a 'click' on a banner or ad).</documentation>
+	</row>
+	<row>
+		<name>Conversion Rate</name>
+		<id>conversion_rate</id>
+		<documentation>The percentage of visits that triggered a conversion. The conversion rate is calculated using the number of visits that converted at least one goal. Visits converting multiple goals are only counted once in the conversion rate.</documentation>
+	</row>
+	<row>
+		<name>Conversions First Interaction</name>
+		<id>nb_attribution_conversions_firstInteraction</id>
+		<documentation>The number of conversions for this channel when the attribution model &quot;First Interaction&quot; is applied.</documentation>
+	</row>
+	<row>
+		<name>Conversions Last Interaction</name>
+		<id>nb_attribution_conversions_lastInteraction</id>
+		<documentation>The number of conversions for this channel when the attribution model &quot;Last Interaction&quot; is applied.</documentation>
+	</row>
+	<row>
+		<name>Conversions Last Non-Direct</name>
+		<id>nb_attribution_conversions_lastNonDirect</id>
+		<documentation>The number of conversions for this channel when the attribution model &quot;Last Non-Direct&quot; is applied.</documentation>
+	</row>
+	<row>
+		<name>Conversions Linear</name>
+		<id>nb_attribution_conversions_linear</id>
+		<documentation>The number of conversions for this channel when the attribution model &quot;Linear&quot; is applied.</documentation>
+	</row>
+	<row>
+		<name>Conversions Position Based</name>
+		<id>nb_attribution_conversions_positionBased</id>
+		<documentation>The number of conversions for this channel when the attribution model &quot;Position Based&quot; is applied.</documentation>
+	</row>
+	<row>
+		<name>Conversions Time Decay</name>
+		<id>nb_attribution_conversions_timeDecay</id>
+		<documentation>The number of conversions for this channel when the attribution model &quot;Time Decay&quot; is applied.</documentation>
+	</row>
+	<row>
+		<name>Conversions goal &quot;Liveaboard.com click&quot; (ID 7 )</name>
+		<id>goal_7_conversion</id>
+		<documentation>The number of times this goal was converted.</documentation>
+	</row>
+	<row>
+		<name>Conversions goal &quot;New Job Application&quot; (ID 4 )</name>
+		<id>goal_4_conversion</id>
+		<documentation>The number of times this goal was converted.</documentation>
+	</row>
+	<row>
+		<name>Crash Occurrences</name>
+		<id>nb_crash_occurrences</id>
+		<documentation>The total number of crashes that occurred.</documentation>
+	</row>
+	<row>
+		<name>Cursor rate</name>
+		<id>field_cursor_rate</id>
+		<documentation>The number of times cursor keys was used on this field after a user interacted with it. This metric is only available for text fields.</documentation>
+	</row>
+	<row>
+		<name>Cursors</name>
+		<id>nb_field_cursor</id>
+		<documentation>The number of times your visitors have used any of the cursor keys on this field. This metric is only available for text fields.</documentation>
+	</row>
+	<row>
+		<name>Deletes</name>
+		<id>nb_field_deletes</id>
+		<documentation>The number of times your visitors have used the backspace or delete key on this field. This metric is only available for text fields.</documentation>
+	</row>
+	<row>
+		<name>Deletion rate</name>
+		<id>field_delete_rate</id>
+		<documentation>The percentage of times either a backspace or delete key was used when a field was changed. This metric is only available for text fields.</documentation>
+	</row>
+	<row>
+		<name>Disappeared Crashes</name>
+		<id>nb_disappeared_crashes</id>
+		<documentation>The number of crashes that disappeared within the current period. A crash is considered disappeared if it has not occurred for a certain number of configurable days.</documentation>
+	</row>
+	<row>
+		<name>Downloads</name>
+		<id>nb_downloads</id>
+		<documentation>The number of times this link was clicked.</documentation>
+	</row>
+	<row>
+		<name>Drop offs</name>
+		<id>nb_field_dropoff</id>
+		<documentation>The number of times a visitor interacted with this field last when they did not submit the form.</documentation>
+	</row>
+	<row>
+		<name>Entrances</name>
+		<id>entry_nb_visits</id>
+		<documentation>Number of visits that started on this page.</documentation>
+	</row>
+	<row>
+		<name>Entries</name>
+		<id>nb_field_entries</id>
+		<documentation>The number of times a visitor has interacted with this field first, when they started to fill out a form. An interaction can be either a field focus or a field change.</documentation>
+	</row>
+	<row>
+		<name>Event value</name>
+		<id>sum_event_value</id>
+		<documentation>The sum of event values</documentation>
+	</row>
+	<row>
+		<name>Events</name>
+		<id>nb_events</id>
+		<documentation>Total number of events</documentation>
+	</row>
+	<row>
+		<name>Events with a value</name>
+		<id>nb_events_with_value</id>
+		<documentation>Number of events where an Event value was set</documentation>
+	</row>
+	<row>
+		<name>Exit rate</name>
+		<id>exit_rate</id>
+		<documentation>The percentage of visits that left the website after viewing this page.</documentation>
+	</row>
+	<row>
+		<name>Exits</name>
+		<id>exit_nb_visits</id>
+		<documentation>Number of visits that ended on this page.</documentation>
+	</row>
+	<row>
+		<name>Exits</name>
+		<id>nb_exits</id>
+		<documentation>The number of visits that did not leave after this interaction.</documentation>
+	</row>
+	<row>
+		<name>Field conversions</name>
+		<id>nb_field_views_converted</id>
+		<documentation>The number of times the field was shown when a form was converted. It does not mean a visitor actually interacted with this field.</documentation>
+	</row>
+	<row>
+		<name>Field submissions</name>
+		<id>nb_field_views_submitted</id>
+		<documentation>The number of times this field was shown when the form was submitted. It does not mean a visitor has actually interacted with this field.</documentation>
+	</row>
+	<row>
+		<name>Finish rate</name>
+		<id>finish_rate</id>
+		<documentation>The percentage of visitors who played a media and finished it (finish means a visitor has watched or listened to the end of the media).</documentation>
+	</row>
+	<row>
+		<name>Finishes</name>
+		<id>nb_finishes</id>
+		<documentation>The number of times a video was finished (a visitor has watched or listened to the end of the media). It does not necessarily mean a visitor has watched or listened to all of the media.</documentation>
+	</row>
+	<row>
+		<name>Form amendment rate</name>
+		<id>field_amendments_rate</id>
+		<documentation>The number of times this field was amended after changing it initially. An amendment is counted when a visitor changes this field (for example types something into a form field or selects a value), then moves on to another field and comes back to this field to change it again. An amendment is also counted when a visitor changes this field, submits the form, and then changes it again to correct a form validation error.</documentation>
+	</row>
+	<row>
+		<name>Form avg. hesitation time</name>
+		<id>avg_form_time_hesitation</id>
+		<documentation>The average time a visitor hesitated to start interacting with a form. The time is calculated as the difference between the time of the page load and the time of the first interaction with a form (for example focusing a form field, typing a letter in a form or selecting a value in the form). The time is counted only while the browser window is active.</documentation>
+	</row>
+	<row>
+		<name>Form avg. time spent</name>
+		<id>avg_form_time_spent</id>
+		<documentation>The average time a visitor spent on a form. The time is calculated as the difference between the first interaction with a form field (for example a field focus) and the last interaction with a form.</documentation>
+	</row>
+	<row>
+		<name>Form avg. time to conversion</name>
+		<id>avg_form_time_to_conversion</id>
+		<documentation>The average time it took a visitor to convert a form. If the visitor completes the form on the first submit, it is equal to the &quot;time to first submission&quot;. If a visitor submits a form several times, it equals to the time spent on the form in total.</documentation>
+	</row>
+	<row>
+		<name>Form avg. time to first submit</name>
+		<id>avg_form_time_to_first_submission</id>
+		<documentation>The average time it took a visitor to submit this form for the first time. It is the difference between the first interaction with the form (for example a field focus) and the time the visitor submits the form.</documentation>
+	</row>
+	<row>
+		<name>Form conversion rate</name>
+		<id>form_conversion_rate</id>
+		<documentation>The number of times a form starter has converted the form.</documentation>
+	</row>
+	<row>
+		<name>Form conversions</name>
+		<id>nb_form_conversions</id>
+		<documentation>The number of times this form was completed successfully.</documentation>
+	</row>
+	<row>
+		<name>Form re-submitter rate</name>
+		<id>form_resubmitters_rate</id>
+		<documentation>The percentage of submitters that have submitted this form at least a second time. This means a visitor first submitted a form, and then submitted it again. For example a re-submit might happen when there were form validation errors. When this number is high, something might not be clear about your forms.</documentation>
+	</row>
+	<row>
+		<name>Form re-submitters</name>
+		<id>nb_form_resubmitters</id>
+		<documentation>The number of form viewers that have re-submitted a form at least once. This means a visitor first submitted a form, and then submitted it again. For example a re-submit might happen when there were form validation errors. When this number is high, something might not be clear about your forms.</documentation>
+	</row>
+	<row>
+		<name>Form starters</name>
+		<id>nb_form_starters</id>
+		<documentation>The number of form viewers that have started interacting with a form at least once. This means a visitor has for example focused or changed a form field. If auto focus for a form field is enabled, a visitor first needs to focus another field or needs to actually start changing a field before it counts as a start.</documentation>
+	</row>
+	<row>
+		<name>Form starters rate</name>
+		<id>form_starters_rate</id>
+		<documentation>The percentage of times a visitor has viewed a page where this form was included and then started interacting with it. This means a visitor has for example focused or changed a form field. If auto focus for a form field is enabled, a visitor first needs to focus another field or needs to actually start changing a field before it counts as a start.</documentation>
+	</row>
+	<row>
+		<name>Form starts</name>
+		<id>nb_form_starts</id>
+		<documentation>The number of times a visitor has started interacting with a form after viewing it. This means a visitor has for example focused or changed a form field. If auto focus for a form field is enabled, a visitor first needs to focus another field or needs to actually start changing a field before it counts as a start.</documentation>
+	</row>
+	<row>
+		<name>Form submissions</name>
+		<id>nb_form_submissions</id>
+		<documentation>The number of times a form was submitted in total. If a visitor submitted a form 10 times, and another visitor 3 times, it will show 13 total form submissions.</documentation>
+	</row>
+	<row>
+		<name>Form submitter rate</name>
+		<id>form_submitter_rate</id>
+		<documentation>The number of times a form starter has submitted the form.</documentation>
+	</row>
+</result>

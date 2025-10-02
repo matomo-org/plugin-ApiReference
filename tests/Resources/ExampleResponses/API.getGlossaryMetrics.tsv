@@ -1,0 +1,101 @@
+name	id	documentation
+	SearchEngineKeywordsPerformance_bing_crawlstats_blocked_robots	URLs currently blocked by your site’s robots.txt.
+	SearchEngineKeywordsPerformance_bing_crawlstats_code_2xx	These codes appear when the server serves a page successfully
+	SearchEngineKeywordsPerformance_bing_crawlstats_code_301	These codes appear when you have permanently moved content from one location (URL) to another.
+	SearchEngineKeywordsPerformance_bing_crawlstats_code_303	These codes appear when you have temporarily moved content from one location (URL) to another.
+	SearchEngineKeywordsPerformance_bing_crawlstats_code_4xx	These codes appear when there was a likely an error in the request which prevented the server from being able to process it.
+	SearchEngineKeywordsPerformance_bing_crawlstats_code_5xx	These codes appear when the server failed to fulfill an apparently valid request.
+	SearchEngineKeywordsPerformance_bing_crawlstats_crawledpages	Number of pages the Bing crawler requested.
+	SearchEngineKeywordsPerformance_bing_crawlstats_dnsfail	"This issue type catalogs recent errors encountered trying to communicate with the DNS server when the bot tried to access your pages. Possibly your server was down, or there was a misconfiguration that prevented DNS routing, for example TTL was set to 0."
+	SearchEngineKeywordsPerformance_bing_crawlstats_errors	Number of errors occured for the Bing crawler.
+	SearchEngineKeywordsPerformance_bing_crawlstats_inindex	Total number of pages available in Bing index
+	SearchEngineKeywordsPerformance_bing_crawlstats_inlinks	"Inbound links Bing is aware of, pointed at URLs on your website. These are links, from websites external of your own, that have been pointed towards your content."
+	SearchEngineKeywordsPerformance_bing_crawlstats_malware	Any page URLs that Bing found that are infected or associated with malware will be grouped in this section.
+	SearchEngineKeywordsPerformance_bing_crawlstats_other_codes	Groups all other codes that are not matched by any other value (such as 1xx or informational codes).
+	SearchEngineKeywordsPerformance_bing_crawlstats_timeout	This number represents recent occurences when Bing could not access your site due to connection errors. This could be a temporary issue but you should check your server logs to see if you are accidentally dropping requests.
+	SearchEngineKeywordsPerformance_yandex_crawlstats_appeared	Pages that were newly added to Yandex search index
+	SearchEngineKeywordsPerformance_yandex_crawlstats_code_2xx	Crawled Pages with a 2xx code
+	SearchEngineKeywordsPerformance_yandex_crawlstats_code_3xx	Crawled Pages with a 3xx code
+	SearchEngineKeywordsPerformance_yandex_crawlstats_code_4xx	Crawled Pages with a 4xx code
+	SearchEngineKeywordsPerformance_yandex_crawlstats_code_5xx	Crawled Pages with a 5xx code
+	SearchEngineKeywordsPerformance_yandex_crawlstats_crawledpages	Number of pages the Yandex crawler requested.
+	SearchEngineKeywordsPerformance_yandex_crawlstats_errors	Crawled paged that failed for any other reason
+	SearchEngineKeywordsPerformance_yandex_crawlstats_inindex	Total number of pages available in Yandex search index
+	SearchEngineKeywordsPerformance_yandex_crawlstats_removed	Pages that were removed from Yandex search index
+"""Goal Liveaboard.com click"" conversion rate"	goal_7_conversion_uniq_visitors_rate	"The ratio of ""Conversions goal ""Liveaboard.com click"" (ID 7 )"" out of all ""Visitors""."
+Actions	nb_actions	"The number of actions performed by your visitors. Actions can be page views, internal site searches, downloads or outlinks."
+Actions per Visit	nb_actions_per_visit	"The average number of actions (page views, site searches, downloads or outlinks) that were performed during the visits."
+Amendments	nb_field_amendments	"The number of times your visitors amended this field in total. An amendment is counted when a visitor changes this field (for example types something into a form field or selects a value), then moves on to another field and comes back to this field to change it again. An amendment is also counted when a visitor changes this field, submits the form, and then changes it again to correct a form validation error."
+Average value	avg_event_value	The average of all values for this event
+Avg. Completion	avg_completion_rate	The percentage of how much visitors have watched of a video. This metric may show more than 100% if many visitors spent more time on the video than the media length. This can be especially the case when the media is played in a loop.
+Avg. DOM completion time	avg_time_dom_completion	Average time (in seconds) it takes for the browser to load media and execute any Javascript code listening for the DOMContentLoaded event after the webpage was loaded and the user can already interact with it.
+Avg. DOM processing time	avg_time_dom_processing	Average time (in seconds) the browser spends loading the webpage after the response was fully received and before the user can start interacting with it.
+Avg. Media Length	avg_media_length	The average length of a video or audio media file. This number may vary for example if the media is a stream or if the media resource changes over time.
+Avg. Time On Dimension	avg_time_on_dimension	Avg. Time on custom action dimension is the average time visitors spent on a specific custom action before moving to another tracked action. Calculated by summing the time spent on the action across all visits and dividing it by the number of times the action was performed.
+Avg. Time To Play	avg_time_to_play	The average amount of time it took a visitor to start playing the media since the page was loaded.
+Avg. Time on Website	avg_time_on_site	The average duration of a visit.
+Avg. field size	avg_field_size	The average field size of this text field. Also includes text sizes of visitors that did not submit the form. Blank text fields (size 0) are ignored in the average calculation.
+Avg. field size on conversion	avg_field_size_converted	"The average field size of this text field when a visitor entered some text, submitted the form afterwards, and converted it."
+Avg. field size on submit	avg_field_size_submitted	The average field size of this text field when a visitor entered some text and submitted the form afterwards.
+Avg. field size when unsubmitted	avg_field_size_unsubmitted	The average field size of this text field when a visitor entered some text but did not submit the form afterwards.
+Avg. generation time	avg_time_generation	"The average time it took to generate the page. This metric includes the time it took the server to generate the web page, plus the time it took for the visitor to download the response from the server. A lower 'Avg. generation time' means a faster website for your visitors!"
+Avg. hesitation time	avg_field_hesitation_time	The average amount of time a visitor hesitated to start filling out this field. The time is measured from the moment a visitor focuses this field until they make the first change.
+Avg. network time	avg_time_network	Average time (in seconds) it takes to connect to the server. This includes the time needed to lookup DNS and establish a TCP connection. This value might be 0 after the first request to a domain as the browser might cache the connection.
+Avg. on load time	avg_time_on_load	Average time (in seconds) it takes the browser to execute Javascript code waiting for the window.load event. This event is triggered once the DOM has completely rendered.
+Avg. page load time	avg_page_load_time	Average time (in seconds) it takes from requesting a page until the page is fully rendered within the browser
+Avg. position	position	Average position of your website in the search engine results list (for this keyword).
+Avg. server time	avg_time_server	Average time (in seconds) it takes the server to generate the page. This is the time between the server receiving the request and starting to serve the response.
+Avg. time on page	avg_time_on_page	"The average amount of time visitors spent on this page (only the page, not the entire website)."
+Avg. time spent	avg_field_time_spent	"The average amount of time spent on this field when a visitor interacted with it. The time is measured from the moment a visitor focuses this field until they make the last change or until they leave the field again. If a visitor interacts with this field several time before submitting or leaving the form, all time spent on this field will be summed. The time spent includes the hesitation time."
+Avg. time spent	avg_time_watched	The average amount of time a visitor spent watching or listening to a media.
+Avg. transfer time	avg_time_transfer	Average time (in seconds) it takes the browser to download the response from the server. This is the time from receiving the first byte till the response is complete.
+Bounce Rate	bounce_rate	"The percentage of visits that only had a single pageview. This means, that the visitor left the website directly from the entrance page."
+Bounces	entry_bounce_count	Number of visits that started and ended on this page. This means that the visitor left the website after viewing only this page.
+CTR	ctr	"Clickthrough rate: A ratio showing how often people who see a search engine results page with a link to your website, end up clicking it."
+Changes	nb_field_changes	The number of times a visitor has changed this field. A first change is counted as soon as a visitor for example types something into a text field or selects a value. Further changes are only counted when the visitor moves on to another field and comes back to this field to change it again.
+Clicked in search results	nb_hits_following_search	"The number of times this Page was visited after a visitor did a search on your website, and clicked on this page in the search results."
+Clicks	nb_clicks	A click is counted each time someone clicks on a link pointing to your website on a search engine results page.
+Content Interactions	nb_interactions	"The number of times a content block was interacted with (eg, a 'click' on a banner or ad)."
+Conversion Rate	conversion_rate	The percentage of visits that triggered a conversion. The conversion rate is calculated using the number of visits that converted at least one goal. Visits converting multiple goals are only counted once in the conversion rate.
+Conversions First Interaction	nb_attribution_conversions_firstInteraction	"The number of conversions for this channel when the attribution model ""First Interaction"" is applied."
+Conversions Last Interaction	nb_attribution_conversions_lastInteraction	"The number of conversions for this channel when the attribution model ""Last Interaction"" is applied."
+Conversions Last Non-Direct	nb_attribution_conversions_lastNonDirect	"The number of conversions for this channel when the attribution model ""Last Non-Direct"" is applied."
+Conversions Linear	nb_attribution_conversions_linear	"The number of conversions for this channel when the attribution model ""Linear"" is applied."
+Conversions Position Based	nb_attribution_conversions_positionBased	"The number of conversions for this channel when the attribution model ""Position Based"" is applied."
+Conversions Time Decay	nb_attribution_conversions_timeDecay	"The number of conversions for this channel when the attribution model ""Time Decay"" is applied."
+"Conversions goal ""Liveaboard.com click"" (ID 7 )"	goal_7_conversion	The number of times this goal was converted.
+"Conversions goal ""New Job Application"" (ID 4 )"	goal_4_conversion	The number of times this goal was converted.
+Crash Occurrences	nb_crash_occurrences	The total number of crashes that occurred.
+Cursor rate	field_cursor_rate	The number of times cursor keys was used on this field after a user interacted with it. This metric is only available for text fields.
+Cursors	nb_field_cursor	The number of times your visitors have used any of the cursor keys on this field. This metric is only available for text fields.
+Deletes	nb_field_deletes	The number of times your visitors have used the backspace or delete key on this field. This metric is only available for text fields.
+Deletion rate	field_delete_rate	The percentage of times either a backspace or delete key was used when a field was changed. This metric is only available for text fields.
+Disappeared Crashes	nb_disappeared_crashes	The number of crashes that disappeared within the current period. A crash is considered disappeared if it has not occurred for a certain number of configurable days.
+Downloads	nb_downloads	The number of times this link was clicked.
+Drop offs	nb_field_dropoff	The number of times a visitor interacted with this field last when they did not submit the form.
+Entrances	entry_nb_visits	Number of visits that started on this page.
+Entries	nb_field_entries	"The number of times a visitor has interacted with this field first, when they started to fill out a form. An interaction can be either a field focus or a field change."
+Event value	sum_event_value	The sum of event values
+Events	nb_events	Total number of events
+Events with a value	nb_events_with_value	Number of events where an Event value was set
+Exit rate	exit_rate	The percentage of visits that left the website after viewing this page.
+Exits	exit_nb_visits	Number of visits that ended on this page.
+Exits	nb_exits	The number of visits that did not leave after this interaction.
+Field conversions	nb_field_views_converted	The number of times the field was shown when a form was converted. It does not mean a visitor actually interacted with this field.
+Field submissions	nb_field_views_submitted	The number of times this field was shown when the form was submitted. It does not mean a visitor has actually interacted with this field.
+Finish rate	finish_rate	The percentage of visitors who played a media and finished it (finish means a visitor has watched or listened to the end of the media).
+Finishes	nb_finishes	The number of times a video was finished (a visitor has watched or listened to the end of the media). It does not necessarily mean a visitor has watched or listened to all of the media.
+Form amendment rate	field_amendments_rate	"The number of times this field was amended after changing it initially. An amendment is counted when a visitor changes this field (for example types something into a form field or selects a value), then moves on to another field and comes back to this field to change it again. An amendment is also counted when a visitor changes this field, submits the form, and then changes it again to correct a form validation error."
+Form avg. hesitation time	avg_form_time_hesitation	"The average time a visitor hesitated to start interacting with a form. The time is calculated as the difference between the time of the page load and the time of the first interaction with a form (for example focusing a form field, typing a letter in a form or selecting a value in the form). The time is counted only while the browser window is active."
+Form avg. time spent	avg_form_time_spent	The average time a visitor spent on a form. The time is calculated as the difference between the first interaction with a form field (for example a field focus) and the last interaction with a form.
+Form avg. time to conversion	avg_form_time_to_conversion	"The average time it took a visitor to convert a form. If the visitor completes the form on the first submit, it is equal to the ""time to first submission"". If a visitor submits a form several times, it equals to the time spent on the form in total."
+Form avg. time to first submit	avg_form_time_to_first_submission	The average time it took a visitor to submit this form for the first time. It is the difference between the first interaction with the form (for example a field focus) and the time the visitor submits the form.
+Form conversion rate	form_conversion_rate	The number of times a form starter has converted the form.
+Form conversions	nb_form_conversions	The number of times this form was completed successfully.
+Form re-submitter rate	form_resubmitters_rate	"The percentage of submitters that have submitted this form at least a second time. This means a visitor first submitted a form, and then submitted it again. For example a re-submit might happen when there were form validation errors. When this number is high, something might not be clear about your forms."
+Form re-submitters	nb_form_resubmitters	"The number of form viewers that have re-submitted a form at least once. This means a visitor first submitted a form, and then submitted it again. For example a re-submit might happen when there were form validation errors. When this number is high, something might not be clear about your forms."
+Form starters	nb_form_starters	"The number of form viewers that have started interacting with a form at least once. This means a visitor has for example focused or changed a form field. If auto focus for a form field is enabled, a visitor first needs to focus another field or needs to actually start changing a field before it counts as a start."
+Form starters rate	form_starters_rate	"The percentage of times a visitor has viewed a page where this form was included and then started interacting with it. This means a visitor has for example focused or changed a form field. If auto focus for a form field is enabled, a visitor first needs to focus another field or needs to actually start changing a field before it counts as a start."
+Form starts	nb_form_starts	"The number of times a visitor has started interacting with a form after viewing it. This means a visitor has for example focused or changed a form field. If auto focus for a form field is enabled, a visitor first needs to focus another field or needs to actually start changing a field before it counts as a start."
+Form submissions	nb_form_submissions	"The number of times a form was submitted in total. If a visitor submitted a form 10 times, and another visitor 3 times, it will show 13 total form submissions."
+Form submitter rate	form_submitter_rate	The number of times a form starter has submitted the form.

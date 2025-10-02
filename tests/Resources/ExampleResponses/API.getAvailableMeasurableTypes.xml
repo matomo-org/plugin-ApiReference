@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<row>
+		<id>website</id>
+		<name>Website</name>
+		<description>A website consists of webpages, typically served from a single domain on the web.</description>
+		<longDescription>Track visitor interactions like page views, clicks, downloads, and events on a public-facing website. A single measurable can include multiple domains and subdomains, or you can create separate measurables for each.</longDescription>
+		<howToSetupUrl>?module=CoreAdminHome&amp;action=trackingCodeGenerator</howToSetupUrl>
+		<settings>
+			<row>
+				<pluginName>Live</pluginName>
+				<title>Live</title>
+				<settings>
+					<row>
+						<name>disable_visitor_log</name>
+						<title>Turn off visits log and visitor profiles</title>
+						<value>0</value>
+						<defaultValue>0</defaultValue>
+						<type>boolean</type>
+						<uiControl>checkbox</uiControl>
+						<uiControlAttributes>
+						</uiControlAttributes>
+						<availableValues />
+						<description />
+						<inlineHelp>Also removes features that depend on these, like the e-commerce log, the segmented visits-log, the real-time map or the real-time widget. May be required to comply with local privacy laws/guidelines.</inlineHelp>
+						<introduction />
+						<condition />
+						<fullWidth>0</fullWidth>
+					</row>
+					<row>
+						<name>disable_visitor_profile</name>
+						<title>Turn off visitor profiles</title>
+						<value>0</value>
+						<defaultValue>0</defaultValue>
+						<type>boolean</type>
+						<uiControl>checkbox</uiControl>
+						<uiControlAttributes>
+						</uiControlAttributes>
+						<availableValues />
+						<description />
+						<inlineHelp>All visits-log related features always function.</inlineHelp>
+						<introduction />
+						<condition>disable_visitor_log==0</condition>
+						<fullWidth>0</fullWidth>
+					</row>
+				</settings>
+			</row>
+		</settings>
+	</row>
+	<row>
+		<id>intranet</id>
+		<name>Intranet Website</name>
+		<description>An intranet measurable is just like a website but hosted on an internal network.</description>
+		<longDescription>Track internal sites that are only accessible within your organisation’s network. Matomo uses first-party cookies to more accurately identify unique visitors in intranet environments.</longDescription>
+		<howToSetupUrl>?module=CoreAdminHome&amp;action=trackingCodeGenerator</howToSetupUrl>
+		<settings>
+			<row>
+				<pluginName>Live</pluginName>
+				<title>Live</title>
+				<settings>
+					<row>
+						<name>disable_visitor_log</name>
+						<title>Turn off visits log and visitor profiles</title>
+						<value>0</value>
+						<defaultValue>0</defaultValue>
+						<type>boolean</type>
+						<uiControl>checkbox</uiControl>
+						<uiControlAttributes>
+						</uiControlAttributes>
+						<availableValues />
+						<description />
+						<inlineHelp>Also removes features that depend on these, like the e-commerce log, the segmented visits-log, the real-time map or the real-time widget. May be required to comply with local privacy laws/guidelines.</inlineHelp>
+						<introduction />
+						<condition />
+						<fullWidth>0</fullWidth>
+					</row>
+					<row>
+						<name>disable_visitor_profile</name>
+						<title>Turn off visitor profiles</title>
+						<value>0</value>
+						<defaultValue>0</defaultValue>
+						<type>boolean</type>
+						<uiControl>checkbox</uiControl>
+						<uiControlAttributes>
+						</uiControlAttributes>
+						<availableValues />
+						<description />
+						<inlineHelp>All visits-log related features always function.</inlineHelp>
+						<introduction />
+						<condition>disable_visitor_log==0</condition>
+						<fullWidth>0</fullWidth>
+					</row>
+				</settings>
+			</row>
+		</settings>
+	</row>
+	<row>
+		<id>rollup</id>
+		<name>Roll-Up</name>
+		<description>Roll-Ups let you aggregate data from multiple websites and apps into one single parent site.</description>
+		<longDescription>The Roll-Up Reporting plugin lets you aggregate data from multiple websites and apps into one single place. Access, analyse, and compare the data of multiple digital properties in one report, helping you instantly gain the insights you need, error-free.</longDescription>
+		<howToSetupUrl />
+		<settings>
+			<row>
+				<pluginName>Live</pluginName>
+				<title>Live</title>
+				<settings>
+					<row>
+						<name>disable_visitor_log</name>
+						<title>Turn off visits log and visitor profiles</title>
+						<value>0</value>
+						<defaultValue>0</defaultValue>
+						<type>boolean</type>
+						<uiControl>checkbox</uiControl>
+						<uiControlAttributes>
+						</uiControlAttributes>
+						<availableValues />
+						<description />
+						<inlineHelp>Also removes features that depend on these, like the e-commerce log, the segmented visits-log, the real-time map or the real-time widget. May be required to comply with local privacy laws/guidelines.</inlineHelp>
+						<introduction />
+						<condition />
+						<fullWidth>0</fullWidth>
+					</row>
+					<row>
+						<name>disable_visitor_profile</name>
+						<title>Turn off visitor profiles</title>
+						<value>0</value>
+						<defaultValue>0</defaultValue>
+						<type>boolean</type>
+						<uiControl>checkbox</uiControl>
+						<uiControlAttributes>
+						</uiControlAttributes>
+						<availableValues />
+						<description />
+						<inlineHelp>All visits-log related features always function.</inlineHelp>
+						<introduction />
+						<condition>disable_visitor_log==0</condition>
+						<fullWidth>0</fullWidth>
+					</row>
+				</settings>
+			</row>
+		</settings>
+	</row>
+</result>
