@@ -1,0 +1,33 @@
+<?php
+
+declare (strict_types=1);
+/**
+ * @license Apache 2.0
+ */
+namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Processors;
+
+use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysis;
+use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
+use Matomo\Dependencies\OpenApiDocs\OpenApi\Context;
+use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
+/**
+ * Merge reusable annotation into <code>@OA\Schemas</code>.
+ */
+class MergeIntoComponents
+{
+    public function __invoke(Analysis $analysis) : void
+    {
+        $components = $analysis->openapi->components;
+        if (Generator::isDefault($components)) {
+            $components = new OA\Components(['_context' => new Context(['generated' => \true], $analysis->context)]);
+        }
+        /** @var OA\AbstractAnnotation $annotation */
+        foreach ($analysis->annotations as $annotation) {
+            if ($annotation instanceof OA\AbstractAnnotation && in_array(OA\Components::class, $annotation::$_parents) && \false === $annotation->_context->is('nested')) {
+                // A top level annotation.
+                $components->merge([$annotation], \true);
+                $analysis->openapi->components = $components;
+            }
+        }
+    }
+}
