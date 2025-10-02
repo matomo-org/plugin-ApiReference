@@ -1366,6 +1366,7 @@ class AnnotationGenerator
     public function buildPropertyAnnotationFromXmlExample(string $propName, array $values): array
     {
         $type = 'object';
+        $originalValues = $values;
         if ($propName === 'row') {
             $type = 'array';
             $values = is_array($values[0] ?? null) ? $values[0] : [];
@@ -1408,8 +1409,8 @@ class AnnotationGenerator
             ];
 
             // Handle arrays of strings which don't have named properties
-            $keys = array_keys($values);
-            if (!is_string(reset($keys)) && count($values) === 1) {
+            $originalKeys = array_keys($originalValues);
+            if (!is_string(reset($originalKeys)) && !is_string(reset($values))) {
                 $itemProperties = ['type="string"'];
             }
 
