@@ -1369,7 +1369,17 @@ class AnnotationGenerator
         $originalValues = $values;
         if ($propName === 'row') {
             $type = 'array';
-            $values = is_array($values[0] ?? null) ? $values[0] : [];
+            // Try to select the row with the most properties
+            $maxValues = 0;
+            $maxValuesKey = null;
+            foreach ($values as $key => $value) {
+                $valueArray = is_array($value) ? $value : [$value];
+                if ($maxValuesKey === null || $maxValues < count($valueArray)) {
+                    $maxValuesKey = $key;
+                    $maxValues = count($valueArray);
+                }
+            }
+            $values = is_array($values[$maxValuesKey]) ? $values[$maxValuesKey] : [];
         }
 
         // Set the common properties
