@@ -15,6 +15,7 @@ class OpenApiDocs extends \Piwik\Plugin
     public const GENERATED_ANNOTATIONS_PATH = '/tmp/annotations/';
     public const EXAMPLE_RESPONSES_PATH = '/tmp/responses/';
     public const GENERATED_SPECS_PATH = '/tmp/specs/';
+    public const AVAILABLE_PROPERTY_TYPES = ['string', 'number', 'integer', 'boolean', 'array', 'object', 'null'];
 
     public function registerEvents()
     {

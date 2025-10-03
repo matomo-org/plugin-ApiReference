@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
+use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 
 /**
  * @group OpenApiDocs
@@ -859,10 +860,35 @@ class AnnotationGeneratorTest extends TestCase
         }
     }
 
-    public function testBuildSchemaAnnotationFromJsonExample(): void
+    /**
+     * @dataProvider getTestJsonSchemaData
+     *
+     * @param string $endpoint
+     * @param array $normalisedObject
+     * @param array $expected
+     *
+     * @return void
+     */
+    public function testBuildSchemaAnnotationFromJsonExample(string $endpoint, array $normalisedObject, array $expected): void
     {
-        // TODO - buildSchemaAnnotationFromJsonExample method
-        $this->expectNotToPerformAssertions();
+        $this->assertNotEmpty($normalisedObject, 'The decoded example response should not be empty for endpoint: ' . $endpoint);
+        $result = $this->annotationGenerator->buildSchemaAnnotationFromJsonExample($normalisedObject);
+        $this->assertEquals($expected, $result, "The JSON schema was not as expected for endpoint $endpoint.");
+    }
+
+    /**
+     * @return iterable<string, array, array>
+     */
+    public static function getTestJsonSchemaData(): iterable
+    {
+        $normalisedMap = self::getNormalisedExamples();
+        $schemasMap = self::getExampleSchemas();
+        foreach (self::EXAMPLE_API_ENDPOINTS as $endpoint) {
+            $normalisedString = $normalisedMap[$endpoint]['json'] ?? '';
+            $normalisedObject = json_decode($normalisedString, true) ?? [];
+            $expected = json_decode($schemasMap[$endpoint]['json'] ?? '', true) ?? [];
+            yield "should match expected JSON schema for $endpoint endpoint" => [$endpoint, $normalisedObject, $expected];
+        }
     }
 
     public function testBuildPropertyAnnotationFromJsonExample(): void
@@ -1017,10 +1043,46 @@ class AnnotationGeneratorTest extends TestCase
         yield 'should ignore the custom quote character when array type' => ['30', 'array', '|', '30'];
     }
 
-    public function testShouldIncludeDefault(): void
+    /**
+     * @dataProvider getTestDataForTestShouldIncludeDefault
+     *
+     * @param string $type
+     * @param string $default
+     * @param bool $expected
+     *
+     * @return void
+     */
+    public function testShouldIncludeDefault(string $type, string $default, bool $expected): void
     {
-        // TODO - shouldIncludeDefault method
-        $this->expectNotToPerformAssertions();
+        $this->assertSame($expected, $this->annotationGenerator->shouldIncludeDefault($type, $default));
+    }
+
+    /**
+     * @return iterable<string, string, bool>
+     */
+    public function getTestDataForTestShouldIncludeDefault(): iterable
+    {
+        yield 'should be false for empty strings' => ['', '', false];
+        yield 'should be false for empty type and no default' => ['', NoDefaultValue::class, false];
+        foreach (OpenApiDocs::AVAILABLE_PROPERTY_TYPES as $type) {
+            $emptyStringExpected = $type === 'string' ? 'true' : 'false';
+            yield "should be $emptyStringExpected for $type type and empty string default" => [$type, '', $emptyStringExpected === 'true'];
+            yield "should be false for $type type and no default" => [$type, NoDefaultValue::class, false];
+            $boolStringExpected = $type === 'boolean' ? 'true' : 'false';
+            yield "should be $boolStringExpected for $type type and 'false' default" => [$type, 'false', $boolStringExpected === 'true'];
+            yield "should be $boolStringExpected for $type type and 'true' default" => [$type, 'true', $boolStringExpected === 'true'];
+            foreach (['0', '5', '10', '15', '20', '50', '99', '100', '999', '1000'] as $default) {
+                yield "should be true for $type type and '$default' default" => [$type, $default, true];
+            }
+            foreach (['abc123', 'test', 'something', 'whatever', '{}', '[]', '{"key":"value"}'] as $default) {
+                $notNumber = !in_array($type, ['integer', 'number']) ? 'true' : 'false';
+                yield "should be $notNumber for $type type and '$default' default" => [$type, $default, $notNumber === 'true'];
+            }
+            foreach (['1.1', '0.25', '60.45', '125.50', '10000.2', '1234567890.1234567890'] as $default) {
+                $notInteger = $type !== 'integer' ? 'true' : 'false';
+                yield "should be $notInteger for $type type and '$default' default" => [$type, $default, $notInteger === 'true'];
+            }
+        }
     }
 
     public function testBuildSchemaObjectArrays(): void

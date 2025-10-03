@@ -1561,12 +1561,13 @@ class AnnotationGenerator
      */
     public function shouldIncludeDefault(string $type, string $default = NoDefaultValue::class): bool
     {
-        if ($default === NoDefaultValue::class) {
-            return false;
-        }
-
-        // Don't use true or false for default if it's not a boolean type
-        if ($type !== 'boolean' && in_array(strtolower($default), ['false', 'true'])) {
+        if (
+            $default === NoDefaultValue::class
+            || ($type === 'number' && !is_numeric($default))
+            || ($type === 'integer' && !\ctype_digit($default))
+            || ($type !== 'string' && $default === '')
+            || ($type !== 'boolean' && in_array(strtolower($default), ['false', 'true']))
+        ) {
             return false;
         }
 
