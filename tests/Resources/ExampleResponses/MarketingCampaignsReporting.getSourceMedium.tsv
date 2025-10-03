@@ -1,0 +1,13 @@
+label	nb_visits	nb_actions	max_actions	sum_visit_length	bounce_count	nb_visits_converted	sum_daily_nb_uniq_visitors	sum_daily_nb_users	goals_idgoal=1_nb_conversions	goals_idgoal=1_nb_visits_converted	goals_idgoal=1_revenue	goals_idgoal=2_nb_conversions	goals_idgoal=2_nb_visits_converted	goals_idgoal=2_revenue	nb_conversions	revenue	goals_idgoal=ecommerceAbandonedCart_nb_conversions	goals_idgoal=ecommerceAbandonedCart_nb_visits_converted	goals_idgoal=ecommerceAbandonedCart_revenue	goals_idgoal=ecommerceAbandonedCart_items	goals_idgoal=ecommerceOrder_nb_conversions	goals_idgoal=ecommerceOrder_nb_visits_converted	goals_idgoal=ecommerceOrder_revenue	goals_idgoal=ecommerceOrder_revenue_subtotal	goals_idgoal=ecommerceOrder_revenue_tax	goals_idgoal=ecommerceOrder_revenue_shipping	goals_idgoal=ecommerceOrder_revenue_discount	goals_idgoal=ecommerceOrder_items
+buysellads - display	106	236	76	32662	54	32	104	0	32	32	0	2	1	112	34	112
+adwords - display	45	56	5	2489	40	2	42	0	2	2	0				2	0
+google - cpc	40	162	26	4304	25	2	40	0	2	2	0				2	0	4	4	115	7
+adwords - cpc	17	19	3	695	16	1	17	0	1	1	0				1	0
+google-ads - email	9	18	5	4	5	2	8	3							2	255.36					2	2	255.36	224	42.56	11.2	22.4	7
+newsletter	5	8	3	5	3	1	5	3							1	321.48	2	2	100	3	1	1	321.48	282	53.58	14.1	28.2	3
+google-ads - paid-ads	4	10	5	853	2	1	4	3	1	1	0				1	0	1	1	50	2
+newsletter - email	4	5	2	2	3	0	4	0
+newsletter - paid-ads	4	3	1	0	4	0	3	2
+email	3	7	5	0	2	0	3	2
+google-ads	2	3	2	0	1	0	2	1
+paid-ads	2	2	1	0	2	0	2	0

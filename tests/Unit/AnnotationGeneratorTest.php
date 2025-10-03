@@ -53,8 +53,15 @@ class AnnotationGeneratorTest extends TestCase
         'LogViewer.getConfiguredLogReaders',
         'LogViewer.getLogConfig',
         'LogViewer.getLogEntries',
+        'MarketingCampaignsReporting.getContent',
+        'MarketingCampaignsReporting.getGroup',
+        'MarketingCampaignsReporting.getId',
         'MarketingCampaignsReporting.getKeyword',
+        'MarketingCampaignsReporting.getMedium',
         'MarketingCampaignsReporting.getName',
+        'MarketingCampaignsReporting.getPlacement',
+        'MarketingCampaignsReporting.getSource',
+        'MarketingCampaignsReporting.getSourceMedium',
     ];
 
     public const EXAMPLE_RESPONSE_FILE_NAMES = [
@@ -799,7 +806,10 @@ class AnnotationGeneratorTest extends TestCase
             $normalisedObject = json_decode($normalisedString, true) ?? [];
             $this->assertNotEmpty($normalisedObject, 'The decoded example response should not be empty for endpoint: ' . $endpoint);
             $expected = json_decode($schemasMap[$endpoint]['xml'] ?? '', true) ?? [];
-            $this->assertEquals($expected, $this->annotationGenerator->buildSchemaAnnotationFromXmlExample($normalisedObject), "The XML schema was not as expected for endpoint $endpoint.");
+            $result = $this->annotationGenerator->buildSchemaAnnotationFromXmlExample($normalisedObject);
+                $result = json_encode($result);
+                $expected = json_encode($expected);
+            $this->assertEquals($expected, $result, "The XML schema was not as expected for endpoint $endpoint.");
         }
     }
 

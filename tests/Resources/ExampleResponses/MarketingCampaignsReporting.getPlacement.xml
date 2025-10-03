@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<row>
+		<label>external</label>
+		<nb_visits>12</nb_visits>
+		<nb_actions>16</nb_actions>
+		<max_actions>4</max_actions>
+		<sum_visit_length>3</sum_visit_length>
+		<bounce_count>10</bounce_count>
+		<nb_visits_converted>1</nb_visits_converted>
+		<sum_daily_nb_uniq_visitors>12</sum_daily_nb_uniq_visitors>
+		<sum_daily_nb_users>4</sum_daily_nb_users>
+		<goals>
+			<row idgoal='ecommerceOrder'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>191.52</revenue>
+				<revenue_subtotal>168</revenue_subtotal>
+				<revenue_tax>31.92</revenue_tax>
+				<revenue_shipping>8.4</revenue_shipping>
+				<revenue_discount>16.8</revenue_discount>
+				<items>3</items>
+			</row>
+		</goals>
+		<nb_conversions>1</nb_conversions>
+		<revenue>191.52</revenue>
+		<segment>campaignPlacement==external</segment>
+	</row>
+	<row>
+		<label>bottom</label>
+		<nb_visits>10</nb_visits>
+		<nb_actions>22</nb_actions>
+		<max_actions>5</max_actions>
+		<sum_visit_length>5</sum_visit_length>
+		<bounce_count>5</bounce_count>
+		<nb_visits_converted>1</nb_visits_converted>
+		<goals>
+			<row idgoal='ecommerceAbandonedCart'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>50</revenue>
+				<items>2</items>
+			</row>
+			<row idgoal='ecommerceOrder'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>63.84</revenue>
+				<revenue_subtotal>56</revenue_subtotal>
+				<revenue_tax>10.64</revenue_tax>
+				<revenue_shipping>2.8</revenue_shipping>
+				<revenue_discount>5.6</revenue_discount>
+				<items>4</items>
+			</row>
+		</goals>
+		<nb_conversions>1</nb_conversions>
+		<revenue>63.84</revenue>
+		<sum_daily_nb_uniq_visitors>9</sum_daily_nb_uniq_visitors>
+		<sum_daily_nb_users>3</sum_daily_nb_users>
+		<segment>campaignPlacement==bottom</segment>
+	</row>
+	<row>
+		<label>top</label>
+		<nb_visits>9</nb_visits>
+		<nb_actions>15</nb_actions>
+		<max_actions>5</max_actions>
+		<sum_visit_length>856</sum_visit_length>
+		<bounce_count>6</bounce_count>
+		<nb_visits_converted>2</nb_visits_converted>
+		<sum_daily_nb_uniq_visitors>8</sum_daily_nb_uniq_visitors>
+		<sum_daily_nb_users>6</sum_daily_nb_users>
+		<goals>
+			<row idgoal='ecommerceAbandonedCart'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>50</revenue>
+				<items>2</items>
+			</row>
+			<row idgoal='ecommerceOrder'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>321.48</revenue>
+				<revenue_subtotal>282</revenue_subtotal>
+				<revenue_tax>53.58</revenue_tax>
+				<revenue_shipping>14.1</revenue_shipping>
+				<revenue_discount>28.2</revenue_discount>
+				<items>3</items>
+			</row>
+			<row idgoal='1'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>0</revenue>
+			</row>
+		</goals>
+		<nb_conversions>2</nb_conversions>
+		<revenue>321.48</revenue>
+		<segment>campaignPlacement==top</segment>
+	</row>
+</result>
