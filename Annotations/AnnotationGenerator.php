@@ -1369,17 +1369,15 @@ class AnnotationGenerator
         $originalValues = $values;
         if ($propName === 'row') {
             $type = 'array';
-            // Try to select the row with the most properties
-            $maxValues = 0;
-            $maxValuesKey = null;
+            // Merge the rows together to get as many properties as possible
+            $mergedValues = [];
             foreach ($values as $key => $value) {
                 $valueArray = is_array($value) ? $value : [$value];
-                if ($maxValuesKey === null || $maxValues < count($valueArray)) {
-                    $maxValuesKey = $key;
-                    $maxValues = count($valueArray);
+                if (is_array($value)) {
+                    $mergedValues = array_merge($mergedValues, $valueArray);
                 }
             }
-            $values = is_array($values[$maxValuesKey]) ? $values[$maxValuesKey] : [];
+            $values = $mergedValues;
         }
 
         // Set the common properties
