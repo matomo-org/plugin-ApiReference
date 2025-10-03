@@ -244,9 +244,12 @@ class AnnotationGenerator
         $existing = $reflectionMethod->getDocComment();
         // Skip methods which have been marked as internal or auto annotations disabled
         if (
-            $existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
-                || stripos($existing, '@internal') !== false
-                || stripos($existing, '@hide') !== false)
+            $existing !== false
+            && (
+                stripos($existing, '@internal') !== false
+                || stripos($existing, '@hide') !== false
+                || stripos($existing, '@deprecated') !== false
+            )
         ) {
             return [];
         }
