@@ -59,7 +59,29 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     additionalProperties=true,
  *     @OA\Property(property="result", type="string", example="success"),
  *     @OA\Property(property="message", type="string", example="ok"),
- *     @OA\Property(property="code", type="integer", example="200")
+ *     @OA\Property(property="code", type="integer", example="200"),
+ *     example={"result":"success","message":"ok"}
+ * )
+ *
+ * @OA\Schema(
+ *     schema="GenericSuccessXml",
+ *     type="object",
+ *     description="Generic Matomo success payload in XML.",
+ *     required={"success"},
+ *     additionalProperties=true,
+ *     @OA\Xml(name="result"),
+ *     @OA\Property(
+ *         property="success",
+ *         type="object",
+ *         @OA\Xml(name="success"),
+ *         @OA\Property(
+ *             property="message",
+ *             type="string",
+ *             @OA\Xml(attribute=true),
+ *             example="ok"
+ *         )
+ *     ),
+ *     example={"success":{"message":"ok"}}
  * )
  *
  * Generic Error object
@@ -160,9 +182,9 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     response="GenericSuccess",
  *     description="Generic 200 response",
  *     @OA\JsonContent(ref="#/components/schemas/GenericSuccess"),
- *     @OA\XmlContent(ref="#/components/schemas/GenericSuccess"),
- *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Result: success"),
- *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="success")
+ *     @OA\XmlContent(ref="#/components/schemas/GenericSuccessXml"),
+ *     @OA\MediaType(mediaType="text/plain", @OA\Schema(type="string"), example="Success:ok"),
+ *     @OA\MediaType(mediaType="text/html",  @OA\Schema(type="string"), example="<!-- Success: ok -->")
  * )
  *
  * @OA\Response(

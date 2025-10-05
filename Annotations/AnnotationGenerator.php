@@ -950,17 +950,23 @@ class AnnotationGenerator
         $root = new \SimpleXMLElement($xml);
 
         $toArray = function (\SimpleXMLElement $node) use (&$toArray) {
-            if (!count($node->children())) {
+            if (!count($node->children()) && !count($node->attributes())) {
                 return trim((string)$node);
             }
-            // Group children by tag name; repeated names become arrays
+
+            // Handle any attributes
             $grouped = [];
+            foreach ($node->attributes() as $attribute) {
+                $grouped['oaXmlAttributes'][] = [$attribute->getName() => (string) $attribute];
+            }
+
+            // Group children by tag name; repeated names become arrays
             foreach ($node->children() as $child) {
                 $name = $child->getName();
                 $grouped[$name][] = $toArray($child);
             }
             return array_map(function ($items) {
-                return (count($items) === 1) ? $items[0] : $items;
+                return (count($items) === 1) ? array_pop($items) : $items;
             }, $grouped);
         };
 
@@ -1014,7 +1020,7 @@ class AnnotationGenerator
 
         // If the return type is void, use the generic response type
         if (empty($successArray['ref']) && !empty($returnType) && strval($returnType) === 'void') {
-            $successArray['ref'] = '#/components/responses/GenericSuccessNoBody';
+            $successArray['ref'] = '#/components/responses/GenericSuccess';
         }
 
         // If it's a generic type and there's no custom description, use one of the global generic responses
@@ -1389,11 +1395,19 @@ class AnnotationGenerator
             sprintf('type="%s",', $type),
         ];
 
+        $hasAttributes = false;
         $childLines = [];
         // Recursively check if any of the children are arrays
         foreach ($values as $key => $value) {
             // If it's not an array, skip
             if (!is_array($value)) {
+                continue;
+            }
+
+            // Special handling for XML attributes
+            if ($key === 'oaXmlAttributes') {
+                $hasAttributes = true;
+                $childLines[] = $this->buildXmlAttributeSchemaLines($value);
                 continue;
             }
 
@@ -1421,7 +1435,7 @@ class AnnotationGenerator
 
             // Handle arrays of strings which don't have named properties
             $originalKeys = array_keys($originalValues);
-            if (!is_string(reset($originalKeys)) && !is_string(reset($values))) {
+            if (!is_string(reset($originalKeys)) && !is_string(reset($values)) && !$hasAttributes) {
                 $itemProperties = ['type="string"'];
             }
 
@@ -1429,6 +1443,23 @@ class AnnotationGenerator
         }
 
         return ['@OA\Property' => array_merge($propertyLines, $childLines)];
+    }
+
+    public function buildXmlAttributeSchemaLines(array $attributes): array
+    {
+        $attributeSchemaLines = [];
+        foreach ($attributes as $index => $attribute) {
+            $key = is_array($attribute) ? array_keys($attribute)[0] : $index;
+            $value = is_array($attribute) ? $attribute[$key] : $attribute;
+            $attributeSchemaLines[] = ['@OA\Property' => [
+                "property=\"$key\",",
+                'type="string",',
+                '@OA\Xml(attribute=true),',
+                "example=\"$value\"",
+            ]];
+        }
+
+        return $attributeSchemaLines;
     }
 
     /**

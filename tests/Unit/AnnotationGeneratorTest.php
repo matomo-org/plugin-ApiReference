@@ -43,6 +43,7 @@ class AnnotationGeneratorTest extends TestCase
         'API.getSettings',
         'API.getSuggestedValuesForSegment',
         'API.getWidgetMetadata',
+        'CustomAlerts.deleteAlert',
         'CustomAlerts.getAlert',
         'CustomAlerts.getAlerts',
         'CustomAlerts.getTriggeredAlerts',
@@ -105,6 +106,7 @@ class AnnotationGeneratorTest extends TestCase
         'API.getSuggestedValuesForSegment.xml',
         'API.getWidgetMetadata.json',
         'API.getWidgetMetadata.xml',
+        'CustomAlerts.deleteAlert.json',
         'CustomAlerts.deleteAlert.xml',
         'CustomAlerts.getAlert.json',
         'CustomAlerts.getAlerts.json',
@@ -844,6 +846,7 @@ class AnnotationGeneratorTest extends TestCase
                     (
                         $type === 'tsv'
                         && in_array($endpoint, [
+                            'CustomAlerts.deleteAlert',
                             'CustomAlerts.getAlert',
                             'CustomAlerts.getAlerts',
                             'CustomAlerts.getTriggeredAlerts',
@@ -893,7 +896,7 @@ class AnnotationGeneratorTest extends TestCase
 
     public function testBuildPropertyAnnotationFromJsonExample(): void
     {
-        // TODO - buildPropertyAnnotationFromJsonExample method
+        // TODO - buildPropertyAnnotationFromJsonExample method. It's covered pretty well by testBuildSchemaAnnotationFromJsonExample, but there might be specific cases to test
         $this->expectNotToPerformAssertions();
     }
 
@@ -910,7 +913,7 @@ class AnnotationGeneratorTest extends TestCase
     {
         $this->assertNotEmpty($normalisedObject, 'The decoded example response should not be empty for endpoint: ' . $endpoint);
         $result = $this->annotationGenerator->buildSchemaAnnotationFromXmlExample($normalisedObject);
-        $this->assertEquals($expected, $result, "The XML schema was not as expected for endpoint $endpoint.");
+        $this->assertEquals(json_encode($expected), json_encode($result), "The XML schema was not as expected for endpoint $endpoint.");
     }
 
     /**
@@ -930,7 +933,7 @@ class AnnotationGeneratorTest extends TestCase
 
     public function testBuildPropertyAnnotationFromXmlExample(): void
     {
-        // TODO - buildPropertyAnnotationFromXmlExample method
+        // TODO - buildPropertyAnnotationFromXmlExample method. It's covered pretty well by testBuildSchemaAnnotationFromXmlExample, but there might be specific cases to test
         $this->expectNotToPerformAssertions();
     }
 
