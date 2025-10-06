@@ -1386,6 +1386,10 @@ class AnnotationGenerator
         foreach ($decodedExampleValue as $key => &$value) {
             if ($key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) {
                 unset($decodedExampleValue[$key]);
+                // Add the attributes as actual properties so that they are visible in the example
+                foreach ($value as $attributeName => $attributeValue) {
+                    $decodedExampleValue[$attributeName] = $attributeValue;
+                }
                 continue;
             }
 
@@ -1437,7 +1441,7 @@ class AnnotationGenerator
             // Special handling for XML attributes
             if ($key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) {
                 $hasAttributes = true;
-                $childLines[] = $this->buildXmlAttributeSchemaLines($value);
+                $childLines = array_merge($childLines, $this->buildXmlAttributeSchemaLines($value));
                 continue;
             }
 
