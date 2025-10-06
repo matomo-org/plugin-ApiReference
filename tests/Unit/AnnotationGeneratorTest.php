@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
+use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 
 /**
  * @group OpenApiDocs
@@ -27,6 +28,22 @@ class AnnotationGeneratorTest extends TestCase
     public const TEST_RESOURCES_DIR = __DIR__ . '/../Resources';
 
     public const EXAMPLE_API_ENDPOINTS = [
+        'API.get',
+        'API.getGlossaryMetrics',
+        'API.getGlossaryReports',
+        'API.getIpFromHeader',
+        'API.getMatomoVersion',
+        'API.getMetadata',
+        'API.getPagesComparisonsDisabledFor',
+        'API.getPhpVersion',
+        'API.getProcessedReport',
+        'API.getReportMetadata',
+        'API.getReportPagesMetadata',
+        'API.getSegmentsMetadata',
+        'API.getSettings',
+        'API.getSuggestedValuesForSegment',
+        'API.getWidgetMetadata',
+        'CustomAlerts.deleteAlert',
         'CustomAlerts.getAlert',
         'CustomAlerts.getAlerts',
         'CustomAlerts.getTriggeredAlerts',
@@ -38,11 +55,58 @@ class AnnotationGeneratorTest extends TestCase
         'LogViewer.getConfiguredLogReaders',
         'LogViewer.getLogConfig',
         'LogViewer.getLogEntries',
+        'MarketingCampaignsReporting.getContent',
+        'MarketingCampaignsReporting.getGroup',
+        'MarketingCampaignsReporting.getId',
         'MarketingCampaignsReporting.getKeyword',
+        'MarketingCampaignsReporting.getMedium',
         'MarketingCampaignsReporting.getName',
+        'MarketingCampaignsReporting.getPlacement',
+        'MarketingCampaignsReporting.getSource',
+        'MarketingCampaignsReporting.getSourceMedium',
     ];
 
     public const EXAMPLE_RESPONSE_FILE_NAMES = [
+        'API.get.json',
+        'API.get.tsv',
+        'API.get.xml',
+        'API.getGlossaryMetrics.json',
+        'API.getGlossaryMetrics.tsv',
+        'API.getGlossaryMetrics.xml',
+        'API.getGlossaryReports.json',
+        'API.getGlossaryReports.tsv',
+        'API.getGlossaryReports.xml',
+        'API.getIpFromHeader.json',
+        'API.getIpFromHeader.tsv',
+        'API.getIpFromHeader.xml',
+        'API.getMatomoVersion.json',
+        'API.getMatomoVersion.tsv',
+        'API.getMatomoVersion.xml',
+        'API.getMetadata.json',
+        'API.getMetadata.xml',
+        'API.getPagesComparisonsDisabledFor.json',
+        'API.getPagesComparisonsDisabledFor.tsv',
+        'API.getPagesComparisonsDisabledFor.xml',
+        'API.getPhpVersion.json',
+        'API.getPhpVersion.tsv',
+        'API.getPhpVersion.xml',
+        'API.getProcessedReport.json',
+        'API.getProcessedReport.xml',
+        'API.getReportMetadata.json',
+        'API.getReportMetadata.xml',
+        'API.getReportPagesMetadata.json',
+        'API.getReportPagesMetadata.xml',
+        'API.getSegmentsMetadata.json',
+        'API.getSegmentsMetadata.xml',
+        'API.getSettings.json',
+        'API.getSettings.tsv',
+        'API.getSettings.xml',
+        'API.getSuggestedValuesForSegment.json',
+        'API.getSuggestedValuesForSegment.tsv',
+        'API.getSuggestedValuesForSegment.xml',
+        'API.getWidgetMetadata.json',
+        'API.getWidgetMetadata.xml',
+        'CustomAlerts.deleteAlert.json',
         'CustomAlerts.deleteAlert.xml',
         'CustomAlerts.getAlert.json',
         'CustomAlerts.getAlerts.json',
@@ -94,6 +158,21 @@ class AnnotationGeneratorTest extends TestCase
      */';
 
     /**
+     * @var array
+     */
+    private static $normalisedExamples;
+
+    /**
+     * @var array
+     */
+    private static $truncatedExamples;
+
+    /**
+     * @var array
+     */
+    private static $exampleSchemas;
+
+    /**
      * @var AnnotationGenerator
      */
     private $annotationGenerator;
@@ -110,7 +189,7 @@ class AnnotationGeneratorTest extends TestCase
      * @return string String contents of the raw response body. If the file isn't found, an empty string is returned.
      * @throws \Exception
      */
-    private function getRawExampleResponseForApiEndpoint(string $apiEndpoint, string $format = 'json'): string
+    private static function getRawExampleResponseForApiEndpoint(string $apiEndpoint, string $format = 'json'): string
     {
         if (!in_array(strtolower($format), ['json', 'xml', 'tsv'])) {
             throw new \Exception('Invalid format: ' . $format . '. Must be: "json", "xml", or "tsv"');
@@ -127,42 +206,65 @@ class AnnotationGeneratorTest extends TestCase
      * @return string String contents of the raw response body. If the file isn't found, an empty string is returned.
      * @throws \Exception
      */
-    private function getRawExampleResponseForPluginMethod(string $plugin, string $method, string $format = 'json'): string
+    private static function getRawExampleResponseForPluginMethod(string $plugin, string $method, string $format = 'json'): string
     {
-        return $this->getRawExampleResponseForApiEndpoint("{$plugin}.{$method}", $format);
+        return self::getRawExampleResponseForApiEndpoint("{$plugin}.{$method}", $format);
     }
 
     /**
-     * Get the map of example responses. The default is returning the map for all the example responses after they've
-     * been normalised for schema generation, but before being truncated.
-     *
-     * @param bool $exampleResponseSchemas Return the generated schemas of the example responses.
-     * @param bool $onlyExamplesThatWereTruncated Return only the example responses that were truncated.
+     * Get the map of example responses which have been normalised in preparation of building schemas.
      *
      * @return array The map of example responses for a bunch of API endpoints.
      * E.g. ['plugin.method' => ['json' => '...', 'xml' => '...', 'tsv' => '...']]
      */
-    private function getExampleResponsesMap(bool $exampleResponseSchemas = false, bool $onlyExamplesThatWereTruncated = false): array
+    private static function getNormalisedExamples(): array
     {
-        if ($exampleResponseSchemas && $onlyExamplesThatWereTruncated) {
-            throw new \Exception('Only one type of example response can be returned at a time.');
+        if (empty(self::$normalisedExamples)) {
+            $demoExampleResponsesString = file_get_contents(self::TEST_RESOURCES_DIR . '/ExampleResponsesNormalised/ExamplesFromDemoByType.json') ?: '';
+            $localExampleResponsesString = file_get_contents(self::TEST_RESOURCES_DIR . '/ExampleResponsesNormalised/ExamplesFromLocalByType.json') ?: '';
+            $demoJson = json_decode($demoExampleResponsesString, true) ?? [];
+            $localJson = json_decode($localExampleResponsesString, true) ?? [];
+            self::$normalisedExamples = array_merge($demoJson, $localJson);
         }
 
-        if ($exampleResponseSchemas) {
-            $exampleResponseSchemasString = file_get_contents(self::TEST_RESOURCES_DIR . '/ExampleResponsesNormalised/ExamplesSchemasByType.json') ?: '';
-            return json_decode($exampleResponseSchemasString, true) ?? [];
-        }
+        return self::$normalisedExamples;
+    }
 
-        if ($onlyExamplesThatWereTruncated) {
+    /**
+     * Get the map of example responses which have been normalised and truncated.
+     *
+     * @return array The map of example responses for a bunch of API endpoints.
+     * E.g. ['plugin.method' => ['json' => '...', 'xml' => '...', 'tsv' => '...']]
+     */
+    private static function getTruncatedExamples(bool $onlyTruncated = false): array
+    {
+        if (empty(self::$truncatedExamples)) {
             $exampleResponsesPostTruncationString = file_get_contents(self::TEST_RESOURCES_DIR . '/ExampleResponsesNormalised/ExamplesPostTruncationByType.json') ?: '';
-            return json_decode($exampleResponsesPostTruncationString, true) ?? [];
+            self::$truncatedExamples = json_decode($exampleResponsesPostTruncationString, true) ?? [];
         }
 
-        $demoExampleResponsesString = file_get_contents(self::TEST_RESOURCES_DIR . '/ExampleResponsesNormalised/ExamplesFromDemoByType.json') ?: '';
-        $localExampleResponsesString = file_get_contents(self::TEST_RESOURCES_DIR . '/ExampleResponsesNormalised/ExamplesFromLocalByType.json') ?: '';
-        $demoJson = json_decode($demoExampleResponsesString, true) ?? [];
-        $localJson = json_decode($localExampleResponsesString, true) ?? [];
-        return array_merge($demoJson, $localJson);
+        if ($onlyTruncated) {
+            return self::$truncatedExamples;
+        }
+
+        // Return the normalised examples with any truncated examples overriding them
+        return array_merge(self::getNormalisedExamples(), self::$truncatedExamples);
+    }
+
+    /**
+     * Get the map of example schemas.
+     *
+     * @return array The map of example schemas for a bunch of API endpoints.
+     * E.g. ['plugin.method' => ['json' => '...', 'xml' => '...', 'tsv' => '...']]
+     */
+    private static function getExampleSchemas(): array
+    {
+        if (empty(self::$exampleSchemas)) {
+            $exampleResponseSchemasString = file_get_contents(self::TEST_RESOURCES_DIR . '/ExampleResponsesNormalised/ExamplesSchemasByType.json') ?: '';
+            self::$exampleSchemas = json_decode($exampleResponseSchemasString, true) ?? [];
+        }
+
+        return self::$exampleSchemas;
     }
 
     public function testGeneratePluginApiAnnotations(): void
@@ -213,7 +315,7 @@ class AnnotationGeneratorTest extends TestCase
     {
         // TODO - Update to use resource file and/or dataprovider to test more than one comment block
         $expected = [
-            'type' => 'array'
+            'type' => 'array',
         ];
         $this->assertEquals($expected, $this->annotationGenerator->getResponseInfoFromDocBlock(self::EXAMPLE_API_METHOD_DOC_BLOCK1));
     }
@@ -236,7 +338,7 @@ class AnnotationGeneratorTest extends TestCase
     /**
      * @return iterable<string, string, string, string>
      */
-    public function getTestDataForBuildVirtualPath(): iterable
+    public static function getTestDataForBuildVirtualPath(): iterable
     {
         yield 'should be empty when all values are empty' => ['', '', '', ''];
         yield 'should be empty when template is empty' => ['', 'SomePlugin', 'SomeMethod', ''];
@@ -668,14 +770,33 @@ class AnnotationGeneratorTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public function testConvertExampleXmlToObject(): void
+    /**
+     * @dataProvider getTestXmlExampleObjectData
+     *
+     * @param string $endpoint
+     * @param string $content
+     * @param string $expected
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function testConvertExampleXmlToObject(string $endpoint, string $content, string $expected): void
     {
-        $normalisedMap = $this->getExampleResponsesMap();
+        $this->assertNotEmpty($content, 'The example response should not be empty for endpoint: ' . $endpoint);
+        $this->assertEquals($expected, json_encode($this->annotationGenerator->convertExampleXmlToObject($content)), "The converted XML was not as expected for endpoint $endpoint.");
+    }
+
+    /**
+     * @return iterable<string, string, string>
+     * @throws \Exception
+     */
+    public static function getTestXmlExampleObjectData(): iterable
+    {
+        $normalisedMap = self::getNormalisedExamples();
         foreach (self::EXAMPLE_API_ENDPOINTS as $endpoint) {
-            $content = $this->getRawExampleResponseForApiEndpoint($endpoint, 'xml');
-            $this->assertNotEmpty($content, 'The example response should not be empty for endpoint: ' . $endpoint);
+            $content = self::getRawExampleResponseForApiEndpoint($endpoint, 'xml');
             $expected = $normalisedMap[$endpoint]['xml'] ?? [];
-            $this->assertEquals($expected, json_encode($this->annotationGenerator->convertExampleXmlToObject($content)), "The converted XML was not as expected for endpoint $endpoint.");
+            yield "converted XML should match expected JSON for $endpoint endpoint" => [$endpoint, $content, $expected];
         }
     }
 
@@ -685,10 +806,32 @@ class AnnotationGeneratorTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public function testCutExampleCloseToCharLimit(): void
+    /**
+     * @dataProvider getTestTruncatedExampleObjectData
+     *
+     * @param string $endpoint
+     * @param string $type
+     * @param string $normalisedExample
+     * @param string $expectedExample
+     *
+     * @return void
+     */
+    public function testCutExampleCloseToCharLimit(string $endpoint, string $type, string $normalisedExample, string $expectedExample): void
     {
-        $truncatedMap = $this->getExampleResponsesMap(false, true);
-        $normalisedMap = $this->getExampleResponsesMap();
+        $this->assertNotEmpty($normalisedExample, "The example response should not be empty for endpoint '$endpoint' and type '$type'.");
+        $result = $this->annotationGenerator->cutExampleCloseToCharLimit($normalisedExample, $type);
+        // Add a little wiggle room since the truncation isn't exact and might allow a little over the limit
+        $this->assertLessThanOrEqual(AnnotationGenerator::EXAMPLE_CHAR_LIMIT + 30, strlen($result), "The example response should not exceed the character limit for endpoint '$endpoint' and type '$type'.");
+        $this->assertEquals($expectedExample, $result, "The truncated example was not as expected for endpoint '$endpoint' and type '$type'.");
+    }
+
+    /**
+     * @return iterable<string, string, string, string>
+     */
+    public static function getTestTruncatedExampleObjectData(): iterable
+    {
+        $truncatedMap = self::getTruncatedExamples();
+        $normalisedMap = self::getNormalisedExamples();
         foreach (self::EXAMPLE_API_ENDPOINTS as $endpoint) {
             $normalisedExamples = $normalisedMap[$endpoint] ?? [];
 
@@ -703,6 +846,7 @@ class AnnotationGeneratorTest extends TestCase
                     (
                         $type === 'tsv'
                         && in_array($endpoint, [
+                            'CustomAlerts.deleteAlert',
                             'CustomAlerts.getAlert',
                             'CustomAlerts.getAlerts',
                             'CustomAlerts.getTriggeredAlerts',
@@ -714,44 +858,163 @@ class AnnotationGeneratorTest extends TestCase
                     continue;
                 }
 
-                $this->assertNotEmpty($normalisedExample, "The example response should not be empty for endpoint '$endpoint' and type '$type'.");
-                $result = $this->annotationGenerator->cutExampleCloseToCharLimit($normalisedExample, $type);
-                $this->assertLessThanOrEqual(AnnotationGenerator::EXAMPLE_CHAR_LIMIT, strlen($result), "The example response should not exceed the character limit for endpoint '$endpoint' and type '$type'.");
-                $this->assertEquals($expectedExample, $result, "The truncated example was not as expected for endpoint '$endpoint' and type '$type'.");
+                yield "truncated example should match expected JSON for $endpoint endpoint and $type type" => [$endpoint, $type, $normalisedExample, $expectedExample];
             }
         }
     }
 
-    public function testBuildSchemaAnnotationFromJsonExample(): void
+    /**
+     * @dataProvider getTestJsonSchemaData
+     *
+     * @param string $endpoint
+     * @param array $normalisedObject
+     * @param array $expected
+     *
+     * @return void
+     */
+    public function testBuildSchemaAnnotationFromJsonExample(string $endpoint, array $normalisedObject, array $expected): void
     {
-        // TODO - buildSchemaAnnotationFromJsonExample method
-        $this->expectNotToPerformAssertions();
+        $this->assertNotEmpty($normalisedObject, 'The decoded example response should not be empty for endpoint: ' . $endpoint);
+        $result = $this->annotationGenerator->buildSchemaAnnotationFromJsonExample($normalisedObject);
+        $this->assertEquals($expected, $result, "The JSON schema was not as expected for endpoint $endpoint.");
+    }
+
+    /**
+     * @return iterable<string, array, array>
+     */
+    public static function getTestJsonSchemaData(): iterable
+    {
+        $normalisedMap = self::getNormalisedExamples();
+        $schemasMap = self::getExampleSchemas();
+        foreach (self::EXAMPLE_API_ENDPOINTS as $endpoint) {
+            $normalisedString = $normalisedMap[$endpoint]['json'] ?? '';
+            $normalisedObject = json_decode($normalisedString, true) ?? [];
+            $expected = json_decode($schemasMap[$endpoint]['json'] ?? '', true) ?? [];
+            yield "should match expected JSON schema for $endpoint endpoint" => [$endpoint, $normalisedObject, $expected];
+        }
     }
 
     public function testBuildPropertyAnnotationFromJsonExample(): void
     {
-        // TODO - buildPropertyAnnotationFromJsonExample method
+        // TODO - buildPropertyAnnotationFromJsonExample method. It's covered pretty well by testBuildSchemaAnnotationFromJsonExample, but there might be specific cases to test
         $this->expectNotToPerformAssertions();
     }
 
-    public function testBuildSchemaAnnotationFromXmlExample(): void
+    /**
+     * @dataProvider getTestXmlSchemaData
+     *
+     * @param string $endpoint
+     * @param array $normalisedObject
+     * @param array $expected
+     *
+     * @return void
+     */
+    public function testBuildSchemaAnnotationFromXmlExample(string $endpoint, array $normalisedObject, array $expected): void
     {
-        $normalisedMap = $this->getExampleResponsesMap();
-        $schemasMap = $this->getExampleResponsesMap(true);
+        $this->assertNotEmpty($normalisedObject, 'The decoded example response should not be empty for endpoint: ' . $endpoint);
+        $result = $this->annotationGenerator->buildSchemaAnnotationFromXmlExample($normalisedObject);
+        $this->assertEquals(json_encode($expected), json_encode($result), "The XML schema was not as expected for endpoint $endpoint.");
+        $this->assertStringNotContainsString(OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME, json_encode($normalisedObject), "The XML example object should no longer contain the temp attribute property for endpoint $endpoint.");
+    }
+
+    /**
+     * @return iterable<string, array, array>
+     */
+    public static function getTestXmlSchemaData(): iterable
+    {
+        $normalisedMap = self::getNormalisedExamples();
+        $schemasMap = self::getExampleSchemas();
         foreach (self::EXAMPLE_API_ENDPOINTS as $endpoint) {
             $normalisedString = $normalisedMap[$endpoint]['xml'] ?? '';
-            $this->assertNotEmpty($normalisedString, 'The normalised example response should not be empty for endpoint: ' . $endpoint);
             $normalisedObject = json_decode($normalisedString, true) ?? [];
-            $this->assertNotEmpty($normalisedObject, 'The decoded example response should not be empty for endpoint: ' . $endpoint);
             $expected = json_decode($schemasMap[$endpoint]['xml'] ?? '', true) ?? [];
-            $this->assertEquals($expected, $this->annotationGenerator->buildSchemaAnnotationFromXmlExample($normalisedObject), "The XML schema was not as expected for endpoint $endpoint.");
+            yield "should match expected XML schema for $endpoint endpoint" => [$endpoint, $normalisedObject, $expected];
         }
     }
 
     public function testBuildPropertyAnnotationFromXmlExample(): void
     {
-        // TODO - buildPropertyAnnotationFromXmlExample method
+        // TODO - buildPropertyAnnotationFromXmlExample method. It's covered pretty well by testBuildSchemaAnnotationFromXmlExample, but there might be specific cases to test
         $this->expectNotToPerformAssertions();
+    }
+
+    /**
+     * @dataProvider getTestDataForTestBuildXmlAttributeSchemaLines
+     *
+     * @param array $attributes
+     * @param array $expected
+     *
+     * @return void
+     */
+    public function testBuildXmlAttributeSchemaLines(array $attributes, array $expected): void
+    {
+        $this->assertEquals($expected, $this->annotationGenerator->buildXmlAttributeSchemaLines($attributes));
+    }
+
+    public static function getTestDataForTestBuildXmlAttributeSchemaLines(): iterable
+    {
+        yield 'should return empty array when attributes are empty' => [[], []];
+        yield 'should return empty array when attributes are nested empty' => [[[]], []];
+        yield 'should return empty array when no attributes have a name' => [[['' => 'value']], []];
+        yield 'should return annotation array as long as the attribute has a name' => [
+            ['testAttribute' => ''],
+            [['@OA\Property' => ['property="testAttribute",', 'type="string",', '@OA\Xml(attribute=true),']]],
+        ];
+        yield 'should return annotation array as long as the attribute has a name even when nested' => [
+            [['testAttribute' => '']],
+            [['@OA\Property' => ['property="testAttribute",', 'type="string",', '@OA\Xml(attribute=true),']]],
+        ];
+        yield 'should return annotation array with example when value is set' => [
+            ['testAttribute' => 'testValue'],
+            [['@OA\Property' => ['property="testAttribute",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue"']]],
+        ];
+        yield 'should return annotation array with example when value is set when nested' => [
+            [['testAttribute' => 'testValue']],
+            [['@OA\Property' => ['property="testAttribute",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue"']]],
+        ];
+        yield 'should return multiple annotation arrays without example when value is not set' => [
+            ['testAttribute1' => '', 'testAttribute2' => ''],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays without example when value is not set when nested' => [
+            [['testAttribute1' => ''], ['testAttribute2' => '']],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays with example when value is set' => [
+            ['testAttribute1' => 'testValue1', 'testAttribute2' => 'testValue2'],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue1"']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue2"']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays with example when value is set when nested' => [
+            [['testAttribute1' => 'testValue1'], ['testAttribute2' => 'testValue2']],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue1"']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue2"']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays with example dependent on value' => [
+            ['testAttribute1' => '', 'testAttribute2' => '', 'testAttribute3' => 'testValue3'],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),']],
+                ['@OA\Property' => ['property="testAttribute3",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue3"']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays with example dependent on value when nested' => [
+            [['testAttribute1' => 'testValue1'], ['testAttribute2' => '']],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue1"']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),']],
+            ],
+        ];
     }
 
     /**
@@ -769,7 +1032,7 @@ class AnnotationGeneratorTest extends TestCase
     }
 
     /**
-     * @return iterable<array, array}>
+     * @return iterable<array, array>
      */
     public function getTestDataForRemoveTrailingCommaFromLastLine(): iterable
     {
@@ -806,7 +1069,7 @@ class AnnotationGeneratorTest extends TestCase
                 '        )',
                 '    )',
                 ')',
-            ]
+            ],
         ];
     }
 
@@ -863,10 +1126,46 @@ class AnnotationGeneratorTest extends TestCase
         yield 'should ignore the custom quote character when array type' => ['30', 'array', '|', '30'];
     }
 
-    public function testShouldIncludeDefault(): void
+    /**
+     * @dataProvider getTestDataForTestShouldIncludeDefault
+     *
+     * @param string $type
+     * @param string $default
+     * @param bool $expected
+     *
+     * @return void
+     */
+    public function testShouldIncludeDefault(string $type, string $default, bool $expected): void
     {
-        // TODO - shouldIncludeDefault method
-        $this->expectNotToPerformAssertions();
+        $this->assertSame($expected, $this->annotationGenerator->shouldIncludeDefault($type, $default));
+    }
+
+    /**
+     * @return iterable<string, string, bool>
+     */
+    public function getTestDataForTestShouldIncludeDefault(): iterable
+    {
+        yield 'should be false for empty strings' => ['', '', false];
+        yield 'should be false for empty type and no default' => ['', NoDefaultValue::class, false];
+        foreach (OpenApiDocs::AVAILABLE_PROPERTY_TYPES as $type) {
+            $emptyStringExpected = $type === 'string' ? 'true' : 'false';
+            yield "should be $emptyStringExpected for $type type and empty string default" => [$type, '', $emptyStringExpected === 'true'];
+            yield "should be false for $type type and no default" => [$type, NoDefaultValue::class, false];
+            $boolStringExpected = $type === 'boolean' ? 'true' : 'false';
+            yield "should be $boolStringExpected for $type type and 'false' default" => [$type, 'false', $boolStringExpected === 'true'];
+            yield "should be $boolStringExpected for $type type and 'true' default" => [$type, 'true', $boolStringExpected === 'true'];
+            foreach (['0', '5', '10', '15', '20', '50', '99', '100', '999', '1000'] as $default) {
+                yield "should be true for $type type and '$default' default" => [$type, $default, true];
+            }
+            foreach (['abc123', 'test', 'something', 'whatever', '{}', '[]', '{"key":"value"}'] as $default) {
+                $notNumber = !in_array($type, ['integer', 'number']) ? 'true' : 'false';
+                yield "should be $notNumber for $type type and '$default' default" => [$type, $default, $notNumber === 'true'];
+            }
+            foreach (['1.1', '0.25', '60.45', '125.50', '10000.2', '1234567890.1234567890'] as $default) {
+                $notInteger = $type !== 'integer' ? 'true' : 'false';
+                yield "should be $notInteger for $type type and '$default' default" => [$type, $default, $notInteger === 'true'];
+            }
+        }
     }
 
     public function testBuildSchemaObjectArrays(): void

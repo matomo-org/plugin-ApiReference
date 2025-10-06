@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<row>General_Actions.Transitions_Transitions</row>
+	<row>MultiSites.index</row>
+	<row>Referrers_Referrers.Referrers_URLCampaignBuilder</row>
+	<row>General_Visitors.UserCountryMap_RealTimeMap</row>
+	<row>General_Visitors.Live_VisitorLog</row>
+	<row>General_Visitors.General_RealTime</row>
+	<row>AbTesting_Experiments.General_Overview</row>
+	<row>AbTesting_Experiments.AbTesting_ManageExperiments</row>
+	<row>ActivityLog.index</row>
+	<row>CustomReports_CustomReports.CustomReports_ManageReports</row>
+	<row>FormAnalytics_Forms.FormAnalytics_TypeRealTime</row>
+	<row>HeatmapSessionRecording_Heatmaps.*</row>
+	<row>HeatmapSessionRecording_SessionRecordings.*</row>
+</result>

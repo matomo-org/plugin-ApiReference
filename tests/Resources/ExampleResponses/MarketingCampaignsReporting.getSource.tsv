@@ -1,0 +1,6 @@
+label	nb_visits	nb_actions	max_actions	sum_visit_length	bounce_count	nb_visits_converted	sum_daily_nb_uniq_visitors	sum_daily_nb_users	goals_idgoal=1_nb_conversions	goals_idgoal=1_nb_visits_converted	goals_idgoal=1_revenue	goals_idgoal=2_nb_conversions	goals_idgoal=2_nb_visits_converted	goals_idgoal=2_revenue	nb_conversions	revenue	metadata_segment	goals_idgoal=ecommerceAbandonedCart_nb_conversions	goals_idgoal=ecommerceAbandonedCart_nb_visits_converted	goals_idgoal=ecommerceAbandonedCart_revenue	goals_idgoal=ecommerceAbandonedCart_items	goals_idgoal=ecommerceOrder_nb_conversions	goals_idgoal=ecommerceOrder_nb_visits_converted	goals_idgoal=ecommerceOrder_revenue	goals_idgoal=ecommerceOrder_revenue_subtotal	goals_idgoal=ecommerceOrder_revenue_tax	goals_idgoal=ecommerceOrder_revenue_shipping	goals_idgoal=ecommerceOrder_revenue_discount	goals_idgoal=ecommerceOrder_items
+buysellads	106	236	76	32662	54	32	104	0	32	32	0	2	1	112	34	112	campaignSource==buysellads
+adwords	62	75	5	3184	56	3	59	0	3	3	0				3	0	campaignSource==adwords
+google	40	162	26	4304	25	2	40	0	2	2	0				2	0	campaignSource==google	4	4	115	7
+google-ads	15	31	5	857	8	3	14	7	1	1	0				3	255.36	campaignSource==google-ads	1	1	50	2	2	2	255.36	224	42.56	11.2	22.4	7
+newsletter	13	16	3	7	10	1	12	5							1	321.48	campaignSource==newsletter	2	2	100	3	1	1	321.48	282	53.58	14.1	28.2	3

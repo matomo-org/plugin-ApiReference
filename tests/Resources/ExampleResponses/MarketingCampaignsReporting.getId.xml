@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<row>
+		<label>cid-1223332</label>
+		<nb_visits>9</nb_visits>
+		<nb_actions>14</nb_actions>
+		<max_actions>3</max_actions>
+		<sum_visit_length>3</sum_visit_length>
+		<bounce_count>5</bounce_count>
+		<nb_visits_converted>0</nb_visits_converted>
+		<goals>
+			<row idgoal='ecommerceAbandonedCart'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>50</revenue>
+				<items>2</items>
+			</row>
+		</goals>
+		<nb_conversions>0</nb_conversions>
+		<revenue>0</revenue>
+		<sum_daily_nb_uniq_visitors>9</sum_daily_nb_uniq_visitors>
+		<sum_daily_nb_users>3</sum_daily_nb_users>
+		<segment>campaignId==cid-1223332</segment>
+	</row>
+	<row>
+		<label>cid-4378565</label>
+		<nb_visits>9</nb_visits>
+		<nb_actions>17</nb_actions>
+		<max_actions>5</max_actions>
+		<sum_visit_length>4</sum_visit_length>
+		<bounce_count>6</bounce_count>
+		<nb_visits_converted>2</nb_visits_converted>
+		<sum_daily_nb_uniq_visitors>9</sum_daily_nb_uniq_visitors>
+		<sum_daily_nb_users>4</sum_daily_nb_users>
+		<goals>
+			<row idgoal='ecommerceOrder'>
+				<nb_conversions>2</nb_conversions>
+				<nb_visits_converted>2</nb_visits_converted>
+				<revenue>513</revenue>
+				<revenue_subtotal>450</revenue_subtotal>
+				<revenue_tax>85.5</revenue_tax>
+				<revenue_shipping>22.5</revenue_shipping>
+				<revenue_discount>45</revenue_discount>
+				<items>6</items>
+			</row>
+		</goals>
+		<nb_conversions>2</nb_conversions>
+		<revenue>513</revenue>
+		<segment>campaignId==cid-4378565</segment>
+	</row>
+	<row>
+		<label>cid-6333444</label>
+		<nb_visits>4</nb_visits>
+		<nb_actions>5</nb_actions>
+		<max_actions>3</max_actions>
+		<sum_visit_length>1</sum_visit_length>
+		<bounce_count>3</bounce_count>
+		<nb_visits_converted>0</nb_visits_converted>
+		<sum_daily_nb_uniq_visitors>3</sum_daily_nb_uniq_visitors>
+		<sum_daily_nb_users>2</sum_daily_nb_users>
+		<segment>campaignId==cid-6333444</segment>
+	</row>
+</result>

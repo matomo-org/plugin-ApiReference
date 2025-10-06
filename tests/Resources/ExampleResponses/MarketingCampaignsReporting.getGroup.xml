@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<row>
+		<label>all</label>
+		<nb_visits>11</nb_visits>
+		<nb_actions>17</nb_actions>
+		<max_actions>5</max_actions>
+		<sum_visit_length>4</sum_visit_length>
+		<bounce_count>8</bounce_count>
+		<nb_visits_converted>1</nb_visits_converted>
+		<goals>
+			<row idgoal='ecommerceAbandonedCart'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>50</revenue>
+				<items>2</items>
+			</row>
+			<row idgoal='ecommerceOrder'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>63.84</revenue>
+				<revenue_subtotal>56</revenue_subtotal>
+				<revenue_tax>10.64</revenue_tax>
+				<revenue_shipping>2.8</revenue_shipping>
+				<revenue_discount>5.6</revenue_discount>
+				<items>4</items>
+			</row>
+		</goals>
+		<nb_conversions>1</nb_conversions>
+		<revenue>63.84</revenue>
+		<sum_daily_nb_uniq_visitors>10</sum_daily_nb_uniq_visitors>
+		<sum_daily_nb_users>5</sum_daily_nb_users>
+		<segment>campaignGroup==all</segment>
+	</row>
+	<row>
+		<label>guest</label>
+		<nb_visits>8</nb_visits>
+		<nb_actions>10</nb_actions>
+		<max_actions>3</max_actions>
+		<sum_visit_length>2</sum_visit_length>
+		<bounce_count>6</bounce_count>
+		<nb_visits_converted>0</nb_visits_converted>
+		<sum_daily_nb_uniq_visitors>7</sum_daily_nb_uniq_visitors>
+		<sum_daily_nb_users>4</sum_daily_nb_users>
+		<segment>campaignGroup==guest</segment>
+	</row>
+	<row>
+		<label>customer</label>
+		<nb_visits>7</nb_visits>
+		<nb_actions>16</nb_actions>
+		<max_actions>5</max_actions>
+		<sum_visit_length>855</sum_visit_length>
+		<bounce_count>3</bounce_count>
+		<nb_visits_converted>2</nb_visits_converted>
+		<goals>
+			<row idgoal='ecommerceAbandonedCart'>
+				<nb_conversions>2</nb_conversions>
+				<nb_visits_converted>2</nb_visits_converted>
+				<revenue>100</revenue>
+				<items>3</items>
+			</row>
+			<row idgoal='ecommerceOrder'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>191.52</revenue>
+				<revenue_subtotal>168</revenue_subtotal>
+				<revenue_tax>31.92</revenue_tax>
+				<revenue_shipping>8.4</revenue_shipping>
+				<revenue_discount>16.8</revenue_discount>
+				<items>3</items>
+			</row>
+			<row idgoal='1'>
+				<nb_conversions>1</nb_conversions>
+				<nb_visits_converted>1</nb_visits_converted>
+				<revenue>0</revenue>
+			</row>
+		</goals>
+		<nb_conversions>2</nb_conversions>
+		<revenue>191.52</revenue>
+		<sum_daily_nb_uniq_visitors>7</sum_daily_nb_uniq_visitors>
+		<sum_daily_nb_users>3</sum_daily_nb_users>
+		<segment>campaignGroup==customer</segment>
+	</row>
+</result>

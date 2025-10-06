@@ -1,0 +1,4 @@
+label	nb_visits	nb_actions	max_actions	sum_visit_length	bounce_count	nb_visits_converted	goals_idgoal=ecommerceAbandonedCart_nb_conversions	goals_idgoal=ecommerceAbandonedCart_nb_visits_converted	goals_idgoal=ecommerceAbandonedCart_revenue	goals_idgoal=ecommerceAbandonedCart_items	nb_conversions	revenue	sum_daily_nb_uniq_visitors	sum_daily_nb_users	metadata_segment	goals_idgoal=ecommerceOrder_nb_conversions	goals_idgoal=ecommerceOrder_nb_visits_converted	goals_idgoal=ecommerceOrder_revenue	goals_idgoal=ecommerceOrder_revenue_subtotal	goals_idgoal=ecommerceOrder_revenue_tax	goals_idgoal=ecommerceOrder_revenue_shipping	goals_idgoal=ecommerceOrder_revenue_discount	goals_idgoal=ecommerceOrder_items
+cid-1223332	9	14	3	3	5	0	1	1	50	2	0	0	9	3	campaignId==cid-1223332
+cid-4378565	9	17	5	4	6	2					2	513	9	4	campaignId==cid-4378565	2	2	513	450	85.5	22.5	45	6
+cid-6333444	4	5	3	1	3	0							3	2	campaignId==cid-6333444

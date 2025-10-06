@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<result>
+    <row>
+        <label>p1-main-2-title</label>
+        <nb_visits>39</nb_visits>
+        <nb_actions>39</nb_actions>
+        <max_actions>1</max_actions>
+        <sum_visit_length>0</sum_visit_length>
+        <bounce_count>39</bounce_count>
+        <nb_visits_converted>0</nb_visits_converted>
+        <sum_daily_nb_uniq_visitors>39</sum_daily_nb_uniq_visitors>
+        <sum_daily_nb_users>0</sum_daily_nb_users>
+        <segment>campaignContent==p1-main-2-title</segment>
+    </row>
+</result>

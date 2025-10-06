@@ -244,9 +244,12 @@ class AnnotationGenerator
         $existing = $reflectionMethod->getDocComment();
         // Skip methods which have been marked as internal or auto annotations disabled
         if (
-            $existing !== false && (stripos($existing, 'OA-AUTO:OFF') !== false
-                || stripos($existing, '@internal') !== false
-                || stripos($existing, '@hide') !== false)
+            $existing !== false
+            && (
+                stripos($existing, '@internal') !== false
+                || stripos($existing, '@hide') !== false
+                || stripos($existing, '@deprecated') !== false
+            )
         ) {
             return [];
         }
@@ -947,17 +950,23 @@ class AnnotationGenerator
         $root = new \SimpleXMLElement($xml);
 
         $toArray = function (\SimpleXMLElement $node) use (&$toArray) {
-            if (!count($node->children())) {
+            if (!count($node->children()) && !count($node->attributes())) {
                 return trim((string)$node);
             }
-            // Group children by tag name; repeated names become arrays
+
+            // Handle any attributes
             $grouped = [];
+            foreach ($node->attributes() as $attribute) {
+                $grouped[OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME][] = [$attribute->getName() => (string) $attribute];
+            }
+
+            // Group children by tag name; repeated names become arrays
             foreach ($node->children() as $child) {
                 $name = $child->getName();
                 $grouped[$name][] = $toArray($child);
             }
             return array_map(function ($items) {
-                return (count($items) === 1) ? $items[0] : $items;
+                return (count($items) === 1) ? array_pop($items) : $items;
             }, $grouped);
         };
 
@@ -1011,7 +1020,7 @@ class AnnotationGenerator
 
         // If the return type is void, use the generic response type
         if (empty($successArray['ref']) && !empty($returnType) && strval($returnType) === 'void') {
-            $successArray['ref'] = '#/components/responses/GenericSuccessNoBody';
+            $successArray['ref'] = '#/components/responses/GenericSuccess';
         }
 
         // If it's a generic type and there's no custom description, use one of the global generic responses
@@ -1133,8 +1142,13 @@ class AnnotationGenerator
     {
         $contentType = $format === 'json' ? 'application/json' : ($format === 'xml' ? 'text/xml' : 'application/vnd.ms-excel');
 
-        $jsonSchema = $format === 'json' ? $this->buildSchemaAnnotationFromJsonExample(json_decode($exampleValue, true) ?? []) : [];
-        $xmlSchema = $format === 'xml' ? $this->buildSchemaAnnotationFromXmlExample(json_decode($exampleValue, true) ?? []) : [];
+        $decodedExampleValue = json_decode($exampleValue, true) ?? [];
+        $jsonSchema = $format === 'json' ? $this->buildSchemaAnnotationFromJsonExample($decodedExampleValue) : [];
+        $xmlSchema = $format === 'xml' ? $this->buildSchemaAnnotationFromXmlExample($decodedExampleValue) : [];
+        // If the XML example contains the temporary property to assist in building XML attributes in the schema, replace with newly encoded array with property removed
+        if ($format === 'xml' && strpos($exampleValue, OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) !== false) {
+            $exampleValue = json_encode($decodedExampleValue);
+        }
 
         if (in_array($format, ['json', 'xml'])) {
             // The annotation expects objects and not arrays, so replace [] with {}
@@ -1323,19 +1337,20 @@ class AnnotationGenerator
     /**
      * Take the deserialised structure of an XML node and build the lines of an OA\Schema annotation object for it.
      *
-     * @param array $xmlArrayObject Nested array of properties of the XML node.
+     * @param array $xmlArrayObject Nested array of properties of the XML node. Passed by reference so that temporary
+     * properties can be removed before the example is included in the annotations.
      * @param string $root Name of the root element. The default is 'result'.
      *
      * @return array Collection of potentially nested arrays representing an OA\Property annotation object.
      */
-    public function buildSchemaAnnotationFromXmlExample(array $xmlArrayObject, string $root = 'result'): array
+    public function buildSchemaAnnotationFromXmlExample(array &$xmlArrayObject, string $root = 'result'): array
     {
         $lines = [
             'type="object",',
             sprintf('@OA\Xml(name="%s"),', $root),
         ];
 
-        foreach ($xmlArrayObject as $key => $value) {
+        foreach ($xmlArrayObject as $key => &$value) {
             // If the value is not an array, skip
             if (!is_array($value)) {
                 continue;
@@ -1343,16 +1358,45 @@ class AnnotationGenerator
 
             if (count($value) === 1) {
                 $keys = array_keys($value);
-                // Skip if it's not a named property
+                // Skip if it's not a named property and isn't an array
                 if (!is_string(reset($keys)) && !is_array(reset($value))) {
                     continue;
                 }
             }
 
             $lines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
+
+            // Recursively remove all instances of the temporary XML attributes property
+            $this->removeTempOaXmlAttributeProperty($value);
         }
 
         return ['@OA\Schema' => $lines];
+    }
+
+    /**
+     * Iterate over a nested array representing an example response object and recursively remove all occurrences of the
+     * temporary property used to help build the schema for XML attributes.
+     *
+     * @param array $decodedExampleValue The reference to the nested array to remove the temporary property from.
+     *
+     * @return void
+     */
+    protected function removeTempOaXmlAttributeProperty(array &$decodedExampleValue): void
+    {
+        foreach ($decodedExampleValue as $key => &$value) {
+            if ($key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) {
+                unset($decodedExampleValue[$key]);
+                // Add the attributes as actual properties so that they are visible in the example
+                foreach ($value as $attributeName => $attributeValue) {
+                    $decodedExampleValue[$attributeName] = $attributeValue;
+                }
+                continue;
+            }
+
+            if (is_array($value)) {
+                $this->removeTempOaXmlAttributeProperty($value);
+            }
+        }
     }
 
     /**
@@ -1366,9 +1410,17 @@ class AnnotationGenerator
     public function buildPropertyAnnotationFromXmlExample(string $propName, array $values): array
     {
         $type = 'object';
+        $originalValues = $values;
         if ($propName === 'row') {
             $type = 'array';
-            $values = is_array($values[0] ?? null) ? $values[0] : [];
+            // Merge the rows together to get as many properties as possible
+            $mergedValues = [];
+            foreach ($values as $value) {
+                if (is_array($value)) {
+                    $mergedValues = array_merge($mergedValues, $value);
+                }
+            }
+            $values = $mergedValues;
         }
 
         // Set the common properties
@@ -1377,11 +1429,19 @@ class AnnotationGenerator
             sprintf('type="%s",', $type),
         ];
 
+        $hasAttributes = false;
         $childLines = [];
         // Recursively check if any of the children are arrays
         foreach ($values as $key => $value) {
             // If it's not an array, skip
             if (!is_array($value)) {
+                continue;
+            }
+
+            // Special handling for XML attributes
+            if ($key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) {
+                $hasAttributes = true;
+                $childLines = array_merge($childLines, $this->buildXmlAttributeSchemaLines($value));
                 continue;
             }
 
@@ -1408,8 +1468,8 @@ class AnnotationGenerator
             ];
 
             // Handle arrays of strings which don't have named properties
-            $keys = array_keys($values);
-            if (!is_string(reset($keys)) && count($values) === 1) {
+            $originalKeys = array_keys($originalValues);
+            if (!is_string(reset($originalKeys)) && !is_string(reset($values)) && !$hasAttributes) {
                 $itemProperties = ['type="string"'];
             }
 
@@ -1417,6 +1477,43 @@ class AnnotationGenerator
         }
 
         return ['@OA\Property' => array_merge($propertyLines, $childLines)];
+    }
+
+    /**
+     * Build the array of lines for the attribute properties of an XML schema annotation object. It accepts an array of
+     * arrays representing the attributes of an XML node. It can also handle a single array of key/value pairs.
+     *
+     * @param array $attributes Collection of attributes and values. E.g. [['key1' => 'value1'],['key2' => 'value2']] or
+     * ['key1' => 'value1', 'key2' => 'value2']
+     *
+     * @return array The lines defining the property annotation objects for the XML attributes.
+     * E.g. [['@OA\Property' => ['property="idgoal",', 'type="string",', '@OA\Xml(attribute=true),', 'example="2"']]]
+     */
+    public function buildXmlAttributeSchemaLines(array $attributes): array
+    {
+        $attributeSchemaLines = [];
+        foreach ($attributes as $index => $attribute) {
+            $keys = is_array($attribute) ? array_keys($attribute) : [];
+            $key = count($keys) === 1 ? $keys[0] : $index;
+            $value = trim(is_array($attribute) ? $attribute[$key] ?? '' : $attribute);
+            // Allow attributes with empty values, but an attribute must always have a name
+            if (empty($key)) {
+                continue;
+            }
+            // Initialise with the lines that will always be present
+            $propertyLines = [
+                sprintf('property="%s",', $key),
+                'type="string",',
+                '@OA\Xml(attribute=true),',
+            ];
+            // Add the example line if there's an actual value
+            if (!empty($value) || strlen($value) > 0) {
+                $propertyLines[] = sprintf('example="%s"', $value);
+            }
+            $attributeSchemaLines[] = ['@OA\Property' => $propertyLines];
+        }
+
+        return $attributeSchemaLines;
     }
 
     /**
@@ -1463,6 +1560,9 @@ class AnnotationGenerator
 
             // If it's not an object, then it's an array of similarly named objects, like parameters
             foreach ($property as $subPropIndex => $subProperty) {
+                if (!is_string($subPropIndex)) {
+                    continue;
+                }
                 $lines = array_merge($lines, $this->buildLinesForAnnotationObject($subPropIndex, $subProperty, $indent + 1));
             }
         }
@@ -1549,12 +1649,13 @@ class AnnotationGenerator
      */
     public function shouldIncludeDefault(string $type, string $default = NoDefaultValue::class): bool
     {
-        if ($default === NoDefaultValue::class) {
-            return false;
-        }
-
-        // Don't use true or false for default if it's not a boolean type
-        if ($type !== 'boolean' && in_array(strtolower($default), ['false', 'true'])) {
+        if (
+            $default === NoDefaultValue::class
+            || ($type === 'number' && !is_numeric($default))
+            || ($type === 'integer' && !\ctype_digit($default))
+            || ($type !== 'string' && $default === '')
+            || ($type !== 'boolean' && in_array(strtolower($default), ['false', 'true']))
+        ) {
             return false;
         }
 
