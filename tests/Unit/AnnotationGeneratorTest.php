@@ -914,6 +914,7 @@ class AnnotationGeneratorTest extends TestCase
         $this->assertNotEmpty($normalisedObject, 'The decoded example response should not be empty for endpoint: ' . $endpoint);
         $result = $this->annotationGenerator->buildSchemaAnnotationFromXmlExample($normalisedObject);
         $this->assertEquals(json_encode($expected), json_encode($result), "The XML schema was not as expected for endpoint $endpoint.");
+        $this->assertStringNotContainsString(OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME, json_encode($normalisedObject), "The XML example object should no longer contain the temp attribute property for endpoint $endpoint.");
     }
 
     /**
@@ -935,6 +936,85 @@ class AnnotationGeneratorTest extends TestCase
     {
         // TODO - buildPropertyAnnotationFromXmlExample method. It's covered pretty well by testBuildSchemaAnnotationFromXmlExample, but there might be specific cases to test
         $this->expectNotToPerformAssertions();
+    }
+
+    /**
+     * @dataProvider getTestDataForTestBuildXmlAttributeSchemaLines
+     *
+     * @param array $attributes
+     * @param array $expected
+     *
+     * @return void
+     */
+    public function testBuildXmlAttributeSchemaLines(array $attributes, array $expected): void
+    {
+        $this->assertEquals($expected, $this->annotationGenerator->buildXmlAttributeSchemaLines($attributes));
+    }
+
+    public static function getTestDataForTestBuildXmlAttributeSchemaLines(): iterable
+    {
+        yield 'should return empty array when attributes are empty' => [[], []];
+        yield 'should return empty array when attributes are nested empty' => [[[]], []];
+        yield 'should return empty array when no attributes have a name' => [[['' => 'value']], []];
+        yield 'should return annotation array as long as the attribute has a name' => [
+            ['testAttribute' => ''],
+            [['@OA\Property' => ['property="testAttribute",', 'type="string",', '@OA\Xml(attribute=true),']]],
+        ];
+        yield 'should return annotation array as long as the attribute has a name even when nested' => [
+            [['testAttribute' => '']],
+            [['@OA\Property' => ['property="testAttribute",', 'type="string",', '@OA\Xml(attribute=true),']]],
+        ];
+        yield 'should return annotation array with example when value is set' => [
+            ['testAttribute' => 'testValue'],
+            [['@OA\Property' => ['property="testAttribute",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue"']]],
+        ];
+        yield 'should return annotation array with example when value is set when nested' => [
+            [['testAttribute' => 'testValue']],
+            [['@OA\Property' => ['property="testAttribute",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue"']]],
+        ];
+        yield 'should return multiple annotation arrays without example when value is not set' => [
+            ['testAttribute1' => '', 'testAttribute2' => ''],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays without example when value is not set when nested' => [
+            [['testAttribute1' => ''], ['testAttribute2' => '']],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays with example when value is set' => [
+            ['testAttribute1' => 'testValue1', 'testAttribute2' => 'testValue2'],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue1"']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue2"']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays with example when value is set when nested' => [
+            [['testAttribute1' => 'testValue1'], ['testAttribute2' => 'testValue2']],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue1"']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue2"']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays with example dependent on value' => [
+            ['testAttribute1' => '', 'testAttribute2' => '', 'testAttribute3' => 'testValue3'],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),']],
+                ['@OA\Property' => ['property="testAttribute3",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue3"']],
+            ],
+        ];
+        yield 'should return multiple annotation arrays with example dependent on value when nested' => [
+            [['testAttribute1' => 'testValue1'], ['testAttribute2' => '']],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue1"']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),']],
+            ],
+        ];
     }
 
     /**
