@@ -11,6 +11,13 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Annotations;
 
+use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Param;
+use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlockFactory;
+use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Lexer\Lexer;
+use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\ConstExprParser;
+use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\PhpDocParser;
+use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\TokenIterator;
+use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\TypeParser;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\API\Proxy;
@@ -24,11 +31,6 @@ use Piwik\Url;
 use Piwik\UrlHelper;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
-use PHPStan\PhpDocParser\Lexer\Lexer;
-use PHPStan\PhpDocParser\Parser\PhpDocParser;
-use PHPStan\PhpDocParser\Parser\TypeParser;
-use PHPStan\PhpDocParser\Parser\ConstExprParser;
-use PHPStan\PhpDocParser\Parser\TokenIterator;
 
 class AnnotationGenerator
 {
@@ -282,21 +284,21 @@ class AnnotationGenerator
      */
     public function getParamInfoFromDocBlock(string $docBlock): array
     {
-        $lexer = new Lexer();
-        $tokens = $lexer->tokenize($docBlock);
-        $expressionParser = new ConstExprParser();
-        $parser = new PhpDocParser(new TypeParser($expressionParser), $expressionParser);
-        $node = $parser->parse(new TokenIterator($tokens));
+        $factory = DocBlockFactory::createInstance();
+        $docBlockObject = $factory->create($docBlock);
 
         $params = [];
-        foreach ($node->getParamTagValues() as $param) {
-            $name = ltrim($param->parameterName, '$');
+        foreach ($docBlockObject->getTagsByName('param') as $param) {
+            if (!($param instanceof Param)) {
+                continue;
+            }
+            $name = ltrim($param->getVariableName(), '$');
             $params[$name] = [
-                'type' => (string)$param->type,
+                'type' => (string) $param->getType(),
                 // Normalise the description. E.g. remove linebreaks and indentation
-                'description' => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], $param->description)),
-                'byRef' => $param->isReference,
-                'variadic' => $param->isVariadic,
+                'description' => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], (string) $param->getDescription())),
+                'byRef' => $param->isReference(),
+                'variadic' => $param->isVariadic(),
             ];
         }
         return $params;
