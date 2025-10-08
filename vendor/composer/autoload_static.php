@@ -4,13 +4,21 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc02410b41ab976b8400bb73dedbf07dc
+class ComposerStaticInit1e9ddc6b3f094bbece3e6bb946077640
 {
     public static $files = array(
 );
 
 
     public static $prefixLengthsPsr4 = array (
+        'p' => 
+        array (
+            'phpDocumentor\\Reflection\\' => 25,
+        ),
+        'W' => 
+        array (
+            'Webmozart\\Assert\\' => 17,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Ctype\\' => 23,
@@ -21,6 +29,7 @@ class ComposerStaticInitc02410b41ab976b8400bb73dedbf07dc
         array (
             'Psr\\Cache\\' => 10,
             'PhpParser\\' => 10,
+            'PHPStan\\PhpDocParser\\' => 21,
         ),
         'O' => 
         array (
@@ -28,12 +37,23 @@ class ComposerStaticInitc02410b41ab976b8400bb73dedbf07dc
         ),
         'D' => 
         array (
+            'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Annotations\\' => 28,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'phpDocumentor\\Reflection\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+        ),
+        'Webmozart\\Assert\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/webmozart/assert/src',
+        ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
@@ -54,9 +74,17 @@ class ComposerStaticInitc02410b41ab976b8400bb73dedbf07dc
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
+        'PHPStan\\PhpDocParser\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src',
+        ),
         'OpenApi\\' => 
         array (
             0 => __DIR__ . '/..' . '/zircote/swagger-php/src',
+        ),
+        'Doctrine\\Deprecations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/src',
         ),
         'Doctrine\\Common\\Lexer\\' => 
         array (
@@ -75,9 +103,9 @@ class ComposerStaticInitc02410b41ab976b8400bb73dedbf07dc
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc02410b41ab976b8400bb73dedbf07dc::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc02410b41ab976b8400bb73dedbf07dc::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitc02410b41ab976b8400bb73dedbf07dc::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit1e9ddc6b3f094bbece3e6bb946077640::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit1e9ddc6b3f094bbece3e6bb946077640::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit1e9ddc6b3f094bbece3e6bb946077640::$classMap;
 
         }, null, ClassLoader::class);
     }
