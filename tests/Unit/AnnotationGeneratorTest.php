@@ -153,7 +153,7 @@ class AnnotationGeneratorTest extends TestCase
      * @param int[] $idDestinationSites Optional array of IDs identifying which site(s) the new custom report is to be
      * assigned to. The default is [idSite] when nothing is provided.
      *
-     * @return array
+     * @return array Some test description for the return annotation.
      * @throws Exception
      */';
 
@@ -316,6 +316,7 @@ class AnnotationGeneratorTest extends TestCase
         // TODO - Update to use resource file and/or dataprovider to test more than one comment block
         $expected = [
             'type' => 'array',
+            'description' => 'Some test description for the return annotation.',
         ];
         $this->assertEquals($expected, $this->annotationGenerator->getResponseInfoFromDocBlock(self::EXAMPLE_API_METHOD_DOC_BLOCK1));
     }

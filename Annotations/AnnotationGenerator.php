@@ -12,12 +12,8 @@ declare(strict_types=1);
 namespace Piwik\Plugins\OpenApiDocs\Annotations;
 
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Param;
+use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlockFactory;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Lexer\Lexer;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\ConstExprParser;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\PhpDocParser;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\TokenIterator;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\TypeParser;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\API\Proxy;
@@ -315,27 +311,24 @@ class AnnotationGenerator
      */
     public function getResponseInfoFromDocBlock(string $docBlock): array
     {
-        $lexer = new Lexer();
-        $tokens = $lexer->tokenize($docBlock);
-        $expressionParser = new ConstExprParser();
-        $parser = new PhpDocParser(new TypeParser($expressionParser), $expressionParser);
-        $node = $parser->parse(new TokenIterator($tokens));
+        $factory = DocBlockFactory::createInstance();
+        $docBlockObject = $factory->create($docBlock);
 
         $responseInfo = ['type' => null];
-        $returnTags = $node->getReturnTagValues();
-        if (empty($returnTags)) {
+        $returnTags = $docBlockObject->getTagsByName('return');
+        if (empty($returnTags) || !($returnTags[0] instanceof TagWithType)) {
             return $responseInfo;
         }
 
         $returnTag = $returnTags[0];
-        $tagValue = strval($returnTag->type);
+        $tagValue = strval($returnTag->getType());
         $responseInfo['type'] = $this->getOpenApiTypeFromPhpType($tagValue);
         if ($responseInfo['type'] === 'string' && !empty($tagValue) && strtolower($tagValue) !== 'string') {
             $responseInfo['type'] = '';
             $responseInfo['description'] = 'Response of unknown type';
         }
-        if (!empty($returnTag->description)) {
-            $responseInfo['description'] = $returnTag->description;
+        if (!empty($returnTag->getDescription())) {
+            $responseInfo['description'] = $returnTag->getDescription();
         }
 
         return $responseInfo;
