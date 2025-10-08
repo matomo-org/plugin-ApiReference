@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\tests\Unit;
 
+require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
