@@ -11,6 +11,7 @@ parameters:
         - scoper.inc.php
         - Specs/SpecGenerator.php
     bootstrapFiles:
+        - phpstan-bootstrap.php
         - ../../bootstrap-phpstan.php
     universalObjectCratesClasses:
         - Piwik\Config
