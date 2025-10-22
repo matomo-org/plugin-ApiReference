@@ -239,16 +239,8 @@ class AnnotationGenerator
      */
     protected function buildAnnotationForMethod(array $rules, string $pluginName, \ReflectionMethod $reflectionMethod): array
     {
-        $existing = $reflectionMethod->getDocComment();
         // Skip methods which have been marked as internal or auto annotations disabled
-        if (
-            $existing !== false
-            && (
-                stripos($existing, '@internal') !== false
-                || stripos($existing, '@hide') !== false
-                || stripos($existing, '@deprecated') !== false
-            )
-        ) {
+        if (self::shouldApiMethodBeIgnored($reflectionMethod)) {
             return [];
         }
 
@@ -267,6 +259,33 @@ class AnnotationGenerator
             && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
 
         return $this->compileOperationLines($path, $opId, $pluginName, $params, $responses, $isPost);
+    }
+
+    /**
+     * Check whether the method should be included in public documentation, or it's been marked as internal or similar.
+     *
+     * @param \ReflectionMethod $reflectionMethod Reflection method used to check the comment block for annotations.
+     *
+     * @return bool Whether the API method should be ignored while generating documentation, like being marked as
+     * internal, hide, deprecated, etc.
+     */
+    public static function shouldApiMethodBeIgnored(\ReflectionMethod $reflectionMethod): bool
+    {
+        $existing = $reflectionMethod->getDocComment();
+        // Skip methods which have been marked as internal or hide
+        if (
+            $existing !== false
+            && (
+                stripos($existing, '@internal') !== false
+                || stripos($existing, '@hide') !== false
+                || stripos($existing, '@deprecated') !== false
+                || stripos($existing, '@ignore') !== false
+            )
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
