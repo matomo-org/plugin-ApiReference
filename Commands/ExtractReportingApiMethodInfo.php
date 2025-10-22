@@ -11,7 +11,6 @@ namespace Piwik\Plugins\OpenApiDocs\Commands;
 
 use Piwik\Plugin\ConsoleCommand;
 use Piwik\Plugins\OpenApiDocs\Annotations\ApiMethodInfoExtractor;
-use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on
