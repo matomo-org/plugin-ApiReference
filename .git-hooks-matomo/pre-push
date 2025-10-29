@@ -62,6 +62,29 @@ STATUS=0
 
 
 
+# Ensure that PHPCS command is available
+PHPCS_COMMAND=""
+PHPCBF_COMMAND=""
+if [ -f "${MATOMO_DIR}/vendor/bin/phpcs" ]; then
+  PHPCS_COMMAND="${MATOMO_DIR}/vendor/bin/phpcs"
+  PHPCBF_COMMAND="${MATOMO_DIR}/vendor/bin/phpcbf ${REPO_DIR} --standard=${REPO_DIR}/phpcs.xml"
+fi
+# If no command, exit
+if [[ -z "PHPCS_COMMAND" ]]; then
+  echo "No way to run phpcs found."
+  exit 1
+fi
+
+echo "Running PHPCS on repo: ${PHPCS_COMMAND} --report-full --standard=${REPO_DIR}/phpcs.xml ${REPO_DIR}"
+if ! $PHPCS_COMMAND --report-full --standard=${REPO_DIR}/phpcs.xml ${REPO_DIR}; then
+  echo "There was an issue found during the PHPCS check."
+  echo "You might try running PHPCBF to automatically fix issues before manually fixing them: ${PHPCBF_COMMAND}"
+  echo ""
+  STATUS=1
+fi
+
+
+
 ### Run PHPStan on newly created files. ###
 
 PHPSTAN_CREATED_CONFIG=phpstan/phpstan.created.neon
