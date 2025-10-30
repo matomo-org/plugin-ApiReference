@@ -1,0 +1,58 @@
+#!/bin/bash
+
+### Check we're running in the context of a plugin and get helpful dir variables ###
+
+REPO_DIR="$(git rev-parse --show-toplevel)"
+echo "Running pre-commit hook in repo: $REPO_DIR"
+
+if [[ "$REPO_DIR" =~ /plugins/(.*) ]]; then
+    PLUGIN_PATH="plugins/${BASH_REMATCH[1]}/"
+else
+    echo "Not a plugin, not running any further checks"
+    exit 1
+fi
+MATOMO_DIR=$(echo "$REPO_DIR" | sed -E 's|/plugins/.*$||')
+
+
+
+# Ensure that PHPCBF command is available
+PHPCBF_COMMAND=""
+if [ -f "${MATOMO_DIR}/vendor/bin/phpcbf" ]; then
+  PHPCBF_COMMAND="${MATOMO_DIR}/vendor/bin/phpcbf ${REPO_DIR} --standard=${REPO_DIR}/phpcs.xml"
+fi
+# If no command, exit
+if [[ -z "PHPCBF_COMMAND" ]]; then
+  echo "No way to run phpcbf found. It should be installed when running Matomo in dev mode."
+  exit 1
+fi
+
+echo "Running PHPCBF to fix any style issues which can be corrected automatically..."
+echo "Command being run: ${PHPCBF_COMMAND}"
+$PHPCBF_COMMAND
+
+
+
+echo ""
+# Ensure that PHPCS command is available
+PHPCS_COMMAND=""
+if [ -f "${MATOMO_DIR}/vendor/bin/phpcs" ]; then
+  PHPCS_COMMAND="${MATOMO_DIR}/vendor/bin/phpcs --report-full --standard=${REPO_DIR}/phpcs.xml ${REPO_DIR}"
+fi
+# If no command, exit
+if [[ -z "PHPCS_COMMAND" ]]; then
+  echo "No way to run phpcs found. It should be installed when running Matomo in dev mode."
+  exit 1
+fi
+
+echo "Running PHPCS check on repo: ${PHPCS_COMMAND}"
+if ! $PHPCS_COMMAND; then
+  echo "Commit cancelled!"
+  echo "There was an issue found during the PHPCS check. Please fix any issues from the report above and commit again."
+  exit 1
+fi
+
+echo ""
+echo "No issues found during style check. Continuing with commit..."
+echo ""
+
+exit 0
