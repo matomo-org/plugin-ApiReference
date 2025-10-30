@@ -9,7 +9,7 @@
 
 namespace Piwik\Plugins\OpenApiDocs;
 
-use Piwik\Piwik;
+ use Piwik\Piwik;
 use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 
 /**
