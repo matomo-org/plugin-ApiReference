@@ -6,7 +6,7 @@ REPO_DIR="$(git rev-parse --show-toplevel)"
 echo "Running pre-commit hook in repo: $REPO_DIR"
 
 if [[ "$REPO_DIR" =~ /plugins/(.*) ]]; then
-    PLUGIN_PATH="plugins/${BASH_REMATCH[1]}/"
+    PLUGIN_PATH="plugins/${BASH_REMATCH[1]}"
 else
     echo "Not a plugin, not running any further checks"
     exit 1
