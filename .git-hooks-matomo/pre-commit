@@ -15,34 +15,48 @@ MATOMO_DIR=$(echo "$REPO_DIR" | sed -E 's|/plugins/.*$||')
 
 
 
-# Ensure that PHPCBF command is available
-PHPCBF_COMMAND=""
-if [ -f "${MATOMO_DIR}/vendor/bin/phpcbf" ]; then
-  PHPCBF_COMMAND="${MATOMO_DIR}/vendor/bin/phpcbf ${REPO_DIR} --standard=${REPO_DIR}/phpcs.xml"
+BASE_COMMAND=""
+# Use local PHP if setup
+if command -v php >/dev/null 2>&1; then
+  BASE_COMMAND="${MATOMO_DIR}/vendor/bin/"
+  PLUGIN_PATH=$REPO_DIR
+# Use ddev if setup (overridding local setup)
+elif command -v ddev >/dev/null 2>&1; then
+  echo "PHP is not installed locally. Checking whether DDEV can be used..."
+  if [ -d "$MATOMO_DIR/.ddev" ]; then
+    cd "$MATOMO_DIR" || exit 1
+    if ddev status 2>&1 > /dev/null; then
+      BASE_COMMAND="ddev exec "
+    fi
+  fi
 fi
-# If no command, exit
-if [[ -z "PHPCBF_COMMAND" ]]; then
+
+
+
+# Ensure that PHPCBF command is available
+if [[ -z "${BASE_COMMAND}phpcbf" ]]; then
   echo "No way to run phpcbf found. It should be installed when running Matomo in dev mode."
   exit 1
 fi
+PHPCBF_COMMAND="${BASE_COMMAND}phpcbf ${PLUGIN_PATH} --standard=${PLUGIN_PATH}/phpcs.xml"
 
 echo "Running PHPCBF to fix any style issues which can be corrected automatically..."
 echo "Command being run: ${PHPCBF_COMMAND}"
-$PHPCBF_COMMAND
+if ! $PHPCBF_COMMAND; then
+  echo "Commit cancelled!"
+  echo "PHPCBF fixed some style issues. Please review the changes, git add the altered files, and commit again."
+  exit 1
+fi
 
 
 
 echo ""
 # Ensure that PHPCS command is available
-PHPCS_COMMAND=""
-if [ -f "${MATOMO_DIR}/vendor/bin/phpcs" ]; then
-  PHPCS_COMMAND="${MATOMO_DIR}/vendor/bin/phpcs --report-full --standard=${REPO_DIR}/phpcs.xml ${REPO_DIR}"
-fi
-# If no command, exit
-if [[ -z "PHPCS_COMMAND" ]]; then
+if [[ -z "${BASE_COMMAND}phpcs" ]]; then
   echo "No way to run phpcs found. It should be installed when running Matomo in dev mode."
   exit 1
 fi
+PHPCS_COMMAND="${BASE_COMMAND}phpcs --report-full --standard=${PLUGIN_PATH}/phpcs.xml ${PLUGIN_PATH}"
 
 echo "Running PHPCS check on repo: ${PHPCS_COMMAND}"
 if ! $PHPCS_COMMAND; then
