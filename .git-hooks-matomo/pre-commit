@@ -1,0 +1,72 @@
+#!/bin/bash
+
+### Check we're running in the context of a plugin and get helpful dir variables ###
+
+REPO_DIR="$(git rev-parse --show-toplevel)"
+echo "Running pre-commit hook in repo: $REPO_DIR"
+
+if [[ "$REPO_DIR" =~ /plugins/(.*) ]]; then
+    PLUGIN_PATH="plugins/${BASH_REMATCH[1]}"
+else
+    echo "Not a plugin, not running any further checks"
+    exit 1
+fi
+MATOMO_DIR=$(echo "$REPO_DIR" | sed -E 's|/plugins/.*$||')
+
+
+
+BASE_COMMAND=""
+# Use local PHP if setup
+if command -v php >/dev/null 2>&1; then
+  BASE_COMMAND="${MATOMO_DIR}/vendor/bin/"
+  PLUGIN_PATH=$REPO_DIR
+# Use ddev if setup (overridding local setup)
+elif command -v ddev >/dev/null 2>&1; then
+  echo "PHP is not installed locally. Checking whether DDEV can be used..."
+  if [ -d "$MATOMO_DIR/.ddev" ]; then
+    cd "$MATOMO_DIR" || exit 1
+    if ddev status 2>&1 > /dev/null; then
+      BASE_COMMAND="ddev exec "
+    fi
+  fi
+fi
+
+
+
+# Ensure that PHPCBF command is available
+if [[ -z "${BASE_COMMAND}phpcbf" ]]; then
+  echo "No way to run phpcbf found. It should be installed when running Matomo in dev mode."
+  exit 1
+fi
+PHPCBF_COMMAND="${BASE_COMMAND}phpcbf ${PLUGIN_PATH} --standard=${PLUGIN_PATH}/phpcs.xml"
+
+echo "Running PHPCBF to fix any style issues which can be corrected automatically..."
+echo "Command being run: ${PHPCBF_COMMAND}"
+if ! $PHPCBF_COMMAND; then
+  echo "Commit cancelled!"
+  echo "PHPCBF fixed some style issues. Please review the changes, git add the altered files, and commit again."
+  exit 1
+fi
+
+
+
+echo ""
+# Ensure that PHPCS command is available
+if [[ -z "${BASE_COMMAND}phpcs" ]]; then
+  echo "No way to run phpcs found. It should be installed when running Matomo in dev mode."
+  exit 1
+fi
+PHPCS_COMMAND="${BASE_COMMAND}phpcs --report-full --standard=${PLUGIN_PATH}/phpcs.xml ${PLUGIN_PATH}"
+
+echo "Running PHPCS check on repo: ${PHPCS_COMMAND}"
+if ! $PHPCS_COMMAND; then
+  echo "Commit cancelled!"
+  echo "There was an issue found during the PHPCS check. Please fix any issues from the report above and commit again."
+  exit 1
+fi
+
+echo ""
+echo "No issues found during style check. Continuing with commit..."
+echo ""
+
+exit 0
