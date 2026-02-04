@@ -657,6 +657,9 @@ class AnnotationGenerator
             case 'double':
                 $type = 'number';
                 break;
+            case 'void':
+                $type = 'null';
+                break;
             default:
                 $type = 'string';
         }
@@ -1081,7 +1084,7 @@ class AnnotationGenerator
         }
 
         // If it's a generic type and there's no custom description, use one of the global generic responses
-        if (empty($successArray['ref']) && !empty($responseInfo['type']) && empty($responseInfo['description'])) {
+        if (empty($successArray['ref']) && !empty($responseInfo['type']) && empty($responseInfo['description']->getBodyTemplate())) {
             $ref = '';
             switch ($responseInfo['type']) {
                 case 'array':
@@ -1096,6 +1099,8 @@ class AnnotationGenerator
                 case 'string':
                     $ref = '#/components/responses/GenericString';
                     break;
+                case 'null':
+                    $ref = '#/components/responses/GenericSuccess';
             }
 
             if (!empty($ref)) {
