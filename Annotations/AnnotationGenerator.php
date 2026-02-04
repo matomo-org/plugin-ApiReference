@@ -121,15 +121,15 @@ class AnnotationGenerator
         $pluginMetadata = Proxy::getInstance()->getMetadata()[$className] ?? [];
 
         $annotations = [[sprintf('@OA\Tag(name="%s")', $pluginName)]];
-        // I decided to not include the description in the tag annotation so that it automatically pulls the API class comment as the description.
-//        if (!empty($pluginMetadata['__documentation'])) {
-//            $tagLines = $this->buildLinesForAnnotationObject('@OA\Tag', [
-//                sprintf('name="%s"', $pluginName),
-//                sprintf('description="%s"', $this->normaliseDescriptionText($pluginMetadata['__documentation'])),
-//            ]);
-//            $this->removeTrailingCommaFromLastLine($tagLines);
-//            $annotations[] = $tagLines;
-//        }
+//      I decided to not include the description in the tag annotation so that it automatically pulls the API class comment as the description.
+        if (!empty($pluginMetadata['__documentation'])) {
+            $tagLines = $this->buildLinesForAnnotationObject('@OA\Tag', [
+                sprintf('name="%s"', $pluginName),
+                sprintf('description="%s"', $this->normaliseDescriptionText($pluginMetadata['__documentation'])),
+            ]);
+            $this->removeTrailingCommaFromLastLine($tagLines);
+            $annotations[] = $tagLines;
+        }
 
         foreach (array_keys($pluginMetadata) as $metadataMethod) {
             if (!$reflectionClass->hasMethod($metadataMethod)) {
@@ -254,11 +254,12 @@ class AnnotationGenerator
 
         $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
         $responses = $this->determineResponses($rules, $pluginName, $methodName, $reflectionMethod, $params);
+        $description = $this->determineDescription($pluginName, $methodName, $reflectionMethod);
 
         $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
             && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
 
-        return $this->compileOperationLines($path, $opId, $pluginName, $params, $responses, $isPost);
+        return $this->compileOperationLines($path, $opId, $pluginName, $params, $responses, $description, $isPost);
     }
 
     /**
@@ -354,6 +355,24 @@ class AnnotationGenerator
     }
 
     /**
+     * Extract the description/summary from a given docblock
+     *
+     * @param string $docBlock The comment block from a method, which hopefully contains a description.
+     *
+     * @return string Description/summary extracted from the docblock
+     */
+    public function getDescriptionFromDocBlock(string $docBlock): string
+    {
+        $factory = DocBlockFactory::createInstance();
+        $docBlockObject = $factory->create($docBlock);
+
+        return $docBlockObject->getSummary();
+    }
+
+
+
+
+        /**
      * This is a helper method for building the path used for an operation annotation. It takes a path template, like
      * the one from the config array and populates it with the plugin name and API method name.
      *
@@ -577,6 +596,30 @@ class AnnotationGenerator
             'custom' => $customParams,
         ];
     }
+
+
+
+
+    /**
+     * Get the description/summary of a given method
+     *
+     * @param string $plugin Name of the plugin. E.g. TagManager.
+     * @param string $method The name of the method being annotated.
+     * @param \ReflectionMethod $reflectionMethod The reflective representation of the method to provide metadata.
+     *
+     * @return string Description of the method
+     */
+    protected function determineDescription(string $plugin, string $method, \ReflectionMethod $reflectionMethod): string
+    {
+        $description = '';
+        $docBlock = $reflectionMethod->getDocComment();
+        if (!empty($docBlock)) {
+            $description = $this->getDescriptionFromDocBlock($docBlock);
+        }
+
+        return $description;
+    }
+
 
     /**
      * Map the PHP type to the OpenAPI type. The currently available types for v3.1.1 are the following: “null”,
@@ -1717,12 +1760,13 @@ class AnnotationGenerator
      *
      * @return string[] The array of all the lines of the operation annotation object.
      */
-    public function compileOperationLines(string $path, string $opId, string $plugin, array $params, array $responses, bool $isPost = false): array
+    public function compileOperationLines(string $path, string $opId, string $plugin, array $params, array $responses, string $description, bool $isPost = false): array
     {
         $operationValuesMap = [
             'path="' . $path . '"',
             'operationId="' . $opId . '"',
             'tags={"' . $plugin . '"}',
+            'description="' . $description . '"',
         ];
         foreach ($params['refs'] ?? [] as $ref) {
             $operationValuesMap[] = '@OA\Parameter(ref="' . $ref . '")';
