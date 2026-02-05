@@ -468,12 +468,17 @@ class AnnotationGenerator
         // Clean up the descriptions a little more like removing linebreaks and escaping double-quotes
         $description = $this->normaliseDescriptionText($description);
 
+        $default = $paramMetadata['default'];
+        if (!is_string($default)) {
+            $default = json_encode($default);
+        }
+
         return [
             'name' => $paramName,
             'types' => $typesMap,
             'description' => $description,
             'required' => $isRequired ? 'true' : 'false',
-            'default' => !$isRequired ? json_encode($paramMetadata['default']) : NoDefaultValue::class,
+            'default' => !$isRequired ? $default : NoDefaultValue::class,
             'example' => $example,
         ];
     }
