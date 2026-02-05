@@ -72,8 +72,6 @@ class SpecGenerator
             BaseValidator::check('pluginName', $pluginName, [new NotEmpty()]);
             Manager::getInstance()->checkIsPluginActivated($pluginName);
 
-            $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
-//            $pluginAnnotationsSource = $pluginDir . '/API.php';
             $pluginAnnotationsSource = $currentPluginDir . '/tmp/annotations/' . $pluginName . 'GeneratedAnnotations.php';
             try {
                 $openapi = (new Generator(StaticContainer::get(NullLogger::class)))->generate([
@@ -82,9 +80,9 @@ class SpecGenerator
             } catch (\Throwable $e) {
                 throw new \Exception('There was an error testing the API annotations for plugin ' . $pluginName, 0, $e);
             }
-//            if (trim($openapi->toYaml()) === 'openapi: ' . OpenApi::DEFAULT_VERSION) {
-//                throw new \Exception("The $pluginName plugin's API class does not appear to be annotated yet.");
-//            }
+            if (trim($openapi->toYaml()) === 'openapi: ' . OpenApi::DEFAULT_VERSION) {
+                throw new \Exception("The $pluginName plugin's API class does not appear to be annotated yet.");
+            }
             $pluginDirs[$pluginName] = $pluginAnnotationsSource;
         }
 

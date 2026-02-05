@@ -122,7 +122,7 @@ class AnnotationGenerator
         $pluginMetadata = Proxy::getInstance()->getMetadata()[$className] ?? [];
 
         $annotations = [[sprintf('@OA\Tag(name="%s")', $pluginName)]];
-//      I decided to not include the description in the tag annotation so that it automatically pulls the API class comment as the description.
+
         if (!empty($pluginMetadata['__documentation'])) {
             $tagLines = $this->buildLinesForAnnotationObject('@OA\Tag', [
                 sprintf('name="%s"', $pluginName),
@@ -1772,6 +1772,7 @@ class AnnotationGenerator
      * @param string $plugin The name of the plugin. E.g. CustomReports
      * @param array $params The compiled list of method parameters and key information about them, like type.
      * @param array $responses compiled list of method expected responses and key information about them, like type.
+     * @param string $description The method level description
      * @param bool $isPost Indicates whether the operation is a POST. The default is false, meaning it's GET.
      *
      * @return string[] The array of all the lines of the operation annotation object.
