@@ -435,7 +435,7 @@ class AnnotationGeneratorTest extends TestCase
             'types' => ['string' => null],
             'description' => '',
             'required' => 'false',
-            'default' => '"SomeDefaultValue"',
+            'default' => 'SomeDefaultValue',
             'example' => '',
         ]];
         yield 'should not wrap metadata default value when boolean type' => ['someParam', [
@@ -467,7 +467,7 @@ class AnnotationGeneratorTest extends TestCase
             'types' => ['string' => null],
             'description' => '',
             'required' => 'false',
-            'default' => '""',
+            'default' => '',
             'example' => '',
         ]];
         yield 'should not count the NoDefaultValue class as a default value' => ['someParam', [
