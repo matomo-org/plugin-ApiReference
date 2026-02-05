@@ -1,7 +1,7 @@
 {
     "name": "OpenApiDocs",
     "description": "Generate API documentation for Matomo in the OpenAPI format.",
-    "version": "5.0.0-b1",
+    "version": "5.0.1-b1",
     "theme": false,
     "keywords": [
         "API",
