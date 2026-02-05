@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Annotations;
 
+use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Description;
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Param;
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlockFactory;
@@ -1088,8 +1089,13 @@ class AnnotationGenerator
             $successArray['ref'] = '#/components/responses/GenericSuccess';
         }
 
+        $description = $responseInfo['description'] ?? null;
+        if ($description instanceof Description) {
+            $description = $description->getBodyTemplate();
+        }
+
         // If it's a generic type and there's no custom description, use one of the global generic responses
-        if (empty($successArray['ref']) && !empty($responseInfo['type']) && empty($responseInfo['description']->getBodyTemplate())) {
+        if (empty($successArray['ref']) && !empty($responseInfo['type']) && empty($description)) {
             $ref = '';
             switch ($responseInfo['type']) {
                 case 'array':
@@ -1776,7 +1782,7 @@ class AnnotationGenerator
             'path="' . $path . '"',
             'operationId="' . $opId . '"',
             'tags={"' . $plugin . '"}',
-            'description="' . $description . '"',
+            'description="' . $this->normaliseDescriptionText($description) . '"',
         ];
         foreach ($params['refs'] ?? [] as $ref) {
             $operationValuesMap[] = '@OA\Parameter(ref="' . $ref . '")';
