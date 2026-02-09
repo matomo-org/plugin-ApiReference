@@ -72,8 +72,7 @@ class SpecGenerator
             BaseValidator::check('pluginName', $pluginName, [new NotEmpty()]);
             Manager::getInstance()->checkIsPluginActivated($pluginName);
 
-            $pluginDir = Manager::getInstance()::getPluginDirectory($pluginName);
-            $pluginAnnotationsSource = $pluginDir . '/API.php';
+            $pluginAnnotationsSource = $currentPluginDir . '/tmp/annotations/' . $pluginName . 'GeneratedAnnotations.php';
             try {
                 $openapi = (new Generator(StaticContainer::get(NullLogger::class)))->generate([
                     $pluginAnnotationsSource,

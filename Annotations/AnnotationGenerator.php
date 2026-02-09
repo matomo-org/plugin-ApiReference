@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Annotations;
 
+use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Description;
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Param;
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlockFactory;
@@ -121,15 +122,15 @@ class AnnotationGenerator
         $pluginMetadata = Proxy::getInstance()->getMetadata()[$className] ?? [];
 
         $annotations = [[sprintf('@OA\Tag(name="%s")', $pluginName)]];
-        // I decided to not include the description in the tag annotation so that it automatically pulls the API class comment as the description.
-//        if (!empty($pluginMetadata['__documentation'])) {
-//            $tagLines = $this->buildLinesForAnnotationObject('@OA\Tag', [
-//                sprintf('name="%s"', $pluginName),
-//                sprintf('description="%s"', $this->normaliseDescriptionText($pluginMetadata['__documentation'])),
-//            ]);
-//            $this->removeTrailingCommaFromLastLine($tagLines);
-//            $annotations[] = $tagLines;
-//        }
+
+        if (!empty($pluginMetadata['__documentation'])) {
+            $tagLines = $this->buildLinesForAnnotationObject('@OA\Tag', [
+                sprintf('name="%s"', $pluginName),
+                sprintf('description="%s"', $this->normaliseDescriptionText($pluginMetadata['__documentation'])),
+            ]);
+            $this->removeTrailingCommaFromLastLine($tagLines);
+            $annotations[] = $tagLines;
+        }
 
         foreach (array_keys($pluginMetadata) as $metadataMethod) {
             if (!$reflectionClass->hasMethod($metadataMethod)) {
@@ -254,11 +255,12 @@ class AnnotationGenerator
 
         $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
         $responses = $this->determineResponses($rules, $pluginName, $methodName, $reflectionMethod, $params);
+        $description = $this->determineDescription($pluginName, $methodName, $reflectionMethod);
 
         $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
             && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
 
-        return $this->compileOperationLines($path, $opId, $pluginName, $params, $responses, $isPost);
+        return $this->compileOperationLines($path, $opId, $pluginName, $params, $responses, $description, $isPost);
     }
 
     /**
@@ -354,6 +356,24 @@ class AnnotationGenerator
     }
 
     /**
+     * Extract the description/summary from a given docblock
+     *
+     * @param string $docBlock The comment block from a method, which hopefully contains a description.
+     *
+     * @return string Description/summary extracted from the docblock
+     */
+    public function getDescriptionFromDocBlock(string $docBlock): string
+    {
+        $factory = DocBlockFactory::createInstance();
+        $docBlockObject = $factory->create($docBlock);
+
+        return $docBlockObject->getSummary();
+    }
+
+
+
+
+        /**
      * This is a helper method for building the path used for an operation annotation. It takes a path template, like
      * the one from the config array and populates it with the plugin name and API method name.
      *
@@ -449,12 +469,17 @@ class AnnotationGenerator
         // Clean up the descriptions a little more like removing linebreaks and escaping double-quotes
         $description = $this->normaliseDescriptionText($description);
 
+        $default = $paramMetadata['default'] ?? null;
+        if (!is_string($default)) {
+            $default = json_encode($default);
+        }
+
         return [
             'name' => $paramName,
             'types' => $typesMap,
             'description' => $description,
             'required' => $isRequired ? 'true' : 'false',
-            'default' => !$isRequired ? json_encode($paramMetadata['default']) : NoDefaultValue::class,
+            'default' => !$isRequired ? $default : NoDefaultValue::class,
             'example' => $example,
         ];
     }
@@ -578,6 +603,30 @@ class AnnotationGenerator
         ];
     }
 
+
+
+
+    /**
+     * Get the description/summary of a given method
+     *
+     * @param string $plugin Name of the plugin. E.g. TagManager.
+     * @param string $method The name of the method being annotated.
+     * @param \ReflectionMethod $reflectionMethod The reflective representation of the method to provide metadata.
+     *
+     * @return string Description of the method
+     */
+    protected function determineDescription(string $plugin, string $method, \ReflectionMethod $reflectionMethod): string
+    {
+        $description = '';
+        $docBlock = $reflectionMethod->getDocComment();
+        if (!empty($docBlock)) {
+            $description = $this->getDescriptionFromDocBlock($docBlock);
+        }
+
+        return $description;
+    }
+
+
     /**
      * Map the PHP type to the OpenAPI type. The currently available types for v3.1.1 are the following: “null”,
      * “boolean”, “object”, “array”, “number”, “string”, or “integer”.
@@ -613,6 +662,9 @@ class AnnotationGenerator
             case 'float':
             case 'double':
                 $type = 'number';
+                break;
+            case 'void':
+                $type = 'null';
                 break;
             default:
                 $type = 'string';
@@ -1037,8 +1089,13 @@ class AnnotationGenerator
             $successArray['ref'] = '#/components/responses/GenericSuccess';
         }
 
+        $description = $responseInfo['description'] ?? null;
+        if ($description instanceof Description) {
+            $description = $description->getBodyTemplate();
+        }
+
         // If it's a generic type and there's no custom description, use one of the global generic responses
-        if (empty($successArray['ref']) && !empty($responseInfo['type']) && empty($responseInfo['description'])) {
+        if (empty($successArray['ref']) && !empty($responseInfo['type']) && empty($description)) {
             $ref = '';
             switch ($responseInfo['type']) {
                 case 'array':
@@ -1053,6 +1110,8 @@ class AnnotationGenerator
                 case 'string':
                     $ref = '#/components/responses/GenericString';
                     break;
+                case 'null':
+                    $ref = '#/components/responses/GenericSuccess';
             }
 
             if (!empty($ref)) {
@@ -1713,16 +1772,18 @@ class AnnotationGenerator
      * @param string $plugin The name of the plugin. E.g. CustomReports
      * @param array $params The compiled list of method parameters and key information about them, like type.
      * @param array $responses compiled list of method expected responses and key information about them, like type.
+     * @param string $description The method level description
      * @param bool $isPost Indicates whether the operation is a POST. The default is false, meaning it's GET.
      *
      * @return string[] The array of all the lines of the operation annotation object.
      */
-    public function compileOperationLines(string $path, string $opId, string $plugin, array $params, array $responses, bool $isPost = false): array
+    public function compileOperationLines(string $path, string $opId, string $plugin, array $params, array $responses, string $description, bool $isPost = false): array
     {
         $operationValuesMap = [
             'path="' . $path . '"',
             'operationId="' . $opId . '"',
             'tags={"' . $plugin . '"}',
+            'description="' . $this->normaliseDescriptionText($description) . '"',
         ];
         foreach ($params['refs'] ?? [] as $ref) {
             $operationValuesMap[] = '@OA\Parameter(ref="' . $ref . '")';
