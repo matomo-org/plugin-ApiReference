@@ -13,6 +13,7 @@ class OpenApiDocs extends \Piwik\Plugin
 {
     public const DEFAULT_SPEC_VERSION = '1.0.0';
     public const OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME = 'oaXmlAttributes';
+    public const OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME = 'defaultKeyName';
     public const GENERATED_ANNOTATIONS_PATH = '/tmp/annotations/';
     public const EXAMPLE_RESPONSES_PATH = '/tmp/responses/';
     public const GENERATED_SPECS_PATH = '/tmp/specs/';

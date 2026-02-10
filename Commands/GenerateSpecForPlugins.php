@@ -35,6 +35,7 @@ class GenerateSpecForPlugins extends ConsoleCommand
         $this->addOptionalValueOption('format', 'f', 'Format of the spec file (JSON or YAML). Default is JSON');
         $this->addOptionalValueOption('api-version', null, 'Version of the spec file. Default is 1.0.0');
         $this->addNoValueOption('not-dry-run', null, 'Flag to allow writing to file instead of outputting a dry run.');
+        $this->addNoValueOption('add-annotations', null, 'Flag to also generate annotations');
     }
 
     /**
@@ -82,13 +83,13 @@ class GenerateSpecForPlugins extends ConsoleCommand
         $format = $input->getOption('format') ?: 'json';
         $version = $input->getOption('api-version') ?: '1.0.0';
         $notDryRun = $input->getOption('not-dry-run') ?: false;
+        $addAnnotations = $input->getOption('add-annotations') ?: false;
 
         $message = sprintf('<info>Generating single swagger file for: %s</info>', $plugin);
 
         $output->writeln($message);
 
         $pluginsArray = explode(',', $plugin);
-        // Generate Annotations firsttttt -> let's output into
 
         $annotations = [];
         foreach ($pluginsArray as $pluginName) {

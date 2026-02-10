@@ -1132,8 +1132,9 @@ class AnnotationGenerator
         $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method, $paramsData);
         foreach ($exampleUrls as $type => $url) {
             $exampleValue = $this->getExampleIfAvailable($url);
-            // If the example lookup failed, try making the same request locally using a temporary token.
+            // If the example lookup failed, try making the same request locally using a local token.
             if (empty($exampleValue)) {
+                print 'No example value on demo for ' . $plugin . ' ' . $method . "\n";
                 $exampleValue = $this->getExampleIfAvailable($url, true);
             }
             if (strlen($exampleValue) > self::EXAMPLE_CHAR_LIMIT) {
@@ -1484,6 +1485,18 @@ class AnnotationGenerator
     {
         $type = 'object';
         $originalValues = $values;
+        $isList = !empty($values) && array_keys($values) === range(0, count($values) - 1);
+        $treatAsArray = $propName !== 'row' && $isList;
+        if ($treatAsArray) {
+            $type = 'array';
+            $mergedValues = [];
+            foreach ($values as $value) {
+                if (is_array($value)) {
+                    $mergedValues = array_merge($mergedValues, $value);
+                }
+            }
+            $values = $mergedValues;
+        }
         if ($propName === 'row') {
             $type = 'array';
             // Merge the rows together to get as many properties as possible
@@ -1511,13 +1524,6 @@ class AnnotationGenerator
                 continue;
             }
 
-            // Special handling for XML attributes
-            if ($key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) {
-                $hasAttributes = true;
-                $childLines = array_merge($childLines, $this->buildXmlAttributeSchemaLines($value));
-                continue;
-            }
-
             // Handle nested arrays
             if (!is_string($key)) {
                 if (!is_array(reset($value))) {
@@ -1525,8 +1531,28 @@ class AnnotationGenerator
                 }
 
                 $keys = array_keys($value);
-                $key = reset($keys);
+                $key = null;
+                foreach ($keys as $candidate) {
+                    if (
+                        $candidate !== OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
+                        && $candidate !== OpenApiDocs::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
+                    ) {
+                        $key = $candidate;
+                        break;
+                    }
+                }
+                $key = $key ?? reset($keys);
                 $value = $value[$key];
+            }
+
+            // Special handling for XML attributes (metadata-only)
+            if (
+                $key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
+                || $key === OpenApiDocs::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
+            ) {
+                $hasAttributes = true;
+                $childLines = array_merge($childLines, $this->buildXmlAttributeSchemaLines($value));
+                continue;
             }
 
             $childLines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
@@ -1541,6 +1567,20 @@ class AnnotationGenerator
             ];
 
             // Handle arrays of strings which don't have named properties
+            $originalKeys = array_keys($originalValues);
+            if (!is_string(reset($originalKeys)) && !is_string(reset($values)) && !$hasAttributes) {
+                $itemProperties = ['type="string"'];
+            }
+
+            $childLines = ['@OA\Items' => array_merge($itemProperties, $childLines)];
+        }
+        if ($treatAsArray) {
+            $itemProperties = [
+                'type="object",',
+                sprintf('@OA\Xml(name="%s"),', $propName),
+                'additionalProperties=true,',
+            ];
+
             $originalKeys = array_keys($originalValues);
             if (!is_string(reset($originalKeys)) && !is_string(reset($values)) && !$hasAttributes) {
                 $itemProperties = ['type="string"'];
@@ -1823,11 +1863,11 @@ class AnnotationGenerator
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
                 $description = !empty($response['description']) && strpos($response['description'], 'Example links: [') !== false
                     ? ', description="' . $response['description'] . '"' : '';
-                $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . $description . ', ref="' . $response['ref'] . '")';
+                $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . $this->normaliseDescriptionText($description) . ', ref="' . $response['ref'] . '")';
             } else {
                 $responsePropertyArray = [
                     'response=200',
-                    'description="' . ($response['description'] ?? 'OK') . '"',
+                    'description="' . ($this->normaliseDescriptionText($response['description']) ?? 'OK') . '"',
                 ];
                 if (!empty($response['schema'])) {
                     $responsePropertyArray = array_merge($responsePropertyArray, $response['schema']);
