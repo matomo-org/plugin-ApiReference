@@ -352,6 +352,10 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     description="An in-database subtable ID.", required=false,
  *     @OA\Schema(type="integer"))
  *
+ * @OA\Parameter(parameter="idSubtableRequired", name="idSubtable", in="query",
+ *     description="An in-database subtable ID.", required=true,
+ *     @OA\Schema(type="integer"))
+ *
  * Parameters specific to DataTables and Views
  * @OA\Parameter(parameter="flatOptional", name="flat", in="query",
  *     description="Flatten subtables into the parent table.", required=false,

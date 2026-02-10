@@ -1862,8 +1862,8 @@ class AnnotationGenerator
                 $code = $response['code'];
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
                 $description = !empty($response['description']) && strpos($response['description'], 'Example links: [') !== false
-                    ? ', description="' . $response['description'] . '"' : '';
-                $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . $this->normaliseDescriptionText($description) . ', ref="' . $response['ref'] . '")';
+                    ? ', description="' . $this->normaliseDescriptionText($response['description']) . '"' : '';
+                $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . $description . ', ref="' . $response['ref'] . '")';
             } else {
                 $responsePropertyArray = [
                     'response=200',
