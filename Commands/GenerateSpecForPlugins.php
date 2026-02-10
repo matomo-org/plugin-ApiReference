@@ -9,7 +9,6 @@
 
 namespace Piwik\Plugins\OpenApiDocs\Commands;
 
-use Piwik\Common;
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
 use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
@@ -108,7 +107,5 @@ class GenerateSpecForPlugins extends ConsoleCommand
         $output->writeln($result);
 
         return $result ? self::SUCCESS : self::FAILURE;
-
     }
 }
-
