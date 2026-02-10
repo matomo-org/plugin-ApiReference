@@ -1867,7 +1867,7 @@ class AnnotationGenerator
             } else {
                 $responsePropertyArray = [
                     'response=200',
-                    'description="' . ($this->normaliseDescriptionText($response['description']) ?? 'OK') . '"',
+                    'description="' . $this->normaliseDescriptionText($response['description'] ?? 'OK') . '"',
                 ];
                 if (!empty($response['schema'])) {
                     $responsePropertyArray = array_merge($responsePropertyArray, $response['schema']);
