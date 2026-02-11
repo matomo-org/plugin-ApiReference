@@ -74,7 +74,6 @@ return [
     'Marketplace',
     'Insights',
     'MarketingCampaignsReporting',
-    'JsTrackerInstallCheck',
     'Dashboard',
     'Actions',
 ];
