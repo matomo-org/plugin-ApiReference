@@ -14,9 +14,9 @@ return [
     'PrivacyManager',
     'CoreAdminHome',
     'MultiChannelConversionAttribution',
-//    'DBStats', BAD XML
+    'DBStats',
     'Funnels',
-//    'SitesManager', BAD XML -> Spaces in response
+    'SitesManager',
     'UsersFlow',
     'DevicesDetection',
     'LanguagesManager',
@@ -68,7 +68,7 @@ return [
     'Live',
     'Tour',
     'CustomJsTracker',
-//    'ImageGraph', BAD XML
+    'ImageGraph',
     'UsersManager',
 //    'ConnectAccounts', Requires cloud?
     'Marketplace',

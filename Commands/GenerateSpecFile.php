@@ -31,11 +31,11 @@ class GenerateSpecFile extends ConsoleCommand
     {
         $this->setName('openapidocs:generate-spec-file');
         $this->setDescription('Generate the OpenAPI documentation file for the Matomo APIs.');
-        $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to document');
+        $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to document, use all to process every plugin');
         $this->addRequiredValueOption('format', 'f', 'Format of the spec file (JSON or YAML). Default is JSON');
         $this->addRequiredValueOption('api-version', null, 'Version of the spec file. Default is 1.0.0');
         $this->addNoValueOption('not-dry-run', null, 'Flag to allow writing to file instead of outputting a dry run.');
-        $this->addNoValueOption('add-annotations', null, 'Flag to also generate annotations');
+        $this->addNoValueOption('add-annotations', null, 'Flag to also generate annotations that are required to generate OpenAPI documentation');
     }
 
     /**

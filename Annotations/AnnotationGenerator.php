@@ -890,6 +890,7 @@ class AnnotationGenerator
             || stripos($response['data'], '<result />') !== false
             || trim($response['data']) === '[]'
             || (stripos($url, 'format=tsv') !== false && trim($response['data']) === 'No data available')
+            || !preg_match("/(json|xml|tsv)/", $response['headers']['content-type']) // Some ask for xml/json/tsv but return image/png, shouldn't be treated as xml
         ) {
             return '';
         }
@@ -900,7 +901,12 @@ class AnnotationGenerator
 
         // Convert the XML responses into a JSON object and then encode it into a string. This is helpful for building schemas.
         if ($format === 'xml') {
-            $body = json_encode($this->convertExampleXmlToObject($body));
+            // Some plugins have invalid XML (e.g <North America>)
+            try {
+                $body = json_encode($this->convertExampleXmlToObject($body));
+            } catch (\Exception $e) {
+                return '';
+            }
         }
 
         return $body;
