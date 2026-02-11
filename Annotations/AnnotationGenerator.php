@@ -1140,7 +1140,6 @@ class AnnotationGenerator
             $exampleValue = $this->getExampleIfAvailable($url);
             // If the example lookup failed, try making the same request locally using a local token.
             if (empty($exampleValue)) {
-                print 'No example value on demo for ' . $plugin . ' ' . $method . "\n";
                 $exampleValue = $this->getExampleIfAvailable($url, true);
             }
             if (strlen($exampleValue) > self::EXAMPLE_CHAR_LIMIT) {
