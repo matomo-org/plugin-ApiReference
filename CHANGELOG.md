@@ -1,7 +1,7 @@
 ## Changelog
 
 
-5.0.1-b1 - 16-02-2026 
+5.0.1-b1 - 2026-02-16
 - Added class and function level docs
 - Updated spec generation command to allow single swagger file generation
 
