@@ -890,7 +890,7 @@ class AnnotationGenerator
             || stripos($response['data'], '<result />') !== false
             || trim($response['data']) === '[]'
             || (stripos($url, 'format=tsv') !== false && trim($response['data']) === 'No data available')
-            || !preg_match("/(json|xml|tsv)/", $response['headers']['content-type'] ?? '') // Some ask for xml/json/tsv but return image/png, shouldn't be treated as xml
+            || !preg_match("/(json|xml|vnd.ms-excel)/", $response['headers']['content-type'] ?? $response['headers']['Content-Type'] ?? '') // Some ask for xml/json/tsv but return image/png, shouldn't be treated as xml
         ) {
             return '';
         }
