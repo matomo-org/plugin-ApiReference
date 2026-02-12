@@ -941,7 +941,11 @@ class AnnotationGenerator
         }
 
         if (!$rawResult && $format === 'xml') {
-            $exampleContents = json_encode($this->convertExampleXmlToObject($exampleContents));
+            try {
+                $exampleContents = json_encode($this->convertExampleXmlToObject($exampleContents));
+            } catch (\Exception $e) {
+                return '';
+            }
         }
 
         // Unless set otherwise, make sure that the example is around the max allowed characters. If raw, don't bother.
