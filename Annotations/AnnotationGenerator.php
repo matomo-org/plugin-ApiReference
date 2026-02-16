@@ -1023,7 +1023,8 @@ class AnnotationGenerator
      */
     public function convertExampleXmlToObject(string $xml): array
     {
-        $root = new \SimpleXMLElement($xml);
+
+        $root = new \SimpleXMLElement($xml, LIBXML_NOERROR);
 
         $toArray = function (\SimpleXMLElement $node) use (&$toArray) {
             if (!count($node->children()) && !count($node->attributes())) {
@@ -1252,6 +1253,10 @@ class AnnotationGenerator
             $mediaType = array_merge($mediaType, $responseSchema);
         }
         if ($format === 'tsv') {
+            // Prevent accidental PHPDoc termination in generated annotation files.
+            $exampleValue = preg_replace('~(?<!\\\\)/\\*~', '\\/*', $exampleValue) ?? $exampleValue;
+            $exampleValue = str_replace('*/', '*\/', $exampleValue);
+
             // Escape quotes differently for the annotation examples
             $exampleValue = str_replace('"', '""', $exampleValue);
             $mediaType[] = 'example="' . $exampleValue . '"';
