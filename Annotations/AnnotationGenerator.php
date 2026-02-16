@@ -890,6 +890,7 @@ class AnnotationGenerator
             || stripos($response['data'], '<result />') !== false
             || trim($response['data']) === '[]'
             || (stripos($url, 'format=tsv') !== false && trim($response['data']) === 'No data available')
+            || !preg_match("/(json|xml|vnd.ms-excel)/", $response['headers']['content-type'] ?? $response['headers']['Content-Type'] ?? '') // Some ask for xml/json/tsv but return image/png, shouldn't be treated as xml
         ) {
             return '';
         }
@@ -900,7 +901,12 @@ class AnnotationGenerator
 
         // Convert the XML responses into a JSON object and then encode it into a string. This is helpful for building schemas.
         if ($format === 'xml') {
-            $body = json_encode($this->convertExampleXmlToObject($body));
+            // Some plugins have invalid XML (e.g <North America>)
+            try {
+                $body = json_encode($this->convertExampleXmlToObject($body));
+            } catch (\Exception $e) {
+                return '';
+            }
         }
 
         return $body;
@@ -935,7 +941,11 @@ class AnnotationGenerator
         }
 
         if (!$rawResult && $format === 'xml') {
-            $exampleContents = json_encode($this->convertExampleXmlToObject($exampleContents));
+            try {
+                $exampleContents = json_encode($this->convertExampleXmlToObject($exampleContents));
+            } catch (\Exception $e) {
+                return '';
+            }
         }
 
         // Unless set otherwise, make sure that the example is around the max allowed characters. If raw, don't bother.
@@ -1013,7 +1023,8 @@ class AnnotationGenerator
      */
     public function convertExampleXmlToObject(string $xml): array
     {
-        $root = new \SimpleXMLElement($xml);
+
+        $root = new \SimpleXMLElement($xml, LIBXML_NOERROR);
 
         $toArray = function (\SimpleXMLElement $node) use (&$toArray) {
             if (!count($node->children()) && !count($node->attributes())) {
@@ -1132,7 +1143,7 @@ class AnnotationGenerator
         $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method, $paramsData);
         foreach ($exampleUrls as $type => $url) {
             $exampleValue = $this->getExampleIfAvailable($url);
-            // If the example lookup failed, try making the same request locally using a temporary token.
+            // If the example lookup failed, try making the same request locally using a local token.
             if (empty($exampleValue)) {
                 $exampleValue = $this->getExampleIfAvailable($url, true);
             }
@@ -1242,6 +1253,10 @@ class AnnotationGenerator
             $mediaType = array_merge($mediaType, $responseSchema);
         }
         if ($format === 'tsv') {
+            // Prevent accidental PHPDoc termination in generated annotation files.
+            $exampleValue = preg_replace('~(?<!\\\\)/\\*~', '\\/*', $exampleValue) ?? $exampleValue;
+            $exampleValue = str_replace('*/', '*\/', $exampleValue);
+
             // Escape quotes differently for the annotation examples
             $exampleValue = str_replace('"', '""', $exampleValue);
             $mediaType[] = 'example="' . $exampleValue . '"';
@@ -1484,6 +1499,18 @@ class AnnotationGenerator
     {
         $type = 'object';
         $originalValues = $values;
+        $isList = !empty($values) && array_keys($values) === range(0, count($values) - 1);
+        $treatAsArray = $propName !== 'row' && $isList;
+        if ($treatAsArray) {
+            $type = 'array';
+            $mergedValues = [];
+            foreach ($values as $value) {
+                if (is_array($value)) {
+                    $mergedValues = array_merge($mergedValues, $value);
+                }
+            }
+            $values = $mergedValues;
+        }
         if ($propName === 'row') {
             $type = 'array';
             // Merge the rows together to get as many properties as possible
@@ -1511,13 +1538,6 @@ class AnnotationGenerator
                 continue;
             }
 
-            // Special handling for XML attributes
-            if ($key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) {
-                $hasAttributes = true;
-                $childLines = array_merge($childLines, $this->buildXmlAttributeSchemaLines($value));
-                continue;
-            }
-
             // Handle nested arrays
             if (!is_string($key)) {
                 if (!is_array(reset($value))) {
@@ -1525,8 +1545,28 @@ class AnnotationGenerator
                 }
 
                 $keys = array_keys($value);
-                $key = reset($keys);
+                $key = null;
+                foreach ($keys as $candidate) {
+                    if (
+                        $candidate !== OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
+                        && $candidate !== OpenApiDocs::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
+                    ) {
+                        $key = $candidate;
+                        break;
+                    }
+                }
+                $key = $key ?? reset($keys);
                 $value = $value[$key];
+            }
+
+            // Special handling for XML attributes (metadata-only)
+            if (
+                $key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
+                || $key === OpenApiDocs::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
+            ) {
+                $hasAttributes = true;
+                $childLines = array_merge($childLines, $this->buildXmlAttributeSchemaLines($value));
+                continue;
             }
 
             $childLines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
@@ -1541,6 +1581,20 @@ class AnnotationGenerator
             ];
 
             // Handle arrays of strings which don't have named properties
+            $originalKeys = array_keys($originalValues);
+            if (!is_string(reset($originalKeys)) && !is_string(reset($values)) && !$hasAttributes) {
+                $itemProperties = ['type="string"'];
+            }
+
+            $childLines = ['@OA\Items' => array_merge($itemProperties, $childLines)];
+        }
+        if ($treatAsArray) {
+            $itemProperties = [
+                'type="object",',
+                sprintf('@OA\Xml(name="%s"),', $propName),
+                'additionalProperties=true,',
+            ];
+
             $originalKeys = array_keys($originalValues);
             if (!is_string(reset($originalKeys)) && !is_string(reset($values)) && !$hasAttributes) {
                 $itemProperties = ['type="string"'];
@@ -1822,12 +1876,12 @@ class AnnotationGenerator
                 $code = $response['code'];
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
                 $description = !empty($response['description']) && strpos($response['description'], 'Example links: [') !== false
-                    ? ', description="' . $response['description'] . '"' : '';
+                    ? ', description="' . $this->normaliseDescriptionText($response['description']) . '"' : '';
                 $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . $description . ', ref="' . $response['ref'] . '")';
             } else {
                 $responsePropertyArray = [
                     'response=200',
-                    'description="' . ($response['description'] ?? 'OK') . '"',
+                    'description="' . $this->normaliseDescriptionText($response['description'] ?? 'OK') . '"',
                 ];
                 if (!empty($response['schema'])) {
                     $responsePropertyArray = array_merge($responsePropertyArray, $response['schema']);

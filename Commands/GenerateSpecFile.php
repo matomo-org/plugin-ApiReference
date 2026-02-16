@@ -9,7 +9,9 @@
 
 namespace Piwik\Plugins\OpenApiDocs\Commands;
 
+use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
+use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
 use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 
 /**
@@ -29,10 +31,11 @@ class GenerateSpecFile extends ConsoleCommand
     {
         $this->setName('openapidocs:generate-spec-file');
         $this->setDescription('Generate the OpenAPI documentation file for the Matomo APIs.');
-        $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to document');
+        $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to document, use all to process every plugin');
         $this->addRequiredValueOption('format', 'f', 'Format of the spec file (JSON or YAML). Default is JSON');
         $this->addRequiredValueOption('api-version', null, 'Version of the spec file. Default is 1.0.0');
         $this->addNoValueOption('not-dry-run', null, 'Flag to allow writing to file instead of outputting a dry run.');
+        $this->addNoValueOption('add-annotations', null, 'Flag to also generate annotations that are required to generate OpenAPI documentation');
     }
 
     /**
@@ -74,16 +77,32 @@ class GenerateSpecFile extends ConsoleCommand
         $output = $this->getOutput();
 
         $plugin = $input->getOption('plugin');
+
+
         if (empty($plugin)) {
             throw new \RuntimeException('Please specify a plugin name.');
+        }
+
+        if (strtolower($plugin) == 'all') {
+            $plugins = require __DIR__ . '/../config/plugins.php';
+            $plugin = implode(',', $plugins);
         }
         $format = $input->getOption('format') ?: 'json';
         $version = $input->getOption('version') ?: '1.0.0';
         $notDryRun = $input->getOption('not-dry-run') ?: false;
+        $addAnnotations = $input->getOption('add-annotations') ?: false;
 
         $message = sprintf('<info>Generating documentation for: %s</info>', $plugin);
 
         $output->writeln($message);
+
+        if ($addAnnotations) {
+            $pluginsArray = explode(',', $plugin);
+            foreach ($pluginsArray as $pluginName) {
+                (StaticContainer::get(AnnotationGenerator::class))->generatePluginApiAnnotations($pluginName, true);
+                $output->writeln('<info>Created Annotations for ' . $pluginName . ' and wrote results to plugins/OpenApiDocs/tmp/annotations.</info>');
+            }
+        }
 
         $result = (new SpecGenerator())->generatePluginDoc($plugin, $format, $version, $notDryRun);
 
