@@ -1113,7 +1113,7 @@ class AnnotationGeneratorTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public function testBuildSchemaObjectArray(): void
+    public function testBuildSchemaObjectArrayWithStringEnum(): void
     {
         $expectedWithEnum = [
             '@OA\Schema' => [
@@ -1123,7 +1123,10 @@ class AnnotationGeneratorTest extends TestCase
             ],
         ];
         $this->assertEquals($expectedWithEnum, $this->annotationGenerator->buildSchemaObjectArray('string', '', NoDefaultValue::class, 'day', ['day', 'week']));
+    }
 
+    public function testBuildSchemaObjectArrayIgnoresEnumForNonStringTypes(): void
+    {
         $expectedWithoutEnum = [
             '@OA\Schema' => [
                 'type="integer"',
