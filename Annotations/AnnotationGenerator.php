@@ -437,15 +437,25 @@ class AnnotationGenerator
         if (count($typeHints) > 1 && in_array('bool', $typeHints)) {
             $typeHints = array_diff($typeHints, ['bool']);
         }
-        foreach ($typeHints as $typePart) {
-            $typePart = trim($typePart, ' ()');
-            $normalisedType = $this->getOpenApiTypeFromPhpType($typePart);
-            // If the type is array, check if there's a subType
-            $subType = null;
-            if ($normalisedType === 'array' && $typePart !== 'array' && strpos($typePart, '[]') !== false) {
-                $subType = substr($typePart, 0, strpos($typePart, '[]'));
+
+        $allTypeHintsAreStringLiterals = $this->areAllTypeHintsStringLiterals($typeHints);
+        $enumValues = [];
+        if ($allTypeHintsAreStringLiterals) {
+            $typesMap['string'] = null;
+            foreach ($typeHints as $typeHint) {
+                $enumValues[] = trim(trim($typeHint), '\'"');
             }
-            $typesMap[$normalisedType] = $subType !== null ? $this->getOpenApiTypeFromPhpType($subType) : $subType;
+        } else {
+            foreach ($typeHints as $typePart) {
+                $typePart = trim($typePart, ' ()');
+                $normalisedType = $this->getOpenApiTypeFromPhpType($typePart);
+                // If the type is array, check if there's a subType
+                $subType = null;
+                if ($normalisedType === 'array' && $typePart !== 'array' && strpos($typePart, '[]') !== false) {
+                    $subType = substr($typePart, 0, strpos($typePart, '[]'));
+                }
+                $typesMap[$normalisedType] = $subType !== null ? $this->getOpenApiTypeFromPhpType($subType) : $subType;
+            }
         }
 
         $isRequired = !key_exists('default', $paramMetadata) || $paramMetadata['default'] instanceof NoDefaultValue;
@@ -474,7 +484,7 @@ class AnnotationGenerator
             $default = json_encode($default);
         }
 
-        return [
+        $paramData = [
             'name' => $paramName,
             'types' => $typesMap,
             'description' => $description,
@@ -482,6 +492,37 @@ class AnnotationGenerator
             'default' => !$isRequired ? $default : NoDefaultValue::class,
             'example' => $example,
         ];
+
+        if (!empty($enumValues)) {
+            $paramData['enum'] = $enumValues;
+        }
+
+        return $paramData;
+    }
+
+    /**
+     * Determine whether all type hints are quoted string literals.
+     *
+     * @param array $typeHints
+     *
+     * @return bool
+     */
+    protected function areAllTypeHintsStringLiterals(array $typeHints): bool
+    {
+        if (empty($typeHints)) {
+            return false;
+        }
+
+        foreach ($typeHints as $typeHint) {
+            $typeHint = trim(strval($typeHint));
+            $firstChar = $typeHint[0] ?? '';
+            $lastChar = $typeHint[strlen($typeHint) - 1] ?? '';
+            if (!(($firstChar === "'" && $lastChar === "'") || ($firstChar === '"' && $lastChar === '"'))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
