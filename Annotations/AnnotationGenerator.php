@@ -1756,12 +1756,19 @@ class AnnotationGenerator
      * @param string $subType This can specify the subtype for arrays. E.g. integer for int[] or string for string[].
      * @param string $default The optional default value for the type. Default is no value.
      * @param string $example The optional example value for the type. Default is empty string which indicated no value.
+     * @param array $enum The optional enum values for the type.
      *
      * @return array[]
      */
-    public function buildSchemaObjectArray(string $type, string $subType = '', string $default = NoDefaultValue::class, string $example = ''): array
+    public function buildSchemaObjectArray(string $type, string $subType = '', string $default = NoDefaultValue::class, string $example = '', array $enum = []): array
     {
         $schemaMap = ['type="' . $type . '"'];
+        if (!empty($enum) && $type === 'string') {
+            $enumStringValues = array_map(static function ($value) {
+                return '"' . str_replace('"', '\"', strval($value)) . '"';
+            }, $enum);
+            $schemaMap[] = 'enum={' . implode(',', $enumStringValues) . '}';
+        }
         if (($example) !== '') {
             $schemaMap[] = 'example=' . $this->wrapStringWithQuotes($example, $type);
         }
@@ -1841,14 +1848,16 @@ class AnnotationGenerator
      * default is set.
      * @param string $example The value to use as the example property of the schema. If it's an empty string, no
      * example is set.
+     * @param array $enum The optional enum values to apply to string schemas.
      *
      * @return array[] The collection of lines which make up the schema annotation object.
      */
-    public function buildSchemaObjectArrays(array $typesMap, string $default = '', string $example = ''): array
+    public function buildSchemaObjectArrays(array $typesMap, string $default = '', string $example = '', array $enum = []): array
     {
         $schemas = [];
         foreach ($typesMap as $type => $subType) {
-            $schemas[] = $this->buildSchemaObjectArray($type, $subType ?? '', $default, $example);
+            $schemaEnum = $type === 'string' ? $enum : [];
+            $schemas[] = $this->buildSchemaObjectArray($type, $subType ?? '', $default, $example, $schemaEnum);
         }
 
         if (count($schemas) === 1) {
@@ -1908,7 +1917,12 @@ class AnnotationGenerator
                 // Escape quotes differently for the annotation examples
                 $exampleString = str_replace('\"', '""', $exampleString);
             }
-            $paramMap[] = $this->buildSchemaObjectArrays($param['types'], strval($param['default']), strval($exampleString));
+            $paramMap[] = $this->buildSchemaObjectArrays(
+                $param['types'],
+                strval($param['default']),
+                strval($exampleString),
+                $param['enum'] ?? []
+            );
             $operationValuesMap[] = ['@OA\Parameter' => $paramMap];
         }
         foreach ($responses as $response) {
