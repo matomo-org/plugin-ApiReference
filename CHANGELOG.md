@@ -1,5 +1,7 @@
 ## Changelog
 
+5.0.2-b1 - 2026-02-16
+- Added support for string literal union types
 
 5.0.1-b1 - 2026-02-16
 - Added class and function level docs

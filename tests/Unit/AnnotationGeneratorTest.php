@@ -596,6 +596,38 @@ class AnnotationGeneratorTest extends TestCase
             'default' => 'Piwik\API\NoDefaultValue',
             'example' => '',
         ]];
+        yield 'should extract enum values when docInfo is a union of string literals' => ['period', [], [
+            'type' => "'day'|'week'|'month'",
+        ], [
+            'name' => 'period',
+            'types' => ['string' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+            'enum' => ['day', 'week', 'month'],
+        ]];
+        yield 'should extract enum values when docInfo uses double-quoted string literals' => ['format', [], [
+            'type' => '"json"|"xml"',
+        ], [
+            'name' => 'format',
+            'types' => ['string' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+            'enum' => ['json', 'xml'],
+        ]];
+        yield 'should not add enum when union mixes string literal and non-literal type' => ['period', [], [
+            'type' => "'day'|int",
+        ], [
+            'name' => 'period',
+            'types' => ['string' => null, 'integer' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
         yield 'should allow multiple types when metadata type is string' => ['someParam', [
             'type' => 'string',
         ], [
@@ -1081,10 +1113,27 @@ class AnnotationGeneratorTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public function testBuildSchemaObjectArray(): void
+    public function testBuildSchemaObjectArrayWithStringEnum(): void
     {
-        // TODO - buildSchemaObjectArray method
-        $this->expectNotToPerformAssertions();
+        $expectedWithEnum = [
+            '@OA\Schema' => [
+                'type="string"',
+                'enum={"day","week"}',
+                'example="day"',
+            ],
+        ];
+        $this->assertEquals($expectedWithEnum, $this->annotationGenerator->buildSchemaObjectArray('string', '', NoDefaultValue::class, 'day', ['day', 'week']));
+    }
+
+    public function testBuildSchemaObjectArrayIgnoresEnumForNonStringTypes(): void
+    {
+        $expectedWithoutEnum = [
+            '@OA\Schema' => [
+                'type="integer"',
+                'example=1',
+            ],
+        ];
+        $this->assertEquals($expectedWithoutEnum, $this->annotationGenerator->buildSchemaObjectArray('integer', '', NoDefaultValue::class, '1', ['1', '2']));
     }
 
     /**
