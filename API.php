@@ -10,7 +10,6 @@
 namespace Piwik\Plugins\OpenApiDocs;
 
 use Piwik\Piwik;
-use Piwik\Request;
 use Piwik\Plugin\Manager;
 use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 
@@ -33,13 +32,11 @@ class API extends \Piwik\Plugin\API
      * @return array<string, mixed> The decoded OpenAPI specification payload.
      * @throws \Exception If the file is missing, unreadable, or contains invalid JSON.
      */
-    public function getMatomoOpenApiSpec(): array
+    public function getMatomoOpenApiSpec(string $format): array
     {
         Piwik::checkUserHasSomeViewAccess();
 
-        $request = Request::fromRequest();
-        $format = strtolower($request->getStringParameter('format', 'json'));
-        if ($format !== 'json') {
+        if (strtolower($format) !== 'json') {
             throw new \Exception(
                 Piwik::translate(
                     'General_ExceptionInvalidReportRendererFormat',

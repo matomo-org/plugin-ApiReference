@@ -55,7 +55,7 @@ class APITest extends TestCase
 
         $api = $this->buildApiMock(true, json_encode($expectedSpec));
 
-        $result = $api->getMatomoOpenApiSpec();
+        $result = $api->getMatomoOpenApiSpec('JSON');
 
         $this->assertSame($expectedSpec, $result);
     }
@@ -67,7 +67,7 @@ class APITest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('OpenAPI spec file was not found');
 
-        $api->getMatomoOpenApiSpec();
+        $api->getMatomoOpenApiSpec('JSON');
     }
 
     public function testGetMatomoOpenApiSpecThrowsExceptionWhenJsonIsInvalid()
@@ -77,8 +77,9 @@ class APITest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('OpenAPI spec file contains invalid JSON');
 
-        $api->getMatomoOpenApiSpec();
+        $api->getMatomoOpenApiSpec('JSON');
     }
+
 
     private function buildApiMock(bool $isReadable, $fileContents = false): API
     {
