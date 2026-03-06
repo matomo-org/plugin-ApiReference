@@ -10,6 +10,7 @@
 namespace Piwik\Plugins\OpenApiDocs;
 
 use Piwik\Piwik;
+use Piwik\Request;
 use Piwik\Plugin\Manager;
 use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 
@@ -34,6 +35,20 @@ class API extends \Piwik\Plugin\API
      */
     public function getMatomoOpenApiSpec(): array
     {
+
+        Piwik::checkUserHasSomeViewAccess();
+
+        $request = Request::fromRequest();
+        $format = strtolower($request->getStringParameter('format', 'json'));
+        if (strtolower($format) !== 'json') {
+            throw new \Exception(
+                Piwik::translate(
+                    'General_ExceptionInvalidReportRendererFormat',
+                    [$format, 'json']
+                )
+            );
+        }
+
         $filePath = $this->getMatomoSpecFilePath();
 
         if (!$this->isSpecFileReadable($filePath)) {
