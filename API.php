@@ -10,15 +10,50 @@
 namespace Piwik\Plugins\OpenApiDocs;
 
 use Piwik\Piwik;
+use Piwik\Plugin\Manager;
 use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 
 /**
  * API for plugin OpenApiDocs
  *
+ * Exposes endpoints to fetch pre-generated OpenAPI specs or generate plugin-specific
+ * OpenAPI docs on demand.
+ *
  * @method static \Piwik\Plugins\OpenApiDocs\API getInstance()
  */
 class API extends \Piwik\Plugin\API
 {
+    /**
+     * Get the pre-generated single OpenAPI spec file if it exists. This endpoint only reads
+     * the generated JSON file and does not trigger spec generation.
+     *
+     * /index.php?module=API&method=OpenApiDocs.getMatomoOpenApiSpec
+     *
+     * @return array<string, mixed> The decoded OpenAPI specification payload.
+     * @throws \Exception If the file is missing, unreadable, or contains invalid JSON.
+     */
+    public function getMatomoOpenApiSpec(): array
+    {
+        $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
+        $filePath = $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . 'matomo_openapi_spec_v' . OpenApiDocs::DEFAULT_SPEC_VERSION . '.json';
+
+        if (!is_file($filePath) || !is_readable($filePath)) {
+            throw new \Exception('OpenAPI spec file was not found. Generate it first via openapidocs:generate-spec-file.');
+        }
+
+        $specContents = file_get_contents($filePath);
+        if ($specContents === false) {
+            throw new \Exception('OpenAPI spec file could not be read.');
+        }
+
+        $decodedSpec = json_decode($specContents, true);
+        if (!is_array($decodedSpec) || json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception('OpenAPI spec file contains invalid JSON.');
+        }
+
+        return $decodedSpec;
+    }
+
     /**
      * Get the generated API documentation data for the specified plugin.
      *
