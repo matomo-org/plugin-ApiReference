@@ -14,7 +14,10 @@ namespace Piwik\Plugins\OpenApiDocs\tests\Unit;
 require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
+use Piwik\Access;
+use Piwik\Container\StaticContainer;
 use Piwik\Plugins\OpenApiDocs\API;
+use Piwik\Tests\Framework\Mock\FakeAccess;
 
 /**
  * @group OpenApiDocs
@@ -23,6 +26,23 @@ use Piwik\Plugins\OpenApiDocs\API;
  */
 class APITest extends TestCase
 {
+    private $originalAccess;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->originalAccess = Access::getInstance();
+        StaticContainer::getContainer()->set(Access::class, new FakeAccess(false, [], [1], 'viewUser'));
+    }
+
+    protected function tearDown(): void
+    {
+        StaticContainer::getContainer()->set(Access::class, $this->originalAccess);
+
+        parent::tearDown();
+    }
+
     public function testGetMatomoOpenApiSpecReturnsDecodedJson()
     {
         $expectedSpec = [

@@ -35,12 +35,11 @@ class API extends \Piwik\Plugin\API
      */
     public function getMatomoOpenApiSpec(): array
     {
-
         Piwik::checkUserHasSomeViewAccess();
 
         $request = Request::fromRequest();
         $format = strtolower($request->getStringParameter('format', 'json'));
-        if (strtolower($format) !== 'json') {
+        if ($format !== 'json') {
             throw new \Exception(
                 Piwik::translate(
                     'General_ExceptionInvalidReportRendererFormat',
