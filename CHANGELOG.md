@@ -1,7 +1,8 @@
 ## Changelog
 
-5.0.2-b1 - 2026-02-16
+5.0.2-b1 - 2026-03-16
 - Added support for string literal union types
+- Added API endpoint to retrieve static matomo swagger file
 
 5.0.1-b1 - 2026-02-16
 - Added class and function level docs
