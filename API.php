@@ -29,6 +29,7 @@ class API extends \Piwik\Plugin\API
      *
      * /index.php?module=API&method=OpenApiDocs.getMatomoOpenApiSpec
      *
+     * @param string $format Output format. Only `json` is supported.
      * @return array<string, mixed> The decoded OpenAPI specification payload.
      * @throws \Exception If the file is missing, unreadable, or contains invalid JSON.
      */
