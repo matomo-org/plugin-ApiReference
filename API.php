@@ -34,14 +34,13 @@ class API extends \Piwik\Plugin\API
      */
     public function getMatomoOpenApiSpec(): array
     {
-        $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
-        $filePath = $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . 'matomo_openapi_spec_v' . OpenApiDocs::DEFAULT_SPEC_VERSION . '.json';
+        $filePath = $this->getMatomoSpecFilePath();
 
-        if (!is_file($filePath) || !is_readable($filePath)) {
+        if (!$this->isSpecFileReadable($filePath)) {
             throw new \Exception('OpenAPI spec file was not found. Generate it first via openapidocs:generate-spec-file.');
         }
 
-        $specContents = file_get_contents($filePath);
+        $specContents = $this->readSpecFile($filePath);
         if ($specContents === false) {
             throw new \Exception('OpenAPI spec file could not be read.');
         }
@@ -52,6 +51,27 @@ class API extends \Piwik\Plugin\API
         }
 
         return $decodedSpec;
+    }
+
+    protected function getMatomoSpecFilePath(): string
+    {
+        $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
+
+        return $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . 'matomo_openapi_spec_v' . OpenApiDocs::DEFAULT_SPEC_VERSION . '.json';
+    }
+
+    protected function isSpecFileReadable(string $filePath): bool
+    {
+        return is_file($filePath) && is_readable($filePath);
+    }
+
+    /**
+     * @param string $filePath
+     * @return string|false
+     */
+    protected function readSpecFile(string $filePath)
+    {
+        return file_get_contents($filePath);
     }
 
     /**
