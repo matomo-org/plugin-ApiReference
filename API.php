@@ -32,7 +32,7 @@ class API extends \Piwik\Plugin\API
      * @return array<string, mixed> The decoded OpenAPI specification payload.
      * @throws \Exception If the file is missing, unreadable, or contains invalid JSON.
      */
-    public function getMatomoOpenApiSpec(string $format): array
+    public function getMatomoOpenApiSpec(string $format = 'json'): array
     {
         Piwik::checkUserHasSomeViewAccess();
 
