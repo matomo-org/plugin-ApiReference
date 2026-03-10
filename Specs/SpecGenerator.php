@@ -12,6 +12,7 @@ namespace Piwik\Plugins\OpenApiDocs\Specs;
 use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations\OpenApi;
 use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
 use Piwik\Container\StaticContainer;
+use Piwik\Exception\PluginNotFoundException;
 use Piwik\Log\LoggerInterface;
 use Piwik\Log\NullLogger;
 use Piwik\Plugin\Manager;
@@ -59,7 +60,7 @@ class SpecGenerator
      * @return string
      * @throws \Piwik\Exception\DI\DependencyException
      * @throws \Piwik\Exception\DI\NotFoundException
-     * @throws \Piwik\Exception\PluginDeactivatedException
+     * @throws PluginNotFoundException
      * @throws \Exception
      */
     public function generateSpec(array $pluginNames, string $format = 'json', string $version = OpenApiDocs::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
@@ -70,7 +71,9 @@ class SpecGenerator
         $pluginDirs = [];
         foreach ($pluginNames as $pluginName) {
             BaseValidator::check('pluginName', $pluginName, [new NotEmpty()]);
-            Manager::getInstance()->checkIsPluginActivated($pluginName);
+            if (!Manager::getInstance()->isPluginInFilesystem($pluginName)) {
+                throw new PluginNotFoundException($pluginName);
+            }
 
             $pluginAnnotationsSource = $currentPluginDir . '/tmp/annotations/' . $pluginName . 'GeneratedAnnotations.php';
             try {
