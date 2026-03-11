@@ -15,6 +15,7 @@ use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Descriptio
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Param;
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlockFactory;
+use Piwik\Exception\PluginNotFoundException;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\API\Proxy;
@@ -98,13 +99,20 @@ class AnnotationGenerator
      *
      * @return string[]|array[] The collection of all the lines which make up the generated annotations for the public API
      * endpoints defined by the plugin.
-     * @throws \Piwik\Exception\PluginDeactivatedException If the plugin is not activated. It should be loaded.
+     * @throws PluginNotFoundException If the plugin is not present in the filesystem.
      * @throws \Throwable
      */
     public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false): array
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
-        Manager::getInstance()->checkIsPluginActivated($pluginName);
+
+        if (in_array($pluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
+            throw new \RuntimeException('OpenAPI doc generation is blocked for ' . $pluginName . '.');
+        }
+
+        if (!Manager::getInstance()->isPluginInFilesystem($pluginName)) {
+            throw new PluginNotFoundException($pluginName);
+        }
 
         $rules = require $this->currentPluginDir . '/Annotations/config.php';
         $pluginAnnotationDir = $this->currentPluginDir . OpenApiDocs::GENERATED_ANNOTATIONS_PATH;
@@ -1180,24 +1188,27 @@ class AnnotationGenerator
         $responseSchema = !empty($responseInfo['type']) ? $this->buildSchemaObjectArray($responseInfo['type']) : [];
 
         $mediaTypes = [];
-        // This simply reuses the example URLs used by the current documentation, but some endpoints don't work because authentication is required
-        $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method, $paramsData);
-        foreach ($exampleUrls as $type => $url) {
-            $exampleValue = $this->getExampleIfAvailable($url);
-            // If the example lookup failed, try making the same request locally using a local token.
-            if (empty($exampleValue)) {
-                $exampleValue = $this->getExampleIfAvailable($url, true);
-            }
-            if (strlen($exampleValue) > self::EXAMPLE_CHAR_LIMIT) {
-                $exampleValue = $this->cutExampleCloseToCharLimit($exampleValue, $type);
-            }
+        $exampleUrls = [];
+        if (Manager::getInstance()->isPluginActivated($plugin)) {
+            // Only fetch live examples for activated plugins since their endpoints can be executed safely.
+            $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method, $paramsData);
+            foreach ($exampleUrls as $type => $url) {
+                $exampleValue = $this->getExampleIfAvailable($url);
+                // If the example lookup failed, try making the same request locally using a local token.
+                if (empty($exampleValue)) {
+                    $exampleValue = $this->getExampleIfAvailable($url, true);
+                }
+                if (strlen($exampleValue) > self::EXAMPLE_CHAR_LIMIT) {
+                    $exampleValue = $this->cutExampleCloseToCharLimit($exampleValue, $type);
+                }
 
-            // Skip if there was no example response
-            if (empty($exampleValue)) {
-                continue;
-            }
+                // Skip if there was no example response
+                if (empty($exampleValue)) {
+                    continue;
+                }
 
-            $mediaTypes[] = $this->buildMediaTypePropertiesArray($type, $exampleValue, $responseSchema);
+                $mediaTypes[] = $this->buildMediaTypePropertiesArray($type, $exampleValue, $responseSchema);
+            }
         }
 
         // Check if any example files exist even though there aren't any example URLs

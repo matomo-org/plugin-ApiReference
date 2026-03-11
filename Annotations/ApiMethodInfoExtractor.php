@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Annotations;
 
+use Piwik\Exception\PluginNotFoundException;
 use Piwik\API\Proxy;
 use Piwik\API\Request;
 use Piwik\Plugin\Manager;
@@ -42,7 +43,9 @@ class ApiMethodInfoExtractor
         $methodInfoArray = [];
         foreach ($pluginNames as $plugin) {
             BaseValidator::check('pluginName', $plugin, [new NotEmpty()]);
-            Manager::getInstance()->checkIsPluginActivated($plugin);
+            if (!Manager::getInstance()->isPluginInFilesystem($plugin)) {
+                throw new PluginNotFoundException($plugin);
+            }
 
             $className = Request::getClassNameAPI($plugin);
 
