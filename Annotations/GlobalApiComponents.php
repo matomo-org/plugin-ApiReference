@@ -34,10 +34,9 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *
  * @OA\SecurityScheme(
  *     securityScheme="MatomoToken",
- *     type="apiKey",
- *     in="query",
- *     name="token_auth",
- *     description="Matomo API token passed as the 'token_auth' query parameter."
+ *     type="http",
+ *     scheme="bearer",
+ *     description="Matomo API token passed in the Authorization header as a bearer token. For demo.matomo.cloud requests, use the anonymous token value: anonymous."
  * )
  *
  * @OA\Server(
