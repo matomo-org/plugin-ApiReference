@@ -105,6 +105,11 @@ class AnnotationGenerator
     public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false): array
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
+
+        if (in_array($pluginName, ['Billing', 'Cloud', 'ConnectAccounts'], true)) {
+            throw new \RuntimeException('OpenAPI doc generation is blocked for ' . $pluginName . '.');
+        }
+
         if (!Manager::getInstance()->isPluginInFilesystem($pluginName)) {
             throw new PluginNotFoundException($pluginName);
         }

@@ -46,6 +46,12 @@ class SpecGenerator
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
 
+        foreach (explode(',', $pluginName) as $currentPluginName) {
+            if (in_array($currentPluginName, ['Billing', 'Cloud', 'ConnectAccounts'], true)) {
+                throw new \RuntimeException('OpenAPI doc generation is blocked for ' . $currentPluginName . '.');
+            }
+        }
+
         return $this->generateSpec(explode(',', $pluginName), $format, $version, $writeToFile);
     }
 
