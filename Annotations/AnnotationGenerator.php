@@ -106,7 +106,7 @@ class AnnotationGenerator
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
 
-        if (in_array($pluginName, ['Billing', 'Cloud', 'ConnectAccounts'], true)) {
+        if (in_array($pluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
             throw new \RuntimeException('OpenAPI doc generation is blocked for ' . $pluginName . '.');
         }
 

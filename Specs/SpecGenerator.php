@@ -47,7 +47,7 @@ class SpecGenerator
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
 
         foreach (explode(',', $pluginName) as $currentPluginName) {
-            if (in_array($currentPluginName, ['Billing', 'Cloud', 'ConnectAccounts'], true)) {
+            if (in_array($currentPluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
                 throw new \RuntimeException('OpenAPI doc generation is blocked for ' . $currentPluginName . '.');
             }
         }

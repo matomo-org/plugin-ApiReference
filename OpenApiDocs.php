@@ -18,6 +18,7 @@ class OpenApiDocs extends \Piwik\Plugin
     public const EXAMPLE_RESPONSES_PATH = '/tmp/responses/';
     public const GENERATED_SPECS_PATH = '/tmp/specs/';
     public const AVAILABLE_PROPERTY_TYPES = ['string', 'number', 'integer', 'boolean', 'array', 'object', 'null'];
+    public const PLUGIN_BLOCKLIST = ['Billing', 'Cloud', 'ConnectAccounts', 'CDN', 'ProxySite'];
 
     public function registerEvents()
     {
