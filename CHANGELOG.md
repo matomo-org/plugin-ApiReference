@@ -4,6 +4,7 @@
 - Added support for string literal union types
 - Added API endpoint to retrieve static matomo swagger file
 - Added support for deactivated plugins
+- Removed token auth support
 
 5.0.1-b1 - 2026-02-16
 - Added class and function level docs
