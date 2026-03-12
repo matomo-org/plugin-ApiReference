@@ -1239,17 +1239,7 @@ class AnnotationGenerator
             $successArray['schema'] = $responseSchema;
         }
 
-        $tsvExampleLink = 'TSV (N/A)';
-        if (count($mediaTypes) > 2) {
-            $tsvExampleLink = "[TSV (Excel)]({$exampleUrls['tsv']})";
-        }
-        $descriptionLinks = empty($exampleUrls) ? '' : "[XML]({$exampleUrls['xml']}), [JSON]({$exampleUrls['json']}), $tsvExampleLink";
-        $descriptionLinks = !empty($descriptionLinks) ? 'Example links: ' . $descriptionLinks : $descriptionLinks;
-
-        // Append the links to the description with a prefix linebreak. If there's no description, skip the break
-        $successArray['description'] .= (!empty($successArray['description']) && !empty($descriptionLinks) ? '</br>' : '') . $descriptionLinks;
-
-        if (empty($successArray['ref']) && empty($descriptionLinks) && empty($successArray['schema'])) {
+        if (empty($successArray['ref']) && empty($successArray['schema'])) {
             $this->addMissingImportantDataWarning($method, 'return', 'Type could not be determined via comment block or example.');
         }
 
