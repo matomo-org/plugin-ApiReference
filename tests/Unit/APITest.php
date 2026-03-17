@@ -43,7 +43,7 @@ class APITest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetMatomoOpenApiSpecReturnsDecodedJson()
+    public function testGetOpenApiSpecReturnsDecodedJsonForMatomo()
     {
         $expectedSpec = [
             'openapi' => '3.1.0',
@@ -53,44 +53,105 @@ class APITest extends TestCase
             ],
         ];
 
-        $api = $this->buildApiMock(true, json_encode($expectedSpec));
+        $api = $this->buildApiMock('/tmp/matomo_openapi_spec_v1.0.0.json', true, json_encode($expectedSpec));
 
-        $result = $api->getMatomoOpenApiSpec();
+        $result = $api->getOpenApiSpec();
 
         $this->assertSame($expectedSpec, $result);
     }
 
-    public function testGetMatomoOpenApiSpecThrowsExceptionWhenFileMissing()
+    public function testGetOpenApiSpecReturnsDecodedJsonForPlugin()
     {
-        $api = $this->buildApiMock(false);
+        $expectedSpec = [
+            'openapi' => '3.1.0',
+            'info' => [
+                'title' => 'Matomo Reporting API for CustomAlerts plugin',
+                'version' => '1.0.0',
+            ],
+        ];
+
+        $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, json_encode($expectedSpec));
+
+        $result = $api->getOpenApiSpec('CustomAlerts');
+
+        $this->assertSame($expectedSpec, $result);
+    }
+
+    public function testGetOpenApiSpecThrowsExceptionWhenFileMissing()
+    {
+        $api = $this->buildApiMock('/tmp/matomo_openapi_spec_v1.0.0.json', false);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('OpenAPI spec file was not found');
 
-        $api->getMatomoOpenApiSpec();
+        $api->getOpenApiSpec();
     }
 
-    public function testGetMatomoOpenApiSpecThrowsExceptionWhenJsonIsInvalid()
+    public function testGetOpenApiSpecThrowsExceptionWhenJsonIsInvalid()
     {
-        $api = $this->buildApiMock(true, '{invalid json}');
+        $api = $this->buildApiMock('/tmp/matomo_openapi_spec_v1.0.0.json', true, '{invalid json}');
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('OpenAPI spec file contains invalid JSON');
 
-        $api->getMatomoOpenApiSpec();
+        $api->getOpenApiSpec();
+    }
+
+    public function testGetOpenApiSpecThrowsExceptionWhenFormatIsInvalid()
+    {
+        $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, '{}');
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('General_ExceptionInvalidReportRendererFormat');
+
+        $api->getOpenApiSpec('CustomAlerts', 'yaml');
+    }
+
+    public function testGetSpecFilePathUsesMatomoFileNameByDefault()
+    {
+        $api = new API();
+
+        $this->assertSame(
+            PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/tmp/specs/matomo_openapi_spec_v1.0.0.json',
+            $this->callProtectedMethod($api, 'getSpecFilePath', ['matomo'])
+        );
+    }
+
+    public function testGetSpecFilePathUsesPluginSpecificFileName()
+    {
+        $api = new API();
+
+        $this->assertSame(
+            PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/tmp/specs/CustomAlerts_openapi_spec_v1.0.0.json',
+            $this->callProtectedMethod($api, 'getSpecFilePath', ['CustomAlerts'])
+        );
     }
 
 
-    private function buildApiMock(bool $isReadable, $fileContents = false): API
+    private function buildApiMock(string $filePath, bool $isReadable, $fileContents = false): API
     {
         $api = $this->getMockBuilder(API::class)
-            ->onlyMethods(['getMatomoSpecFilePath', 'isSpecFileReadable', 'readSpecFile'])
+            ->onlyMethods(['getSpecFilePath', 'isSpecFileReadable', 'readSpecFile'])
             ->getMock();
 
-        $api->method('getMatomoSpecFilePath')->willReturn('/tmp/matomo_openapi_spec_v1.0.0.json');
+        $api->method('getSpecFilePath')->willReturn($filePath);
         $api->method('isSpecFileReadable')->willReturn($isReadable);
         $api->method('readSpecFile')->willReturn($fileContents);
 
         return $api;
+    }
+
+    /**
+     * @param object $object
+     * @param string $methodName
+     * @param array<int, mixed> $arguments
+     * @return mixed
+     */
+    private function callProtectedMethod($object, string $methodName, array $arguments = [])
+    {
+        $reflection = new \ReflectionMethod($object, $methodName);
+        $reflection->setAccessible(true);
+
+        return $reflection->invokeArgs($object, $arguments);
     }
 }
