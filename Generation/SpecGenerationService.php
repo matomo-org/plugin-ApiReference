@@ -33,6 +33,17 @@ class SpecGenerationService
         $this->specGenerator = $specGenerator;
     }
 
+    /**
+     * Generate an OpenAPI spec for one or more comma-separated plugin names.
+     *
+     * @param string $pluginNames Comma-separated plugin names to include in the generated spec.
+     * @param string $format Output format for the spec, for example `json` or `yaml`.
+     * @param string $version Version string written into the generated OpenAPI spec.
+     * @param bool $writeToFile Whether the generated spec should also be written to the plugin tmp specs directory.
+     * @param bool $addAnnotations Whether API annotations should be regenerated before building the spec.
+     * @return string The generated OpenAPI spec contents.
+     * @throws \RuntimeException If no non-empty plugin names are provided.
+     */
     public function generateSpecForPlugins(
         string $pluginNames,
         string $format = 'json',
