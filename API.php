@@ -27,19 +27,25 @@ class API extends \Piwik\Plugin\API
      * Get a pre-generated OpenAPI spec file if it exists. This endpoint only reads
      * the generated JSON file and does not trigger spec generation.
      *
-     * /index.php?module=API&method=OpenApiDocs.getOpenApiSpec&spec=matomo
+     * /index.php?module=API&method=OpenApiDocs.getOpenApiSpec&spec=CustomAlerts
      *
-     * @param string $spec Spec identifier used in the generated filename. Use `matomo`
-     *                     for the aggregate spec or a plugin name for a specific spec.
+     * @param string $spec Plugin name used in the generated filename.
      * @param string $format Output format. Only `json` is supported.
      * @return array<string, mixed> The decoded OpenAPI specification payload.
      * @throws \Exception If the file is missing, unreadable, or contains invalid JSON.
      */
-    public function getOpenApiSpec(string $spec = 'matomo', string $format = 'json'): array
+    public function getOpenApiSpec(string $spec, string $format = 'json'): array
     {
         Piwik::checkUserHasSomeViewAccess();
 
         $this->validateJsonFormat($format);
+
+        if (
+            !Manager::getInstance()->isValidPluginName($spec)
+            || !Manager::getInstance()->isPluginInFilesystem($spec)
+        ) {
+            throw new \Piwik\Exception\PluginNotFoundException($spec);
+        }
 
         $filePath = $this->getSpecFilePath($spec);
         if (!$this->isSpecFileReadable($filePath)) {

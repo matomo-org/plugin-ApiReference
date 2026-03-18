@@ -43,23 +43,6 @@ class APITest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetOpenApiSpecReturnsDecodedJsonForMatomo()
-    {
-        $expectedSpec = [
-            'openapi' => '3.1.0',
-            'info' => [
-                'title' => 'Matomo Reporting API',
-                'version' => '1.0.0',
-            ],
-        ];
-
-        $api = $this->buildApiMock('/tmp/matomo_openapi_spec_v1.0.0.json', true, json_encode($expectedSpec));
-
-        $result = $api->getOpenApiSpec();
-
-        $this->assertSame($expectedSpec, $result);
-    }
-
     public function testGetOpenApiSpecReturnsDecodedJsonForPlugin()
     {
         $expectedSpec = [
@@ -79,22 +62,22 @@ class APITest extends TestCase
 
     public function testGetOpenApiSpecThrowsExceptionWhenFileMissing()
     {
-        $api = $this->buildApiMock('/tmp/matomo_openapi_spec_v1.0.0.json', false);
+        $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', false);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('OpenAPI spec file was not found');
 
-        $api->getOpenApiSpec();
+        $api->getOpenApiSpec('CustomAlerts');
     }
 
     public function testGetOpenApiSpecThrowsExceptionWhenJsonIsInvalid()
     {
-        $api = $this->buildApiMock('/tmp/matomo_openapi_spec_v1.0.0.json', true, '{invalid json}');
+        $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, '{invalid json}');
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('OpenAPI spec file contains invalid JSON');
 
-        $api->getOpenApiSpec();
+        $api->getOpenApiSpec('CustomAlerts');
     }
 
     public function testGetOpenApiSpecThrowsExceptionWhenFormatIsInvalid()
@@ -107,14 +90,13 @@ class APITest extends TestCase
         $api->getOpenApiSpec('CustomAlerts', 'yaml');
     }
 
-    public function testGetSpecFilePathUsesMatomoFileNameByDefault()
+    public function testGetOpenApiSpecThrowsExceptionWhenSpecIsNotAValidPlugin()
     {
         $api = new API();
 
-        $this->assertSame(
-            PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/tmp/specs/matomo_openapi_spec_v1.0.0.json',
-            $this->callProtectedMethod($api, 'getSpecFilePath', ['matomo'])
-        );
+        $this->expectException(\Piwik\Exception\PluginNotFoundException::class);
+
+        $api->getOpenApiSpec('DefinitelyNotARealPlugin');
     }
 
     public function testGetSpecFilePathUsesPluginSpecificFileName()
