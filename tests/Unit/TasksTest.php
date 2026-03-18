@@ -72,10 +72,13 @@ class TasksTest extends TestCase
 
     public function testGenerateConfiguredPluginSpecsLogsPerPluginFailuresAndContinues(): void
     {
+        $calledPlugins = [];
         $service = $this->createMock(SpecGenerationService::class);
-        $service->expects($this->atLeastOnce())
+        $service->expects($this->atLeast(2))
             ->method('generateSpecForPlugins')
-            ->willReturnCallback(function (string $pluginName): string {
+            ->willReturnCallback(function (string $pluginName) use (&$calledPlugins): string {
+                $calledPlugins[] = $pluginName;
+
                 if ($pluginName === 'RollUpReporting') {
                     throw new \RuntimeException('Foo failed');
                 }
@@ -88,6 +91,8 @@ class TasksTest extends TestCase
 
         $tasks->generateConfiguredPluginSpecs();
 
+        $this->assertSame('RollUpReporting', $calledPlugins[0]);
+        $this->assertSame('Login', $calledPlugins[1]);
         $this->assertStringContainsString('OpenApiDocs scheduled generation failed for plugin RollUpReporting: Foo failed', $logger->output);
     }
 }

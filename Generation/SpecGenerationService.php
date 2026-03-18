@@ -46,7 +46,7 @@ class SpecGenerationService
             $this->generateAnnotations($parsedPluginNames);
         }
 
-        return $this->specGenerator->generatePluginDoc($pluginNames, $format, $version, $writeToFile);
+        return $this->specGenerator->generateSpec($parsedPluginNames, $format, $version, $writeToFile);
     }
 
     /**

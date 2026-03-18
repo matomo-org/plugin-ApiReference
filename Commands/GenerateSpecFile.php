@@ -127,8 +127,6 @@ class GenerateSpecFile extends ConsoleCommand
 
         if ($notDryRun) {
             $output->writeln('<info>Results written to plugins/OpenApiDocs/tmp/specs/ directory.</info>');
-
-            return self::SUCCESS;
         }
 
         $output->writeln($result);

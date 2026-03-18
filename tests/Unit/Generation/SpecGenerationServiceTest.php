@@ -43,15 +43,15 @@ class SpecGenerationServiceTest extends TestCase
         $annotationGenerator = $this->createMock(AnnotationGenerator::class);
         $specGenerator = $this->getMockBuilder(SpecGenerator::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['generatePluginDoc'])
+            ->onlyMethods(['generateSpec'])
             ->getMock();
 
         $annotationGenerator->expects($this->once())
             ->method('generatePluginApiAnnotations')
             ->with('CustomAlerts', true);
         $specGenerator->expects($this->once())
-            ->method('generatePluginDoc')
-            ->with('CustomAlerts', 'json', '1.0.0', true)
+            ->method('generateSpec')
+            ->with(['CustomAlerts'], 'json', '1.0.0', true)
             ->willReturn('spec body');
 
         $service = new SpecGenerationService($annotationGenerator, $specGenerator);
