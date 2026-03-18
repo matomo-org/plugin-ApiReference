@@ -11,8 +11,8 @@ namespace Piwik\Plugins\OpenApiDocs\Commands;
 
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
-use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
-use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
+use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
+use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on
@@ -23,6 +23,18 @@ use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
  */
 class GenerateSpecFile extends ConsoleCommand
 {
+    /**
+     * @var SpecGenerationService
+     */
+    private $specGenerationService;
+
+    public function __construct(?SpecGenerationService $specGenerationService = null)
+    {
+        $this->specGenerationService = $specGenerationService ?: StaticContainer::get(SpecGenerationService::class);
+
+        parent::__construct();
+    }
+
     /**
      * This method allows you to configure your command. Here you can define the name and description of your command
      * as well as all options and arguments you expect when executing it.
@@ -78,17 +90,20 @@ class GenerateSpecFile extends ConsoleCommand
 
         $plugin = $input->getOption('plugin');
 
-
         if (empty($plugin)) {
             throw new \RuntimeException('Please specify a plugin name.');
         }
 
         if (strtolower($plugin) == 'all') {
-            $plugins = require __DIR__ . '/../config/plugins.php';
-            $plugin = implode(',', $plugins);
+            $pluginNames = require __DIR__ . '/../config/plugins.php';
+            $plugin = implode(',', $pluginNames);
+        } else {
+            $pluginNames = array_values(array_filter(array_map('trim', explode(',', $plugin)), static function (string $pluginName): bool {
+                return $pluginName !== '';
+            }));
         }
         $format = $input->getOption('format') ?: 'json';
-        $version = $input->getOption('version') ?: '1.0.0';
+        $version = $input->getOption('api-version') ?: OpenApiDocs::DEFAULT_SPEC_VERSION;
         $notDryRun = $input->getOption('not-dry-run') ?: false;
         $addAnnotations = $input->getOption('add-annotations') ?: false;
 
@@ -96,24 +111,28 @@ class GenerateSpecFile extends ConsoleCommand
 
         $output->writeln($message);
 
+        $result = $this->specGenerationService->generateSpecForPlugins(
+            $plugin,
+            $format,
+            $version,
+            $notDryRun,
+            $addAnnotations
+        );
+
         if ($addAnnotations) {
-            $pluginsArray = explode(',', $plugin);
-            foreach ($pluginsArray as $pluginName) {
-                (StaticContainer::get(AnnotationGenerator::class))->generatePluginApiAnnotations($pluginName, true);
+            foreach ($pluginNames as $pluginName) {
                 $output->writeln('<info>Created Annotations for ' . $pluginName . ' and wrote results to plugins/OpenApiDocs/tmp/annotations.</info>');
             }
         }
 
-        $result = (new SpecGenerator())->generatePluginDoc($plugin, $format, $version, $notDryRun);
-
         if ($notDryRun) {
             $output->writeln('<info>Results written to plugins/OpenApiDocs/tmp/specs/ directory.</info>');
 
-            return $result ? self::SUCCESS : self::FAILURE;
+            return self::SUCCESS;
         }
 
         $output->writeln($result);
 
-        return $result ? self::SUCCESS : self::FAILURE;
+        return self::SUCCESS;
     }
 }
