@@ -94,7 +94,8 @@ class APITest extends TestCase
     {
         $api = new API();
 
-        $this->expectException(\Piwik\Exception\PluginNotFoundException::class);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Invalid plugin name: DefinitelyNotARealPlugin');
 
         $api->getOpenApiSpec('DefinitelyNotARealPlugin');
     }

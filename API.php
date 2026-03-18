@@ -44,7 +44,7 @@ class API extends \Piwik\Plugin\API
             !Manager::getInstance()->isValidPluginName($pluginName)
             || !Manager::getInstance()->isPluginInFilesystem($pluginName)
         ) {
-            throw new \Piwik\Exception\PluginNotFoundException($pluginName);
+            throw new \Exception('Invalid plugin name: ' . $pluginName);
         }
 
         $filePath = $this->getSpecFilePath($pluginName);
