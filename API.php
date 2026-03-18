@@ -29,25 +29,25 @@ class API extends \Piwik\Plugin\API
      *
      * /index.php?module=API&method=OpenApiDocs.getOpenApiSpec&spec=CustomAlerts
      *
-     * @param string $spec Plugin name used in the generated filename.
+     * @param string $pluginName Plugin name used in the generated filename.
      * @param string $format Output format. Only `json` is supported.
      * @return array<string, mixed> The decoded OpenAPI specification payload.
      * @throws \Exception If the file is missing, unreadable, or contains invalid JSON.
      */
-    public function getOpenApiSpec(string $spec, string $format = 'json'): array
+    public function getOpenApiSpec(string $pluginName, string $format = 'json'): array
     {
         Piwik::checkUserHasSomeViewAccess();
 
         $this->validateJsonFormat($format);
 
         if (
-            !Manager::getInstance()->isValidPluginName($spec)
-            || !Manager::getInstance()->isPluginInFilesystem($spec)
+            !Manager::getInstance()->isValidPluginName($pluginName)
+            || !Manager::getInstance()->isPluginInFilesystem($pluginName)
         ) {
-            throw new \Piwik\Exception\PluginNotFoundException($spec);
+            throw new \Piwik\Exception\PluginNotFoundException($pluginName);
         }
 
-        $filePath = $this->getSpecFilePath($spec);
+        $filePath = $this->getSpecFilePath($pluginName);
         if (!$this->isSpecFileReadable($filePath)) {
             throw new \Exception('OpenAPI spec file was not found. Generate it first via openapidocs:generate-spec-file.');
         }
@@ -65,11 +65,11 @@ class API extends \Piwik\Plugin\API
         return $decodedSpec;
     }
 
-    protected function getSpecFilePath(string $spec): string
+    protected function getSpecFilePath(string $pluginName): string
     {
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
 
-        return $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . $spec . '_openapi_spec_v' . OpenApiDocs::DEFAULT_SPEC_VERSION . '.json';
+        return $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . $pluginName . '_openapi_spec_v' . OpenApiDocs::DEFAULT_SPEC_VERSION . '.json';
     }
 
     protected function isSpecFileReadable(string $filePath): bool
