@@ -43,7 +43,7 @@ class GenerateSpecFile extends ConsoleCommand
     {
         $this->setName('openapidocs:generate-spec-file');
         $this->setDescription('Generate the OpenAPI documentation file for the Matomo APIs.');
-        $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to document, use all to process every plugin');
+        $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to document. Multiple plugins can be comma-separated');
         $this->addRequiredValueOption('format', 'f', 'Format of the spec file (JSON or YAML). Default is JSON');
         $this->addRequiredValueOption('api-version', null, 'Version of the spec file. Default is 1.0.0');
         $this->addNoValueOption('not-dry-run', null, 'Flag to allow writing to file instead of outputting a dry run.');
@@ -94,14 +94,9 @@ class GenerateSpecFile extends ConsoleCommand
             throw new \RuntimeException('Please specify a plugin name.');
         }
 
-        if (strtolower($plugin) == 'all') {
-            $pluginNames = require __DIR__ . '/../config/plugins.php';
-            $plugin = implode(',', $pluginNames);
-        } else {
-            $pluginNames = array_values(array_filter(array_map('trim', explode(',', $plugin)), static function (string $pluginName): bool {
-                return $pluginName !== '';
-            }));
-        }
+        $pluginNames = array_values(array_filter(array_map('trim', explode(',', $plugin)), static function (string $pluginName): bool {
+            return $pluginName !== '';
+        }));
         $format = $input->getOption('format') ?: 'json';
         $version = $input->getOption('api-version') ?: OpenApiDocs::DEFAULT_SPEC_VERSION;
         $notDryRun = $input->getOption('not-dry-run') ?: false;

@@ -36,7 +36,7 @@ class Tasks extends \Piwik\Plugin\Tasks
     public function schedule()
     {
         if ($this->isSpecGenerationEnabled()) {
-            $this->weekly('generateConfiguredPluginSpecs');
+            $this->daily('generateConfiguredPluginSpecs');
         }
     }
 
