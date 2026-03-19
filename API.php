@@ -24,30 +24,30 @@ use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 class API extends \Piwik\Plugin\API
 {
     /**
-     * Get the pre-generated single OpenAPI spec file if it exists. This endpoint only reads
+     * Get a pre-generated OpenAPI spec file if it exists. This endpoint only reads
      * the generated JSON file and does not trigger spec generation.
      *
-     * /index.php?module=API&method=OpenApiDocs.getMatomoOpenApiSpec
+     * /index.php?module=API&method=OpenApiDocs.getOpenApiSpec&spec=CustomAlerts
      *
+     * @param string $pluginName Plugin name used in the generated filename.
      * @param string $format Output format. Only `json` is supported.
      * @return array<string, mixed> The decoded OpenAPI specification payload.
      * @throws \Exception If the file is missing, unreadable, or contains invalid JSON.
      */
-    public function getMatomoOpenApiSpec(string $format = 'json'): array
+    public function getOpenApiSpec(string $pluginName, string $format = 'json'): array
     {
         Piwik::checkUserHasSomeViewAccess();
 
-        if (strtolower($format) !== 'json') {
-            throw new \Exception(
-                Piwik::translate(
-                    'General_ExceptionInvalidReportRendererFormat',
-                    [$format, 'json']
-                )
-            );
+        $this->validateJsonFormat($format);
+
+        if (
+            !Manager::getInstance()->isValidPluginName($pluginName)
+            || !Manager::getInstance()->isPluginInFilesystem($pluginName)
+        ) {
+            throw new \Exception('Invalid plugin name: ' . $pluginName);
         }
 
-        $filePath = $this->getMatomoSpecFilePath();
-
+        $filePath = $this->getSpecFilePath($pluginName);
         if (!$this->isSpecFileReadable($filePath)) {
             throw new \Exception('OpenAPI spec file was not found. Generate it first via openapidocs:generate-spec-file.');
         }
@@ -65,11 +65,11 @@ class API extends \Piwik\Plugin\API
         return $decodedSpec;
     }
 
-    protected function getMatomoSpecFilePath(): string
+    protected function getSpecFilePath(string $pluginName): string
     {
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
 
-        return $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . 'matomo_openapi_spec_v' . OpenApiDocs::DEFAULT_SPEC_VERSION . '.json';
+        return $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . $pluginName . '_openapi_spec_v' . OpenApiDocs::DEFAULT_SPEC_VERSION . '.json';
     }
 
     protected function isSpecFileReadable(string $filePath): bool
@@ -84,6 +84,18 @@ class API extends \Piwik\Plugin\API
     protected function readSpecFile(string $filePath)
     {
         return file_get_contents($filePath);
+    }
+
+    protected function validateJsonFormat(string $format): void
+    {
+        if (strtolower($format) !== 'json') {
+            throw new \Exception(
+                Piwik::translate(
+                    'General_ExceptionInvalidReportRendererFormat',
+                    [$format, 'json']
+                )
+            );
+        }
     }
 
     /**
