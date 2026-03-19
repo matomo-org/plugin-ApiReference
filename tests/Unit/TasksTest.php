@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Piwik\Config;
 use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
 use Piwik\Plugins\OpenApiDocs\Tasks;
-use Piwik\Scheduler\Schedule\Weekly;
+use Piwik\Scheduler\Schedule\Daily;
 use Piwik\Tests\Framework\Mock\FakeLogger;
 
 /**
@@ -56,7 +56,7 @@ class TasksTest extends TestCase
         $this->assertCount(0, $tasks->getScheduledTasks());
     }
 
-    public function testScheduleRegistersWeeklyTaskWhenEnabled(): void
+    public function testScheduleRegistersDailyTaskWhenEnabled(): void
     {
         Config::getInstance()->OpenApiDocs = ['enable_spec_generation_task' => 1];
 
@@ -67,7 +67,7 @@ class TasksTest extends TestCase
 
         $this->assertCount(1, $scheduledTasks);
         $this->assertSame('generateConfiguredPluginSpecs', $scheduledTasks[0]->getMethodName());
-        $this->assertInstanceOf(Weekly::class, $scheduledTasks[0]->getScheduledTime());
+        $this->assertInstanceOf(Daily::class, $scheduledTasks[0]->getScheduledTime());
     }
 
     public function testGenerateConfiguredPluginSpecsLogsPerPluginFailuresAndContinues(): void
