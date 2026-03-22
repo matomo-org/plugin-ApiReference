@@ -357,7 +357,7 @@ class AnnotationGenerator
             $responseInfo['description'] = 'Response of unknown type';
         }
         if (!empty($returnTag->getDescription())) {
-            $responseInfo['description'] = $returnTag->getDescription();
+            $responseInfo['description'] = $this->getDescriptionText($returnTag->getDescription());
         }
 
         return $responseInfo;
@@ -545,6 +545,22 @@ class AnnotationGenerator
     {
         $description = str_replace("\n", ' ', trim($description));
         return str_replace('"', '""', $description);
+    }
+
+    /**
+     * Normalise phpDocumentor description values into plain strings.
+     *
+     * @param mixed $description
+     *
+     * @return string
+     */
+    protected function getDescriptionText($description): string
+    {
+        if ($description instanceof Description) {
+            return $description->getBodyTemplate();
+        }
+
+        return is_string($description) ? $description : '';
     }
 
     /**
@@ -1149,10 +1165,7 @@ class AnnotationGenerator
             $successArray['ref'] = '#/components/responses/GenericSuccess';
         }
 
-        $description = $responseInfo['description'] ?? null;
-        if ($description instanceof Description) {
-            $description = $description->getBodyTemplate();
-        }
+        $description = $this->getDescriptionText($responseInfo['description'] ?? null);
 
         // If it's a generic type and there's no custom description, use one of the global generic responses
         if (empty($successArray['ref']) && !empty($responseInfo['type']) && empty($description)) {
@@ -1927,17 +1940,19 @@ class AnnotationGenerator
             $operationValuesMap[] = ['@OA\Parameter' => $paramMap];
         }
         foreach ($responses as $response) {
+            $responseDescription = $this->getDescriptionText($response['description'] ?? null);
+
             // Don't use the reference if there are media type examples
             if (isset($response['ref']) && empty($response['mediaTypes'])) {
                 $code = $response['code'];
                 $codeFormatted = is_numeric($code) ? (string)$code : '"' . $code . '"';
-                $description = !empty($response['description']) && strpos($response['description'], 'Example links: [') !== false
-                    ? ', description="' . $this->normaliseDescriptionText($response['description']) . '"' : '';
+                $description = $responseDescription !== '' && strpos($responseDescription, 'Example links: [') !== false
+                    ? ', description="' . $this->normaliseDescriptionText($responseDescription) . '"' : '';
                 $operationValuesMap[] = '@OA\Response(response=' . $codeFormatted . $description . ', ref="' . $response['ref'] . '")';
             } else {
                 $responsePropertyArray = [
                     'response=200',
-                    'description="' . $this->normaliseDescriptionText($response['description'] ?? 'OK') . '"',
+                    'description="' . $this->normaliseDescriptionText($responseDescription !== '' ? $responseDescription : 'OK') . '"',
                 ];
                 if (!empty($response['schema'])) {
                     $responsePropertyArray = array_merge($responsePropertyArray, $response['schema']);

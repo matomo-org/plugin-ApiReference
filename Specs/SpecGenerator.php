@@ -44,14 +44,6 @@ class SpecGenerator
      */
     public function generatePluginDoc(string $pluginName, string $format = 'json', string $version = OpenApiDocs::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
     {
-        BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
-
-        foreach (explode(',', $pluginName) as $currentPluginName) {
-            if (in_array($currentPluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
-                throw new \RuntimeException('OpenAPI doc generation is blocked for ' . $currentPluginName . '.');
-            }
-        }
-
         return $this->generateSpec(explode(',', $pluginName), $format, $version, $writeToFile);
     }
 
@@ -73,6 +65,12 @@ class SpecGenerator
     {
         BaseValidator::check('pluginNames', $pluginNames, [new NotEmpty()]);
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
+
+        foreach ($pluginNames as $currentPluginName) {
+            if (in_array($currentPluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
+                throw new \RuntimeException('OpenAPI doc generation is blocked for ' . $currentPluginName . '.');
+            }
+        }
 
         $pluginDirs = [];
         foreach ($pluginNames as $pluginName) {
