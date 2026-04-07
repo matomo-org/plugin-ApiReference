@@ -11,8 +11,10 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Commands;
 
+use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
 use Piwik\Plugins\OpenApiDocs\Annotations\ApiMethodInfoExtractor;
+use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on
@@ -86,7 +88,7 @@ class ExtractReportingApiMethodInfo extends ConsoleCommand
         $result = (new ApiMethodInfoExtractor())->extractMethodInfo($plugin, $notDryRun);
 
         if ($notDryRun) {
-            $output->writeln('<info>Results written to plugins/OpenApiDocs/tmp/annotations directory.</info>');
+            $output->writeln('<info>Results written to ' . StaticContainer::get(PathResolver::class)->getAnnotationsDirectory() . '</info>');
 
             return $result ? self::SUCCESS : self::FAILURE;
         }

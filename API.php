@@ -12,6 +12,7 @@ namespace Piwik\Plugins\OpenApiDocs;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
 use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
+use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 
 /**
  * API for plugin OpenApiDocs
@@ -67,9 +68,7 @@ class API extends \Piwik\Plugin\API
 
     protected function getSpecFilePath(string $pluginName): string
     {
-        $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
-
-        return $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . $pluginName . '_openapi_spec_v' . OpenApiDocs::DEFAULT_SPEC_VERSION . '.json';
+        return $this->getSpecPathResolver()->getSpecFilePath($pluginName);
     }
 
     protected function isSpecFileReadable(string $filePath): bool
@@ -96,6 +95,11 @@ class API extends \Piwik\Plugin\API
                 )
             );
         }
+    }
+
+    protected function getSpecPathResolver(): PathResolver
+    {
+        return new PathResolver();
     }
 
     /**

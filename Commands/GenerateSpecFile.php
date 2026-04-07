@@ -13,6 +13,7 @@ use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
 use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
 use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
+use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on
@@ -28,9 +29,15 @@ class GenerateSpecFile extends ConsoleCommand
      */
     private $specGenerationService;
 
-    public function __construct(?SpecGenerationService $specGenerationService = null)
+    /**
+     * @var PathResolver
+     */
+    private $specPathResolver;
+
+    public function __construct(?SpecGenerationService $specGenerationService = null, ?PathResolver $specPathResolver = null)
     {
         $this->specGenerationService = $specGenerationService ?: StaticContainer::get(SpecGenerationService::class);
+        $this->specPathResolver = $specPathResolver ?: StaticContainer::get(PathResolver::class);
 
         parent::__construct();
     }
@@ -116,12 +123,12 @@ class GenerateSpecFile extends ConsoleCommand
 
         if ($addAnnotations) {
             foreach ($pluginNames as $pluginName) {
-                $output->writeln('<info>Created Annotations for ' . $pluginName . ' and wrote results to plugins/OpenApiDocs/tmp/annotations.</info>');
+                $output->writeln('<info>Created Annotations for ' . $pluginName . ' and wrote results to ' . $this->specPathResolver->getAnnotationsDirectory() . '</info>');
             }
         }
 
         if ($notDryRun) {
-            $output->writeln('<info>Results written to plugins/OpenApiDocs/tmp/specs/ directory.</info>');
+            $output->writeln('<info>Results written to ' . $this->specPathResolver->getSpecDirectory() . '</info>');
             return self::SUCCESS;
         }
 
