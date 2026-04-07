@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Piwik\Access;
 use Piwik\Container\StaticContainer;
 use Piwik\Plugins\OpenApiDocs\API;
+use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 use Piwik\Tests\Framework\Mock\FakeAccess;
 
 /**
@@ -100,12 +101,21 @@ class APITest extends TestCase
         $api->getOpenApiSpec('DefinitelyNotARealPlugin');
     }
 
-    public function testGetSpecFilePathUsesPluginSpecificFileName()
+    public function testGetSpecFilePathDelegatesToPathResolver()
     {
-        $api = new API();
+        $pathResolver = $this->createMock(PathResolver::class);
+        $pathResolver->expects($this->once())
+            ->method('getSpecFilePath')
+            ->with('CustomAlerts')
+            ->willReturn('/shared/specs/CustomAlerts_openapi_spec_v1.0.0.json');
+
+        $api = $this->getMockBuilder(API::class)
+            ->onlyMethods(['getSpecPathResolver'])
+            ->getMock();
+        $api->method('getSpecPathResolver')->willReturn($pathResolver);
 
         $this->assertSame(
-            PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/tmp/specs/CustomAlerts_openapi_spec_v1.0.0.json',
+            '/shared/specs/CustomAlerts_openapi_spec_v1.0.0.json',
             $this->callProtectedMethod($api, 'getSpecFilePath', ['CustomAlerts'])
         );
     }
