@@ -13,10 +13,10 @@ use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations\OpenApi;
 use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
 use Piwik\Container\StaticContainer;
 use Piwik\Exception\PluginNotFoundException;
-use Piwik\Filesystem;
 use Piwik\Log\LoggerInterface;
 use Piwik\Log\NullLogger;
 use Piwik\Plugin\Manager;
+use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
 use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 use Piwik\SettingsPiwik;
 use Piwik\Validators\BaseValidator;
@@ -29,9 +29,15 @@ class SpecGenerator
      */
     private $specPathResolver;
 
-    public function __construct(?PathResolver $specPathResolver = null)
+    /**
+     * @var ArtifactWriter
+     */
+    private $artifactWriter;
+
+    public function __construct(?PathResolver $specPathResolver = null, ?ArtifactWriter $artifactWriter = null)
     {
         $this->specPathResolver = $specPathResolver ?? new PathResolver();
+        $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
 
         // Set the constant for the current instance's URL
         if (!defined('LOCAL_MATOMO_SERVER_URL')) {
@@ -126,35 +132,9 @@ class SpecGenerator
         $specContents = $lowercaseFormat === 'yaml' ? $openapi->toYaml() : $openapi->toJson();
         if ($writeToFile) {
             $pluginSpecPath = $this->specPathResolver->getSpecFilePath($specFileBaseName, $version, $lowercaseFormat);
-            $this->writeSpecFile($pluginSpecPath, $specContents);
+            $this->artifactWriter->writeFile($pluginSpecPath, $specContents);
         }
 
         return $specContents;
-    }
-
-    private function writeSpecFile(string $pluginSpecPath, string $specContents): void
-    {
-        $directory = dirname($pluginSpecPath);
-        Filesystem::mkdir($directory);
-
-        if (!is_dir($directory) || !is_writable($directory)) {
-            throw new \RuntimeException('OpenAPI spec output directory is not writable: ' . $directory);
-        }
-
-        $temporaryFile = tempnam($directory, 'openapi_spec_');
-        if ($temporaryFile === false) {
-            throw new \RuntimeException('Could not create temporary file for OpenAPI spec output in ' . $directory);
-        }
-
-        $bytesWritten = @file_put_contents($temporaryFile, $specContents, LOCK_EX);
-        if ($bytesWritten === false) {
-            @unlink($temporaryFile);
-            throw new \RuntimeException('Could not write OpenAPI spec file to temporary path ' . $temporaryFile);
-        }
-
-        if (!@rename($temporaryFile, $pluginSpecPath)) {
-            @unlink($temporaryFile);
-            throw new \RuntimeException('Could not move OpenAPI spec file into place at ' . $pluginSpecPath);
-        }
     }
 }

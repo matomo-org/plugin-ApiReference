@@ -20,10 +20,10 @@ use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\API\Proxy;
 use Piwik\API\Request;
-use Piwik\Filesystem;
 use Piwik\Http;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
+use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
 use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 use Piwik\SettingsPiwik;
@@ -80,6 +80,11 @@ class AnnotationGenerator
     protected $pathResolver;
 
     /**
+     * @var ArtifactWriter
+     */
+    protected $artifactWriter;
+
+    /**
      * @var array[]
      */
     protected $reportMetadata;
@@ -89,10 +94,14 @@ class AnnotationGenerator
      */
     protected $missingImportantDataWarnings;
 
-    public function __construct(DocumentationGenerator $generator, ?PathResolver $pathResolver = null)
-    {
+    public function __construct(
+        DocumentationGenerator $generator,
+        ?PathResolver $pathResolver = null,
+        ?ArtifactWriter $artifactWriter = null
+    ) {
         $this->generator = $generator;
         $this->pathResolver = $pathResolver ?? new PathResolver();
+        $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
         $this->missingImportantDataWarnings = [];
         $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
     }
@@ -1029,10 +1038,7 @@ class AnnotationGenerator
 
     protected function writeFile(string $filePath, string $contents)
     {
-        $directory = dirname($filePath);
-        Filesystem::mkdir($directory);
-
-        return file_put_contents($filePath, $contents);
+        return $this->artifactWriter->writeFile($filePath, $contents);
     }
 
     /**

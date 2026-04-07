@@ -14,8 +14,8 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
 use Piwik\Exception\PluginNotFoundException;
 use Piwik\API\Proxy;
 use Piwik\API\Request;
-use Piwik\Filesystem;
 use Piwik\Plugin\Manager;
+use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
 use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
@@ -27,9 +27,15 @@ class ApiMethodInfoExtractor
      */
     private $pathResolver;
 
-    public function __construct(?PathResolver $pathResolver = null)
+    /**
+     * @var ArtifactWriter
+     */
+    private $artifactWriter;
+
+    public function __construct(?PathResolver $pathResolver = null, ?ArtifactWriter $artifactWriter = null)
     {
         $this->pathResolver = $pathResolver ?? new PathResolver();
+        $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
     }
 
     /**
@@ -73,8 +79,7 @@ class ApiMethodInfoExtractor
 
         if ($writeToFile) {
             $pluginSpecPath = $this->pathResolver->getApiMethodInfoFilePath($fileBaseName);
-            Filesystem::mkdir(dirname($pluginSpecPath));
-            file_put_contents($pluginSpecPath, $methodInfoString);
+            $this->artifactWriter->writeFile($pluginSpecPath, $methodInfoString);
         }
 
         return $methodInfoString;
