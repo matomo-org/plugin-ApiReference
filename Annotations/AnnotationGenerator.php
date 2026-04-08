@@ -94,15 +94,22 @@ class AnnotationGenerator
      */
     protected $missingImportantDataWarnings;
 
+    /**
+     * @var bool
+     */
+    protected $allowLocalRequests;
+
     public function __construct(
         DocumentationGenerator $generator,
         ?PathResolver $pathResolver = null,
-        ?ArtifactWriter $artifactWriter = null
+        ?ArtifactWriter $artifactWriter = null,
+        bool $allowLocalRequests = false
     ) {
         $this->generator = $generator;
         $this->pathResolver = $pathResolver ?? new PathResolver();
         $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
         $this->missingImportantDataWarnings = [];
+        $this->allowLocalRequests = $allowLocalRequests;
         $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
     }
 
@@ -859,6 +866,7 @@ class AnnotationGenerator
      */
     protected function getDemoReportMetadata(): array
     {
+
         if (is_array($this->reportMetadata) && count($this->reportMetadata)) {
             return $this->reportMetadata;
         }
@@ -928,6 +936,7 @@ class AnnotationGenerator
                 return $exampleContents;
             }
         }
+
 
         // Include a specific parameter for the TSV requests.
         if ($format === 'tsv') {
@@ -1229,7 +1238,9 @@ class AnnotationGenerator
                 $exampleValue = $this->getExampleIfAvailable($url);
                 // If the example lookup failed, try making the same request locally using a local token.
                 if (empty($exampleValue)) {
-                    $exampleValue = $this->getExampleIfAvailable($url, true);
+                    if ($this->allowLocalRequests) {
+                        $exampleValue = $this->getExampleIfAvailable($url, true);
+                    }
                 }
                 if (strlen($exampleValue) > self::EXAMPLE_CHAR_LIMIT) {
                     $exampleValue = $this->cutExampleCloseToCharLimit($exampleValue, $type);
