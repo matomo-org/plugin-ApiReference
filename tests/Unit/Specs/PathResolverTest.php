@@ -35,7 +35,7 @@ class PathResolverTest extends TestCase
 
     public function testReturnsSharedPathsWhenCloudIsEnabledAndDistributedCachePathExists(): void
     {
-        $resolver = new PathResolver('/plugins/OpenApiDocs', true, $this->buildContainerStub(true, '/cache/distributed'));
+        $resolver = $this->buildPathResolverWithSharedPathValidationResult(true, '/cache/distributed', true);
 
         $this->assertSame('/cache/distributed/OpenApiDocs/specs/', $resolver->getSpecDirectory());
         $this->assertSame('/cache/distributed/OpenApiDocs/annotations/', $resolver->getAnnotationsDirectory());
@@ -62,7 +62,7 @@ class PathResolverTest extends TestCase
 
     public function testBuildsFilePathsUsingExpectedNamingConventions(): void
     {
-        $resolver = new PathResolver('/plugins/OpenApiDocs', true, $this->buildContainerStub(true, '/cache/distributed/'));
+        $resolver = $this->buildPathResolverWithSharedPathValidationResult(true, '/cache/distributed/', true);
 
         $this->assertSame(
             '/cache/distributed/OpenApiDocs/specs/CustomAlerts_openapi_spec_v2.0.0.yaml',
@@ -100,5 +100,22 @@ class PathResolverTest extends TestCase
         }
 
         return $container;
+    }
+
+    private function buildPathResolverWithSharedPathValidationResult(
+        bool $hasDistributedCachePath,
+        string $distributedCachePath,
+        bool $isUsableSharedBasePath
+    ): PathResolver {
+        $resolver = $this->getMockBuilder(PathResolver::class)
+            ->setConstructorArgs(['/plugins/OpenApiDocs', true, $this->buildContainerStub($hasDistributedCachePath, $distributedCachePath)])
+            ->onlyMethods(['isUsableSharedBasePath'])
+            ->getMock();
+
+        $resolver->method('isUsableSharedBasePath')
+            ->with(trim($distributedCachePath))
+            ->willReturn($isUsableSharedBasePath);
+
+        return $resolver;
     }
 }

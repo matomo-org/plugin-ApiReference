@@ -98,11 +98,16 @@ class PathResolver
             return null;
         }
 
-        if (!is_dir($sharedBasePath) || !is_writable($sharedBasePath)) {
+        if (!$this->isUsableSharedBasePath($sharedBasePath)) {
             return null;
         }
 
         return rtrim($sharedBasePath, '/\\') . self::SHARED_BASE_SUBDIRECTORY . ltrim(substr($sharedSubdirectory, strlen(self::SHARED_BASE_SUBDIRECTORY)), '/\\');
+    }
+
+    protected function isUsableSharedBasePath(string $sharedBasePath): bool
+    {
+        return is_dir($sharedBasePath) && is_writable($sharedBasePath);
     }
 
     private function getStaticContainer(): ?Container
