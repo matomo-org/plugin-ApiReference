@@ -98,6 +98,10 @@ class PathResolver
             return null;
         }
 
+        if (!is_dir($sharedBasePath) || !is_writable($sharedBasePath)) {
+            return null;
+        }
+
         return rtrim($sharedBasePath, '/\\') . self::SHARED_BASE_SUBDIRECTORY . ltrim(substr($sharedSubdirectory, strlen(self::SHARED_BASE_SUBDIRECTORY)), '/\\');
     }
 
