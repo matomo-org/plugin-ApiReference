@@ -23,7 +23,9 @@ use Piwik\API\Request;
 use Piwik\Http;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
+use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
 use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
+use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 use Piwik\SettingsPiwik;
 use Piwik\Url;
 use Piwik\UrlHelper;
@@ -73,6 +75,16 @@ class AnnotationGenerator
     protected $generator;
 
     /**
+     * @var PathResolver
+     */
+    protected $pathResolver;
+
+    /**
+     * @var ArtifactWriter
+     */
+    protected $artifactWriter;
+
+    /**
      * @var array[]
      */
     protected $reportMetadata;
@@ -82,9 +94,14 @@ class AnnotationGenerator
      */
     protected $missingImportantDataWarnings;
 
-    public function __construct(DocumentationGenerator $generator)
-    {
+    public function __construct(
+        DocumentationGenerator $generator,
+        ?PathResolver $pathResolver = null,
+        ?ArtifactWriter $artifactWriter = null
+    ) {
         $this->generator = $generator;
+        $this->pathResolver = $pathResolver ?? new PathResolver();
+        $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
         $this->missingImportantDataWarnings = [];
         $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
     }
@@ -115,8 +132,7 @@ class AnnotationGenerator
         }
 
         $rules = require $this->currentPluginDir . '/Annotations/config.php';
-        $pluginAnnotationDir = $this->currentPluginDir . OpenApiDocs::GENERATED_ANNOTATIONS_PATH;
-        $pluginAnnotationPath = $pluginAnnotationDir . "/{$pluginName}GeneratedAnnotations.php";
+        $pluginAnnotationPath = $this->pathResolver->getAnnotationFilePath($pluginName);
 
         $className = Request::getClassNameAPI($pluginName);
 
@@ -231,8 +247,7 @@ class AnnotationGenerator
      */
     protected function writeAnnotationsToFile(array $annotations, string $filePath, string $pluginName)
     {
-        // Create or overwrite the annotations file
-        return file_put_contents($filePath, $this->getContentForGeneratedAnnotationsFile($annotations, $pluginName));
+        return $this->writeFile($filePath, $this->getContentForGeneratedAnnotationsFile($annotations, $pluginName));
     }
 
     /**
@@ -903,11 +918,11 @@ class AnnotationGenerator
         }
         $method = $queryParams['method'];
         $format = strtolower($queryParams['format']);
-        $exampleFilePath = $this->currentPluginDir . OpenApiDocs::EXAMPLE_RESPONSES_PATH . $method . '.' . $format;
+        [$pluginName, $methodName] = explode('.', $method);
+        $exampleFilePath = $this->pathResolver->getExampleResponseFilePath($pluginName, $methodName, $format);
         // If there's already a file, use that instead of making a new server call. Ignore the file when the flag is set.
         if (!$ignoreCached) {
             // If an example file is found, return its contents instead of making the server call.
-            [$pluginName, $methodName] = explode('.', $method);
             $exampleContents = $this->getCachedExampleResponseFile($pluginName, $methodName, $format);
             if (!empty($exampleContents)) {
                 return $exampleContents;
@@ -962,7 +977,7 @@ class AnnotationGenerator
         $body = $response['data'];
 
         // Write the example response to file as a cache and reference.
-        file_put_contents($exampleFilePath, $body);
+        $this->writeFile($exampleFilePath, $body);
 
         // Convert the XML responses into a JSON object and then encode it into a string. This is helpful for building schemas.
         if ($format === 'xml') {
@@ -994,7 +1009,7 @@ class AnnotationGenerator
      */
     protected function getCachedExampleResponseFile(string $pluginName, string $methodName, string $format, bool $rawResult = false, bool $applyMaxLength = true): string
     {
-        $exampleFilePath = $this->currentPluginDir . OpenApiDocs::EXAMPLE_RESPONSES_PATH . $pluginName . '.' . $methodName . '.' . $format;
+        $exampleFilePath = $this->pathResolver->getExampleResponseFilePath($pluginName, $methodName, $format);
         // Simply return an empty string if the file doesn't exist yet.
         if (!file_exists($exampleFilePath)) {
             return '';
@@ -1019,6 +1034,11 @@ class AnnotationGenerator
         }
 
         return $exampleContents;
+    }
+
+    protected function writeFile(string $filePath, string $contents)
+    {
+        return $this->artifactWriter->writeFile($filePath, $contents);
     }
 
     /**

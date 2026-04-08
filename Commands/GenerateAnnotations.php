@@ -12,6 +12,7 @@ namespace Piwik\Plugins\OpenApiDocs\Commands;
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
 use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
+use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on
@@ -83,7 +84,7 @@ class GenerateAnnotations extends ConsoleCommand
         $result = (StaticContainer::get(AnnotationGenerator::class))->generatePluginApiAnnotations($plugin, $notDryRun);
 
         if ($notDryRun) {
-            $output->writeln('<info>Results written to plugins/OpenApiDocs/tmp/annotations/ directory.</info>');
+            $output->writeln('<info>Results written to ' . StaticContainer::get(PathResolver::class)->getAnnotationsDirectory() . '</info>');
 
             return $result ? self::SUCCESS : self::FAILURE;
         }

@@ -16,6 +16,7 @@ use Piwik\Exception\PluginNotFoundException;
 use Piwik\Log\LoggerInterface;
 use Piwik\Log\NullLogger;
 use Piwik\Plugin\Manager;
+use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
 use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 use Piwik\SettingsPiwik;
 use Piwik\Validators\BaseValidator;
@@ -23,8 +24,21 @@ use Piwik\Validators\NotEmpty;
 
 class SpecGenerator
 {
-    public function __construct()
+    /**
+     * @var PathResolver
+     */
+    private $specPathResolver;
+
+    /**
+     * @var ArtifactWriter
+     */
+    private $artifactWriter;
+
+    public function __construct(?PathResolver $specPathResolver = null, ?ArtifactWriter $artifactWriter = null)
     {
+        $this->specPathResolver = $specPathResolver ?? new PathResolver();
+        $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
+
         // Set the constant for the current instance's URL
         if (!defined('LOCAL_MATOMO_SERVER_URL')) {
             define('LOCAL_MATOMO_SERVER_URL', SettingsPiwik::getPiwikUrl());
@@ -79,7 +93,7 @@ class SpecGenerator
                 throw new PluginNotFoundException($pluginName);
             }
 
-            $pluginAnnotationsSource = $currentPluginDir . '/tmp/annotations/' . $pluginName . 'GeneratedAnnotations.php';
+            $pluginAnnotationsSource = $this->specPathResolver->getAnnotationFilePath($pluginName);
             try {
                 $openapi = (new Generator(StaticContainer::get(NullLogger::class)))->generate([
                     $pluginAnnotationsSource,
@@ -117,8 +131,8 @@ class SpecGenerator
         $lowercaseFormat = strtolower($format);
         $specContents = $lowercaseFormat === 'yaml' ? $openapi->toYaml() : $openapi->toJson();
         if ($writeToFile) {
-            $pluginSpecPath = $currentPluginDir . OpenApiDocs::GENERATED_SPECS_PATH . $specFileBaseName . '_openapi_spec_v' . $version . '.' . $lowercaseFormat;
-            file_put_contents($pluginSpecPath, $specContents);
+            $pluginSpecPath = $this->specPathResolver->getSpecFilePath($specFileBaseName, $version, $lowercaseFormat);
+            $this->artifactWriter->writeFile($pluginSpecPath, $specContents);
         }
 
         return $specContents;

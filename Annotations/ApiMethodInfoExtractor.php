@@ -15,12 +15,29 @@ use Piwik\Exception\PluginNotFoundException;
 use Piwik\API\Proxy;
 use Piwik\API\Request;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
+use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
+use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
 
 class ApiMethodInfoExtractor
 {
+    /**
+     * @var PathResolver
+     */
+    private $pathResolver;
+
+    /**
+     * @var ArtifactWriter
+     */
+    private $artifactWriter;
+
+    public function __construct(?PathResolver $pathResolver = null, ?ArtifactWriter $artifactWriter = null)
+    {
+        $this->pathResolver = $pathResolver ?? new PathResolver();
+        $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
+    }
+
     /**
      * Look up the Matomo Reporting API methods for the specified plugin(s) and output the basic information for each.
      * This includes the comment block, parameter information, and things like that. This can then be fed to a secure
@@ -38,8 +55,6 @@ class ApiMethodInfoExtractor
         $pluginNames = explode(',', $pluginName);
 
         BaseValidator::check('pluginNames', $pluginNames, [new NotEmpty()]);
-        $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
-
         $methodInfoArray = [];
         foreach ($pluginNames as $plugin) {
             BaseValidator::check('pluginName', $plugin, [new NotEmpty()]);
@@ -63,8 +78,8 @@ class ApiMethodInfoExtractor
         }
 
         if ($writeToFile) {
-            $pluginSpecPath = $currentPluginDir . OpenApiDocs::GENERATED_ANNOTATIONS_PATH . $fileBaseName . '_api_method_info.json';
-            file_put_contents($pluginSpecPath, $methodInfoString);
+            $pluginSpecPath = $this->pathResolver->getApiMethodInfoFilePath($fileBaseName);
+            $this->artifactWriter->writeFile($pluginSpecPath, $methodInfoString);
         }
 
         return $methodInfoString;
