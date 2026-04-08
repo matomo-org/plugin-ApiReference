@@ -1238,7 +1238,7 @@ class AnnotationGenerator
                 $exampleValue = $this->getExampleIfAvailable($url);
                 // If the example lookup failed, try making the same request locally using a local token.
                 if (empty($exampleValue)) {
-                    if($this->allowLocalRequests) {
+                    if ($this->allowLocalRequests) {
                         $exampleValue = $this->getExampleIfAvailable($url, true);
                     }
                 }
