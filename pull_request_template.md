@@ -24,3 +24,4 @@
 - [✔/✖/NA] Are all newly added texts included via translation?
 - [✔/✖/NA] Are text sanitized properly? (Eg use of v-text v/s v-html for vue)
 - [✔/✖/NA] Version bumped?
+- [✔/✖/NA] Documentation updated?
