@@ -25,6 +25,26 @@ use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 class API extends \Piwik\Plugin\API
 {
     /**
+     * Return the OpenApiDocs plugin whitelist from config/plugins.php.
+     *
+     * /index.php?module=API&method=OpenApiDocs.getPluginWhitelist
+     *
+     * @return array<int, string>
+     * @throws \Exception
+     */
+    public function getPluginWhitelist(): array
+    {
+        Piwik::checkUserHasSomeViewAccess();
+
+        $pluginWhitelist = $this->loadPluginWhitelist();
+        if (!is_array($pluginWhitelist)) {
+            throw new \Exception('OpenApiDocs plugin whitelist config is invalid.');
+        }
+
+        return $pluginWhitelist;
+    }
+
+    /**
      * Get a pre-generated OpenAPI spec file if it exists. This endpoint only reads
      * the generated JSON file and does not trigger spec generation.
      *
@@ -69,6 +89,14 @@ class API extends \Piwik\Plugin\API
     protected function getSpecFilePath(string $pluginName): string
     {
         return $this->getSpecPathResolver()->getSpecFilePath($pluginName);
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function loadPluginWhitelist()
+    {
+        return require __DIR__ . '/config/plugins.php';
     }
 
     protected function isSpecFileReadable(string $filePath): bool
