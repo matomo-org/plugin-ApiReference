@@ -61,6 +61,31 @@ class APITest extends TestCase
         $this->assertSame($expectedSpec, $result);
     }
 
+    public function testGetPluginWhitelistReturnsConfigValuesInOrder()
+    {
+        $expectedWhitelist = ['RollUpReporting', 'Login', 'ActivityLog'];
+
+        $api = $this->getMockBuilder(API::class)
+            ->onlyMethods(['loadPluginWhitelist'])
+            ->getMock();
+        $api->method('loadPluginWhitelist')->willReturn($expectedWhitelist);
+
+        $this->assertSame($expectedWhitelist, $api->getPluginWhitelist());
+    }
+
+    public function testGetPluginWhitelistThrowsExceptionWhenConfigIsInvalid()
+    {
+        $api = $this->getMockBuilder(API::class)
+            ->onlyMethods(['loadPluginWhitelist'])
+            ->getMock();
+        $api->method('loadPluginWhitelist')->willReturn('invalid');
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('OpenApiDocs plugin whitelist config is invalid.');
+
+        $api->getPluginWhitelist();
+    }
+
     public function testGetOpenApiSpecThrowsExceptionWhenFileMissing()
     {
         $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', false);
