@@ -94,6 +94,7 @@ class SpecGenerator
             }
 
             $pluginAnnotationsSource = $this->specPathResolver->getAnnotationFilePath($pluginName);
+            $this->loadAnnotationSourceIfNeeded($pluginAnnotationsSource);
             try {
                 $openapi = (new Generator(StaticContainer::get(NullLogger::class)))->generate([
                     $pluginAnnotationsSource,
@@ -108,6 +109,9 @@ class SpecGenerator
         }
 
         $generator = new Generator(StaticContainer::get(LoggerInterface::class));
+        foreach ($pluginDirs as $pluginDir) {
+            $this->loadAnnotationSourceIfNeeded($pluginDir);
+        }
         $openapi = $generator->setVersion(OpenApi::VERSION_3_1_0)->generate(array_merge([
             $currentPluginDir . '/Annotations/GlobalApiComponents.php',
         ], $pluginDirs));
@@ -136,5 +140,14 @@ class SpecGenerator
         }
 
         return $specContents;
+    }
+
+    private function loadAnnotationSourceIfNeeded(string $annotationSource): void
+    {
+        if (!is_file($annotationSource) || pathinfo($annotationSource, PATHINFO_EXTENSION) !== 'php') {
+            return;
+        }
+
+        require_once $annotationSource;
     }
 }
