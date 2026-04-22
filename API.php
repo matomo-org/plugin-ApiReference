@@ -15,22 +15,20 @@ use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 
 /**
- * API for plugin OpenApiDocs
+ * Provides Reporting API endpoints for reading OpenAPI plugin configuration and specifications.
  *
- * Exposes endpoints to fetch pre-generated OpenAPI specs or generate plugin-specific
- * OpenAPI docs on demand.
+ * Exposes endpoints to return the configured plugin whitelist, read pre-generated spec files,
+ * or generate plugin OpenAPI specifications on demand.
  *
  * @method static \Piwik\Plugins\OpenApiDocs\API getInstance()
  */
 class API extends \Piwik\Plugin\API
 {
     /**
-     * Return the OpenApiDocs plugin whitelist from config/plugins.php.
+     * Returns the plugin names configured for OpenApiDocs spec generation.
      *
-     * /index.php?module=API&method=OpenApiDocs.getPluginWhitelist
-     *
-     * @return array<int, string>
-     * @throws \Exception
+     * @return array<int, string> The configured whitelist of plugin names from
+     *                            `config/plugins.php`.
      */
     public function getPluginWhitelist(): array
     {
@@ -45,15 +43,14 @@ class API extends \Piwik\Plugin\API
     }
 
     /**
-     * Get a pre-generated OpenAPI spec file if it exists. This endpoint only reads
-     * the generated JSON file and does not trigger spec generation.
+     * Returns a previously generated OpenAPI specification for a plugin.
      *
-     * /index.php?module=API&method=OpenApiDocs.getOpenApiSpec&spec=CustomAlerts
+     * Reads the stored JSON spec file for the requested plugin and does not trigger
+     * spec generation.
      *
-     * @param string $pluginName Plugin name used in the generated filename.
-     * @param string $format Output format. Only `json` is supported.
-     * @return array<string, mixed> The decoded OpenAPI specification payload.
-     * @throws \Exception If the file is missing, unreadable, or contains invalid JSON.
+     * @param string $pluginName The plugin name whose generated OpenAPI spec file should be read.
+     * @param string $format The response format to read. Only `json` is supported.
+     * @return array<string, mixed> The decoded OpenAPI specification data from the generated JSON file.
      */
     public function getOpenApiSpec(string $pluginName, string $format = 'json'): array
     {
@@ -131,14 +128,12 @@ class API extends \Piwik\Plugin\API
     }
 
     /**
-     * Get the generated API documentation data for the specified plugin.
+     * Generates an OpenAPI specification for one or more plugins and returns it immediately.
      *
-     * /index.php?module=API&method=OpenApiDocs.getGeneratedOpenApiSpec&plugin=CustomAlerts
-     *
-     * @param string $plugin Name of the plugin to get the JSON for. E.g. TagManager or CustomerAlerts
-     * @param string $format String to indicate JSON or YAML.
-     * @return string | array
-     * @throws \Exception
+     * @param string $plugin The plugin name to generate, or a comma-separated list of plugin names.
+     * @param string $format The response format to generate. Supported values are `json` and `yaml`.
+     * @return array<string, mixed>|string The generated OpenAPI specification as decoded JSON data for
+     *                                     `json`, or as a YAML string for `yaml`.
      */
     public function getGeneratedOpenApiSpec(string $plugin, string $format)
     {
