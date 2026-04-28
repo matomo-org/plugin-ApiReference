@@ -845,7 +845,7 @@ class AnnotationGenerator
             }
         }
 
-        $exampleUrl = 'https://demo.matomo.cloud/' . $exampleUrl;
+        $exampleUrl = $this->prependInstanceUrl($exampleUrl);
         return [
             'xml' => $exampleUrl . '&format=xml&token_auth=anonymous',
             'json' => $exampleUrl . '&format=JSON&token_auth=anonymous',
@@ -871,7 +871,7 @@ class AnnotationGenerator
             return $this->reportMetadata;
         }
 
-        $url = 'https://demo.matomo.cloud/index.php?module=API&method=API.getReportMetadata&format=JSON&idSite=1&hideMetricsDoc=0&showSubtableReports=0&filter_limit=-1&period=day';
+        $url = $this->getReportMetadataUrl();
         try {
             $response = Http::sendHttpRequestBy(
                 Http::getTransportMethod(),
@@ -948,7 +948,6 @@ class AnnotationGenerator
         if ($useLocalToken) {
             $token = Piwik::requestTemporarySystemAuthToken('OpenApiDocs', 24);
             $tempUrl = str_replace('&token_auth=anonymous', '&token_auth=' . $token, $tempUrl);
-            $tempUrl = str_replace('https://demo.matomo.cloud/', SettingsPiwik::getPiwikUrl(), $tempUrl);
         }
         try {
             $response = Http::sendHttpRequestBy(
@@ -1050,6 +1049,24 @@ class AnnotationGenerator
         return $this->artifactWriter->writeFile($filePath, $contents);
     }
 
+    protected function getInstanceUrl(): string
+    {
+        return rtrim(SettingsPiwik::getPiwikUrl(), '/') . '/';
+    }
+
+    protected function prependInstanceUrl(string $path): string
+    {
+        return $this->getInstanceUrl() . ltrim($path, '/');
+    }
+
+    protected function getReportMetadataUrl(): string
+    {
+        return $this->prependInstanceUrl(
+            'index.php?module=API&method=API.getReportMetadata&format=JSON&idSite=1&hideMetricsDoc=0'
+            . '&showSubtableReports=0&filter_limit=-1&period=day'
+        );
+    }
+
     /**
      * Try to build an example URL for a specific API method using report metadata. This queries the demo server for
      * report metadata to get examples of existing reports which can be used as example URLS. If no metadata matches the
@@ -1094,7 +1111,7 @@ class AnnotationGenerator
                 );
 
                 // Use the JSON format for the test. If we get a valid response, return the URL without format.
-                if (!empty($this->getExampleIfAvailable('https://demo.matomo.cloud/' . $url . '&format=JSON'))) {
+                if (!empty($this->getExampleIfAvailable($this->prependInstanceUrl($url . '&format=JSON')))) {
                     return $url;
                 }
             }
