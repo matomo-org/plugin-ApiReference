@@ -11,37 +11,29 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Specs;
 
-use Piwik\Container\Container;
-use Piwik\Container\StaticContainer;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
+use Piwik\Piwik;
 
 class PathResolver
 {
-    private const SHARED_BASE_SUBDIRECTORY = '/OpenApiDocs/';
+    private const ARTIFACT_BASE_SUBDIRECTORY = '/tmp/';
 
-    private const SHARED_SPECS_SUBDIRECTORY = '/OpenApiDocs/specs/';
+    private const SPECS_SUBDIRECTORY = 'specs/';
 
-    private const SHARED_ANNOTATIONS_SUBDIRECTORY = '/OpenApiDocs/annotations/';
+    private const ANNOTATIONS_SUBDIRECTORY = 'annotations/';
 
-    private const SHARED_RESPONSES_SUBDIRECTORY = '/OpenApiDocs/responses/';
+    private const RESPONSES_SUBDIRECTORY = 'responses/';
 
     private $pluginDirectory;
 
-    private $isCloudActivated;
-
-    private $container;
-
-    public function __construct(?string $pluginDirectory = null, ?bool $isCloudActivated = null, ?Container $container = null)
+    public function __construct(?string $pluginDirectory = null)
     {
         $this->pluginDirectory = $pluginDirectory ?? Manager::getInstance()::getPluginDirectory('OpenApiDocs');
-        $this->isCloudActivated = $isCloudActivated ?? Manager::getInstance()->isPluginActivated('Cloud');
-        $this->container = $container ?? $this->getStaticContainer();
     }
 
     public function getSpecDirectory(): string
     {
-        return $this->getArtifactDirectory(self::SHARED_SPECS_SUBDIRECTORY, OpenApiDocs::GENERATED_SPECS_PATH);
+        return $this->getArtifactDirectory(self::SPECS_SUBDIRECTORY);
     }
 
     public function getSpecFilePath(
@@ -54,7 +46,7 @@ class PathResolver
 
     public function getAnnotationsDirectory(): string
     {
-        return $this->getArtifactDirectory(self::SHARED_ANNOTATIONS_SUBDIRECTORY, OpenApiDocs::GENERATED_ANNOTATIONS_PATH);
+        return $this->getArtifactDirectory(self::ANNOTATIONS_SUBDIRECTORY);
     }
 
     public function getAnnotationFilePath(string $pluginName): string
@@ -69,7 +61,7 @@ class PathResolver
 
     public function getResponsesDirectory(): string
     {
-        return $this->getArtifactDirectory(self::SHARED_RESPONSES_SUBDIRECTORY, OpenApiDocs::EXAMPLE_RESPONSES_PATH);
+        return $this->getArtifactDirectory(self::RESPONSES_SUBDIRECTORY);
     }
 
     public function getExampleResponseFilePath(string $pluginName, string $methodName, string $format): string
@@ -77,45 +69,26 @@ class PathResolver
         return $this->getResponsesDirectory() . $pluginName . '.' . $methodName . '.' . strtolower($format);
     }
 
-    private function getArtifactDirectory(string $sharedSubdirectory, string $fallbackPath): string
+    private function getArtifactDirectory(string $subdirectory): string
     {
-        $sharedPath = $this->getSharedArtifactDirectory($sharedSubdirectory);
-        if ($sharedPath !== null) {
-            return $sharedPath;
-        }
-
-        return $this->pluginDirectory . $fallbackPath;
+        return $this->getArtifactBasePath() . $subdirectory;
     }
 
-    private function getSharedArtifactDirectory(string $sharedSubdirectory): ?string
+    private function getArtifactBasePath(): string
     {
-        if (!$this->isCloudActivated || $this->container === null || !$this->container->has('CloudDistributedCachePath')) {
-            return null;
+        $defaultArtifactBasePath = $this->pluginDirectory . self::ARTIFACT_BASE_SUBDIRECTORY;
+        $artifactBasePath = $defaultArtifactBasePath;
+        $this->dispatchArtifactBasePathEvent($artifactBasePath);
+
+        if (empty($artifactBasePath)) {
+            $artifactBasePath = $defaultArtifactBasePath;
         }
 
-        $sharedBasePath = trim((string) $this->container->get('CloudDistributedCachePath'));
-        if ($sharedBasePath === '') {
-            return null;
-        }
-
-        if (!$this->isUsableSharedBasePath($sharedBasePath)) {
-            return null;
-        }
-
-        return rtrim($sharedBasePath, '/\\') . self::SHARED_BASE_SUBDIRECTORY . ltrim(substr($sharedSubdirectory, strlen(self::SHARED_BASE_SUBDIRECTORY)), '/\\');
+        return rtrim($artifactBasePath, '/\\') . '/';
     }
 
-    protected function isUsableSharedBasePath(string $sharedBasePath): bool
+    protected function dispatchArtifactBasePathEvent(?string &$artifactBasePath): void
     {
-        return is_dir($sharedBasePath) && is_writable($sharedBasePath);
-    }
-
-    private function getStaticContainer(): ?Container
-    {
-        try {
-            return StaticContainer::getContainer();
-        } catch (\Throwable $e) {
-            return null;
-        }
+        Piwik::postEvent('OpenApiDocs.getArtifactBasePath', [&$artifactBasePath]);
     }
 }

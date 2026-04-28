@@ -14,7 +14,6 @@ namespace Piwik\Plugins\OpenApiDocs\tests\Unit\Specs;
 require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use Piwik\Container\Container;
 use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 
 /**
@@ -26,34 +25,34 @@ class PathResolverTest extends TestCase
 {
     public function testReturnsPluginLocalPathsWhenCloudIsDisabled(): void
     {
-        $resolver = new PathResolver('/plugins/OpenApiDocs', false);
+        $resolver = new PathResolver('/plugins/OpenApiDocs');
 
         $this->assertSame('/plugins/OpenApiDocs/tmp/specs/', $resolver->getSpecDirectory());
         $this->assertSame('/plugins/OpenApiDocs/tmp/annotations/', $resolver->getAnnotationsDirectory());
         $this->assertSame('/plugins/OpenApiDocs/tmp/responses/', $resolver->getResponsesDirectory());
     }
 
-    public function testReturnsSharedPathsWhenCloudIsEnabledAndDistributedCachePathExists(): void
+    public function testReturnsOverriddenPathsWhenArtifactBasePathEventProvidesOne(): void
     {
-        $resolver = $this->buildPathResolverWithSharedPathValidationResult(true, '/cache/distributed', true);
+        $resolver = $this->buildPathResolverWithArtifactBasePath('/cache/distributed/OpenApiDocs');
 
         $this->assertSame('/cache/distributed/OpenApiDocs/specs/', $resolver->getSpecDirectory());
         $this->assertSame('/cache/distributed/OpenApiDocs/annotations/', $resolver->getAnnotationsDirectory());
         $this->assertSame('/cache/distributed/OpenApiDocs/responses/', $resolver->getResponsesDirectory());
     }
 
-    public function testFallsBackToPluginLocalPathsWhenCloudCachePathIsMissing(): void
+    public function testTrimsTrailingSlashesFromOverriddenArtifactBasePath(): void
     {
-        $resolver = new PathResolver('/plugins/OpenApiDocs', true, $this->buildContainerStub(false));
+        $resolver = $this->buildPathResolverWithArtifactBasePath('/cache/distributed/OpenApiDocs/');
 
-        $this->assertSame('/plugins/OpenApiDocs/tmp/specs/', $resolver->getSpecDirectory());
-        $this->assertSame('/plugins/OpenApiDocs/tmp/annotations/', $resolver->getAnnotationsDirectory());
-        $this->assertSame('/plugins/OpenApiDocs/tmp/responses/', $resolver->getResponsesDirectory());
+        $this->assertSame('/cache/distributed/OpenApiDocs/specs/', $resolver->getSpecDirectory());
+        $this->assertSame('/cache/distributed/OpenApiDocs/annotations/', $resolver->getAnnotationsDirectory());
+        $this->assertSame('/cache/distributed/OpenApiDocs/responses/', $resolver->getResponsesDirectory());
     }
 
-    public function testFallsBackToPluginLocalPathsWhenCloudCachePathIsEmpty(): void
+    public function testKeepsDefaultLocalPathsWhenEventDoesNotProvideOverride(): void
     {
-        $resolver = new PathResolver('/plugins/OpenApiDocs', true, $this->buildContainerStub(true, '   '));
+        $resolver = $this->buildPathResolverWithArtifactBasePath(null);
 
         $this->assertSame('/plugins/OpenApiDocs/tmp/specs/', $resolver->getSpecDirectory());
         $this->assertSame('/plugins/OpenApiDocs/tmp/annotations/', $resolver->getAnnotationsDirectory());
@@ -62,7 +61,7 @@ class PathResolverTest extends TestCase
 
     public function testBuildsFilePathsUsingExpectedNamingConventions(): void
     {
-        $resolver = $this->buildPathResolverWithSharedPathValidationResult(true, '/cache/distributed/', true);
+        $resolver = $this->buildPathResolverWithArtifactBasePath('/cache/distributed/OpenApiDocs/');
 
         $this->assertSame(
             '/cache/distributed/OpenApiDocs/specs/CustomAlerts_openapi_spec_v2.0.0.yaml',
@@ -82,39 +81,17 @@ class PathResolverTest extends TestCase
         );
     }
 
-    private function buildContainerStub(bool $hasDistributedCachePath, string $distributedCachePath = ''): Container
+    private function buildPathResolverWithArtifactBasePath(?string $artifactBasePath): PathResolver
     {
-        $container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['has', 'get'])
-            ->getMock();
-
-        $container->method('has')
-            ->with('CloudDistributedCachePath')
-            ->willReturn($hasDistributedCachePath);
-
-        if ($hasDistributedCachePath) {
-            $container->method('get')
-                ->with('CloudDistributedCachePath')
-                ->willReturn($distributedCachePath);
-        }
-
-        return $container;
-    }
-
-    private function buildPathResolverWithSharedPathValidationResult(
-        bool $hasDistributedCachePath,
-        string $distributedCachePath,
-        bool $isUsableSharedBasePath
-    ): PathResolver {
         $resolver = $this->getMockBuilder(PathResolver::class)
-            ->setConstructorArgs(['/plugins/OpenApiDocs', true, $this->buildContainerStub($hasDistributedCachePath, $distributedCachePath)])
-            ->onlyMethods(['isUsableSharedBasePath'])
+            ->setConstructorArgs(['/plugins/OpenApiDocs'])
+            ->onlyMethods(['dispatchArtifactBasePathEvent'])
             ->getMock();
 
-        $resolver->method('isUsableSharedBasePath')
-            ->with(trim($distributedCachePath))
-            ->willReturn($isUsableSharedBasePath);
+        $resolver->method('dispatchArtifactBasePathEvent')
+            ->willReturnCallback(static function (?string &$resolvedArtifactBasePath) use ($artifactBasePath): void {
+                $resolvedArtifactBasePath = $artifactBasePath;
+            });
 
         return $resolver;
     }
