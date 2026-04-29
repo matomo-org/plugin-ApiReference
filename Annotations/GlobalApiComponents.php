@@ -36,17 +36,12 @@ namespace Piwik\Plugins\OpenApiDocs\Annotations;
  *     securityScheme="MatomoToken",
  *     type="http",
  *     scheme="bearer",
- *     description="Matomo API token passed in the Authorization header as a bearer token. For demo.matomo.cloud requests, use the anonymous token value: anonymous."
+ *     description="Matomo API token passed in the Authorization header as a bearer token."
  * )
  *
  * @OA\Server(
  *     url=LOCAL_MATOMO_SERVER_URL,
  *     description="Current Matomo instance"
- * )
- *
- * @OA\Server(
- *     url="https://demo.matomo.cloud/",
- *     description="Matomo demo server"
  * )
  *
  * Generic Error object
