@@ -13,6 +13,7 @@ namespace Piwik\Plugins\OpenApiDocs\Specs;
 
 use Piwik\Plugin\Manager;
 use Piwik\Piwik;
+use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 
 class PathResolver
 {
