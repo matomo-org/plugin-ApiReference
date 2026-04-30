@@ -28,10 +28,19 @@ class Tasks extends \Piwik\Plugin\Tasks
      */
     private $logger;
 
-    public function __construct(SpecGenerationService $specGenerationService, LoggerInterface $logger)
-    {
+    /**
+     * @var PluginListProvider
+     */
+    private $pluginListProvider;
+
+    public function __construct(
+        SpecGenerationService $specGenerationService,
+        LoggerInterface $logger,
+        ?PluginListProvider $pluginListProvider = null
+    ) {
         $this->specGenerationService = $specGenerationService;
         $this->logger = $logger;
+        $this->pluginListProvider = $pluginListProvider ?? new PluginListProvider();
     }
 
     public function schedule()
@@ -43,7 +52,7 @@ class Tasks extends \Piwik\Plugin\Tasks
 
     public function generateConfiguredPluginSpecs(): void
     {
-        $pluginNames = PluginListProvider::getPluginsForSpecGeneration();
+        $pluginNames = $this->pluginListProvider->getPluginsForSpecGeneration();
 
         foreach ($pluginNames as $pluginName) {
             try {

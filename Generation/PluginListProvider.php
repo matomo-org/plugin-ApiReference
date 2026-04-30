@@ -11,55 +11,74 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Generation;
 
+use Piwik\EventDispatcher;
 use Piwik\Plugin\Manager;
-use Piwik\Piwik;
 use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 
 class PluginListProvider
 {
     /**
+     * @var Manager
+     */
+    private $pluginManager;
+
+    /**
+     * @var EventDispatcher
+     */
+    private $eventDispatcher;
+
+    public function __construct(?Manager $pluginManager = null, ?EventDispatcher $eventDispatcher = null)
+    {
+        $this->pluginManager = $pluginManager ?? Manager::getInstance();
+        $this->eventDispatcher = $eventDispatcher ?? EventDispatcher::getInstance();
+    }
+
+    /**
      * @return string[]
      */
-    public static function getPluginsForSpecGeneration(): array
+    public function getPluginsForSpecGeneration(): array
     {
         $pluginNames = [];
 
-        foreach (Manager::getInstance()->getInstalledPluginsName() as $pluginName) {
-            if (!self::shouldIncludePlugin($pluginName)) {
+        foreach ($this->pluginManager->getInstalledPluginsName() as $pluginName) {
+            if (!$this->shouldIncludePlugin($pluginName)) {
                 continue;
             }
 
             $pluginNames[] = $pluginName;
         }
 
-        self::dispatchUpdatePluginListEvent($pluginNames);
+        $this->dispatchUpdatePluginListEvent($pluginNames);
 
         return array_values(array_unique($pluginNames));
     }
 
-    private static function shouldIncludePlugin(string $pluginName): bool
+    private function shouldIncludePlugin(string $pluginName): bool
     {
         if (in_array($pluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
             return false;
         }
 
-        $pluginManager = Manager::getInstance();
-
         if (
-            !$pluginManager->isPluginActivated($pluginName)
-            || !$pluginManager->isPluginInFilesystem($pluginName)
+            !$this->pluginManager->isPluginActivated($pluginName)
+            || !$this->pluginManager->isPluginInFilesystem($pluginName)
         ) {
             return false;
         }
 
+        return $this->pluginHasApiFile($pluginName);
+    }
+
+    protected function pluginHasApiFile(string $pluginName): bool
+    {
         return is_file(Manager::getPluginDirectory($pluginName) . '/API.php');
     }
 
     /**
      * @param string[] $pluginNames
      */
-    private static function dispatchUpdatePluginListEvent(array &$pluginNames): void
+    private function dispatchUpdatePluginListEvent(array &$pluginNames): void
     {
-        Piwik::postEvent('OpenApiDocs.updatePluginList', [&$pluginNames]);
+        $this->eventDispatcher->postEvent('OpenApiDocs.updatePluginList', [&$pluginNames]);
     }
 }

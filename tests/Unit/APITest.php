@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Piwik\Access;
 use Piwik\Container\StaticContainer;
 use Piwik\Plugins\OpenApiDocs\API;
+use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
 use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 use Piwik\Tests\Framework\Mock\FakeAccess;
 
@@ -61,29 +62,19 @@ class APITest extends TestCase
         $this->assertSame($expectedSpec, $result);
     }
 
-    public function testGetPluginWhitelistReturnsConfigValuesInOrder()
+    public function testGetPluginWhitelistReturnsProviderValues(): void
     {
-        $expectedWhitelist = ['RollUpReporting', 'Login', 'ActivityLog'];
+        $provider = $this->createMock(PluginListProvider::class);
+        $provider->expects($this->once())
+            ->method('getPluginsForSpecGeneration')
+            ->willReturn(['Login', 'ActivityLog']);
 
         $api = $this->getMockBuilder(API::class)
-            ->onlyMethods(['loadPluginWhitelist'])
+            ->onlyMethods(['getPluginListProvider'])
             ->getMock();
-        $api->method('loadPluginWhitelist')->willReturn($expectedWhitelist);
+        $api->method('getPluginListProvider')->willReturn($provider);
 
-        $this->assertSame($expectedWhitelist, $api->getPluginWhitelist());
-    }
-
-    public function testGetPluginWhitelistThrowsExceptionWhenConfigIsInvalid()
-    {
-        $api = $this->getMockBuilder(API::class)
-            ->onlyMethods(['loadPluginWhitelist'])
-            ->getMock();
-        $api->method('loadPluginWhitelist')->willReturn('invalid');
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('OpenApiDocs plugin whitelist config is invalid.');
-
-        $api->getPluginWhitelist();
+        $this->assertSame(['Login', 'ActivityLog'], $api->getPluginWhitelist());
     }
 
     public function testGetOpenApiSpecThrowsExceptionWhenFileMissing()

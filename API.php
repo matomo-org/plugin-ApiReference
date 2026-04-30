@@ -34,7 +34,7 @@ class API extends \Piwik\Plugin\API
     {
         Piwik::checkUserHasSomeViewAccess();
 
-        return PluginListProvider::getPluginsForSpecGeneration();
+        return $this->getPluginListProvider()->getPluginsForSpecGeneration();
     }
 
     /**
@@ -113,6 +113,12 @@ class API extends \Piwik\Plugin\API
     {
         return new PathResolver();
     }
+
+    protected function getPluginListProvider(): PluginListProvider
+    {
+        return new PluginListProvider();
+    }
+
     /**
      * Generates an OpenAPI specification for one or more plugins and returns it immediately.
      *

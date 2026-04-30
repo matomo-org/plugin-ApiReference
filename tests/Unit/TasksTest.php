@@ -15,6 +15,7 @@ require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 use Piwik\Config;
+use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
 use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
 use Piwik\Plugins\OpenApiDocs\Tasks;
 use Piwik\Scheduler\Schedule\Daily;
@@ -87,7 +88,11 @@ class TasksTest extends TestCase
             });
 
         $logger = new FakeLogger();
-        $tasks = new Tasks($service, $logger);
+        $pluginListProvider = $this->createMock(PluginListProvider::class);
+        $pluginListProvider->method('getPluginsForSpecGeneration')
+            ->willReturn(['RollUpReporting', 'Login']);
+
+        $tasks = new Tasks($service, $logger, $pluginListProvider);
 
         $tasks->generateConfiguredPluginSpecs();
 
