@@ -10,6 +10,7 @@
 namespace Piwik\Plugins\OpenApiDocs;
 
 use Piwik\Piwik;
+use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
 use Piwik\Plugin\Manager;
 use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
 use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
@@ -17,7 +18,7 @@ use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 /**
  * Provides Reporting API endpoints for reading OpenAPI plugin configuration and specifications.
  *
- * Exposes endpoints to return the configured plugin whitelist, read pre-generated spec files,
+ * Exposes endpoints to return the effective plugin list for spec generation, read pre-generated spec files,
  * or generate plugin OpenAPI specifications on demand.
  *
  * @method static \Piwik\Plugins\OpenApiDocs\API getInstance()
@@ -25,21 +26,15 @@ use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
 class API extends \Piwik\Plugin\API
 {
     /**
-     * Returns the plugin names configured for OpenApiDocs spec generation.
+     * Returns the plugin names used for OpenApiDocs spec generation.
      *
-     * @return array<int, string> The configured whitelist of plugin names from
-     *                            `config/plugins.php`.
+     * @return array<int, string>
      */
     public function getPluginWhitelist(): array
     {
         Piwik::checkUserHasSomeViewAccess();
 
-        $pluginWhitelist = $this->loadPluginWhitelist();
-        if (!is_array($pluginWhitelist)) {
-            throw new \Exception('OpenApiDocs plugin whitelist config is invalid.');
-        }
-
-        return $pluginWhitelist;
+        return PluginListProvider::getPluginsForSpecGeneration();
     }
 
     /**
@@ -88,14 +83,6 @@ class API extends \Piwik\Plugin\API
         return $this->getSpecPathResolver()->getSpecFilePath($pluginName);
     }
 
-    /**
-     * @return mixed
-     */
-    protected function loadPluginWhitelist()
-    {
-        return require __DIR__ . '/config/plugins.php';
-    }
-
     protected function isSpecFileReadable(string $filePath): bool
     {
         return is_file($filePath) && is_readable($filePath);
@@ -126,7 +113,6 @@ class API extends \Piwik\Plugin\API
     {
         return new PathResolver();
     }
-
     /**
      * Generates an OpenAPI specification for one or more plugins and returns it immediately.
      *

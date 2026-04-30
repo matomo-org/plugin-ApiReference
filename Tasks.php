@@ -13,6 +13,7 @@ namespace Piwik\Plugins\OpenApiDocs;
 
 use Piwik\Config;
 use Piwik\Log\LoggerInterface;
+use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
 use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
 
 class Tasks extends \Piwik\Plugin\Tasks
@@ -42,7 +43,7 @@ class Tasks extends \Piwik\Plugin\Tasks
 
     public function generateConfiguredPluginSpecs(): void
     {
-        $pluginNames = require __DIR__ . '/config/plugins.php';
+        $pluginNames = PluginListProvider::getPluginsForSpecGeneration();
 
         foreach ($pluginNames as $pluginName) {
             try {
