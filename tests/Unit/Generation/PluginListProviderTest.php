@@ -88,10 +88,10 @@ class PluginListProviderTest extends TestCase
     public function testGetPluginsForSpecGenerationAppliesEventUpdates(): void
     {
         $provider = $this->makeProvider(
-            ['HasApi'],
-            ['HasApi' => true],
-            ['HasApi' => true],
-            true,
+            ['HasApi', 'Login'],
+            ['HasApi' => true, 'Login' => true],
+            ['HasApi' => true, 'Login' => true],
+            ['HasApi' => true, 'Login' => true],
             static function (EventDispatcher $eventDispatcher): void {
                 $eventDispatcher->addObserver('OpenApiDocs.updatePluginList', function (&$pluginNames): void {
                     $pluginNames[] = 'Login';
@@ -109,16 +109,56 @@ class PluginListProviderTest extends TestCase
         $this->assertSame([], $provider->getPluginsForSpecGeneration());
     }
 
+    public function testGetPluginsForSpecGenerationDropsInvalidEventUpdatesButKeepsUnactivatedInstalledPlugins(): void
+    {
+        $provider = $this->makeProvider(
+            ['HasApi', 'Login', 'InactivePlugin', 'NoApi', 'ConnectAccounts'],
+            [
+                'HasApi' => true,
+                'Login' => true,
+                'InactivePlugin' => false,
+                'NoApi' => true,
+                'ConnectAccounts' => true,
+            ],
+            [
+                'HasApi' => true,
+                'Login' => true,
+                'InactivePlugin' => true,
+                'NoApi' => true,
+                'ConnectAccounts' => true,
+            ],
+            [
+                'HasApi' => true,
+                'Login' => true,
+                'InactivePlugin' => true,
+                'NoApi' => false,
+                'ConnectAccounts' => true,
+            ],
+            static function (EventDispatcher $eventDispatcher): void {
+                $eventDispatcher->addObserver('OpenApiDocs.updatePluginList', function (&$pluginNames): void {
+                    $pluginNames[] = 'Login';
+                    $pluginNames[] = 'InactivePlugin';
+                    $pluginNames[] = 'NoApi';
+                    $pluginNames[] = 'ConnectAccounts';
+                    $pluginNames[] = 123;
+                });
+            }
+        );
+
+        $this->assertSame(['HasApi', 'Login', 'InactivePlugin'], $provider->getPluginsForSpecGeneration());
+    }
+
     /**
      * @param string[] $installedPlugins
      * @param array<string, bool> $activatedByPlugin
      * @param array<string, bool> $inFilesystemByPlugin
+     * @param bool|array<string, bool> $hasApiFile
      */
     private function makeProvider(
         array $installedPlugins,
         array $activatedByPlugin,
         array $inFilesystemByPlugin,
-        bool $hasApiFile,
+        $hasApiFile,
         ?callable $configureEventDispatcher = null
     ): PluginListProvider {
         $pluginManager = $this->createConfiguredMock(Manager::class, [
@@ -149,7 +189,13 @@ class PluginListProviderTest extends TestCase
             ->getMock();
 
         $provider->method('pluginHasApiFile')
-            ->willReturn($hasApiFile);
+            ->willReturnCallback(static function (string $pluginName) use ($hasApiFile): bool {
+                if (is_array($hasApiFile)) {
+                    return $hasApiFile[$pluginName] ?? false;
+                }
+
+                return $hasApiFile;
+            });
 
         return $provider;
     }

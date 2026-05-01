@@ -50,7 +50,11 @@ class PluginListProvider
 
         $this->dispatchUpdatePluginListEvent($pluginNames);
 
-        return array_values(array_unique($pluginNames));
+        $pluginNames = array_values(array_unique($pluginNames));
+
+        return array_values(array_filter($pluginNames, function ($pluginName): bool {
+            return is_string($pluginName) && $this->shouldIncludeEventProvidedPlugin($pluginName);
+        }));
     }
 
     private function shouldIncludePlugin(string $pluginName): bool
@@ -63,6 +67,19 @@ class PluginListProvider
             !$this->pluginManager->isPluginActivated($pluginName)
             || !$this->pluginManager->isPluginInFilesystem($pluginName)
         ) {
+            return false;
+        }
+
+        return $this->pluginHasApiFile($pluginName);
+    }
+
+    private function shouldIncludeEventProvidedPlugin(string $pluginName): bool
+    {
+        if (in_array($pluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
+            return false;
+        }
+
+        if (!$this->pluginManager->isPluginInFilesystem($pluginName)) {
             return false;
         }
 
