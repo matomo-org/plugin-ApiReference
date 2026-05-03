@@ -33,7 +33,7 @@
           <input
             :value="searchTerm"
             type="text"
-            class="searchInput"
+            class="searchInput browser-default"
             :placeholder="translate('OpenApiDocs_SwaggerPageSearchPlaceholder')"
             @input="onSearchInput"
           >
@@ -50,7 +50,11 @@
           <div
             v-for="plugin in filteredPlugins"
             :key="plugin"
-            :class="['card', 'pluginCard', { 'pluginCard--expanded': expandedPluginName === plugin }]"
+            :class="[
+              'card',
+              'pluginCard',
+              { 'pluginCard--expanded': expandedPluginName === plugin },
+            ]"
           >
             <button
               type="button"
@@ -73,19 +77,7 @@
               v-if="expandedPluginName === plugin"
               class="card-content pluginBody"
             >
-              <div class="swaggerScope">
-                <Alert
-                  v-if="swaggerErrors[plugin]"
-                  severity="danger"
-                >
-                  {{ swaggerErrors[plugin] }}
-                </Alert>
-
-                <div
-                  :id="getSwaggerContainerId(plugin)"
-                  class="swaggerMount"
-                />
-              </div>
+              <SwaggerUiPanel :plugin="plugin" />
             </div>
           </div>
         </div>
@@ -95,7 +87,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick } from 'vue';
+import { defineComponent } from 'vue';
 import {
   ActivityIndicator,
   AjaxHelper,
@@ -104,37 +96,7 @@ import {
   ContentIntro,
   translate,
 } from 'CoreHome';
-
-type SwaggerUiFactory = (config: {
-  dom_id: string;
-  deepLinking: boolean;
-  defaultModelsExpandDepth: number;
-  docExpansion: 'list' | 'full' | 'none';
-  layout: string;
-  onComplete?: () => void;
-  presets?: unknown[];
-  plugins?: Array<() => unknown>;
-  requestInterceptor?: (request: { loadSpec?: boolean; url: string }) => { loadSpec?: boolean; url: string };
-  tagsSorter?: string;
-  url: string;
-}) => unknown;
-
-type SwaggerRootElement = HTMLElement & {
-  __matomoActiveCopySuccessState?: {
-    element: HTMLElement;
-    originalInnerHTML: string;
-    resetTimeoutId: number;
-  } | null;
-  __matomoSummaryPathClickHandlerAttached?: boolean;
-};
-
-type SwaggerWindow = Window & {
-  SwaggerUIBundle?: SwaggerUiFactory & {
-    presets?: {
-      apis?: unknown;
-    };
-  };
-};
+import SwaggerUiPanel from './SwaggerUiPanel.vue';
 
 interface SwaggerPageState {
   expandedPluginName: string | null;
@@ -142,7 +104,6 @@ interface SwaggerPageState {
   loadError: string | null;
   plugins: string[];
   searchTerm: string;
-  swaggerErrors: Record<string, string | null>;
 }
 
 export default defineComponent({
@@ -150,6 +111,7 @@ export default defineComponent({
     ActivityIndicator,
     Alert,
     ContentBlock,
+    SwaggerUiPanel,
   },
   directives: {
     ContentIntro,
@@ -172,7 +134,6 @@ export default defineComponent({
       loadError: null,
       plugins: [],
       searchTerm: '',
-      swaggerErrors: {},
     };
   },
   created() {
@@ -185,7 +146,6 @@ export default defineComponent({
       this.loadError = null;
       this.plugins = [];
       this.searchTerm = '';
-      this.swaggerErrors = {};
 
       AjaxHelper.fetch<string[]>(
         {
@@ -195,7 +155,7 @@ export default defineComponent({
           createErrorNotification: false,
         },
       ).then((plugins) => {
-        this.plugins = plugins;
+        this.plugins = [...plugins].sort((left, right) => left.localeCompare(right));
       }).catch(() => {
         this.loadError = translate('OpenApiDocs_SwaggerPageRequestFailed');
       }).finally(() => {
@@ -213,208 +173,13 @@ export default defineComponent({
         this.expandedPluginName = null;
       }
     },
-    async togglePlugin(plugin: string) {
+    togglePlugin(plugin: string) {
       if (this.expandedPluginName === plugin) {
         this.expandedPluginName = null;
         return;
       }
 
       this.expandedPluginName = plugin;
-      this.swaggerErrors[plugin] = null;
-
-      await nextTick();
-      this.renderSwaggerUi(plugin);
-    },
-    getSwaggerContainerId(plugin: string) {
-      return `swagger-ui-${plugin}`;
-    },
-    getSwaggerSpecUrl(plugin: string) {
-      const params = new URLSearchParams({
-        module: 'API',
-        method: 'OpenApiDocs.getGeneratedOpenApiSpec',
-        plugin,
-        format: 'JSON',
-      });
-
-      return `index.php?${params.toString()}`;
-    },
-    shortenSummaryPaths(swaggerRoot: ParentNode) {
-      const summaryPrefix = '/index.php?module=API&method=';
-      const summaryPaths = swaggerRoot.querySelectorAll('.opblock-summary-path');
-
-      Array.prototype.forEach.call(summaryPaths, (element: Element) => {
-        const fullPath = element.getAttribute('data-path');
-
-        if (!fullPath || !fullPath.startsWith(summaryPrefix)) {
-          return;
-        }
-
-        element.textContent = fullPath.substring(summaryPrefix.length);
-        element.setAttribute('title', fullPath);
-      });
-    },
-    updateFlatSingleTag(swaggerRoot: ParentNode) {
-      const tagSections = swaggerRoot.querySelectorAll('.opblock-tag-section');
-
-      Array.prototype.forEach.call(tagSections, (tagSection: Element) => {
-        tagSection.classList.remove('matomo-flat-tag');
-      });
-
-      if (tagSections.length !== 1) {
-        return;
-      }
-
-      const tagSection = tagSections[0];
-      if (tagSection.querySelector(':scope > .opblock-tag')) {
-        tagSection.classList.add('matomo-flat-tag');
-      }
-    },
-    normalizeSwaggerUi(swaggerRoot: ParentNode | null) {
-      if (!swaggerRoot) {
-        return;
-      }
-
-      this.shortenSummaryPaths(swaggerRoot);
-      this.updateFlatSingleTag(swaggerRoot);
-    },
-    getSummaryPathCopyControl(target: Element | null) {
-      return target?.closest('.opblock-summary .view-line-link.copy-to-clipboard') as HTMLElement | null;
-    },
-    getFlatTagHeader(target: Element | null) {
-      return target?.closest('.opblock-tag-section.matomo-flat-tag > .opblock-tag') as HTMLElement | null;
-    },
-    getOriginalCopyControlMarkup(swaggerRoot: SwaggerRootElement, control: HTMLElement) {
-      const state = swaggerRoot.__matomoActiveCopySuccessState;
-
-      if (state && state.element === control) {
-        return state.originalInnerHTML;
-      }
-
-      return control.innerHTML;
-    },
-    clearCopySuccessState(swaggerRoot: SwaggerRootElement) {
-      const state = swaggerRoot.__matomoActiveCopySuccessState;
-
-      if (!state) {
-        return;
-      }
-
-      window.clearTimeout(state.resetTimeoutId);
-      state.element.innerHTML = state.originalInnerHTML;
-      state.element.classList.remove('matomo-copy-success');
-      state.element.classList.remove('matomo-copy-reset');
-      void state.element.offsetWidth;
-      state.element.classList.add('matomo-copy-reset');
-      swaggerRoot.__matomoActiveCopySuccessState = null;
-    },
-    showCopySuccessState(swaggerRoot: SwaggerRootElement, control: HTMLElement, originalInnerHTML: string) {
-      this.clearCopySuccessState(swaggerRoot);
-
-      control.innerHTML = '<i class="icon-ok matomo-copy-success-icon" aria-hidden="true"></i>';
-      control.classList.remove('matomo-copy-reset');
-      control.classList.add('matomo-copy-success');
-
-      swaggerRoot.__matomoActiveCopySuccessState = {
-        element: control,
-        originalInnerHTML,
-        resetTimeoutId: window.setTimeout(() => {
-          if (swaggerRoot.__matomoActiveCopySuccessState?.element === control) {
-            this.clearCopySuccessState(swaggerRoot);
-          }
-        }, 3000),
-      };
-    },
-    disableAuthorizePlugin() {
-      return {
-        wrapComponents: {
-          authorizeBtn: () => () => null,
-        },
-      };
-    },
-    attachSwaggerInteractionHandlers(swaggerRoot: SwaggerRootElement | null) {
-      const interactiveSwaggerSelector = '.opblock-tag, .opblock-summary, .expand-operation, .opblock-summary-control';
-
-      if (!swaggerRoot || swaggerRoot.__matomoSummaryPathClickHandlerAttached) {
-        return;
-      }
-
-      swaggerRoot.__matomoSummaryPathClickHandlerAttached = true;
-      swaggerRoot.addEventListener('click', (event) => {
-        const target = event.target as Element | null;
-        const flatTagHeader = this.getFlatTagHeader(target);
-
-        if (flatTagHeader) {
-          if (target?.closest('a')) {
-            event.stopPropagation();
-          } else {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-
-          return;
-        }
-
-        const summaryPathCopyControl = this.getSummaryPathCopyControl(target);
-
-        if (summaryPathCopyControl) {
-          const originalInnerHTML = this.getOriginalCopyControlMarkup(swaggerRoot, summaryPathCopyControl);
-
-          window.setTimeout(() => {
-            if (summaryPathCopyControl.isConnected) {
-              this.showCopySuccessState(swaggerRoot, summaryPathCopyControl, originalInnerHTML);
-            }
-          }, 0);
-        }
-
-        if (!target?.closest(interactiveSwaggerSelector)) {
-          return;
-        }
-
-        window.setTimeout(() => {
-          this.normalizeSwaggerUi(swaggerRoot);
-        }, 0);
-      }, true);
-    },
-    renderSwaggerUi(plugin: string) {
-      const swaggerUiBundle = (window as SwaggerWindow).SwaggerUIBundle;
-      const containerId = this.getSwaggerContainerId(plugin);
-      const container = document.getElementById(containerId) as SwaggerRootElement | null;
-
-      if (!swaggerUiBundle || !container) {
-        this.swaggerErrors[plugin] = translate('OpenApiDocs_SwaggerPageSpecLoadFailed');
-        return;
-      }
-
-      container.innerHTML = '';
-
-      swaggerUiBundle({
-        dom_id: `#${containerId}`,
-        url: this.getSwaggerSpecUrl(plugin),
-        deepLinking: true,
-        docExpansion: 'list',
-        defaultModelsExpandDepth: -1,
-        layout: 'BaseLayout',
-        tagsSorter: 'alpha',
-        presets: swaggerUiBundle.presets?.apis ? [swaggerUiBundle.presets.apis] : [],
-        plugins: [this.disableAuthorizePlugin],
-        requestInterceptor: (request) => {
-          if (request.loadSpec && request.url.includes('OpenApiDocs.getGeneratedOpenApiSpec')) {
-            return {
-              ...request,
-              url: this.getSwaggerSpecUrl(plugin),
-            };
-          }
-
-          return request;
-        },
-        onComplete: () => {
-          window.setTimeout(() => {
-            this.normalizeSwaggerUi(container);
-          }, 0);
-
-          this.attachSwaggerInteractionHandlers(container);
-        },
-      });
     },
   },
 });
@@ -428,40 +193,35 @@ export default defineComponent({
 .searchBar {
   position: relative;
   margin-bottom: 1.5rem;
+  width: 300px;
 }
 
 .searchIcon {
   position: absolute;
-  top: 50%;
-  left: 14px;
-  transform: translateY(-50%);
-  color: #98a3b3;
+  top: 13px;
+  left: 12px;
+  color: #d0d5dd;
   font-size: 14px;
   pointer-events: none;
 }
 
 .searchInput {
   width: 100%;
-  height: 42px;
-  margin: 0;
-  padding: 0 16px 0 40px;
-  border: 1px solid #d9dee7;
+  height: 38px;
+  padding: 10px 12px 10px 38px;
+  border: 1px solid #d0d5dd;
   border-radius: 8px;
-  box-sizing: border-box;
-  background: #fff;
+  font-size: 14px;
   box-shadow: none;
-  color: #1f2933;
-  font: inherit;
+}
+
+.searchInput:focus-visible {
+  border: 1px solid #5b8def;
+  outline: 1px solid #5b8def;
 }
 
 .searchInput::placeholder {
-  color: #98a3b3;
-}
-
-.searchInput:focus {
-  border-color: #c7d2df;
-  box-shadow: 0 0 0 1px #c7d2df;
-  outline: none;
+  color: #98a2b3;
 }
 
 .emptyText {
@@ -531,7 +291,7 @@ export default defineComponent({
 
 .pluginBody {
   position: relative;
-  padding: 20px;
+  padding: 0;
 }
 
 .pluginBody::before {
@@ -541,18 +301,5 @@ export default defineComponent({
   left: 20px;
   right: 20px;
   border-top: 1px solid #e6edf5;
-}
-
-.swaggerMount {
-  min-height: 180px;
-}
-
-.swaggerScope :deep(.swagger-ui) {
-  border: 0;
-  border-radius: 0;
-  color: #3c4858;
-  font-size: 14px;
-  line-height: 1.5;
-  padding-top: 0;
 }
 </style>

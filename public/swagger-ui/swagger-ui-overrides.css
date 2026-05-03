@@ -1,10 +1,10 @@
-.swaggerScope .swagger-ui .opblock-tag {
+.swaggerMount .swagger-ui .opblock-tag {
     align-items: flex-start;
     display: flex;
     flex-wrap: wrap;
 }
 
-.swaggerScope .swagger-ui {
+.swaggerMount .swagger-ui {
     --matomo-swagger-get-main: #3152A0;
     --matomo-swagger-get-background: #E9EFFF;
     --matomo-swagger-post-main: #35C4C4;
@@ -18,104 +18,115 @@
     padding-top: 10px;
 }
 
-.swaggerScope .swagger-ui input,
-.swaggerScope .swagger-ui select,
-.swaggerScope .swagger-ui textarea,
-.swaggerScope .swagger-ui button {
+.swaggerMount .swagger-ui input,
+.swaggerMount .swagger-ui select,
+.swaggerMount .swagger-ui textarea,
+.swaggerMount .swagger-ui button {
     box-shadow: none;
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
+    height: inherit;
     margin: 0;
     text-transform: none;
 }
 
-.swaggerScope .swagger-ui input,
-.swaggerScope .swagger-ui select,
-.swaggerScope .swagger-ui textarea {
+.swaggerMount .swagger-ui input,
+.swaggerMount .swagger-ui select,
+.swaggerMount .swagger-ui textarea {
     background-image: none;
 }
 
-.swaggerScope .swagger-ui .information-container,
-.swaggerScope .swagger-ui .scheme-container {
+.swaggerMount .swagger-ui select {
+    max-width: 340px;
+}
+
+
+
+.swaggerMount .swagger-ui .information-container,
+.swaggerMount .swagger-ui .scheme-container {
     display: none;
 }
 
-.swaggerScope .swagger-ui .opblock-description-wrapper,
-.swaggerScope .swagger-ui .opblock-description-wrapper p,
-.swaggerScope .swagger-ui .opblock-description-wrapper li,
-.swaggerScope .swagger-ui .opblock-external-docs-wrapper,
-.swaggerScope .swagger-ui .opblock-external-docs-wrapper p {
+.swaggerMount .swagger-ui .opblock-description-wrapper,
+.swaggerMount .swagger-ui .opblock-description-wrapper p,
+.swaggerMount .swagger-ui .opblock-description-wrapper li,
+.swaggerMount .swagger-ui .opblock-external-docs-wrapper,
+.swaggerMount .swagger-ui .opblock-external-docs-wrapper p {
     line-height: 1.6;
 }
 
-.swaggerScope .swagger-ui .opblock-tag > small,
-.swaggerScope .swagger-ui .opblock-tag > small p,
-.swaggerScope .swagger-ui .opblock-tag > small li,
-.swaggerScope .swagger-ui .opblock-tag .renderedMarkdown,
-.swaggerScope .swagger-ui .opblock-tag .renderedMarkdown p,
-.swaggerScope .swagger-ui .opblock-tag .renderedMarkdown li {
+.swaggerMount .swagger-ui .opblock-tag > small,
+.swaggerMount .swagger-ui .opblock-tag > small p,
+.swaggerMount .swagger-ui .opblock-tag > small li,
+.swaggerMount .swagger-ui .opblock-tag .renderedMarkdown,
+.swaggerMount .swagger-ui .opblock-tag .renderedMarkdown p,
+.swaggerMount .swagger-ui .opblock-tag .renderedMarkdown li {
     line-height: 1.6;
 }
 
-.swaggerScope .swagger-ui .opblock-description-wrapper code,
-.swaggerScope .swagger-ui .opblock-external-docs-wrapper code,
-.swaggerScope .swagger-ui .opblock-tag > small code,
-.swaggerScope .swagger-ui .opblock-tag .renderedMarkdown code,
-.swaggerScope .swagger-ui .markdown code,
-.swaggerScope .swagger-ui .renderedMarkdown code {
+.swaggerMount .swagger-ui .opblock-description-wrapper code,
+.swaggerMount .swagger-ui .opblock-external-docs-wrapper code,
+.swaggerMount .swagger-ui .opblock-tag > small code,
+.swaggerMount .swagger-ui .opblock-tag .renderedMarkdown code,
+.swaggerMount .swagger-ui .markdown code,
+.swaggerMount .swagger-ui .renderedMarkdown code {
     color: #A93552 !important;
     font-size: 11px;
     font-weight: 600;
     padding: 3px 5px;
 }
 
-.swaggerScope .swagger-ui .opblock.opblock-get {
+.swaggerMount .swagger-ui .opblock.opblock-get {
     background: var(--matomo-swagger-get-background);
     border-color: var(--matomo-swagger-get-main);
 }
 
-.swaggerScope .swagger-ui .opblock.opblock-get .opblock-summary,
-.swaggerScope .swagger-ui .opblock.opblock-get .opblock-section-header,
-.swaggerScope .swagger-ui .opblock.opblock-get .opblock-body > .opblock-description-wrapper,
-.swaggerScope .swagger-ui .opblock.opblock-get .opblock-body > .opblock-title_normal {
+.swaggerMount .swagger-ui .opblock.opblock-get .opblock-summary,
+.swaggerMount .swagger-ui .opblock.opblock-get .opblock-section-header,
+.swaggerMount .swagger-ui .opblock.opblock-get .opblock-body > .opblock-description-wrapper,
+.swaggerMount .swagger-ui .opblock.opblock-get .opblock-body > .opblock-title_normal {
     border-color: var(--matomo-swagger-get-main);
 }
 
-.swaggerScope .swagger-ui .opblock.opblock-get .opblock-section-header {
+.swaggerMount .swagger-ui .opblock.opblock-get .opblock-section-header {
     background: #F3F6FF;
 }
 
-.swaggerScope .swagger-ui .opblock.opblock-get .opblock-summary-method {
+.swaggerMount .swagger-ui .opblock.opblock-get .opblock-summary-method {
     background: var(--matomo-swagger-get-main);
 }
 
-.swaggerScope .swagger-ui .opblock.opblock-post {
+.swaggerMount .swagger-ui .opblock.opblock-post {
     background: var(--matomo-swagger-post-background);
     border-color: var(--matomo-swagger-post-main);
 }
 
-.swaggerScope .swagger-ui .opblock.opblock-post .opblock-summary,
-.swaggerScope .swagger-ui .opblock.opblock-post .opblock-section-header,
-.swaggerScope .swagger-ui .opblock.opblock-post .opblock-body > .opblock-description-wrapper,
-.swaggerScope .swagger-ui .opblock.opblock-post .opblock-body > .opblock-title_normal {
+.swaggerMount .swagger-ui .opblock.opblock-post .opblock-summary,
+.swaggerMount .swagger-ui .opblock.opblock-post .opblock-section-header,
+.swaggerMount .swagger-ui .opblock.opblock-post .opblock-body > .opblock-description-wrapper,
+.swaggerMount .swagger-ui .opblock.opblock-post .opblock-body > .opblock-title_normal {
     border-color: var(--matomo-swagger-post-main);
 }
 
-.swaggerScope .swagger-ui .opblock.opblock-post .opblock-section-header {
+.swaggerMount .swagger-ui .opblock.opblock-post .opblock-section-header {
     background: #F1FFFF;
 }
 
-.swaggerScope .swagger-ui .opblock.opblock-post .opblock-summary-method {
+.swaggerMount .swagger-ui .opblock.opblock-post .opblock-summary-method {
     background: var(--matomo-swagger-post-main);
 }
 
-.swaggerScope .swagger-ui .authorization__btn {
+.swaggerMount .swagger-ui .authorization__btn {
     display: none;
 }
 
-.swaggerScope .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard,
-.swaggerScope .swagger-ui .opblock .opblock-summary:hover .view-line-link.copy-to-clipboard {
+.swaggerMount .swagger-ui .try-out__btn {
+    display: none;
+}
+
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard,
+.swaggerMount .swagger-ui .opblock .opblock-summary:hover .view-line-link.copy-to-clipboard {
     align-items: center;
     border-radius: 3px;
     color: inherit;
@@ -126,19 +137,19 @@
     width: 24px;
 }
 
-.swaggerScope .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard:is(:hover, :focus) {
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard:is(:hover, :focus) {
     background: var(--matomo-swagger-get-main);
 }
 
-.swaggerScope .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard.matomo-copy-success {
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard.matomo-copy-success {
     color: #fff;
 }
 
-.swaggerScope .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard .matomo-copy-success-icon {
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard .matomo-copy-success-icon {
     animation: matomo-copy-success-icon-in 300ms ease;
 }
 
-.swaggerScope .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard.matomo-copy-reset > * {
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard.matomo-copy-reset > * {
     animation: matomo-copy-original-icon-in 300ms ease;
 }
 
@@ -166,51 +177,51 @@
     }
 }
 
-.swaggerScope .swagger-ui .opblock-tag > a.nostyle {
+.swaggerMount .swagger-ui .opblock-tag > a.nostyle {
     order: 1;
 }
 
-.swaggerScope .swagger-ui .opblock-tag > button.expand-operation {
+.swaggerMount .swagger-ui .opblock-tag > button.expand-operation {
     margin-left: auto;
     order: 2;
 }
 
-.swaggerScope .swagger-ui .opblock-tag > small {
+.swaggerMount .swagger-ui .opblock-tag > small {
     flex-basis: 100%;
     margin-top: 6px;
     order: 3;
 }
 
-.swaggerScope .swagger-ui .opblock-tag-section.matomo-flat-tag {
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag {
     margin-bottom: 16px;
 }
 
-.swaggerScope .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag {
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag {
     cursor: default;
     padding-right: 0;
 }
 
-.swaggerScope .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag:hover {
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag:hover {
     background: inherit;
 }
 
-.swaggerScope .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag > small {
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag > small {
     cursor: text;
 }
 
-.swaggerScope .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag a {
-    cursor: pointer;
-}
-
-.swaggerScope .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag .expand-operation {
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag a {
     display: none;
 }
 
-.swaggerScope .swagger-ui .parameters-col_description {
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag .expand-operation {
+    display: none;
+}
+
+.swaggerMount .swagger-ui .parameters-col_description {
     font-size: 14px;
 }
 
-.swaggerScope .swagger-ui .info .title small pre.version {
+.swaggerMount .swagger-ui .info .title small pre.version {
     background-color: transparent;
     border: 0;
     border-radius: 0;
@@ -222,3 +233,5 @@
     word-break: normal;
     word-wrap: normal;
 }
+
+
