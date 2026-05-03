@@ -22,6 +22,37 @@ class OpenApiDocs extends \Piwik\Plugin
 
     public function registerEvents()
     {
-        return [];
+        return [
+            'AssetManager.getStylesheetFiles' => 'getStylesheetFiles',
+            'AssetManager.getJavaScriptFiles' => 'getJsFiles',
+            'Translate.getClientSideTranslationKeys' => 'getClientSideTranslationKeys',
+        ];
+    }
+
+    public function getStylesheetFiles(&$stylesheets): void
+    {
+        $stylesheets[] = 'plugins/OpenApiDocs/public/swagger-ui/swagger-ui.css';
+        $stylesheets[] = 'plugins/OpenApiDocs/public/swagger-ui/swagger-ui-overrides.css';
+        $stylesheets[] = 'plugins/OpenApiDocs/vue/dist/OpenApiDocs.css';
+    }
+
+    public function getJsFiles(&$jsFiles): void
+    {
+        $jsFiles[] = 'plugins/OpenApiDocs/public/swagger-ui/swagger-ui-bundle.js';
+    }
+
+    public function getClientSideTranslationKeys(&$translationKeys): void
+    {
+        $translationKeys[] = 'OpenApiDocs_Swagger';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageDescription';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageLoading';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPagePluginEmpty';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPagePluginPlaceholder';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPagePlaceholder';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageRequestFailed';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageSpecLoadFailed';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageSearchNoResults';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageSearchPlaceholder';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageTitle';
     }
 }
