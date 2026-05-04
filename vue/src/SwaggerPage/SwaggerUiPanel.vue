@@ -7,17 +7,17 @@
 
 <template>
   <div
-    v-if="!isReady && !loadError"
+    v-if="isLoading && !spec && !displayError"
     class="swaggerLoader"
   >
     <ActivityIndicator :loading="true" />
   </div>
 
   <Alert
-    v-if="loadError"
+    v-if="displayError"
     severity="danger"
   >
-    {{ loadError }}
+    {{ displayError }}
   </Alert>
 
   <div
@@ -33,6 +33,10 @@ import { ActivityIndicator, Alert, translate } from 'CoreHome';
 const activeCopySuccessStateKey = '__matomoActiveCopySuccessState';
 const summaryPathClickHandlerAttachedKey = '__matomoSummaryPathClickHandlerAttached';
 
+interface OpenApiSpec {
+  [key: string]: unknown;
+}
+
 type SwaggerUiFactory = (config: {
   defaultModelsExpandDepth: number;
   deepLinking: boolean;
@@ -42,11 +46,8 @@ type SwaggerUiFactory = (config: {
   onComplete?: () => void;
   plugins?: Array<() => unknown>;
   presets?: unknown[];
-  requestInterceptor?: (
-    request: { loadSpec?: boolean; url: string },
-  ) => { loadSpec?: boolean; url: string };
+  spec?: OpenApiSpec;
   tagsSorter?: string;
-  url: string;
 }) => unknown;
 
 type SwaggerRootElement = HTMLElement & {
@@ -81,6 +82,18 @@ export default defineComponent({
       type: String as PropType<string>,
       required: true,
     },
+    spec: {
+      type: Object as PropType<OpenApiSpec | null>,
+      default: null,
+    },
+    isLoading: {
+      type: Boolean,
+      default: false,
+    },
+    specLoadError: {
+      type: String as PropType<string | null>,
+      default: null,
+    },
   },
   data(): SwaggerUiPanelState {
     return {
@@ -89,12 +102,27 @@ export default defineComponent({
     };
   },
   computed: {
+    displayError(): string | null {
+      return this.specLoadError || this.loadError;
+    },
     swaggerContainerId(): string {
       return `swagger-ui-${this.plugin}`;
     },
   },
   mounted() {
-    this.renderSwaggerUi();
+    if (this.spec) {
+      this.renderSwaggerUi();
+    }
+  },
+  watch: {
+    spec(spec: OpenApiSpec | null) {
+      if (spec) {
+        this.renderSwaggerUi();
+        return;
+      }
+
+      this.resetSwaggerUi();
+    },
   },
   beforeUnmount() {
     const container = document.getElementById(
@@ -108,16 +136,6 @@ export default defineComponent({
     this.clearCopySuccessState(container);
   },
   methods: {
-    getSwaggerSpecUrl() {
-      const params = new URLSearchParams({
-        module: 'API',
-        method: 'OpenApiDocs.getGeneratedOpenApiSpec',
-        plugin: this.plugin,
-        format: 'JSON',
-      });
-
-      return `index.php?${params.toString()}`;
-    },
     shortenSummaryPaths(swaggerRoot: ParentNode) {
       const summaryPrefix = '/index.php?module=API&method=';
       const summaryPaths = swaggerRoot.querySelectorAll('.opblock-summary-path');
@@ -280,6 +298,21 @@ export default defineComponent({
         }, 0);
       }, true);
     },
+    resetSwaggerUi() {
+      const container = document.getElementById(
+        this.swaggerContainerId,
+      ) as SwaggerRootElement | null;
+
+      this.isReady = false;
+      this.loadError = null;
+
+      if (!container) {
+        return;
+      }
+
+      this.clearCopySuccessState(container);
+      container.innerHTML = '';
+    },
     renderSwaggerUi() {
       const swaggerUiBundle = (window as SwaggerWindow).SwaggerUIBundle;
       const container = document.getElementById(
@@ -289,7 +322,11 @@ export default defineComponent({
       this.isReady = false;
       this.loadError = null;
 
-      if (!swaggerUiBundle || !container) {
+      if (!swaggerUiBundle || !container || !this.spec) {
+        if (!this.spec) {
+          return;
+        }
+
         this.isReady = true;
         this.loadError = translate('OpenApiDocs_SwaggerPageSpecLoadFailed');
         return;
@@ -299,7 +336,7 @@ export default defineComponent({
 
       swaggerUiBundle({
         dom_id: `#${this.swaggerContainerId}`,
-        url: this.getSwaggerSpecUrl(),
+        spec: this.spec,
         deepLinking: true,
         docExpansion: 'list',
         defaultModelsExpandDepth: -1,
@@ -307,16 +344,6 @@ export default defineComponent({
         tagsSorter: 'alpha',
         presets: swaggerUiBundle.presets?.apis ? [swaggerUiBundle.presets.apis] : [],
         plugins: [this.disableAuthorizePlugin],
-        requestInterceptor: (request) => {
-          if (request.loadSpec && request.url.includes('OpenApiDocs.getGeneratedOpenApiSpec')) {
-            return {
-              ...request,
-              url: this.getSwaggerSpecUrl(),
-            };
-          }
-
-          return request;
-        },
         onComplete: () => {
           window.setTimeout(() => {
             this.normalizeSwaggerUi(container);
@@ -333,7 +360,7 @@ export default defineComponent({
 
 <style scoped>
 .swaggerLoader {
-  min-height: 180px;
+  max-height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;

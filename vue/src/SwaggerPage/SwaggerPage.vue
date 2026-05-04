@@ -14,11 +14,6 @@
 
     <ContentBlock>
       <ActivityIndicator :loading="isLoading" />
-
-      <p v-if="isLoading" class="loadingText">
-        {{ translate('OpenApiDocs_SwaggerPageLoading') }}
-      </p>
-
       <Alert v-if="loadError" severity="danger">
         {{ loadError }}
       </Alert>
@@ -55,11 +50,13 @@
               'pluginCard',
               { 'pluginCard--expanded': expandedPluginName === plugin },
             ]"
+            @mouseenter="prefetchPluginSpec(plugin)"
           >
             <button
               type="button"
               class="pluginToggle"
               :aria-expanded="expandedPluginName === plugin ? 'true' : 'false'"
+              @focus="prefetchPluginSpec(plugin)"
               @click="togglePlugin(plugin)"
             >
               <span class="pluginHeader">
@@ -73,12 +70,27 @@
               </span>
             </button>
 
-            <div
-              v-if="expandedPluginName === plugin"
-              class="card-content pluginBody"
+            <transition
+              name="pluginBodyTransition"
+              @before-enter="onPluginBodyBeforeEnter"
+              @enter="onPluginBodyEnter"
+              @before-leave="onPluginBodyBeforeLeave"
+              @leave="onPluginBodyLeave"
+              @after-enter="resetPluginBodyTransitionStyles"
+              @after-leave="resetPluginBodyTransitionStyles"
             >
-              <SwaggerUiPanel :plugin="plugin" />
-            </div>
+              <div
+                v-show="expandedPluginName === plugin"
+                class="card-content pluginBody"
+              >
+                <SwaggerUiPanel
+                  :plugin="plugin"
+                  :spec="getPluginSpecState(plugin).spec"
+                  :is-loading="getPluginSpecState(plugin).status === 'loading'"
+                  :spec-load-error="getPluginSpecState(plugin).loadError"
+                />
+              </div>
+            </transition>
           </div>
         </div>
       </div>
@@ -98,11 +110,25 @@ import {
 } from 'CoreHome';
 import SwaggerUiPanel from './SwaggerUiPanel.vue';
 
+type PluginSpecStatus = 'idle' | 'loading' | 'loaded' | 'error';
+
+interface OpenApiSpec {
+  [key: string]: unknown;
+}
+
+interface PluginSpecState {
+  loadError: string | null;
+  request: Promise<OpenApiSpec | null> | null;
+  spec: OpenApiSpec | null;
+  status: PluginSpecStatus;
+}
+
 interface SwaggerPageState {
   expandedPluginName: string | null;
   isLoading: boolean;
   loadError: string | null;
   plugins: string[];
+  pluginSpecs: Record<string, PluginSpecState>;
   searchTerm: string;
 }
 
@@ -133,6 +159,7 @@ export default defineComponent({
       isLoading: false,
       loadError: null,
       plugins: [],
+      pluginSpecs: {},
       searchTerm: '',
     };
   },
@@ -140,11 +167,47 @@ export default defineComponent({
     this.fetchPlugins();
   },
   methods: {
+    forceReflow(element: HTMLElement) {
+      void element.offsetHeight;
+    },
+    getPluginBodyTransitionDuration(height: number) {
+      return Math.min(400, Math.max(180, Math.round(height / 4)));
+    },
+    resetPluginBodyTransitionStyles(element: Element) {
+      const htmlElement = element as HTMLElement;
+      htmlElement.style.height = '';
+      htmlElement.style.transitionDuration = '';
+      htmlElement.style.overflow = '';
+    },
+    setPluginBodyTransitionState(element: HTMLElement, height: string) {
+      element.style.height = height;
+      element.style.overflow = 'hidden';
+    },
+    onPluginBodyBeforeEnter(element: Element) {
+      this.setPluginBodyTransitionState(element as HTMLElement, '0');
+    },
+    onPluginBodyEnter(element: Element) {
+      const htmlElement = element as HTMLElement;
+      htmlElement.style.transitionDuration = `${this.getPluginBodyTransitionDuration(htmlElement.scrollHeight)}ms`;
+      this.forceReflow(htmlElement);
+      htmlElement.style.height = `${htmlElement.scrollHeight}px`;
+    },
+    onPluginBodyBeforeLeave(element: Element) {
+      const htmlElement = element as HTMLElement;
+      this.setPluginBodyTransitionState(htmlElement, `${htmlElement.scrollHeight}px`);
+    },
+    onPluginBodyLeave(element: Element) {
+      const htmlElement = element as HTMLElement;
+      htmlElement.style.transitionDuration = `${this.getPluginBodyTransitionDuration(htmlElement.scrollHeight)}ms`;
+      this.forceReflow(htmlElement);
+      htmlElement.style.height = '0';
+    },
     fetchPlugins() {
       this.expandedPluginName = null;
       this.isLoading = true;
       this.loadError = null;
       this.plugins = [];
+      this.pluginSpecs = {};
       this.searchTerm = '';
 
       AjaxHelper.fetch<string[]>(
@@ -173,6 +236,62 @@ export default defineComponent({
         this.expandedPluginName = null;
       }
     },
+    createPluginSpecState(): PluginSpecState {
+      return {
+        loadError: null,
+        request: null,
+        spec: null,
+        status: 'idle',
+      };
+    },
+    getPluginSpecState(plugin: string): PluginSpecState {
+      if (!this.pluginSpecs[plugin]) {
+        this.pluginSpecs[plugin] = this.createPluginSpecState();
+      }
+
+      return this.pluginSpecs[plugin];
+    },
+    prefetchPluginSpec(plugin: string, forceReload = false): Promise<OpenApiSpec | null> {
+      const state = this.getPluginSpecState(plugin);
+
+      if (!forceReload) {
+        if (state.status === 'loaded') {
+          return Promise.resolve(state.spec);
+        }
+
+        if (state.request) {
+          return state.request;
+        }
+      }
+
+      state.status = 'loading';
+      state.loadError = null;
+
+      state.request = AjaxHelper.fetch<OpenApiSpec>(
+        {
+          method: 'OpenApiDocs.getOpenApiSpec',
+          pluginName: plugin,
+          format: 'json',
+        },
+        {
+          createErrorNotification: false,
+        },
+      ).then((spec) => {
+        state.spec = spec;
+        state.status = 'loaded';
+
+        return spec;
+      }).catch(() => {
+        state.spec = null;
+        state.status = 'error';
+        state.loadError = translate('OpenApiDocs_SwaggerPageSpecLoadFailed');
+
+        return null;
+      }).finally(() => {
+        state.request = null;
+      });
+      return state.request;
+    },
     togglePlugin(plugin: string) {
       if (this.expandedPluginName === plugin) {
         this.expandedPluginName = null;
@@ -180,6 +299,11 @@ export default defineComponent({
       }
 
       this.expandedPluginName = plugin;
+
+      const state = this.getPluginSpecState(plugin);
+      if (state.status !== 'loaded') {
+        this.prefetchPluginSpec(plugin, state.status === 'error');
+      }
     },
   },
 });
@@ -239,12 +363,7 @@ export default defineComponent({
   border-radius: 4px;
   box-shadow: none;
   overflow: hidden;
-}
-
-.pluginCard--expanded {
-  border-color: #cfd8e3;
-  animation: pluginCardOpen 180ms ease;
-  transform-origin: top center;
+  transition: border-color 180ms ease;
 }
 
 .pluginToggle {
@@ -305,15 +424,20 @@ export default defineComponent({
   border-top: 1px solid #e6edf5;
 }
 
-@keyframes pluginCardOpen {
-  from {
-    opacity: 0.72;
-    transform: translateY(-4px);
-  }
+.pluginBodyTransition-enter-active,
+.pluginBodyTransition-leave-active {
+  overflow: hidden;
+  transition: height 200ms ease, opacity 180ms ease;
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.pluginBodyTransition-enter-from,
+.pluginBodyTransition-leave-to {
+  height: 0;
+  opacity: 0.72;
+}
+
+.pluginBodyTransition-enter-to,
+.pluginBodyTransition-leave-from {
+  opacity: 1;
 }
 </style>
