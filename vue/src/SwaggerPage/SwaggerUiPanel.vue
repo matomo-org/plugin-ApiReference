@@ -309,7 +309,7 @@ export default defineComponent({
       swaggerUiBundle({
         dom_id: `#${this.swaggerContainerId}`,
         spec: this.spec,
-        deepLinking: true,
+        deepLinking: false,
         docExpansion: 'list',
         defaultModelsExpandDepth: -1,
         layout: 'BaseLayout',
