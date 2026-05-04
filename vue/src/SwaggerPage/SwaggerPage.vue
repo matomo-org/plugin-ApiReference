@@ -168,7 +168,7 @@ export default defineComponent({
   },
   methods: {
     forceReflow(element: HTMLElement) {
-      void element.offsetHeight;
+      element.getBoundingClientRect();
     },
     getPluginBodyTransitionDuration(height: number) {
       return Math.min(400, Math.max(180, Math.round(height / 4)));
@@ -366,6 +366,12 @@ export default defineComponent({
   transition: border-color 180ms ease;
 }
 
+.pluginCard--expanded {
+  border-color: #cfd8e3;
+  animation: pluginCardOpen 180ms ease;
+  transform-origin: top center;
+}
+
 .pluginToggle {
   width: 100%;
   padding: 16px 20px;
@@ -424,20 +430,4 @@ export default defineComponent({
   border-top: 1px solid #e6edf5;
 }
 
-.pluginBodyTransition-enter-active,
-.pluginBodyTransition-leave-active {
-  overflow: hidden;
-  transition: height 200ms ease, opacity 180ms ease;
-}
-
-.pluginBodyTransition-enter-from,
-.pluginBodyTransition-leave-to {
-  height: 0;
-  opacity: 0.72;
-}
-
-.pluginBodyTransition-enter-to,
-.pluginBodyTransition-leave-from {
-  opacity: 1;
-}
 </style>
