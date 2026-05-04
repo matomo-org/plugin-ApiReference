@@ -314,6 +314,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.page {
+  color: var(--theme-color-text, #3b4151);
+}
+
 .searchBar {
   position: relative;
   margin-bottom: 1.5rem;
@@ -324,7 +328,7 @@ export default defineComponent({
   position: absolute;
   top: 13px;
   left: 12px;
-  color: #d0d5dd;
+  color: var(--theme-color-text-lighter, #98a2b3);
   font-size: 14px;
   pointer-events: none;
 }
@@ -333,27 +337,31 @@ export default defineComponent({
   width: 100%;
   height: 38px;
   padding: 10px 12px 10px 38px;
-  border: 1px solid #d0d5dd;
+  background: var(--theme-color-background-contrast, #fff);
+  border: 1px solid var(--theme-color-border, #d0d5dd);
   border-radius: 8px;
+  color: var(--theme-color-text, #3b4151);
   font-size: 14px;
   box-shadow: none;
 }
 
 .searchInput:focus-visible {
-  border: 1px solid #5b8def;
-  outline: 1px solid #5b8def;
+  border: 1px solid var(--theme-color-focus-ring, #5b8def);
+  outline: 1px solid var(--theme-color-focus-ring, #5b8def);
 }
 
 .searchInput::placeholder {
-  color: #98a2b3;
+  color: var(--theme-color-text-lighter, #98a2b3);
 }
 
 .emptyText {
   margin-bottom: 0;
+  color: var(--theme-color-text-light, #646464);
 }
 
 .pluginCard {
-  border: 1px solid #d9e2ec;
+  background: var(--theme-color-background-contrast, #fff);
+  border: 1px solid var(--theme-color-border, #d9e2ec);
   border-radius: 4px;
   box-shadow: none;
   overflow: hidden;
@@ -361,7 +369,7 @@ export default defineComponent({
 }
 
 .pluginCard--expanded {
-  border-color: #cfd8e3;
+  border-color: var(--theme-color-border, #cfd8e3);
   transform-origin: top center;
 }
 
@@ -370,7 +378,7 @@ export default defineComponent({
   padding: 16px 20px;
   border: 0;
   outline: none;
-  background: #fff;
+  background: var(--theme-color-background-contrast, #fff);
   display: flex;
   align-items: center;
   color: inherit;
@@ -380,7 +388,7 @@ export default defineComponent({
 }
 
 .pluginToggle:focus-visible {
-  box-shadow: inset 0 0 0 2px #cfd8e3;
+  box-shadow: inset 0 0 0 2px var(--theme-color-focus-ring, #cfd8e3);
 }
 
 .pluginHeader {
@@ -391,7 +399,7 @@ export default defineComponent({
 
 .pluginChevron {
   flex: 0 0 12px;
-  color: #5b6b7c;
+  color: var(--theme-color-text-light, #5b6b7c);
   font-size: 12px;
   display: inline-flex;
   align-items: center;
@@ -414,7 +422,7 @@ export default defineComponent({
   top: 0;
   left: 20px;
   right: 20px;
-  border-top: 1px solid #e6edf5;
+  border-top: 1px solid var(--theme-color-border, #e6edf5);
 }
 
 </style>

@@ -350,7 +350,7 @@ export default defineComponent({
 .swaggerMount :deep(.swagger-ui) {
   border: 0;
   border-radius: 0;
-  color: #3c4858;
+  color: var(--theme-color-text, #3b4151);
   font-size: 14px;
   line-height: 1.5;
   padding-top: 0;
