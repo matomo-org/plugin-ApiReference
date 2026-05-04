@@ -15,7 +15,6 @@
     --matomo-swagger-link: var(--theme-color-link, #3152A0);
     --matomo-swagger-code: var(--theme-color-code, #A93552);
     --matomo-swagger-code-background: var(--theme-color-code-background, rgba(0, 0, 0, 0.05));
-    border: 1px solid var(--matomo-swagger-border);
     border-radius: 5px;
     color: var(--matomo-swagger-text);
     font-family: var(--theme-fontFamily-base, sans-serif);
@@ -300,7 +299,7 @@
 }
 
 .swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard.matomo-copy-success {
-    color: var(--theme-color-brand, #43a047);
+    color: var(--matomo-swagger-opblock-main);
 }
 
 .swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard .matomo-copy-success-icon {
