@@ -243,6 +243,8 @@ export default defineComponent({
 
 .pluginCard--expanded {
   border-color: #cfd8e3;
+  animation: pluginCardOpen 180ms ease;
+  transform-origin: top center;
 }
 
 .pluginToggle {
@@ -301,5 +303,17 @@ export default defineComponent({
   left: 20px;
   right: 20px;
   border-top: 1px solid #e6edf5;
+}
+
+@keyframes pluginCardOpen {
+  from {
+    opacity: 0.72;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

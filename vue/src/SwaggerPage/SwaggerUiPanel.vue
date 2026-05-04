@@ -149,6 +149,17 @@ export default defineComponent({
         tagSection.classList.add('matomo-flat-tag');
       }
     },
+    applyMatomoCopyIcons(swaggerRoot: ParentNode) {
+      const copyControls = swaggerRoot.querySelectorAll('.opblock-summary .view-line-link.copy-to-clipboard');
+
+      Array.prototype.forEach.call(copyControls, (element: HTMLElement) => {
+        if (element.classList.contains('matomo-copy-success')) {
+          return;
+        }
+
+        element.innerHTML = '<span class="icon-content-copy" aria-hidden="true"></span>';
+      });
+    },
     normalizeSwaggerUi(swaggerRoot: ParentNode | null) {
       if (!swaggerRoot) {
         return;
@@ -156,6 +167,7 @@ export default defineComponent({
 
       this.shortenSummaryPaths(swaggerRoot);
       this.updateFlatSingleTag(swaggerRoot);
+      this.applyMatomoCopyIcons(swaggerRoot);
     },
     getSummaryPathCopyControl(target: Element | null) {
       return target?.closest('.opblock-summary .view-line-link.copy-to-clipboard') as HTMLElement | null;
@@ -179,12 +191,17 @@ export default defineComponent({
         return;
       }
 
+      const { element } = state;
+
       window.clearTimeout(state.resetTimeoutId);
-      state.element.innerHTML = state.originalInnerHTML;
-      state.element.classList.remove('matomo-copy-success');
-      state.element.classList.remove('matomo-copy-reset');
+      element.innerHTML = state.originalInnerHTML;
+      element.classList.remove('matomo-copy-success');
+      element.classList.remove('matomo-copy-reset');
       window.requestAnimationFrame(() => {
-        state.element.classList.add('matomo-copy-reset');
+        element.classList.add('matomo-copy-reset');
+        window.setTimeout(() => {
+          element.classList.remove('matomo-copy-reset');
+        }, 300);
       });
       swaggerRoot[activeCopySuccessStateKey] = null;
     },

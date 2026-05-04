@@ -5,17 +5,40 @@
 }
 
 .swaggerMount .swagger-ui {
-    --matomo-swagger-get-main: #3152A0;
-    --matomo-swagger-get-background: #E9EFFF;
-    --matomo-swagger-post-main: #35C4C4;
-    --matomo-swagger-post-background: #E8FFFF;
-    border: 1px solid #ecf0f2;
+    --matomo-swagger-get-main: var(--theme-color-link, #3152A0);
+    --matomo-swagger-get-background: color-mix(in srgb, var(--matomo-swagger-get-main) 9%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-get-header-background: color-mix(in srgb, var(--matomo-swagger-get-background) 76%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-post-main: var(--theme-color-brand, #35C4C4);
+    --matomo-swagger-post-background: color-mix(in srgb, var(--matomo-swagger-post-main) 9%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-post-header-background: color-mix(in srgb, var(--matomo-swagger-post-background) 76%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-panel-background: var(--theme-color-background-contrast, #fff);
+    --matomo-swagger-panel-background-muted: var(--theme-color-background-tinyContrast, #f2f2f2);
+    --matomo-swagger-border: var(--theme-color-border, #ecf0f2);
+    --matomo-swagger-text: var(--theme-color-text, #3b4151);
+    --matomo-swagger-text-contrast: var(--theme-color-text-contrast, #3b4151);
+    --matomo-swagger-link: var(--theme-color-link, #3152A0);
+    --matomo-swagger-code: var(--theme-color-code, #A93552);
+    --matomo-swagger-code-background: var(--theme-color-code-background, rgba(0, 0, 0, 0.05));
+    border: 1px solid var(--matomo-swagger-border);
     border-radius: 5px;
-    color: #3b4151;
-    font-family: sans-serif;
+    color: var(--matomo-swagger-text);
+    font-family: var(--theme-fontFamily-base, sans-serif);
     font-size: 14px;
     line-height: 1.4;
     padding-top: 10px;
+}
+
+.swaggerMount .swagger-ui *:not([class^="icon-"]):not([class*=" icon-"]) {
+    font-family: inherit;
+}
+
+.swaggerMount .swagger-ui :is(code, kbd, pre, samp), .swagger-ui .opblock-summary-path   {
+    font-family: monospace, monospace !important;
+}
+
+.swagger-ui .opblock-summary-path {
+    font-weight: 500 !important;
+    font-size: 15px !important;
 }
 
 .swaggerMount .swagger-ui input,
@@ -71,15 +94,25 @@
 .swaggerMount .swagger-ui .opblock-tag .renderedMarkdown code,
 .swaggerMount .swagger-ui .markdown code,
 .swaggerMount .swagger-ui .renderedMarkdown code {
-    color: #A93552 !important;
+    background-color: var(--matomo-swagger-code-background);
+    color: var(--matomo-swagger-code) !important;
     font-size: 11px;
     font-weight: 600;
     padding: 3px 5px;
 }
 
+.swaggerMount .swagger-ui a {
+    color: var(--matomo-swagger-link);
+}
+
 .swaggerMount .swagger-ui .opblock.opblock-get {
     background: var(--matomo-swagger-get-background);
     border-color: var(--matomo-swagger-get-main);
+}
+
+.swaggerMount .swagger-ui .opblock.is-open {
+    animation: matomo-swagger-opblock-open 500ms ease;
+    transform-origin: top center;
 }
 
 .swaggerMount .swagger-ui .opblock.opblock-get .opblock-summary,
@@ -90,11 +123,12 @@
 }
 
 .swaggerMount .swagger-ui .opblock.opblock-get .opblock-section-header {
-    background: #F3F6FF;
+    background: var(--matomo-swagger-get-header-background);
 }
 
 .swaggerMount .swagger-ui .opblock.opblock-get .opblock-summary-method {
     background: var(--matomo-swagger-get-main);
+    font-weight: 500 !important;
 }
 
 .swaggerMount .swagger-ui .opblock.opblock-post {
@@ -110,7 +144,7 @@
 }
 
 .swaggerMount .swagger-ui .opblock.opblock-post .opblock-section-header {
-    background: #F1FFFF;
+    background: var(--matomo-swagger-post-header-background);
 }
 
 .swaggerMount .swagger-ui .opblock.opblock-post .opblock-summary-method {
@@ -122,15 +156,22 @@
 }
 
 .swaggerMount .swagger-ui .try-out__btn {
-    display: none;
+    background: transparent;
+    color: var(--theme-color-text) !important;
+}
+
+.swaggerMount .swagger-ui .copy-to-clipboard {
+    background: transparent;
+    border: 0;
 }
 
 .swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard,
 .swaggerMount .swagger-ui .opblock .opblock-summary:hover .view-line-link.copy-to-clipboard {
     align-items: center;
     border-radius: 3px;
-    color: inherit;
+    color: var(--theme-color-text-light, #646464);
     display: inline-flex;
+    height: 24px;
     justify-content: center;
     margin: 0;
     transition: background-color 300ms ease, color 300ms ease, opacity 300ms ease;
@@ -138,15 +179,21 @@
 }
 
 .swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard:is(:hover, :focus) {
-    background: var(--matomo-swagger-get-main);
+    color: var(--theme-color-text-contrast, #37474f);
 }
 
 .swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard.matomo-copy-success {
-    color: #fff;
+    color: var(--theme-color-brand, #43a047);
 }
 
 .swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard .matomo-copy-success-icon {
     animation: matomo-copy-success-icon-in 300ms ease;
+}
+
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard .icon-content-copy,
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard .matomo-copy-success-icon {
+    font-size: 16px;
+    line-height: 1;
 }
 
 .swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard.matomo-copy-reset > * {
@@ -162,6 +209,18 @@
     to {
         opacity: 1;
         transform: scale(1);
+    }
+}
+
+@keyframes matomo-swagger-opblock-open {
+    from {
+        opacity: 0.72;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -233,5 +292,3 @@
     word-break: normal;
     word-wrap: normal;
 }
-
-
