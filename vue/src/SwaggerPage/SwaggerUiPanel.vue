@@ -32,6 +32,15 @@ import { ActivityIndicator, Alert, translate } from 'CoreHome';
 
 const activeCopySuccessStateKey = '__matomoActiveCopySuccessState';
 const summaryPathClickHandlerAttachedKey = '__matomoSummaryPathClickHandlerAttached';
+const summaryPrefix = '/index.php?module=API&method=';
+const interactiveSwaggerSelector = '.opblock-tag, .opblock-summary, .expand-operation, .opblock-summary-control';
+const copyIconMarkup = '<span class="icon-content-copy" aria-hidden="true"></span>';
+const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-hidden="true"></i>';
+const disableAuthorizePlugin = () => ({
+  wrapComponents: {
+    authorizeBtn: () => () => null,
+  },
+});
 
 interface OpenApiSpec {
   [key: string]: unknown;
@@ -53,7 +62,6 @@ type SwaggerUiFactory = (config: {
 type SwaggerRootElement = HTMLElement & {
   [activeCopySuccessStateKey]?: {
     element: HTMLElement;
-    originalInnerHTML: string;
     resetTimeoutId: number;
   } | null;
   [summaryPathClickHandlerAttachedKey]?: boolean;
@@ -109,25 +117,21 @@ export default defineComponent({
       return `swagger-ui-${this.plugin}`;
     },
   },
-  mounted() {
-    if (this.spec) {
-      this.renderSwaggerUi();
-    }
-  },
   watch: {
-    spec(spec: OpenApiSpec | null) {
-      if (spec) {
-        this.renderSwaggerUi();
-        return;
-      }
+    spec: {
+      immediate: true,
+      handler(spec: OpenApiSpec | null) {
+        if (spec) {
+          this.renderSwaggerUi();
+          return;
+        }
 
-      this.resetSwaggerUi();
+        this.resetSwaggerUi();
+      },
     },
   },
   beforeUnmount() {
-    const container = document.getElementById(
-      this.swaggerContainerId,
-    ) as SwaggerRootElement | null;
+    const container = this.getSwaggerRoot();
 
     if (!container) {
       return;
@@ -136,11 +140,13 @@ export default defineComponent({
     this.clearCopySuccessState(container);
   },
   methods: {
+    getSwaggerRoot(): SwaggerRootElement | null {
+      return document.getElementById(this.swaggerContainerId) as SwaggerRootElement | null;
+    },
     shortenSummaryPaths(swaggerRoot: ParentNode) {
-      const summaryPrefix = '/index.php?module=API&method=';
-      const summaryPaths = swaggerRoot.querySelectorAll('.opblock-summary-path');
+      const summaryPaths = swaggerRoot.querySelectorAll<HTMLElement>('.opblock-summary-path');
 
-      Array.prototype.forEach.call(summaryPaths, (element: Element) => {
+      summaryPaths.forEach((element) => {
         const fullPath = element.getAttribute('data-path');
 
         if (!fullPath || !fullPath.startsWith(summaryPrefix)) {
@@ -152,9 +158,9 @@ export default defineComponent({
       });
     },
     updateFlatSingleTag(swaggerRoot: ParentNode) {
-      const tagSections = swaggerRoot.querySelectorAll('.opblock-tag-section');
+      const tagSections = swaggerRoot.querySelectorAll<HTMLElement>('.opblock-tag-section');
 
-      Array.prototype.forEach.call(tagSections, (tagSection: Element) => {
+      tagSections.forEach((tagSection) => {
         tagSection.classList.remove('matomo-flat-tag');
       });
 
@@ -168,21 +174,17 @@ export default defineComponent({
       }
     },
     applyMatomoCopyIcons(swaggerRoot: ParentNode) {
-      const copyControls = swaggerRoot.querySelectorAll('.opblock-summary .view-line-link.copy-to-clipboard');
+      const copyControls = swaggerRoot.querySelectorAll<HTMLElement>('.opblock-summary .view-line-link.copy-to-clipboard');
 
-      Array.prototype.forEach.call(copyControls, (element: HTMLElement) => {
+      copyControls.forEach((element) => {
         if (element.classList.contains('matomo-copy-success')) {
           return;
         }
 
-        element.innerHTML = '<span class="icon-content-copy" aria-hidden="true"></span>';
+        element.innerHTML = copyIconMarkup;
       });
     },
-    normalizeSwaggerUi(swaggerRoot: ParentNode | null) {
-      if (!swaggerRoot) {
-        return;
-      }
-
+    normalizeSwaggerUi(swaggerRoot: ParentNode) {
       this.shortenSummaryPaths(swaggerRoot);
       this.updateFlatSingleTag(swaggerRoot);
       this.applyMatomoCopyIcons(swaggerRoot);
@@ -192,15 +194,6 @@ export default defineComponent({
     },
     getFlatTagHeader(target: Element | null) {
       return target?.closest('.opblock-tag-section.matomo-flat-tag > .opblock-tag') as HTMLElement | null;
-    },
-    getOriginalCopyControlMarkup(swaggerRoot: SwaggerRootElement, control: HTMLElement) {
-      const state = swaggerRoot[activeCopySuccessStateKey];
-
-      if (state && state.element === control) {
-        return state.originalInnerHTML;
-      }
-
-      return control.innerHTML;
     },
     clearCopySuccessState(swaggerRoot: SwaggerRootElement) {
       const state = swaggerRoot[activeCopySuccessStateKey];
@@ -212,7 +205,7 @@ export default defineComponent({
       const { element } = state;
 
       window.clearTimeout(state.resetTimeoutId);
-      element.innerHTML = state.originalInnerHTML;
+      element.innerHTML = copyIconMarkup;
       element.classList.remove('matomo-copy-success');
       element.classList.remove('matomo-copy-reset');
       window.requestAnimationFrame(() => {
@@ -226,17 +219,15 @@ export default defineComponent({
     showCopySuccessState(
       swaggerRoot: SwaggerRootElement,
       control: HTMLElement,
-      originalInnerHTML: string,
     ) {
       this.clearCopySuccessState(swaggerRoot);
 
-      control.innerHTML = '<i class="icon-ok matomo-copy-success-icon" aria-hidden="true"></i>';
+      control.innerHTML = copySuccessIconMarkup;
       control.classList.remove('matomo-copy-reset');
       control.classList.add('matomo-copy-success');
 
       swaggerRoot[activeCopySuccessStateKey] = {
         element: control,
-        originalInnerHTML,
         resetTimeoutId: window.setTimeout(() => {
           if (swaggerRoot[activeCopySuccessStateKey]?.element === control) {
             this.clearCopySuccessState(swaggerRoot);
@@ -244,16 +235,7 @@ export default defineComponent({
         }, 3000),
       };
     },
-    disableAuthorizePlugin() {
-      return {
-        wrapComponents: {
-          authorizeBtn: () => () => null,
-        },
-      };
-    },
     attachSwaggerInteractionHandlers(swaggerRoot: SwaggerRootElement | null) {
-      const interactiveSwaggerSelector = '.opblock-tag, .opblock-summary, .expand-operation, .opblock-summary-control';
-
       if (!swaggerRoot || swaggerRoot[summaryPathClickHandlerAttachedKey]) {
         return;
       }
@@ -264,12 +246,11 @@ export default defineComponent({
         const flatTagHeader = this.getFlatTagHeader(target);
 
         if (flatTagHeader) {
-          if (target?.closest('a')) {
-            event.stopPropagation();
-          } else {
+          if (!target?.closest('a')) {
             event.preventDefault();
-            event.stopPropagation();
           }
+
+          event.stopPropagation();
 
           return;
         }
@@ -277,14 +258,9 @@ export default defineComponent({
         const summaryPathCopyControl = this.getSummaryPathCopyControl(target);
 
         if (summaryPathCopyControl) {
-          const originalInnerHTML = this.getOriginalCopyControlMarkup(
-            swaggerRoot,
-            summaryPathCopyControl,
-          );
-
           window.setTimeout(() => {
             if (summaryPathCopyControl.isConnected) {
-              this.showCopySuccessState(swaggerRoot, summaryPathCopyControl, originalInnerHTML);
+              this.showCopySuccessState(swaggerRoot, summaryPathCopyControl);
             }
           }, 0);
         }
@@ -299,9 +275,7 @@ export default defineComponent({
       }, true);
     },
     resetSwaggerUi() {
-      const container = document.getElementById(
-        this.swaggerContainerId,
-      ) as SwaggerRootElement | null;
+      const container = this.getSwaggerRoot();
 
       this.isReady = false;
       this.loadError = null;
@@ -315,9 +289,7 @@ export default defineComponent({
     },
     renderSwaggerUi() {
       const swaggerUiBundle = (window as SwaggerWindow).SwaggerUIBundle;
-      const container = document.getElementById(
-        this.swaggerContainerId,
-      ) as SwaggerRootElement | null;
+      const container = this.getSwaggerRoot();
 
       this.isReady = false;
       this.loadError = null;
@@ -343,7 +315,7 @@ export default defineComponent({
         layout: 'BaseLayout',
         tagsSorter: 'alpha',
         presets: swaggerUiBundle.presets?.apis ? [swaggerUiBundle.presets.apis] : [],
-        plugins: [this.disableAuthorizePlugin],
+        plugins: [disableAuthorizePlugin],
         onComplete: () => {
           window.setTimeout(() => {
             this.normalizeSwaggerUi(container);

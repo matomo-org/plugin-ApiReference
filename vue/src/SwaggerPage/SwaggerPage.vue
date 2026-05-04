@@ -26,11 +26,10 @@
         <div class="searchBar">
           <span class="searchIcon icon-search" />
           <input
-            :value="searchTerm"
+            v-model="searchTerm"
             type="text"
             class="searchInput browser-default"
             :placeholder="translate('OpenApiDocs_SwaggerPageSearchPlaceholder')"
-            @input="onSearchInput"
           >
         </div>
 
@@ -166,7 +165,18 @@ export default defineComponent({
   created() {
     this.fetchPlugins();
   },
+  watch: {
+    searchTerm(value: string) {
+      if (this.expandedPluginName && !this.matchesSearch(this.expandedPluginName, value)) {
+        this.expandedPluginName = null;
+      }
+    },
+  },
   methods: {
+    matchesSearch(plugin: string, searchTerm?: string) {
+      const normalizedSearchTerm = (searchTerm ?? this.searchTerm).trim().toLowerCase();
+      return plugin.toLowerCase().includes(normalizedSearchTerm);
+    },
     forceReflow(element: HTMLElement) {
       element.getBoundingClientRect();
     },
@@ -183,14 +193,18 @@ export default defineComponent({
       element.style.height = height;
       element.style.overflow = 'hidden';
     },
+    transitionPluginBody(element: HTMLElement, startHeight: string, endHeight: string) {
+      this.setPluginBodyTransitionState(element, startHeight);
+      element.style.transitionDuration = `${this.getPluginBodyTransitionDuration(element.scrollHeight)}ms`;
+      this.forceReflow(element);
+      element.style.height = endHeight;
+    },
     onPluginBodyBeforeEnter(element: Element) {
       this.setPluginBodyTransitionState(element as HTMLElement, '0');
     },
     onPluginBodyEnter(element: Element) {
       const htmlElement = element as HTMLElement;
-      htmlElement.style.transitionDuration = `${this.getPluginBodyTransitionDuration(htmlElement.scrollHeight)}ms`;
-      this.forceReflow(htmlElement);
-      htmlElement.style.height = `${htmlElement.scrollHeight}px`;
+      this.transitionPluginBody(htmlElement, '0', `${htmlElement.scrollHeight}px`);
     },
     onPluginBodyBeforeLeave(element: Element) {
       const htmlElement = element as HTMLElement;
@@ -198,11 +212,9 @@ export default defineComponent({
     },
     onPluginBodyLeave(element: Element) {
       const htmlElement = element as HTMLElement;
-      htmlElement.style.transitionDuration = `${this.getPluginBodyTransitionDuration(htmlElement.scrollHeight)}ms`;
-      this.forceReflow(htmlElement);
-      htmlElement.style.height = '0';
+      this.transitionPluginBody(htmlElement, `${htmlElement.scrollHeight}px`, '0');
     },
-    fetchPlugins() {
+    async fetchPlugins() {
       this.expandedPluginName = null;
       this.isLoading = true;
       this.loadError = null;
@@ -210,30 +222,20 @@ export default defineComponent({
       this.pluginSpecs = {};
       this.searchTerm = '';
 
-      AjaxHelper.fetch<string[]>(
-        {
-          method: 'OpenApiDocs.getPluginWhitelist',
-        },
-        {
-          createErrorNotification: false,
-        },
-      ).then((plugins) => {
+      try {
+        const plugins = await AjaxHelper.fetch<string[]>(
+          {
+            method: 'OpenApiDocs.getPluginWhitelist',
+          },
+          {
+            createErrorNotification: false,
+          },
+        );
         this.plugins = [...plugins].sort((left, right) => left.localeCompare(right));
-      }).catch(() => {
+      } catch {
         this.loadError = translate('OpenApiDocs_SwaggerPageRequestFailed');
-      }).finally(() => {
+      } finally {
         this.isLoading = false;
-      });
-    },
-    onSearchInput(event: Event) {
-      const target = event.target as HTMLInputElement | null;
-      this.onSearchTermChange(target?.value || '');
-    },
-    onSearchTermChange(value: string) {
-      this.searchTerm = value;
-
-      if (this.expandedPluginName && !this.filteredPlugins.includes(this.expandedPluginName)) {
-        this.expandedPluginName = null;
       }
     },
     createPluginSpecState(): PluginSpecState {
@@ -251,12 +253,12 @@ export default defineComponent({
 
       return this.pluginSpecs[plugin];
     },
-    prefetchPluginSpec(plugin: string, forceReload = false): Promise<OpenApiSpec | null> {
+    async prefetchPluginSpec(plugin: string, forceReload = false): Promise<OpenApiSpec | null> {
       const state = this.getPluginSpecState(plugin);
 
       if (!forceReload) {
         if (state.status === 'loaded') {
-          return Promise.resolve(state.spec);
+          return state.spec;
         }
 
         if (state.request) {
@@ -267,29 +269,31 @@ export default defineComponent({
       state.status = 'loading';
       state.loadError = null;
 
-      state.request = AjaxHelper.fetch<OpenApiSpec>(
-        {
-          method: 'OpenApiDocs.getOpenApiSpec',
-          pluginName: plugin,
-          format: 'json',
-        },
-        {
-          createErrorNotification: false,
-        },
-      ).then((spec) => {
-        state.spec = spec;
-        state.status = 'loaded';
+      state.request = (async () => {
+        try {
+          const spec = await AjaxHelper.fetch<OpenApiSpec>(
+            {
+              method: 'OpenApiDocs.getOpenApiSpec',
+              pluginName: plugin,
+              format: 'json',
+            },
+            {
+              createErrorNotification: false,
+            },
+          );
+          state.spec = spec;
+          state.status = 'loaded';
+          return spec;
+        } catch {
+          state.spec = null;
+          state.status = 'error';
+          state.loadError = translate('OpenApiDocs_SwaggerPageSpecLoadFailed');
+          return null;
+        } finally {
+          state.request = null;
+        }
+      })();
 
-        return spec;
-      }).catch(() => {
-        state.spec = null;
-        state.status = 'error';
-        state.loadError = translate('OpenApiDocs_SwaggerPageSpecLoadFailed');
-
-        return null;
-      }).finally(() => {
-        state.request = null;
-      });
       return state.request;
     },
     togglePlugin(plugin: string) {
@@ -310,10 +314,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.loadingText {
-  margin-bottom: 1rem;
-}
-
 .searchBar {
   position: relative;
   margin-bottom: 1.5rem;
@@ -352,13 +352,7 @@ export default defineComponent({
   margin-bottom: 0;
 }
 
-.pluginList {
-  display: flex;
-  flex-direction: column;
-}
-
 .pluginCard {
-  margin-top: 0;
   border: 1px solid #d9e2ec;
   border-radius: 4px;
   box-shadow: none;
@@ -368,7 +362,6 @@ export default defineComponent({
 
 .pluginCard--expanded {
   border-color: #cfd8e3;
-  animation: pluginCardOpen 180ms ease;
   transform-origin: top center;
 }
 
@@ -386,11 +379,6 @@ export default defineComponent({
   text-align: left;
 }
 
-.pluginToggle:focus,
-.pluginToggle:active {
-  outline: none;
-}
-
 .pluginToggle:focus-visible {
   box-shadow: inset 0 0 0 2px #cfd8e3;
 }
@@ -402,8 +390,7 @@ export default defineComponent({
 }
 
 .pluginChevron {
-  width: 12px;
-  min-width: 12px;
+  flex: 0 0 12px;
   color: #5b6b7c;
   font-size: 12px;
   display: inline-flex;

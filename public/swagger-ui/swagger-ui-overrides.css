@@ -1,9 +1,3 @@
-.swaggerMount .swagger-ui .opblock-tag {
-    align-items: flex-start;
-    display: flex;
-    flex-wrap: wrap;
-}
-
 .swaggerMount .swagger-ui {
     --matomo-swagger-get-main: var(--theme-color-link, #3152A0);
     --matomo-swagger-get-background: color-mix(in srgb, var(--matomo-swagger-get-main) 9%, var(--theme-color-background-contrast, #fff));
@@ -32,13 +26,13 @@
     font-family: inherit;
 }
 
-.swaggerMount .swagger-ui :is(code, kbd, pre, samp), .swagger-ui .opblock-summary-path   {
+.swaggerMount .swagger-ui :is(code, kbd, pre, samp, .opblock-summary-path) {
     font-family: monospace, monospace !important;
 }
 
-.swagger-ui .opblock-summary-path {
-    font-weight: 500 !important;
+.swaggerMount .swagger-ui .opblock-summary-path {
     font-size: 15px !important;
+    font-weight: 500 !important;
 }
 
 .swaggerMount .swagger-ui input,
@@ -48,15 +42,13 @@
     box-shadow: none;
     font-family: inherit;
     font-size: inherit;
-    line-height: inherit;
     height: inherit;
+    line-height: inherit;
     margin: 0;
     text-transform: none;
 }
 
-.swaggerMount .swagger-ui input,
-.swaggerMount .swagger-ui select,
-.swaggerMount .swagger-ui textarea {
+.swaggerMount .swagger-ui :is(input, select, textarea) {
     background-image: none;
 }
 
@@ -64,36 +56,34 @@
     max-width: 340px;
 }
 
-
-
-.swaggerMount .swagger-ui .information-container,
-.swaggerMount .swagger-ui .scheme-container {
+.swaggerMount .swagger-ui :is(.information-container, .scheme-container, .authorization__btn) {
     display: none;
 }
 
-.swaggerMount .swagger-ui .opblock-description-wrapper,
-.swaggerMount .swagger-ui .opblock-description-wrapper p,
-.swaggerMount .swagger-ui .opblock-description-wrapper li,
-.swaggerMount .swagger-ui .opblock-external-docs-wrapper,
-.swaggerMount .swagger-ui .opblock-external-docs-wrapper p {
+.swaggerMount .swagger-ui :is(
+    .opblock-description-wrapper,
+    .opblock-description-wrapper p,
+    .opblock-description-wrapper li,
+    .opblock-external-docs-wrapper,
+    .opblock-external-docs-wrapper p,
+    .opblock-tag > small,
+    .opblock-tag > small p,
+    .opblock-tag > small li,
+    .opblock-tag .renderedMarkdown,
+    .opblock-tag .renderedMarkdown p,
+    .opblock-tag .renderedMarkdown li
+) {
     line-height: 1.6;
 }
 
-.swaggerMount .swagger-ui .opblock-tag > small,
-.swaggerMount .swagger-ui .opblock-tag > small p,
-.swaggerMount .swagger-ui .opblock-tag > small li,
-.swaggerMount .swagger-ui .opblock-tag .renderedMarkdown,
-.swaggerMount .swagger-ui .opblock-tag .renderedMarkdown p,
-.swaggerMount .swagger-ui .opblock-tag .renderedMarkdown li {
-    line-height: 1.6;
-}
-
-.swaggerMount .swagger-ui .opblock-description-wrapper code,
-.swaggerMount .swagger-ui .opblock-external-docs-wrapper code,
-.swaggerMount .swagger-ui .opblock-tag > small code,
-.swaggerMount .swagger-ui .opblock-tag .renderedMarkdown code,
-.swaggerMount .swagger-ui .markdown code,
-.swaggerMount .swagger-ui .renderedMarkdown code {
+.swaggerMount .swagger-ui :is(
+    .opblock-description-wrapper code,
+    .opblock-external-docs-wrapper code,
+    .opblock-tag > small code,
+    .opblock-tag .renderedMarkdown code,
+    .markdown code,
+    .renderedMarkdown code
+) {
     background-color: var(--matomo-swagger-code-background);
     color: var(--matomo-swagger-code) !important;
     font-size: 11px;
@@ -105,60 +95,54 @@
     color: var(--matomo-swagger-link);
 }
 
+.swaggerMount .swagger-ui .opblock:is(.opblock-get, .opblock-post) {
+    background: var(--matomo-swagger-opblock-background);
+    border-color: var(--matomo-swagger-opblock-main);
+}
+
+.swaggerMount .swagger-ui .opblock:is(.opblock-get, .opblock-post) :is(
+    .opblock-summary,
+    .opblock-section-header,
+    .opblock-body > .opblock-description-wrapper,
+    .opblock-body > .opblock-title_normal
+) {
+    border-color: var(--matomo-swagger-opblock-main);
+}
+
+.swaggerMount .swagger-ui .opblock:is(.opblock-get, .opblock-post) .opblock-section-header {
+    background: var(--matomo-swagger-opblock-header-background);
+}
+
+.swaggerMount .swagger-ui .opblock:is(.opblock-get, .opblock-post) .opblock-summary-method {
+    background: var(--matomo-swagger-opblock-main);
+}
+
 .swaggerMount .swagger-ui .opblock.opblock-get {
-    background: var(--matomo-swagger-get-background);
-    border-color: var(--matomo-swagger-get-main);
-}
-
-
-
-.swaggerMount .swagger-ui .opblock.opblock-get .opblock-summary,
-.swaggerMount .swagger-ui .opblock.opblock-get .opblock-section-header,
-.swaggerMount .swagger-ui .opblock.opblock-get .opblock-body > .opblock-description-wrapper,
-.swaggerMount .swagger-ui .opblock.opblock-get .opblock-body > .opblock-title_normal {
-    border-color: var(--matomo-swagger-get-main);
-}
-
-.swaggerMount .swagger-ui .opblock.opblock-get .opblock-section-header {
-    background: var(--matomo-swagger-get-header-background);
+    --matomo-swagger-opblock-background: var(--matomo-swagger-get-background);
+    --matomo-swagger-opblock-header-background: var(--matomo-swagger-get-header-background);
+    --matomo-swagger-opblock-main: var(--matomo-swagger-get-main);
 }
 
 .swaggerMount .swagger-ui .opblock.opblock-get .opblock-summary-method {
-    background: var(--matomo-swagger-get-main);
     font-weight: 500 !important;
 }
 
 .swaggerMount .swagger-ui .opblock.opblock-post {
-    background: var(--matomo-swagger-post-background);
-    border-color: var(--matomo-swagger-post-main);
+    --matomo-swagger-opblock-background: var(--matomo-swagger-post-background);
+    --matomo-swagger-opblock-header-background: var(--matomo-swagger-post-header-background);
+    --matomo-swagger-opblock-main: var(--matomo-swagger-post-main);
 }
 
-.swaggerMount .swagger-ui .opblock.opblock-post .opblock-summary,
-.swaggerMount .swagger-ui .opblock.opblock-post .opblock-section-header,
-.swaggerMount .swagger-ui .opblock.opblock-post .opblock-body > .opblock-description-wrapper,
-.swaggerMount .swagger-ui .opblock.opblock-post .opblock-body > .opblock-title_normal {
-    border-color: var(--matomo-swagger-post-main);
-}
-
-.swaggerMount .swagger-ui .opblock.opblock-post .opblock-section-header {
-    background: var(--matomo-swagger-post-header-background);
-}
-
-.swaggerMount .swagger-ui .opblock.opblock-post .opblock-summary-method {
-    background: var(--matomo-swagger-post-main);
-}
-
-.swaggerMount .swagger-ui .authorization__btn {
-    display: none;
+.swaggerMount .swagger-ui .try-out__btn,
+.swaggerMount .swagger-ui .copy-to-clipboard {
+    background: transparent;
 }
 
 .swaggerMount .swagger-ui .try-out__btn {
-    background: transparent;
     color: var(--theme-color-text) !important;
 }
 
 .swaggerMount .swagger-ui .copy-to-clipboard {
-    background: transparent;
     border: 0;
 }
 
@@ -187,8 +171,10 @@
     animation: matomo-copy-success-icon-in 300ms ease;
 }
 
-.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard .icon-content-copy,
-.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard .matomo-copy-success-icon {
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard :is(
+    .icon-content-copy,
+    .matomo-copy-success-icon
+) {
     font-size: 16px;
     line-height: 1;
 }
@@ -209,7 +195,6 @@
     }
 }
 
-
 @keyframes matomo-copy-original-icon-in {
     from {
         opacity: 0;
@@ -220,6 +205,12 @@
         opacity: 1;
         transform: scale(1);
     }
+}
+
+.swaggerMount .swagger-ui .opblock-tag {
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .swaggerMount .swagger-ui .opblock-tag > a.nostyle {
@@ -237,9 +228,8 @@
     order: 3;
 }
 
-
 .swaggerMount .swagger-ui section {
-    margin-top: 0px !important;
+    margin-top: 0 !important;
 }
 
 .swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag {
@@ -259,11 +249,7 @@
     cursor: text;
 }
 
-.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag a {
-    display: none;
-}
-
-.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag .expand-operation {
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag :is(a, .expand-operation) {
     display: none;
 }
 
