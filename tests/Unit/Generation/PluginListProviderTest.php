@@ -14,7 +14,6 @@ namespace Piwik\Plugins\OpenApiDocs\tests\Unit\Generation;
 require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use Piwik\EventDispatcher;
 use Piwik\Plugin\Manager;
 use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
 
@@ -92,10 +91,9 @@ class PluginListProviderTest extends TestCase
             ['HasApi' => true, 'Login' => true],
             ['HasApi' => true, 'Login' => true],
             ['HasApi' => true, 'Login' => true],
-            static function (EventDispatcher $eventDispatcher): void {
-                $eventDispatcher->addObserver('OpenApiDocs.updatePluginList', function (&$pluginNames): void {
-                    $pluginNames[] = 'Login';
-                });
+            static function (string $eventName, array $params): void {
+                $pluginNames = &$params[0];
+                $pluginNames[] = 'Login';
             }
         );
 
@@ -134,14 +132,13 @@ class PluginListProviderTest extends TestCase
                 'NoApi' => false,
                 'ConnectAccounts' => true,
             ],
-            static function (EventDispatcher $eventDispatcher): void {
-                $eventDispatcher->addObserver('OpenApiDocs.updatePluginList', function (&$pluginNames): void {
-                    $pluginNames[] = 'Login';
-                    $pluginNames[] = 'InactivePlugin';
-                    $pluginNames[] = 'NoApi';
-                    $pluginNames[] = 'ConnectAccounts';
-                    $pluginNames[] = 123;
-                });
+            static function (string $eventName, array $params): void {
+                $pluginNames = &$params[0];
+                $pluginNames[] = 'Login';
+                $pluginNames[] = 'InactivePlugin';
+                $pluginNames[] = 'NoApi';
+                $pluginNames[] = 'ConnectAccounts';
+                $pluginNames[] = 123;
             }
         );
 
@@ -159,7 +156,7 @@ class PluginListProviderTest extends TestCase
         array $activatedByPlugin,
         array $inFilesystemByPlugin,
         $hasApiFile,
-        ?callable $configureEventDispatcher = null
+        ?callable $postEventCallback = null
     ): PluginListProvider {
         $pluginManager = $this->createConfiguredMock(Manager::class, [
             'getInstalledPluginsName' => $installedPlugins,
@@ -176,16 +173,9 @@ class PluginListProviderTest extends TestCase
                 return $inFilesystemByPlugin[$pluginName] ?? false;
             });
 
-        if ($configureEventDispatcher) {
-            $eventDispatcher = new EventDispatcher($pluginManager, []);
-            $configureEventDispatcher($eventDispatcher);
-        } else {
-            $eventDispatcher = $this->createMock(EventDispatcher::class);
-        }
-
         $provider = $this->getMockBuilder(PluginListProvider::class)
-            ->setConstructorArgs([$pluginManager, $eventDispatcher])
-            ->onlyMethods(['pluginHasApiFile'])
+            ->setConstructorArgs([$pluginManager])
+            ->onlyMethods(['pluginHasApiFile', 'postEvent'])
             ->getMock();
 
         $provider->method('pluginHasApiFile')
@@ -196,6 +186,11 @@ class PluginListProviderTest extends TestCase
 
                 return $hasApiFile;
             });
+
+        if ($postEventCallback) {
+            $provider->method('postEvent')
+                ->willReturnCallback($postEventCallback);
+        }
 
         return $provider;
     }

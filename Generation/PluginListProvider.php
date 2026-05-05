@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Generation;
 
-use Piwik\EventDispatcher;
+use Piwik\Piwik;
 use Piwik\Plugin\Manager;
 use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 
@@ -22,15 +22,9 @@ class PluginListProvider
      */
     private $pluginManager;
 
-    /**
-     * @var EventDispatcher
-     */
-    private $eventDispatcher;
-
-    public function __construct(?Manager $pluginManager = null, ?EventDispatcher $eventDispatcher = null)
+    public function __construct(?Manager $pluginManager = null)
     {
         $this->pluginManager = $pluginManager ?? Manager::getInstance();
-        $this->eventDispatcher = $eventDispatcher ?? EventDispatcher::getInstance();
     }
 
     /**
@@ -96,6 +90,14 @@ class PluginListProvider
      */
     private function dispatchUpdatePluginListEvent(array &$pluginNames): void
     {
-        $this->eventDispatcher->postEvent('OpenApiDocs.updatePluginList', [&$pluginNames]);
+        $this->postEvent('OpenApiDocs.updatePluginList', [&$pluginNames]);
+    }
+
+    /**
+     * @param array<int, mixed> $params
+     */
+    protected function postEvent(string $eventName, array $params): void
+    {
+        Piwik::postEvent($eventName, $params);
     }
 }
