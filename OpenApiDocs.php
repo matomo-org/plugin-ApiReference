@@ -31,14 +31,14 @@ class OpenApiDocs extends \Piwik\Plugin
 
     public function getStylesheetFiles(&$stylesheets): void
     {
-        $stylesheets[] = 'plugins/OpenApiDocs/public/swagger-ui/swagger-ui.css';
-        $stylesheets[] = 'plugins/OpenApiDocs/public/swagger-ui/swagger-ui-overrides.css';
+        $stylesheets[] = 'plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui.css';
+        $stylesheets[] = 'plugins/OpenApiDocs/vue/src/SwaggerPage/swagger-ui-overrides.css';
         $stylesheets[] = 'plugins/OpenApiDocs/vue/dist/OpenApiDocs.css';
     }
 
     public function getJsFiles(&$jsFiles): void
     {
-        $jsFiles[] = 'plugins/OpenApiDocs/public/swagger-ui/swagger-ui-bundle.js';
+        $jsFiles[] = 'plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui-bundle.js';
     }
 
     public function getClientSideTranslationKeys(&$translationKeys): void

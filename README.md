@@ -4,6 +4,16 @@
 
 Allow generating OpenAPI documentation for the Matomo public APIs.
 
+## Frontend assets
+Swagger UI is managed via npm inside [vue/package.json](/home/lachlan/matomo-code/matomo_5x-dev/plugins/OpenApiDocs/vue/package.json). The plugin runtime does not load Swagger UI from `node_modules`; instead, the needed distributable files are synced into `vue/lib/swagger-ui/`.
+
+Typical workflow:
+- Run `npm install` in `plugins/OpenApiDocs/vue`.
+- Run `npm run sync-swagger-ui` in `plugins/OpenApiDocs/vue` after adding or updating `swagger-ui-dist`.
+- Run `ddev matomo:console vue:build OpenApiDocs` after changing Vue source.
+
+The plugin-specific Swagger overrides live in [vue/src/SwaggerPage/swagger-ui-overrides.css](/home/lachlan/matomo-code/matomo_5x-dev/plugins/OpenApiDocs/vue/src/SwaggerPage/swagger-ui-overrides.css).
+
 ## Dependencies
 This plugin had its vendored dependencies scoped using [matomo scoper](https://github.com/matomo-org/matomo-scoper). This means that composer packages are prefixed so that they won't conflict with the same libraries used by other plugins.
 If you need to update a dependency, you should be able to run `composer install` to populate the vendor directory and then follow the [instructions for scoping a plugin](https://github.com/matomo-org/matomo-scoper#how-to-scope-a-matomo-plugin). Since the scoper.inc.php file already exists, it will hopefully be as simple as running the scoper for this plugin. Once that's done, you'll also need to make some of the dependencies compatible with Matomo's minimum supported version of PHP.
