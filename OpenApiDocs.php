@@ -48,11 +48,7 @@ class OpenApiDocs extends \Piwik\Plugin
         $translationKeys[] = 'OpenApiDocs_ReportingApiReference';
         $translationKeys[] = 'OpenApiDocs_ReportingApiSummary';
         $translationKeys[] = 'OpenApiDocs_Swagger';
-        $translationKeys[] = 'OpenApiDocs_SwaggerPageDescription';
-        $translationKeys[] = 'OpenApiDocs_SwaggerPageLoading';
         $translationKeys[] = 'OpenApiDocs_SwaggerPagePluginEmpty';
-        $translationKeys[] = 'OpenApiDocs_SwaggerPagePluginPlaceholder';
-        $translationKeys[] = 'OpenApiDocs_SwaggerPagePlaceholder';
         $translationKeys[] = 'OpenApiDocs_SwaggerPageRequestFailed';
         $translationKeys[] = 'OpenApiDocs_SwaggerPageSpecLoadFailed';
         $translationKeys[] = 'OpenApiDocs_SwaggerPageSearchNoResults';
