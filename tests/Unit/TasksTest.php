@@ -89,7 +89,7 @@ class TasksTest extends TestCase
 
         $logger = new FakeLogger();
         $pluginListProvider = $this->createMock(PluginListProvider::class);
-        $pluginListProvider->method('getPluginsForSpecGeneration')
+        $pluginListProvider->method('getAllowedPlugins')
             ->willReturn(['RollUpReporting', 'Login']);
 
         $tasks = new Tasks($service, $logger, $pluginListProvider);

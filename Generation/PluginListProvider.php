@@ -30,17 +30,9 @@ class PluginListProvider
     /**
      * @return string[]
      */
-    public function getPluginsForSpecGeneration(): array
+    public function getAllowedPlugins(): array
     {
-        $pluginNames = [];
-
-        foreach ($this->pluginManager->getInstalledPluginsName() as $pluginName) {
-            if (!$this->shouldIncludePlugin($pluginName)) {
-                continue;
-            }
-
-            $pluginNames[] = $pluginName;
-        }
+        $pluginNames = array_values($this->pluginManager->getActivatedPlugins());
 
         $this->dispatchUpdatePluginListEvent($pluginNames);
 
@@ -49,22 +41,6 @@ class PluginListProvider
         return array_values(array_filter($pluginNames, function ($pluginName): bool {
             return is_string($pluginName) && $this->shouldIncludeEventProvidedPlugin($pluginName);
         }));
-    }
-
-    private function shouldIncludePlugin(string $pluginName): bool
-    {
-        if (in_array($pluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
-            return false;
-        }
-
-        if (
-            !$this->pluginManager->isPluginActivated($pluginName)
-            || !$this->pluginManager->isPluginInFilesystem($pluginName)
-        ) {
-            return false;
-        }
-
-        return $this->pluginHasApiFile($pluginName);
     }
 
     private function shouldIncludeEventProvidedPlugin(string $pluginName): bool

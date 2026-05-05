@@ -62,11 +62,11 @@ class APITest extends TestCase
         $this->assertSame($expectedSpec, $result);
     }
 
-    public function testGetPluginWhitelistReturnsProviderValues(): void
+    public function testGetAllowedPluginsReturnsProviderValues(): void
     {
         $provider = $this->createMock(PluginListProvider::class);
         $provider->expects($this->once())
-            ->method('getPluginsForSpecGeneration')
+            ->method('getAllowedPlugins')
             ->willReturn(['Login', 'ActivityLog']);
 
         $api = $this->getMockBuilder(API::class)
@@ -74,7 +74,7 @@ class APITest extends TestCase
             ->getMock();
         $api->method('getPluginListProvider')->willReturn($provider);
 
-        $this->assertSame(['Login', 'ActivityLog'], $api->getPluginWhitelist());
+        $this->assertSame(['Login', 'ActivityLog'], $api->getAllowedPlugins());
     }
 
     public function testGetOpenApiSpecThrowsExceptionWhenFileMissing()

@@ -52,7 +52,7 @@ class Tasks extends \Piwik\Plugin\Tasks
 
     public function generateConfiguredPluginSpecs(): void
     {
-        $pluginNames = $this->pluginListProvider->getPluginsForSpecGeneration();
+        $pluginNames = $this->pluginListProvider->getAllowedPlugins();
 
         foreach ($pluginNames as $pluginName) {
             try {

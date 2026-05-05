@@ -30,11 +30,11 @@ class API extends \Piwik\Plugin\API
      *
      * @return array<int, string>
      */
-    public function getPluginWhitelist(): array
+    public function getAllowedPlugins(): array
     {
         Piwik::checkUserHasSomeViewAccess();
 
-        return $this->getPluginListProvider()->getPluginsForSpecGeneration();
+        return $this->getPluginListProvider()->getAllowedPlugins();
     }
 
     /**

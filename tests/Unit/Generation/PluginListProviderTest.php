@@ -24,71 +24,54 @@ use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
  */
 class PluginListProviderTest extends TestCase
 {
-    public function testGetPluginsForSpecGenerationIncludesPluginWhenEligible(): void
+    public function testGetAllowedPluginsIncludesActivatedPluginWhenEligible(): void
     {
         $provider = $this->makeProvider(
             ['HasApi'],
             ['HasApi' => true],
-            ['HasApi' => true],
             true
         );
 
-        $this->assertSame(['HasApi'], $provider->getPluginsForSpecGeneration());
+        $this->assertSame(['HasApi'], $provider->getAllowedPlugins());
     }
 
-    public function testGetPluginsForSpecGenerationExcludesBlocklistedPlugin(): void
+    public function testGetAllowedPluginsExcludesBlocklistedPlugin(): void
     {
         $provider = $this->makeProvider(
             ['ConnectAccounts'],
             ['ConnectAccounts' => true],
-            ['ConnectAccounts' => true],
             true
         );
 
-        $this->assertSame([], $provider->getPluginsForSpecGeneration());
+        $this->assertSame([], $provider->getAllowedPlugins());
     }
 
-    public function testGetPluginsForSpecGenerationExcludesInactivePlugin(): void
+    public function testGetAllowedPluginsExcludesPluginNotInFilesystem(): void
     {
         $provider = $this->makeProvider(
             ['InactivePlugin'],
             ['InactivePlugin' => false],
-            ['InactivePlugin' => true],
             true
         );
 
-        $this->assertSame([], $provider->getPluginsForSpecGeneration());
+        $this->assertSame([], $provider->getAllowedPlugins());
     }
 
-    public function testGetPluginsForSpecGenerationExcludesPluginNotInFilesystem(): void
-    {
-        $provider = $this->makeProvider(
-            ['MissingPlugin'],
-            ['MissingPlugin' => true],
-            ['MissingPlugin' => false],
-            true
-        );
-
-        $this->assertSame([], $provider->getPluginsForSpecGeneration());
-    }
-
-    public function testGetPluginsForSpecGenerationExcludesPluginWithoutApiFile(): void
+    public function testGetAllowedPluginsExcludesPluginWithoutApiFile(): void
     {
         $provider = $this->makeProvider(
             ['NoApi'],
             ['NoApi' => true],
-            ['NoApi' => true],
             false
         );
 
-        $this->assertSame([], $provider->getPluginsForSpecGeneration());
+        $this->assertSame([], $provider->getAllowedPlugins());
     }
 
-    public function testGetPluginsForSpecGenerationAppliesEventUpdates(): void
+    public function testGetAllowedPluginsAppliesEventUpdates(): void
     {
         $provider = $this->makeProvider(
             ['HasApi', 'Login'],
-            ['HasApi' => true, 'Login' => true],
             ['HasApi' => true, 'Login' => true],
             ['HasApi' => true, 'Login' => true],
             static function (string $eventName, array $params): void {
@@ -97,27 +80,20 @@ class PluginListProviderTest extends TestCase
             }
         );
 
-        $this->assertSame(['HasApi', 'Login'], $provider->getPluginsForSpecGeneration());
+        $this->assertSame(['HasApi', 'Login'], $provider->getAllowedPlugins());
     }
 
-    public function testGetPluginsForSpecGenerationReturnsEmptyListWhenNoPluginsInstalled(): void
+    public function testGetAllowedPluginsReturnsEmptyListWhenNoPluginsInstalled(): void
     {
-        $provider = $this->makeProvider([], [], [], false);
+        $provider = $this->makeProvider([], [], false);
 
-        $this->assertSame([], $provider->getPluginsForSpecGeneration());
+        $this->assertSame([], $provider->getAllowedPlugins());
     }
 
-    public function testGetPluginsForSpecGenerationDropsInvalidEventUpdatesButKeepsUnactivatedInstalledPlugins(): void
+    public function testGetAllowedPluginsDropsInvalidEventUpdatesButKeepsEventAddedPlugins(): void
     {
         $provider = $this->makeProvider(
             ['HasApi', 'Login', 'InactivePlugin', 'NoApi', 'ConnectAccounts'],
-            [
-                'HasApi' => true,
-                'Login' => true,
-                'InactivePlugin' => false,
-                'NoApi' => true,
-                'ConnectAccounts' => true,
-            ],
             [
                 'HasApi' => true,
                 'Login' => true,
@@ -142,31 +118,24 @@ class PluginListProviderTest extends TestCase
             }
         );
 
-        $this->assertSame(['HasApi', 'Login', 'InactivePlugin'], $provider->getPluginsForSpecGeneration());
+        $this->assertSame(['HasApi', 'Login', 'InactivePlugin'], $provider->getAllowedPlugins());
     }
 
     /**
-     * @param string[] $installedPlugins
-     * @param array<string, bool> $activatedByPlugin
+     * @param string[] $activatedPlugins
      * @param array<string, bool> $inFilesystemByPlugin
      * @param bool|array<string, bool> $hasApiFile
      */
     private function makeProvider(
-        array $installedPlugins,
-        array $activatedByPlugin,
+        array $activatedPlugins,
         array $inFilesystemByPlugin,
         $hasApiFile,
         ?callable $postEventCallback = null
     ): PluginListProvider {
         $pluginManager = $this->createConfiguredMock(Manager::class, [
-            'getInstalledPluginsName' => $installedPlugins,
+            'getActivatedPlugins' => $activatedPlugins,
             'getPluginsLoadedAndActivated' => [],
         ]);
-
-        $pluginManager->method('isPluginActivated')
-            ->willReturnCallback(static function (string $pluginName) use ($activatedByPlugin): bool {
-                return $activatedByPlugin[$pluginName] ?? false;
-            });
 
         $pluginManager->method('isPluginInFilesystem')
             ->willReturnCallback(static function (string $pluginName) use ($inFilesystemByPlugin): bool {
