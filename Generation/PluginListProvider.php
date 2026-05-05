@@ -13,7 +13,6 @@ namespace Piwik\Plugins\OpenApiDocs\Generation;
 
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
 
 class PluginListProvider
 {
@@ -45,14 +44,9 @@ class PluginListProvider
 
     private function shouldIncludeEventProvidedPlugin(string $pluginName): bool
     {
-        if (in_array($pluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
-            return false;
-        }
-
         if (!$this->pluginManager->isPluginInFilesystem($pluginName)) {
             return false;
         }
-
         return $this->pluginHasApiFile($pluginName);
     }
 
