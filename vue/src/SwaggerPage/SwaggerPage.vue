@@ -57,7 +57,7 @@
           <div
             v-for="plugin in plugins"
             :key="plugin"
-            v-show="filteredPlugins.includes(plugin)"
+            v-show="filteredPluginSet.has(plugin)"
             :class="[
               'card',
               'pluginCard',
@@ -198,6 +198,9 @@ export default defineComponent({
       }
 
       return this.plugins.filter((plugin) => plugin.toLowerCase().includes(searchTerm));
+    },
+    filteredPluginSet(): Set<string> {
+      return new Set(this.filteredPlugins);
     },
   },
   data(): SwaggerPageState {
