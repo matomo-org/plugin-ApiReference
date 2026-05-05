@@ -102,7 +102,7 @@ class APITest extends TestCase
         $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, '{}');
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('General_ExceptionInvalidReportRendererFormat');
+        $this->expectExceptionMessage("Report format 'yaml' not valid");
 
         $api->getOpenApiSpec('CustomAlerts', 'yaml');
     }
