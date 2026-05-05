@@ -21,7 +21,7 @@ class Menu extends \Piwik\Plugin\Menu
         }
 
         $menu->addPlatformItem(
-            'OpenApiDocs_Swagger',
+            'OpenApiDocs_SwaggerApi',
             $this->urlForAction('swagger'),
             30
         );
