@@ -294,7 +294,7 @@ export default defineComponent({
       this.isReady = false;
       this.loadError = null;
 
-      if (!swaggerUiBundle || !container || !this.spec) {
+      if (!swaggerUiBundle || !this.spec) {
         if (!this.spec) {
           return;
         }

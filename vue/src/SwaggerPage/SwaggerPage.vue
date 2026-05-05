@@ -9,8 +9,21 @@
   <div class="page">
     <div v-content-intro>
       <h2>{{ translate('OpenApiDocs_SwaggerPageTitle') }}</h2>
-      <p>{{ translate('OpenApiDocs_SwaggerPageDescription') }}</p>
     </div>
+
+    <ContentBlock :content-title="translate('OpenApiDocs_ReportingApiReference')">
+      <p>{{ translate('OpenApiDocs_ReportingApiSummary') }}</p>
+      <p v-html="$sanitize(reportingApiMoreInformation)" />
+    </ContentBlock>
+
+    <ContentBlock :content-title="translate('OpenApiDocs_UserAuthentication')">
+      <p v-html="$sanitize(userAuthenticationHelp)" />
+      <p>
+        <a :href="userSecurityUrl">
+          {{ translate('OpenApiDocs_UserAuthenticationManageTokens') }}
+        </a>
+      </p>
+    </ContentBlock>
 
     <ContentBlock>
       <ActivityIndicator :loading="isLoading" />
@@ -42,8 +55,9 @@
           class="pluginList"
         >
           <div
-            v-for="plugin in filteredPlugins"
+            v-for="plugin in plugins"
             :key="plugin"
+            v-show="filteredPlugins.includes(plugin)"
             :class="[
               'card',
               'pluginCard',
@@ -105,6 +119,8 @@ import {
   Alert,
   ContentBlock,
   ContentIntro,
+  externalLink,
+  MatomoUrl,
   translate,
 } from 'CoreHome';
 import SwaggerUiPanel from './SwaggerUiPanel.vue';
@@ -142,6 +158,38 @@ export default defineComponent({
     ContentIntro,
   },
   computed: {
+    reportingApiMoreInformation(): string {
+      return translate(
+        'OpenApiDocs_ReportingApiMoreInformation',
+        externalLink('https://matomo.org/docs/analytics-api'),
+        '</a>',
+        externalLink('https://developer.matomo.org/api-reference/reporting-api'),
+        '</a>',
+      );
+    },
+    userAuthenticationHelp(): string {
+      const usingTokenAuth = translate(
+        'OpenApiDocs_UserAuthenticationUsingTokenAuth',
+        '',
+        '',
+        '<code>token_auth</code>',
+      );
+
+      const learnMore = translate(
+        'CoreHome_LearnMoreFullStop',
+        externalLink('https://developer.matomo.org/api-reference/reporting-api#authenticate-to-the-api-via-token_auth-parameter'),
+        '</a>',
+      );
+
+      return `${usingTokenAuth} ${learnMore}`;
+    },
+    userSecurityUrl(): string {
+      return `?${MatomoUrl.stringify({
+        ...MatomoUrl.urlParsed.value,
+        module: 'UsersManager',
+        action: 'userSecurity',
+      })}#/#authtokens`;
+    },
     filteredPlugins(): string[] {
       const searchTerm = this.searchTerm.trim().toLowerCase();
 

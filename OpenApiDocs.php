@@ -43,6 +43,10 @@ class OpenApiDocs extends \Piwik\Plugin
 
     public function getClientSideTranslationKeys(&$translationKeys): void
     {
+        $translationKeys[] = 'CoreHome_LearnMoreFullStop';
+        $translationKeys[] = 'OpenApiDocs_ReportingApiMoreInformation';
+        $translationKeys[] = 'OpenApiDocs_ReportingApiReference';
+        $translationKeys[] = 'OpenApiDocs_ReportingApiSummary';
         $translationKeys[] = 'OpenApiDocs_Swagger';
         $translationKeys[] = 'OpenApiDocs_SwaggerPageDescription';
         $translationKeys[] = 'OpenApiDocs_SwaggerPageLoading';
@@ -54,5 +58,8 @@ class OpenApiDocs extends \Piwik\Plugin
         $translationKeys[] = 'OpenApiDocs_SwaggerPageSearchNoResults';
         $translationKeys[] = 'OpenApiDocs_SwaggerPageSearchPlaceholder';
         $translationKeys[] = 'OpenApiDocs_SwaggerPageTitle';
+        $translationKeys[] = 'OpenApiDocs_UserAuthentication';
+        $translationKeys[] = 'OpenApiDocs_UserAuthenticationManageTokens';
+        $translationKeys[] = 'OpenApiDocs_UserAuthenticationUsingTokenAuth';
     }
 }
