@@ -8,7 +8,7 @@
 <template>
   <div class="page">
     <div v-content-intro>
-      <h2>{{ translate('OpenApiDocs_SwaggerPageTitle') }}</h2>
+      <h2>{{ translate('OpenApiDocs_SwaggerApi') }}</h2>
     </div>
 
     <ContentBlock :content-title="translate('OpenApiDocs_ReportingApiReference')">

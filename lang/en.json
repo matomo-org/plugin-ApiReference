@@ -3,7 +3,7 @@
         "ReportingApiMoreInformation": "More info about the Matomo APIs available in %1$sIntroduction to Matomo API%2$s and the %3$sMatomo API Reference%4$s.",
         "ReportingApiReference": "Reporting API Reference",
         "ReportingApiSummary": "All the data in Matomo is available through simple APIs.",
-        "Swagger": "Swagger",
+        "SwaggerApi": "Swagger API",
         "SwaggerPagePluginEmpty": "No plugins are configured in the OpenApiDocs whitelist.",
         "SwaggerPageRequestFailed": "The plugin whitelist could not be loaded.",
         "SwaggerPageSpecLoadFailed": "The OpenAPI spec could not be loaded for this plugin.",
