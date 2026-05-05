@@ -26,17 +26,20 @@ use Piwik\Tests\Framework\TestCase\IntegrationTestCase;
  */
 class ControllerTest extends IntegrationTestCase
 {
-    private Controller $controller;
+    /**
+     * @var Controller
+     */
+    private $controller;
 
     /**
      * @var array<string, mixed>
      */
-    private array $backupGet;
+    private $backupGet;
 
     /**
      * @var array<string, mixed>
      */
-    private array $backupRequest;
+    private $backupRequest;
 
     public function setUp(): void
     {
