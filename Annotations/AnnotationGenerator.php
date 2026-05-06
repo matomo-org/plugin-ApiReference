@@ -845,7 +845,7 @@ class AnnotationGenerator
             }
         }
 
-        $exampleUrl = 'https://demo.matomo.cloud/' . $exampleUrl;
+        $exampleUrl = $this->prependInstanceUrl($exampleUrl);
         return [
             'xml' => $exampleUrl . '&format=xml&token_auth=anonymous',
             'json' => $exampleUrl . '&format=JSON&token_auth=anonymous',
@@ -854,7 +854,7 @@ class AnnotationGenerator
     }
 
     /**
-     * Query demo.matomo.cloud for report metadata which can later be used to help determine good example URLs for
+     * Query for report metadata which can later be used to help determine good example URLs for
      * specific API endpoints. This method is only used when the example URL can't be determined using the default
      * method. This only works for endpoints associated with reports and have metadata provided by the containing
      * plugin. The response is cached as a property so the request is only made once regardless of how many times this
@@ -871,7 +871,7 @@ class AnnotationGenerator
             return $this->reportMetadata;
         }
 
-        $url = 'https://demo.matomo.cloud/index.php?module=API&method=API.getReportMetadata&format=JSON&idSite=1&hideMetricsDoc=0&showSubtableReports=0&filter_limit=-1&period=day';
+        $url = $this->getReportMetadataUrl();
         try {
             $response = Http::sendHttpRequestBy(
                 Http::getTransportMethod(),
@@ -903,11 +903,10 @@ class AnnotationGenerator
 
     /**
      * Take the example URL and query the endpoint for an example response, hiding subtables. If a response isn't
-     * received from demo.matomo.cloud, it can try using a temporary token to make the request against the current
+     * received, it can try using a temporary token to make the request against the current
      * instance of Matomo.
      *
-     * @param string $url The full example URL. E.g.
-     * https://demo.matomo.cloud/?module=API&method=CustomReports.getConfiguredReports&idSite=1&format=xml&token_auth=anonymous
+     * @param string $url The full example URL.
      * @param bool $useLocalToken A boolean indicating whether to get a temporary token and try the request against the
      * currently running Matomo instance.
      * @param bool $ignoreCached A boolean indicating whether the cached response file should be ignored. Default is
@@ -948,7 +947,6 @@ class AnnotationGenerator
         if ($useLocalToken) {
             $token = Piwik::requestTemporarySystemAuthToken('OpenApiDocs', 24);
             $tempUrl = str_replace('&token_auth=anonymous', '&token_auth=' . $token, $tempUrl);
-            $tempUrl = str_replace('https://demo.matomo.cloud/', SettingsPiwik::getPiwikUrl(), $tempUrl);
         }
         try {
             $response = Http::sendHttpRequestBy(
@@ -1050,6 +1048,24 @@ class AnnotationGenerator
         return $this->artifactWriter->writeFile($filePath, $contents);
     }
 
+    protected function getInstanceUrl(): string
+    {
+        return rtrim(SettingsPiwik::getPiwikUrl(), '/') . '/';
+    }
+
+    protected function prependInstanceUrl(string $path): string
+    {
+        return $this->getInstanceUrl() . ltrim($path, '/');
+    }
+
+    protected function getReportMetadataUrl(): string
+    {
+        return $this->prependInstanceUrl(
+            'index.php?module=API&method=API.getReportMetadata&format=JSON&idSite=1&hideMetricsDoc=0'
+            . '&showSubtableReports=0&filter_limit=-1&period=day'
+        );
+    }
+
     /**
      * Try to build an example URL for a specific API method using report metadata. This queries the demo server for
      * report metadata to get examples of existing reports which can be used as example URLS. If no metadata matches the
@@ -1094,7 +1110,7 @@ class AnnotationGenerator
                 );
 
                 // Use the JSON format for the test. If we get a valid response, return the URL without format.
-                if (!empty($this->getExampleIfAvailable('https://demo.matomo.cloud/' . $url . '&format=JSON'))) {
+                if (!empty($this->getExampleIfAvailable($this->prependInstanceUrl($url . '&format=JSON')))) {
                     return $url;
                 }
             }

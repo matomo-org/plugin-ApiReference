@@ -18,6 +18,7 @@ use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
 use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
+use Piwik\Plugins\OpenApiDocs\tests\Resources\MockAnnotationGenerator;
 
 /**
  * @group OpenApiDocs
@@ -284,6 +285,89 @@ class AnnotationGeneratorTest extends TestCase
     {
         // TODO - buildAnnotationForMethod method
         $this->expectNotToPerformAssertions();
+    }
+
+    public function testGetApplicableDemoExampleUrlsUsesCurrentInstanceUrl(): void
+    {
+        $generator = $this->getMockBuilder(DocumentationGenerator::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getExampleUrl'])
+            ->getMock();
+        $generator->expects($this->once())
+            ->method('getExampleUrl')
+            ->with('\\Piwik\\Plugins\\API\\API', 'get', [
+                'idSite' => 1,
+                'period' => 'day',
+                'date' => 'today',
+            ])
+            ->willReturn('index.php?module=API&method=API.get&idSite=1&period=day&date=today');
+
+        $annotationGenerator = new class ($generator) extends MockAnnotationGenerator {
+            protected function getInstanceUrl(): string
+            {
+                return 'https://local.matomo.test/';
+            }
+        };
+
+        $this->assertSame([
+            'xml' => 'https://local.matomo.test/index.php?module=API&method=API.get&idSite=1&period=day&date=today&format=xml&token_auth=anonymous',
+            'json' => 'https://local.matomo.test/index.php?module=API&method=API.get&idSite=1&period=day&date=today&format=JSON&token_auth=anonymous',
+            'tsv' => 'https://local.matomo.test/index.php?module=API&method=API.get&idSite=1&period=day&date=today&format=Tsv&token_auth=anonymous',
+        ], $annotationGenerator->getApplicableDemoExampleUrls('API', 'get', []));
+    }
+
+    public function testGetReportMetadataUrlUsesCurrentInstanceUrl(): void
+    {
+        $annotationGenerator = new class (new DocumentationGenerator()) extends MockAnnotationGenerator {
+            protected function getInstanceUrl(): string
+            {
+                return 'https://local.matomo.test/';
+            }
+        };
+
+        $this->assertSame(
+            'https://local.matomo.test/index.php?module=API&method=API.getReportMetadata&format=JSON&idSite=1'
+            . '&hideMetricsDoc=0&showSubtableReports=0&filter_limit=-1&period=day',
+            $annotationGenerator->getReportMetadataUrl()
+        );
+    }
+
+    public function testGetReportExampleUrlFromMetadataUsesCurrentInstanceUrl(): void
+    {
+        $annotationGenerator = new class (new DocumentationGenerator()) extends MockAnnotationGenerator {
+            public $receivedUrl = null;
+
+            protected function getInstanceUrl(): string
+            {
+                return 'https://local.matomo.test/';
+            }
+
+            public function getDemoReportMetadata(): array
+            {
+                return [[
+                    'module' => 'VisitsSummary',
+                    'action' => 'get',
+                    'imageGraphUrl' => 'index.php?module=API&method=ImageGraph.get&apiModule=VisitsSummary&apiAction=get&idSite=1&period=day&date=today',
+                ]];
+            }
+
+            public function getExampleIfAvailable(string $url, bool $useLocalToken = false, bool $ignoreCached = false): string
+            {
+                $this->receivedUrl = $url;
+                return '{"result":"ok"}';
+            }
+        };
+
+        $result = $annotationGenerator->getReportExampleUrlFromMetadata('VisitsSummary', 'get');
+
+        $this->assertSame(
+            'index.php?module=API&method=VisitsSummary.get&idSite=1&period=day&date=today',
+            $result
+        );
+        $this->assertSame(
+            'https://local.matomo.test/index.php?module=API&method=VisitsSummary.get&idSite=1&period=day&date=today&format=JSON',
+            $annotationGenerator->receivedUrl
+        );
     }
 
     public function testGetParamInfoFromDocBlock(): void

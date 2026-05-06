@@ -60,9 +60,9 @@ class MockAnnotationGenerator extends AnnotationGenerator
     /**
      * @inheritDoc
      */
-    public function getExampleIfAvailable(string $url, bool $useLocalToken = false): string
+    public function getExampleIfAvailable(string $url, bool $useLocalToken = false, bool $ignoreCached = false): string
     {
-        return parent::getExampleIfAvailable($url, $useLocalToken);
+        return parent::getExampleIfAvailable($url, $useLocalToken, $ignoreCached);
     }
 
     /**
@@ -71,6 +71,16 @@ class MockAnnotationGenerator extends AnnotationGenerator
     public function getReportExampleUrlFromMetadata(string $pluginName, string $methodName): string
     {
         return parent::getReportExampleUrlFromMetadata($pluginName, $methodName);
+    }
+
+    public function getReportMetadataUrl(): string
+    {
+        return parent::getReportMetadataUrl();
+    }
+
+    public function prependInstanceUrl(string $path): string
+    {
+        return parent::prependInstanceUrl($path);
     }
 
     /**
