@@ -36,11 +36,6 @@ const summaryPrefix = '/index.php?module=API&method=';
 const interactiveSwaggerSelector = '.opblock-tag, .opblock-summary, .expand-operation, .opblock-summary-control';
 const copyIconMarkup = '<span class="icon-content-copy" aria-hidden="true"></span>';
 const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-hidden="true"></i>';
-const disableAuthorizePlugin = () => ({
-  wrapComponents: {
-    authorizeBtn: () => () => null,
-  },
-});
 
 interface OpenApiSpec {
   [key: string]: unknown;
@@ -315,7 +310,6 @@ export default defineComponent({
         layout: 'BaseLayout',
         tagsSorter: 'alpha',
         presets: swaggerUiBundle.presets?.apis ? [swaggerUiBundle.presets.apis] : [],
-        plugins: [disableAuthorizePlugin],
         onComplete: () => {
           window.setTimeout(() => {
             this.normalizeSwaggerUi(container);

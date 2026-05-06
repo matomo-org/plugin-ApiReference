@@ -104,8 +104,31 @@
     color: var(--matomo-swagger-text);
 }
 
-.swaggerMount .swagger-ui :is(.information-container, .scheme-container, .authorization__btn) {
-    display: none;
+
+.swagger-ui .dialog-ux .modal-ux :is(h3, h4) {
+    color: var(--matomo-swagger-text) !important;
+}
+
+.swagger-ui .dialog-ux .modal-ux  {
+    background: var(--theme-color-background-contrast);
+}
+
+
+.swaggerMount .swagger-ui .scheme-container {
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 20px;
+    background: transparent;
+}
+
+
+.swaggerMount .swagger-ui .schemes {
+    display: flex;
+}
+
+.swaggerMount .swagger-ui :is(.information-container, .schemes-server-container) {
+    display: none !important;
 }
 
 .swaggerMount .swagger-ui :is(
@@ -150,6 +173,7 @@
 .swaggerMount .swagger-ui .opblock .tab-header .tab-item.active h4 span {
     color: var(--matomo-swagger-text);
 }
+
 
 .swaggerMount .swagger-ui :is(
     .opblock-summary-path__deprecated,
@@ -200,8 +224,7 @@
     .parameters-col_description input,
     .response-control-media-type__accept-message,
     .responses-inner .highlight-code,
-    .model-example .highlight-code,
-    .opblock-body pre.microlight
+    .model-example .highlight-code
 ) {
     background: var(--matomo-swagger-panel-background-subtle);
 }
@@ -261,8 +284,16 @@
     background: transparent;
 }
 
-.swaggerMount .swagger-ui .try-out__btn {
+.swaggerMount .swagger-ui :is(.btn) {
     color: var(--theme-color-text) !important;
+}
+
+.swaggerMount .swagger-ui .authorize {
+    display: inline !important;
+}
+
+.swaggerMount .swagger-ui .authorize svg {
+    fill: var(--theme-color-link);
 }
 
 .swaggerMount .swagger-ui :is(.btn, .authorize, .clear-btn, .download-contents) {
