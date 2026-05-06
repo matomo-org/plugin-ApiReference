@@ -33,7 +33,6 @@ class OpenApiDocs extends \Piwik\Plugin
     {
         $stylesheets[] = 'plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui.css';
         $stylesheets[] = 'plugins/OpenApiDocs/vue/src/SwaggerPage/swagger-ui-overrides.css';
-        $stylesheets[] = 'plugins/OpenApiDocs/vue/dist/OpenApiDocs.css';
     }
 
     public function getJsFiles(&$jsFiles): void

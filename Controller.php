@@ -18,7 +18,7 @@ class Controller extends \Piwik\Plugin\ControllerAdmin
 {
     public function swagger(): string
     {
-        Piwik::checkUserHasSuperUserAccess();
+        Piwik::checkUserHasSomeViewAccess();
 
         $view = new View('@OpenApiDocs/swagger');
         $this->setBasicVariablesView($view);
