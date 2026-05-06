@@ -276,7 +276,7 @@ export default defineComponent({
       try {
         const plugins = await AjaxHelper.fetch<string[]>(
           {
-            method: 'OpenApiDocs.getPluginWhitelist',
+            method: 'OpenApiDocs.getAllowedPlugins',
           },
           {
             createErrorNotification: false,
