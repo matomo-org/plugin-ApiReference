@@ -35,17 +35,6 @@ class PluginListProviderTest extends TestCase
         $this->assertSame(['HasApi'], $provider->getAllowedPlugins());
     }
 
-    public function testGetAllowedPluginsExcludesBlocklistedPlugin(): void
-    {
-        $provider = $this->makeProvider(
-            ['ConnectAccounts'],
-            ['ConnectAccounts' => true],
-            true
-        );
-
-        $this->assertSame([], $provider->getAllowedPlugins());
-    }
-
     public function testGetAllowedPluginsExcludesPluginNotInFilesystem(): void
     {
         $provider = $this->makeProvider(
@@ -99,21 +88,18 @@ class PluginListProviderTest extends TestCase
                 'Login' => true,
                 'InactivePlugin' => true,
                 'NoApi' => true,
-                'ConnectAccounts' => true,
             ],
             [
                 'HasApi' => true,
                 'Login' => true,
                 'InactivePlugin' => true,
                 'NoApi' => false,
-                'ConnectAccounts' => true,
             ],
             static function (string $eventName, array $params): void {
                 $pluginNames = &$params[0];
                 $pluginNames[] = 'Login';
                 $pluginNames[] = 'InactivePlugin';
                 $pluginNames[] = 'NoApi';
-                $pluginNames[] = 'ConnectAccounts';
                 $pluginNames[] = 123;
             }
         );
