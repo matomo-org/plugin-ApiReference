@@ -78,13 +78,13 @@ class ControllerTest extends IntegrationTestCase
         parent::tearDown();
     }
 
-    public function testSwaggerRendersAdminPageForSuperUser(): void
+    public function testSwaggerRendersAdminPageForViewAccess(): void
     {
         FakeAccess::clearAccess(
-            $superUser = true,
-            $idSitesAdmin = [1],
+            $superUser = false,
+            $idSitesAdmin = [0],
             $idSitesView = [1],
-            $identity = 'superUserLogin'
+            $identity = 'viewAccessUser'
         );
 
         $html = $this->controller->swagger();
@@ -94,14 +94,14 @@ class ControllerTest extends IntegrationTestCase
         $this->assertStringContainsString('Swagger', $html);
     }
 
-    public function testSwaggerThrowsWhenUserIsNotSuperUser(): void
+    public function testSwaggerThrowsWhenUserHasNoAccess(): void
     {
         $originalAccess = StaticContainer::getContainer()->get(Access::class);
-        StaticContainer::getContainer()->set(Access::class, new FakeAccess(false, [], [1], 'viewUser'));
+        StaticContainer::getContainer()->set(Access::class, new FakeAccess(false, [], [], 'noAccess'));
 
         try {
             $this->expectException(\Exception::class);
-            $this->expectExceptionMessage('checkUserHasSuperUserAccess');
+            $this->expectExceptionMessage('checkUserHasSomeViewAccess');
 
             $this->controller->swagger();
         } finally {
