@@ -13,6 +13,7 @@ namespace Piwik\Plugins\OpenApiDocs;
 
 use Piwik\Config;
 use Piwik\Log\LoggerInterface;
+use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
 use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
 
 class Tasks extends \Piwik\Plugin\Tasks
@@ -27,10 +28,19 @@ class Tasks extends \Piwik\Plugin\Tasks
      */
     private $logger;
 
-    public function __construct(SpecGenerationService $specGenerationService, LoggerInterface $logger)
-    {
+    /**
+     * @var PluginListProvider
+     */
+    private $pluginListProvider;
+
+    public function __construct(
+        SpecGenerationService $specGenerationService,
+        LoggerInterface $logger,
+        ?PluginListProvider $pluginListProvider = null
+    ) {
         $this->specGenerationService = $specGenerationService;
         $this->logger = $logger;
+        $this->pluginListProvider = $pluginListProvider ?? new PluginListProvider();
     }
 
     public function schedule()
@@ -42,7 +52,7 @@ class Tasks extends \Piwik\Plugin\Tasks
 
     public function generateConfiguredPluginSpecs(): void
     {
-        $pluginNames = require __DIR__ . '/config/plugins.php';
+        $pluginNames = $this->pluginListProvider->getAllowedPlugins();
 
         foreach ($pluginNames as $pluginName) {
             try {
