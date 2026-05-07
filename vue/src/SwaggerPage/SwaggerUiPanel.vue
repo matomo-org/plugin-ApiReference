@@ -41,6 +41,11 @@ interface OpenApiSpec {
   [key: string]: unknown;
 }
 
+interface OpenApiServer {
+  url?: string;
+  [key: string]: unknown;
+}
+
 type SwaggerUiFactory = (config: {
   defaultModelsExpandDepth: number;
   deepLinking: boolean;
@@ -84,6 +89,10 @@ export default defineComponent({
     plugin: {
       type: String as PropType<string>,
       required: true,
+    },
+    piwikUrl: {
+      type: String as PropType<string | null>,
+      default: null,
     },
     spec: {
       type: Object as PropType<OpenApiSpec | null>,
@@ -137,6 +146,16 @@ export default defineComponent({
   methods: {
     getSwaggerRoot(): SwaggerRootElement | null {
       return document.getElementById(this.swaggerContainerId) as SwaggerRootElement | null;
+    },
+    getSpecWithCurrentInstanceUrl(spec: OpenApiSpec): OpenApiSpec {
+      if (!this.piwikUrl) {
+        return spec;
+      }
+
+      return {
+        ...spec,
+        servers: [{ url: this.piwikUrl } as OpenApiServer],
+      };
     },
     shortenSummaryPaths(swaggerRoot: ParentNode) {
       const summaryPaths = swaggerRoot.querySelectorAll<HTMLElement>('.opblock-summary-path');
@@ -303,7 +322,7 @@ export default defineComponent({
 
       swaggerUiBundle({
         dom_id: `#${this.swaggerContainerId}`,
-        spec: this.spec,
+        spec: this.getSpecWithCurrentInstanceUrl(this.spec),
         deepLinking: false,
         docExpansion: 'list',
         defaultModelsExpandDepth: -1,

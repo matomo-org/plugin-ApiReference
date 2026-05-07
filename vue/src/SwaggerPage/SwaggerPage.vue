@@ -98,6 +98,7 @@
               >
                 <SwaggerUiPanel
                   :plugin="plugin"
+                  :piwik-url="piwikUrl"
                   :spec="getPluginSpecState(plugin).spec"
                   :is-loading="getPluginSpecState(plugin).status === 'loading'"
                   :spec-load-error="getPluginSpecState(plugin).loadError"
@@ -148,6 +149,12 @@ interface SwaggerPageState {
 }
 
 export default defineComponent({
+  props: {
+    piwikUrl: {
+      type: String,
+      default: null,
+    },
+  },
   components: {
     ActivityIndicator,
     Alert,
