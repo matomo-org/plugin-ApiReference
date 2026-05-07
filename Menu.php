@@ -16,7 +16,7 @@ class Menu extends \Piwik\Plugin\Menu
 {
     public function configureAdminMenu(MenuAdmin $menu): void
     {
-        if (!Piwik::hasUserSuperUserAccess()) {
+        if (!Piwik::isUserHasSomeViewAccess()) {
             return;
         }
 

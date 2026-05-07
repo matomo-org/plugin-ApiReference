@@ -91,6 +91,9 @@ class ControllerTest extends IntegrationTestCase
 
         $this->assertNotSame('', $html);
         $this->assertStringContainsString('vue-entry="OpenApiDocs.SwaggerPage"', $html);
+        $this->assertStringContainsString('plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui.css', $html);
+        $this->assertStringContainsString('plugins/OpenApiDocs/vue/src/SwaggerPage/swagger-ui-overrides.css', $html);
+        $this->assertStringContainsString('plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui-bundle.js', $html);
         $this->assertStringContainsString('Swagger', $html);
     }
 

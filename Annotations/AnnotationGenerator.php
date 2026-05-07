@@ -964,8 +964,8 @@ class AnnotationGenerator
                 $httpMethod = 'GET'
             );
         } catch (\Throwable $e) {
-            // Add a little bit more context for troubleshooting the failed request
-            throw new \Exception('Error getting example from URL: ' . $url . PHP_EOL . $e, 0, $e);
+            // Example lookups are best-effort. Timeouts and other transport failures should not abort spec generation.
+            return '';
         }
 
         // If the example didn't load or resulted in an error, simply return an empty string

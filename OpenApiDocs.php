@@ -23,21 +23,8 @@ class OpenApiDocs extends \Piwik\Plugin
     public function registerEvents()
     {
         return [
-            'AssetManager.getStylesheetFiles' => 'getStylesheetFiles',
-            'AssetManager.getJavaScriptFiles' => 'getJsFiles',
             'Translate.getClientSideTranslationKeys' => 'getClientSideTranslationKeys',
         ];
-    }
-
-    public function getStylesheetFiles(&$stylesheets): void
-    {
-        $stylesheets[] = 'plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui.css';
-        $stylesheets[] = 'plugins/OpenApiDocs/vue/src/SwaggerPage/swagger-ui-overrides.css';
-    }
-
-    public function getJsFiles(&$jsFiles): void
-    {
-        $jsFiles[] = 'plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui-bundle.js';
     }
 
     public function getClientSideTranslationKeys(&$translationKeys): void
