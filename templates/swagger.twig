@@ -1,0 +1,17 @@
+{% extends 'admin.twig' %}
+
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui.css" />
+    <link rel="stylesheet" href="plugins/OpenApiDocs/vue/src/SwaggerPage/swagger-ui-overrides.css" />
+    <script src="plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui-bundle.js"></script>
+{% endblock %}
+
+{% set title %}{{ 'OpenApiDocs_SwaggerApi'|translate }}{% endset %}
+
+{% block content %}
+    <div
+        vue-entry="OpenApiDocs.SwaggerPage"
+        piwik-url="{{ piwikUrl|default(null)|json_encode }}"
+    ></div>
+{% endblock %}

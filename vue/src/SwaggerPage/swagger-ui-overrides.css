@@ -1,0 +1,437 @@
+.swaggerMount .swagger-ui {
+    --matomo-swagger-get-main: var(--theme-color-link, #3152A0);
+    --matomo-swagger-get-background: color-mix(in srgb, var(--matomo-swagger-get-main) 9%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-get-header-background: color-mix(in srgb, var(--matomo-swagger-get-background) 76%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-post-main: var(--theme-color-brand, #35C4C4);
+    --matomo-swagger-post-background: color-mix(in srgb, var(--matomo-swagger-post-main) 9%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-post-header-background: color-mix(in srgb, var(--matomo-swagger-post-background) 76%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-panel-background: var(--theme-color-background-contrast, #fff);
+    --matomo-swagger-panel-background-muted: var(--theme-color-background-tinyContrast, #f2f2f2);
+    --matomo-swagger-panel-background-subtle: var(--theme-color-background-base, #fafbfc);
+    --matomo-swagger-border: var(--theme-color-border, #ecf0f2);
+    --matomo-swagger-text: var(--theme-color-text, #3b4151);
+    --matomo-swagger-text-light: var(--theme-color-text-light, #646464);
+    --matomo-swagger-text-contrast: var(--theme-color-text-contrast, #3b4151);
+    --matomo-swagger-link: var(--theme-color-link, #3152A0);
+    --matomo-swagger-code: var(--theme-color-code, #A93552);
+    --matomo-swagger-code-background: var(--theme-color-code-background, rgba(0, 0, 0, 0.05));
+    border-radius: 5px;
+    color: var(--matomo-swagger-text);
+    font-family: var(--theme-fontFamily-base, sans-serif);
+    font-size: 14px;
+    line-height: 1.4;
+    padding-top: 10px;
+}
+
+.swaggerMount .swagger-ui *:not([class^="icon-"]):not([class*=" icon-"]) {
+    font-family: inherit;
+}
+
+.swaggerMount .swagger-ui :is(
+    .wrapper,
+    .opblock,
+    .opblock-body,
+    .model-box,
+    .model-container,
+    .responses-inner,
+    .tab,
+    .highlight-code,
+    .microlight,
+    table tbody tr td,
+    table thead tr td,
+    table thead tr th
+) {
+    color: inherit;
+}
+
+.swaggerMount .swagger-ui :is(code, kbd, pre, samp, .opblock-summary-path) {
+    font-family: monospace, monospace !important;
+}
+
+.swaggerMount .swagger-ui .opblock-summary-path {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+}
+
+.swaggerMount .swagger-ui .opblock :is(
+    .opblock-summary-operation-id,
+    .opblock-summary-path,
+    .opblock-summary-path__deprecated
+) {
+    color: var(--matomo-swagger-text) !important;
+}
+
+.swaggerMount .swagger-ui .opblock .opblock-summary-path__deprecated {
+    color: var(--matomo-swagger-text-light) !important;
+}
+
+.swaggerMount .swagger-ui input,
+.swaggerMount .swagger-ui select,
+.swaggerMount .swagger-ui textarea,
+.swaggerMount .swagger-ui button {
+    color: inherit;
+    box-shadow: none;
+    font-family: inherit;
+    font-size: inherit;
+    height: inherit;
+    line-height: inherit;
+    margin: 0;
+    text-transform: none;
+}
+
+.swaggerMount .swagger-ui :is(input, select, textarea) {
+    background-color: var(--matomo-swagger-panel-background);
+    border: 1px solid var(--matomo-swagger-border);
+    color: var(--matomo-swagger-text);
+    background-image: none;
+}
+
+.swaggerMount .swagger-ui select {
+    max-width: 340px;
+}
+
+.swaggerMount .swagger-ui :is(input, select, textarea)::placeholder {
+    color: var(--matomo-swagger-text-light);
+}
+
+.swaggerMount .swagger-ui :is(input, select, textarea):focus {
+    border-color: var(--theme-color-focus-ring, #5b8def);
+    outline: 1px solid var(--theme-color-focus-ring, #5b8def);
+}
+
+.swaggerMount .swagger-ui select option {
+    background: var(--matomo-swagger-panel-background);
+    color: var(--matomo-swagger-text);
+}
+
+
+.swagger-ui .dialog-ux .modal-ux :is(h3, h4) {
+    color: var(--matomo-swagger-text) !important;
+}
+
+.swagger-ui .dialog-ux .modal-ux  {
+    background: var(--theme-color-background-contrast);
+}
+
+
+.swaggerMount .swagger-ui .scheme-container {
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 20px;
+    background: transparent;
+}
+
+
+.swaggerMount .swagger-ui .schemes {
+    display: flex;
+}
+
+.swaggerMount .swagger-ui :is(.information-container, .schemes-server-container) {
+    display: none !important;
+}
+
+.swaggerMount .swagger-ui :is(
+    .opblock-description-wrapper,
+    .opblock-description-wrapper p,
+    .opblock-description-wrapper li,
+    .opblock-external-docs-wrapper,
+    .opblock-external-docs-wrapper p,
+    .opblock-tag > small,
+    .opblock-tag > small p,
+    .opblock-tag > small li,
+    .opblock-tag .renderedMarkdown,
+    .opblock-tag .renderedMarkdown p,
+    .opblock-tag .renderedMarkdown li
+) {
+    line-height: 1.6;
+}
+
+.swaggerMount .swagger-ui :is(
+    .opblock-tag,
+    .opblock-tag small,
+    .opblock-summary-description,
+    .response-col_status,
+    .response-col_description,
+    .parameter__name,
+    .parameter__type,
+    .parameter__deprecated,
+    .tab li,
+    .tab li button,
+    .model-title,
+    .model,
+    .prop-type,
+    .prop-format,
+    .scheme,
+    .scheme-container .schemes > label,
+    .responses-header h4,
+    .responses-header h5
+) {
+    color: var(--matomo-swagger-text);
+}
+
+.swaggerMount .swagger-ui .opblock .tab-header .tab-item.active h4 span {
+    color: var(--matomo-swagger-text);
+}
+
+
+.swaggerMount .swagger-ui :is(
+    .opblock-summary-path__deprecated,
+    .parameter__name.required span,
+    .parameter__extension,
+    .response-col_links,
+    .tab li small,
+    .model-toggle:after
+) {
+    color: var(--matomo-swagger-text-light);
+}
+
+.swaggerMount .swagger-ui :is(
+    .opblock-description-wrapper code,
+    .opblock-external-docs-wrapper code,
+    .opblock-tag > small code,
+    .opblock-tag .renderedMarkdown code,
+    .markdown code,
+    .renderedMarkdown code
+) {
+    background-color: var(--matomo-swagger-code-background);
+    color: var(--matomo-swagger-code) !important;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 5px;
+}
+
+.swaggerMount .swagger-ui a {
+    color: var(--matomo-swagger-link);
+}
+
+.swaggerMount .swagger-ui .opblock:is(.opblock-get, .opblock-post) {
+    background: var(--matomo-swagger-opblock-background);
+    border-color: var(--matomo-swagger-opblock-main);
+}
+
+.swaggerMount .swagger-ui :is(
+    .opblock-section-header,
+    .responses-inner h4,
+    .responses-inner h5,
+    .tab-header,
+    .opblock .opblock-summary-description
+) {
+    background: transparent;
+}
+
+.swaggerMount .swagger-ui :is(
+    .parameters-col_description input,
+    .response-control-media-type__accept-message,
+    .responses-inner .highlight-code,
+    .model-example .highlight-code
+) {
+    background: var(--matomo-swagger-panel-background-subtle);
+}
+
+.swaggerMount .swagger-ui :is(
+    .responses-table,
+    .responses-wrapper,
+    .parameters-container,
+    .opblock-section-header,
+    .opblock-body > .opblock-description-wrapper,
+    .opblock-body > .opblock-title_normal,
+    .model-box,
+    .tab
+) {
+    border-color: var(--matomo-swagger-border);
+}
+
+.swaggerMount .swagger-ui .opblock:is(.opblock-get, .opblock-post) :is(
+    .opblock-summary,
+    .opblock-section-header,
+    .opblock-body > .opblock-description-wrapper,
+    .opblock-body > .opblock-title_normal
+) {
+    border-color: var(--matomo-swagger-opblock-main);
+}
+
+.swaggerMount .swagger-ui .opblock:is(.opblock-get, .opblock-post) .opblock-section-header {
+    background: var(--matomo-swagger-opblock-header-background);
+}
+
+.swaggerMount .swagger-ui .opblock:is(.opblock-get, .opblock-post) .opblock-section-header h4 {
+    color: var(--theme-color-text);
+}
+
+.swaggerMount .swagger-ui .opblock:is(.opblock-get, .opblock-post) .opblock-summary-method {
+    background: var(--matomo-swagger-opblock-main);
+}
+
+.swaggerMount .swagger-ui .opblock.opblock-get {
+    --matomo-swagger-opblock-background: var(--matomo-swagger-get-background);
+    --matomo-swagger-opblock-header-background: var(--matomo-swagger-get-header-background);
+    --matomo-swagger-opblock-main: var(--matomo-swagger-get-main);
+}
+
+.swaggerMount .swagger-ui .opblock.opblock-get .opblock-summary-method {
+    font-weight: 500 !important;
+}
+
+.swaggerMount .swagger-ui .opblock.opblock-post {
+    --matomo-swagger-opblock-background: var(--matomo-swagger-post-background);
+    --matomo-swagger-opblock-header-background: var(--matomo-swagger-post-header-background);
+    --matomo-swagger-opblock-main: var(--matomo-swagger-post-main);
+}
+
+.swaggerMount .swagger-ui .try-out__btn,
+.swaggerMount .swagger-ui .copy-to-clipboard {
+    background: transparent;
+}
+
+.swaggerMount .swagger-ui :is(.btn) {
+    color: var(--theme-color-text) !important;
+}
+
+.swaggerMount .swagger-ui .authorize {
+    display: inline !important;
+}
+
+.swaggerMount .swagger-ui .authorize svg {
+    fill: var(--theme-color-link);
+}
+
+.swaggerMount .swagger-ui :is(.btn, .authorize, .clear-btn, .download-contents) {
+    background: var(--matomo-swagger-panel-background-muted);
+    border-color: var(--matomo-swagger-border);
+    color: var(--matomo-swagger-text);
+}
+
+.swaggerMount .swagger-ui :is(.btn, .authorize, .clear-btn, .download-contents):is(:hover, :focus) {
+    background: var(--matomo-swagger-panel-background-subtle);
+    border-color: var(--theme-color-focus-ring, #5b8def);
+    color: var(--matomo-swagger-text-contrast);
+}
+
+.swaggerMount .swagger-ui .copy-to-clipboard {
+    border: 0;
+}
+
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard,
+.swaggerMount .swagger-ui .opblock .opblock-summary:hover .view-line-link.copy-to-clipboard {
+    align-items: center;
+    border-radius: 3px;
+    color: var(--theme-color-text-light, #646464);
+    display: inline-flex;
+    height: 24px;
+    justify-content: center;
+    margin: 0;
+    transition: background-color 300ms ease, color 300ms ease, opacity 300ms ease;
+    width: 24px;
+}
+
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard:is(:hover, :focus) {
+    color: var(--theme-color-text-contrast, #37474f);
+}
+
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard.matomo-copy-success {
+    color: var(--matomo-swagger-opblock-main);
+}
+
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard .matomo-copy-success-icon {
+    animation: matomo-copy-success-icon-in 300ms ease;
+}
+
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard :is(
+    .icon-content-copy,
+    .matomo-copy-success-icon
+) {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard.matomo-copy-reset > * {
+    animation: matomo-copy-original-icon-in 300ms ease;
+}
+
+@keyframes matomo-copy-success-icon-in {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes matomo-copy-original-icon-in {
+    from {
+        opacity: 0;
+        transform: scale(1.15);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.swaggerMount .swagger-ui .opblock-tag {
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.swaggerMount .swagger-ui .opblock-tag > a.nostyle {
+    order: 1;
+}
+
+.swaggerMount .swagger-ui .opblock-tag > button.expand-operation {
+    margin-left: auto;
+    order: 2;
+}
+
+.swaggerMount .swagger-ui .opblock-tag > small {
+    flex-basis: 100%;
+    margin-top: 6px;
+    order: 3;
+}
+
+.swaggerMount .swagger-ui section {
+    margin-top: 0 !important;
+}
+
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag {
+    margin-bottom: 16px;
+}
+
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag {
+    cursor: default;
+    padding-right: 0;
+}
+
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag:hover {
+    background: inherit;
+}
+
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag > small {
+    cursor: text;
+}
+
+.swaggerMount .swagger-ui .opblock-tag-section.matomo-flat-tag > .opblock-tag :is(a, .expand-operation) {
+    display: none;
+}
+
+.swaggerMount .swagger-ui .parameters-col_description {
+    font-size: 14px;
+}
+
+.swaggerMount .swagger-ui .info .title small pre.version {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    display: inline;
+    font-size: inherit;
+    line-height: inherit;
+    margin: 0;
+    padding: 0;
+    word-break: normal;
+    word-wrap: normal;
+}

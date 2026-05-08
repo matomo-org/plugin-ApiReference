@@ -22,6 +22,25 @@ class OpenApiDocs extends \Piwik\Plugin
 
     public function registerEvents()
     {
-        return [];
+        return [
+            'Translate.getClientSideTranslationKeys' => 'getClientSideTranslationKeys',
+        ];
+    }
+
+    public function getClientSideTranslationKeys(&$translationKeys): void
+    {
+        $translationKeys[] = 'CoreHome_LearnMoreFullStop';
+        $translationKeys[] = 'OpenApiDocs_ReportingApiMoreInformation';
+        $translationKeys[] = 'OpenApiDocs_ReportingApiReference';
+        $translationKeys[] = 'OpenApiDocs_ReportingApiSummary';
+        $translationKeys[] = 'OpenApiDocs_SwaggerApi';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPagePluginEmpty';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageRequestFailed';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageSpecLoadFailed';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageSearchNoResults';
+        $translationKeys[] = 'OpenApiDocs_SwaggerPageSearchPlaceholder';
+        $translationKeys[] = 'OpenApiDocs_UserAuthentication';
+        $translationKeys[] = 'OpenApiDocs_UserAuthenticationManageTokens';
+        $translationKeys[] = 'OpenApiDocs_UserAuthenticationUsingTokenAuth';
     }
 }
