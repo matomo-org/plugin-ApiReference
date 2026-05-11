@@ -52,7 +52,11 @@ class PluginListProvider
         $descriptions = [];
 
         foreach ($this->getAllowedPlugins() as $pluginName) {
-            $descriptions[$pluginName] = $this->getPluginDescription($pluginName);
+            try {
+                $descriptions[$pluginName] = $this->getPluginDescription($pluginName);
+            } catch (\Throwable $e) {
+                $descriptions[$pluginName] = '';
+            }
         }
 
         return $descriptions;

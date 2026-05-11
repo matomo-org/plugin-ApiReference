@@ -143,6 +143,31 @@ class PluginListProviderTest extends TestCase
         $this->assertSame(['Login' => ''], $provider->getAllowedPluginDescriptions());
     }
 
+    public function testGetAllowedPluginDescriptionsContinuesWhenOnePluginDescriptionFails(): void
+    {
+        $provider = $this->getMockBuilder(PluginListProvider::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getAllowedPlugins', 'getPluginDescription'])
+            ->getMock();
+
+        $provider->method('getAllowedPlugins')
+            ->willReturn(['Login', 'BrokenPlugin', 'ActivityLog']);
+        $provider->method('getPluginDescription')
+            ->willReturnCallback(static function (string $pluginName): string {
+                if ($pluginName === 'BrokenPlugin') {
+                    throw new \RuntimeException('Could not register API class');
+                }
+
+                return $pluginName === 'Login' ? 'Login API description' : 'Activity log API description';
+            });
+
+        $this->assertSame([
+            'Login' => 'Login API description',
+            'BrokenPlugin' => '',
+            'ActivityLog' => 'Activity log API description',
+        ], $provider->getAllowedPluginDescriptions());
+    }
+
     /**
      * @param string[] $activatedPlugins
      * @param array<string, bool> $inFilesystemByPlugin
