@@ -107,6 +107,42 @@ class PluginListProviderTest extends TestCase
         $this->assertSame(['HasApi', 'Login', 'InactivePlugin'], $provider->getAllowedPlugins());
     }
 
+    public function testGetAllowedPluginDescriptionsReturnsDescriptionPerAllowedPlugin(): void
+    {
+        $provider = $this->getMockBuilder(PluginListProvider::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getAllowedPlugins', 'getPluginDescription'])
+            ->getMock();
+
+        $provider->method('getAllowedPlugins')
+            ->willReturn(['Login', 'ActivityLog']);
+        $provider->method('getPluginDescription')
+            ->willReturnMap([
+                ['Login', 'Login API description'],
+                ['ActivityLog', 'Activity log API description'],
+            ]);
+
+        $this->assertSame([
+            'Login' => 'Login API description',
+            'ActivityLog' => 'Activity log API description',
+        ], $provider->getAllowedPluginDescriptions());
+    }
+
+    public function testGetAllowedPluginDescriptionsReturnsEmptyStringWhenDescriptionMissing(): void
+    {
+        $provider = $this->getMockBuilder(PluginListProvider::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getAllowedPlugins', 'getPluginDescription'])
+            ->getMock();
+
+        $provider->method('getAllowedPlugins')
+            ->willReturn(['Login']);
+        $provider->method('getPluginDescription')
+            ->willReturn('');
+
+        $this->assertSame(['Login' => ''], $provider->getAllowedPluginDescriptions());
+    }
+
     /**
      * @param string[] $activatedPlugins
      * @param array<string, bool> $inFilesystemByPlugin

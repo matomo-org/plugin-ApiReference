@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\OpenApiDocs\Generation;
 
+use Piwik\API\Proxy;
+use Piwik\API\Request;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
 
@@ -42,6 +44,20 @@ class PluginListProvider
         }));
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public function getAllowedPluginDescriptions(): array
+    {
+        $descriptions = [];
+
+        foreach ($this->getAllowedPlugins() as $pluginName) {
+            $descriptions[$pluginName] = $this->getPluginDescription($pluginName);
+        }
+
+        return $descriptions;
+    }
+
     private function shouldIncludeEventProvidedPlugin(string $pluginName): bool
     {
         if (!$this->pluginManager->isPluginInFilesystem($pluginName)) {
@@ -53,6 +69,15 @@ class PluginListProvider
     protected function pluginHasApiFile(string $pluginName): bool
     {
         return is_file(Manager::getPluginDirectory($pluginName) . '/API.php');
+    }
+
+    protected function getPluginDescription(string $pluginName): string
+    {
+        $apiClassName = Request::getClassNameAPI($pluginName);
+        Proxy::getInstance()->registerClass($apiClassName);
+        $documentation = Proxy::getInstance()->getMetadata()[$apiClassName]['__documentation'] ?? '';
+
+        return is_string($documentation) ? trim(strip_tags($documentation)) : '';
     }
 
     /**

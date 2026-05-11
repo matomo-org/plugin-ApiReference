@@ -38,6 +38,18 @@ class API extends \Piwik\Plugin\API
     }
 
     /**
+     * Returns API class descriptions for the plugins used by OpenApiDocs spec generation.
+     *
+     * @return array<string, string>
+     */
+    public function getAllowedPluginDescriptions(): array
+    {
+        Piwik::checkUserHasSomeViewAccess();
+
+        return $this->getPluginListProvider()->getAllowedPluginDescriptions();
+    }
+
+    /**
      * Returns a previously generated OpenAPI specification for a plugin.
      *
      * Reads the stored JSON spec file for the requested plugin and does not trigger
