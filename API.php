@@ -38,15 +38,15 @@ class API extends \Piwik\Plugin\API
     }
 
     /**
-     * Returns API class descriptions for the plugins used by OpenApiDocs spec generation.
+     * Returns metadata for the plugins used by OpenApiDocs spec generation.
      *
-     * @return array<string, string>
+     * @return array<string, array{description: string}>
      */
-    public function getAllowedPluginDescriptions(): array
+    public function getAllowedPluginMetadata(): array
     {
         Piwik::checkUserHasSomeViewAccess();
 
-        return $this->getPluginListProvider()->getAllowedPluginDescriptions();
+        return $this->getPluginListProvider()->getAllowedPluginMetadata();
     }
 
     /**

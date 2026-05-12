@@ -77,14 +77,14 @@ class APITest extends TestCase
         $this->assertSame(['Login', 'ActivityLog'], $api->getAllowedPlugins());
     }
 
-    public function testGetAllowedPluginDescriptionsReturnsProviderValues(): void
+    public function testGetAllowedPluginMetadataReturnsProviderValues(): void
     {
         $provider = $this->createMock(PluginListProvider::class);
         $provider->expects($this->once())
-            ->method('getAllowedPluginDescriptions')
+            ->method('getAllowedPluginMetadata')
             ->willReturn([
-                'Login' => 'Login API description',
-                'ActivityLog' => '',
+                'Login' => ['description' => 'Login API description'],
+                'ActivityLog' => ['description' => ''],
             ]);
 
         $api = $this->getMockBuilder(API::class)
@@ -93,9 +93,9 @@ class APITest extends TestCase
         $api->method('getPluginListProvider')->willReturn($provider);
 
         $this->assertSame([
-            'Login' => 'Login API description',
-            'ActivityLog' => '',
-        ], $api->getAllowedPluginDescriptions());
+            'Login' => ['description' => 'Login API description'],
+            'ActivityLog' => ['description' => ''],
+        ], $api->getAllowedPluginMetadata());
     }
 
     public function testGetOpenApiSpecThrowsExceptionWhenFileMissing()

@@ -107,7 +107,7 @@ class PluginListProviderTest extends TestCase
         $this->assertSame(['HasApi', 'Login', 'InactivePlugin'], $provider->getAllowedPlugins());
     }
 
-    public function testGetAllowedPluginDescriptionsReturnsDescriptionPerAllowedPlugin(): void
+    public function testGetAllowedPluginMetadataReturnsDescriptionPerAllowedPlugin(): void
     {
         $provider = $this->getMockBuilder(PluginListProvider::class)
             ->disableOriginalConstructor()
@@ -123,12 +123,12 @@ class PluginListProviderTest extends TestCase
             ]);
 
         $this->assertSame([
-            'Login' => 'Login API description',
-            'ActivityLog' => 'Activity log API description',
-        ], $provider->getAllowedPluginDescriptions());
+            'Login' => ['description' => 'Login API description'],
+            'ActivityLog' => ['description' => 'Activity log API description'],
+        ], $provider->getAllowedPluginMetadata());
     }
 
-    public function testGetAllowedPluginDescriptionsReturnsEmptyStringWhenDescriptionMissing(): void
+    public function testGetAllowedPluginMetadataReturnsEmptyStringWhenDescriptionMissing(): void
     {
         $provider = $this->getMockBuilder(PluginListProvider::class)
             ->disableOriginalConstructor()
@@ -140,10 +140,10 @@ class PluginListProviderTest extends TestCase
         $provider->method('getPluginDescription')
             ->willReturn('');
 
-        $this->assertSame(['Login' => ''], $provider->getAllowedPluginDescriptions());
+        $this->assertSame(['Login' => ['description' => '']], $provider->getAllowedPluginMetadata());
     }
 
-    public function testGetAllowedPluginDescriptionsContinuesWhenOnePluginDescriptionFails(): void
+    public function testGetAllowedPluginMetadataContinuesWhenOnePluginDescriptionFails(): void
     {
         $provider = $this->getMockBuilder(PluginListProvider::class)
             ->disableOriginalConstructor()
@@ -162,10 +162,10 @@ class PluginListProviderTest extends TestCase
             });
 
         $this->assertSame([
-            'Login' => 'Login API description',
-            'BrokenPlugin' => '',
-            'ActivityLog' => 'Activity log API description',
-        ], $provider->getAllowedPluginDescriptions());
+            'Login' => ['description' => 'Login API description'],
+            'BrokenPlugin' => ['description' => ''],
+            'ActivityLog' => ['description' => 'Activity log API description'],
+        ], $provider->getAllowedPluginMetadata());
     }
 
     /**

@@ -45,21 +45,25 @@ class PluginListProvider
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, array{description: string}>
      */
-    public function getAllowedPluginDescriptions(): array
+    public function getAllowedPluginMetadata(): array
     {
-        $descriptions = [];
+        $metadata = [];
 
         foreach ($this->getAllowedPlugins() as $pluginName) {
             try {
-                $descriptions[$pluginName] = $this->getPluginDescription($pluginName);
+                $description = $this->getPluginDescription($pluginName);
             } catch (\Throwable $e) {
-                $descriptions[$pluginName] = '';
+                $description = '';
             }
+
+            $metadata[$pluginName] = [
+                'description' => $description,
+            ];
         }
 
-        return $descriptions;
+        return $metadata;
     }
 
     private function shouldIncludeEventProvidedPlugin(string $pluginName): bool
