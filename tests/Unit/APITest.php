@@ -77,6 +77,27 @@ class APITest extends TestCase
         $this->assertSame(['Login', 'ActivityLog'], $api->getAllowedPlugins());
     }
 
+    public function testGetAllowedPluginMetadataReturnsProviderValues(): void
+    {
+        $provider = $this->createMock(PluginListProvider::class);
+        $provider->expects($this->once())
+            ->method('getAllowedPluginMetadata')
+            ->willReturn([
+                'Login' => ['description' => 'Login API description'],
+                'ActivityLog' => ['description' => ''],
+            ]);
+
+        $api = $this->getMockBuilder(API::class)
+            ->onlyMethods(['getPluginListProvider'])
+            ->getMock();
+        $api->method('getPluginListProvider')->willReturn($provider);
+
+        $this->assertSame([
+            'Login' => ['description' => 'Login API description'],
+            'ActivityLog' => ['description' => ''],
+        ], $api->getAllowedPluginMetadata());
+    }
+
     public function testGetOpenApiSpecThrowsExceptionWhenFileMissing()
     {
         $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', false);

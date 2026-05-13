@@ -107,6 +107,67 @@ class PluginListProviderTest extends TestCase
         $this->assertSame(['HasApi', 'Login', 'InactivePlugin'], $provider->getAllowedPlugins());
     }
 
+    public function testGetAllowedPluginMetadataReturnsDescriptionPerAllowedPlugin(): void
+    {
+        $provider = $this->getMockBuilder(PluginListProvider::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getAllowedPlugins', 'getPluginDescription'])
+            ->getMock();
+
+        $provider->method('getAllowedPlugins')
+            ->willReturn(['Login', 'ActivityLog']);
+        $provider->method('getPluginDescription')
+            ->willReturnMap([
+                ['Login', 'Login API description'],
+                ['ActivityLog', 'Activity log API description'],
+            ]);
+
+        $this->assertSame([
+            'Login' => ['description' => 'Login API description'],
+            'ActivityLog' => ['description' => 'Activity log API description'],
+        ], $provider->getAllowedPluginMetadata());
+    }
+
+    public function testGetAllowedPluginMetadataReturnsEmptyStringWhenDescriptionMissing(): void
+    {
+        $provider = $this->getMockBuilder(PluginListProvider::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getAllowedPlugins', 'getPluginDescription'])
+            ->getMock();
+
+        $provider->method('getAllowedPlugins')
+            ->willReturn(['Login']);
+        $provider->method('getPluginDescription')
+            ->willReturn('');
+
+        $this->assertSame(['Login' => ['description' => '']], $provider->getAllowedPluginMetadata());
+    }
+
+    public function testGetAllowedPluginMetadataContinuesWhenOnePluginDescriptionFails(): void
+    {
+        $provider = $this->getMockBuilder(PluginListProvider::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getAllowedPlugins', 'getPluginDescription'])
+            ->getMock();
+
+        $provider->method('getAllowedPlugins')
+            ->willReturn(['Login', 'BrokenPlugin', 'ActivityLog']);
+        $provider->method('getPluginDescription')
+            ->willReturnCallback(static function (string $pluginName): string {
+                if ($pluginName === 'BrokenPlugin') {
+                    throw new \RuntimeException('Could not register API class');
+                }
+
+                return $pluginName === 'Login' ? 'Login API description' : 'Activity log API description';
+            });
+
+        $this->assertSame([
+            'Login' => ['description' => 'Login API description'],
+            'BrokenPlugin' => ['description' => ''],
+            'ActivityLog' => ['description' => 'Activity log API description'],
+        ], $provider->getAllowedPluginMetadata());
+    }
+
     /**
      * @param string[] $activatedPlugins
      * @param array<string, bool> $inFilesystemByPlugin
