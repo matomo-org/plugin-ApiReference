@@ -110,5 +110,4 @@ class MockAnnotationGenerator extends AnnotationGenerator
     {
         return parent::shouldUseParameterLevelExample($typesMap, $example);
     }
-
 }

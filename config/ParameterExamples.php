@@ -1,4 +1,5 @@
 <?php
+
 return [
     'idSite:int|string|int[]' => 1,
     'period:\'day\'|\'week\'|\'month\'|\'year\'|\'range\'' => 'day',
