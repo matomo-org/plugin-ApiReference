@@ -99,6 +99,11 @@ class AnnotationGenerator
      */
     protected $allowLocalRequests;
 
+    /**
+     * @var array<string, mixed>|null
+     */
+    protected $parameterExamples;
+
     public function __construct(
         DocumentationGenerator $generator,
         ?PathResolver $pathResolver = null,
@@ -110,6 +115,7 @@ class AnnotationGenerator
         $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
         $this->missingImportantDataWarnings = [];
         $this->allowLocalRequests = $allowLocalRequests;
+        $this->parameterExamples = null;
         $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
     }
 
@@ -455,7 +461,7 @@ class AnnotationGenerator
         // Sometimes, doc-block can wrap type hinting with parenthesis. Remove them.
         $type = trim($type, '()');
         // If the signature type is array, but the type hinting provides more, use that instead
-        if ($type === 'array' && strpos($docType, '[]') !== false && strpos($docType, '|') === false) {
+        if ($type === 'array' && $this->hasSpecificArrayShape($docType) && strpos($docType, '|') === false) {
             $type = $docType;
         }
         $typesMap = [];
@@ -468,6 +474,7 @@ class AnnotationGenerator
             $typeHints = array_diff($typeHints, ['bool']);
         }
 
+        $isRequired = !key_exists('default', $paramMetadata) || $paramMetadata['default'] instanceof NoDefaultValue;
         $allTypeHintsAreStringLiterals = $this->areAllTypeHintsStringLiterals($typeHints);
         $enumValues = [];
         if ($allTypeHintsAreStringLiterals) {
@@ -478,17 +485,13 @@ class AnnotationGenerator
         } else {
             foreach ($typeHints as $typePart) {
                 $typePart = trim($typePart, ' ()');
-                $normalisedType = $this->getOpenApiTypeFromPhpType($typePart);
+                $normalisedType = $this->hasSpecificArrayShape($typePart) ? 'array' : $this->getOpenApiTypeFromPhpType($typePart);
                 // If the type is array, check if there's a subType
-                $subType = null;
-                if ($normalisedType === 'array' && $typePart !== 'array' && strpos($typePart, '[]') !== false) {
-                    $subType = substr($typePart, 0, strpos($typePart, '[]'));
-                }
+                $subType = $this->getArraySubTypeFromPhpType($typePart, $normalisedType);
                 $typesMap[$normalisedType] = $subType !== null ? $this->getOpenApiTypeFromPhpType($subType) : $subType;
             }
         }
 
-        $isRequired = !key_exists('default', $paramMetadata) || $paramMetadata['default'] instanceof NoDefaultValue;
         $description = $paramDocInfo['description'] ?? '';
         if (empty($description)) {
             $this->addMissingImportantDataWarning($methodName, $paramName, 'Description is not specified in comment block.');
@@ -504,6 +507,13 @@ class AnnotationGenerator
             // Trim any excess whitespace and surrounding quotes from the example
             $example = trim($example);
             $example = trim($example, '"');
+        }
+
+        if ($isRequired && $example === '') {
+            $configExample = $this->getParameterExampleFromConfig($paramName, $type, $typesMap);
+            if ($configExample !== null) {
+                $example = $configExample;
+            }
         }
 
         // Clean up the descriptions a little more like removing linebreaks and escaping double-quotes
@@ -548,6 +558,138 @@ class AnnotationGenerator
             $firstChar = $typeHint[0] ?? '';
             $lastChar = $typeHint[strlen($typeHint) - 1] ?? '';
             if (!(($firstChar === "'" && $lastChar === "'") || ($firstChar === '"' && $lastChar === '"'))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function hasSpecificArrayShape(string $type): bool
+    {
+        return strpos($type, '[]') !== false || preg_match('/^(array|list)<.+>$/', trim($type)) === 1;
+    }
+
+    protected function getArraySubTypeFromPhpType(string $typePart, string $normalisedType): ?string
+    {
+        if ($normalisedType !== 'array' || $typePart === 'array') {
+            return null;
+        }
+
+        if (strpos($typePart, '[]') !== false) {
+            return substr($typePart, 0, strpos($typePart, '[]'));
+        }
+
+        if (preg_match('/^(array|list)<(.+)>$/', trim($typePart), $matches) !== 1) {
+            return null;
+        }
+
+        $genericParts = array_map('trim', explode(',', $matches[2], 2));
+        if (count($genericParts) === 1) {
+            return $genericParts[0];
+        }
+
+        return $genericParts[1];
+    }
+
+    /**
+     * Load and return the configured parameter examples.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getParameterExamplesConfig(): array
+    {
+        if ($this->parameterExamples !== null) {
+            return $this->parameterExamples;
+        }
+
+        $configPath = $this->currentPluginDir . '/config/ParameterExamples.php';
+        if (!is_file($configPath)) {
+            $this->parameterExamples = [];
+            return $this->parameterExamples;
+        }
+
+        $config = require $configPath;
+        $this->parameterExamples = is_array($config) ? $config : [];
+
+        return $this->parameterExamples;
+    }
+
+    /**
+     * Return a config-backed example string if the configured example is intentionally simple enough to support.
+     */
+    protected function getParameterExampleFromConfig(string $paramName, string $type, array $typesMap): ?string
+    {
+        $config = $this->getParameterExamplesConfig();
+        $keysToTry = [
+            $paramName . ':' . $type,
+            $paramName . ':' . preg_replace('/\s+/', '', $type),
+        ];
+
+        $configValue = null;
+        $foundConfigValue = false;
+        foreach (array_unique($keysToTry) as $key) {
+            if (!array_key_exists($key, $config)) {
+                continue;
+            }
+
+            $configValue = $config[$key];
+            $foundConfigValue = true;
+            break;
+        }
+
+        if (!$foundConfigValue) {
+            return null;
+        }
+
+        return $this->normaliseConfiguredParameterExample($configValue, $typesMap);
+    }
+
+    /**
+     * Convert supported scalar/basic-array config values into the string form used by schema generation.
+     */
+    protected function normaliseConfiguredParameterExample($example, array $typesMap = []): ?string
+    {
+        if (is_bool($example)) {
+            return $example ? 'true' : 'false';
+        }
+
+        if (is_int($example) || is_float($example) || is_string($example)) {
+            return strval($example);
+        }
+
+        if (
+            !is_array($example)
+            || !$this->isBasicExampleArray($example)
+            || !$this->supportsBasicArrayExample($typesMap)
+        ) {
+            return null;
+        }
+
+        $encoded = json_encode(array_values($example));
+
+        return is_string($encoded) ? $encoded : null;
+    }
+
+    /**
+     * Only use array config examples when the emitted schema includes an array shape.
+     */
+    protected function supportsBasicArrayExample(array $typesMap): bool
+    {
+        return array_key_exists('array', $typesMap);
+    }
+
+    /**
+     * Only support flat indexed arrays of scalar values for now.
+     */
+    protected function isBasicExampleArray(array $example): bool
+    {
+        if (array_values($example) !== $example) {
+            return false;
+        }
+
+        foreach ($example as $item) {
+            if (!is_bool($item) && !is_int($item) && !is_float($item) && !is_string($item)) {
                 return false;
             }
         }
@@ -1863,7 +2005,7 @@ class AnnotationGenerator
      */
     public function wrapStringWithQuotes(string $string, string $type, string $quoteCharacter = '"'): string
     {
-        if (in_array($type, ['integer', 'boolean', 'array'])) {
+        if (in_array($type, ['integer', 'number', 'boolean', 'array'])) {
             return $string;
         }
 
@@ -1972,11 +2114,16 @@ class AnnotationGenerator
                 $paramMap[] = 'description="' . $param['description'] . '"';
             }
             $exampleString = $param['example'];
-            if (in_array('array', array_keys($param['types']))) {
+            $useParameterLevelExample = $this->shouldUseParameterLevelExample($param['types'], $exampleString);
+            if (in_array('array', array_keys($param['types'])) && !$useParameterLevelExample) {
                 // The annotation expects example objects and not arrays, so replace [] with {}
                 $exampleString = str_replace(['[', ']'], ['{', '}'], $exampleString);
                 // Escape quotes differently for the annotation examples
                 $exampleString = str_replace('\"', '""', $exampleString);
+            }
+            if ($useParameterLevelExample) {
+                $paramMap[] = 'example="' . $this->normaliseDescriptionText($exampleString) . '"';
+                $exampleString = '';
             }
             $paramMap[] = $this->buildSchemaObjectArrays(
                 $param['types'],
@@ -2018,5 +2165,19 @@ class AnnotationGenerator
         // Trim the comma off the very last item at this level and return the array
         $this->removeTrailingCommaFromLastLine($lines);
         return $lines;
+    }
+
+    /**
+     * Use a parameter-level string example for scalar/array unions so Swagger UI can show a concrete query value.
+     *
+     * @param array<string, string|null> $typesMap
+     */
+    protected function shouldUseParameterLevelExample(array $typesMap, string $example): bool
+    {
+        if (count($typesMap) <= 1 || !array_key_exists('array', $typesMap) || $example === '') {
+            return false;
+        }
+
+        return is_array(json_decode($example, true));
     }
 }

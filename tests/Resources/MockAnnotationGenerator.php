@@ -90,4 +90,25 @@ class MockAnnotationGenerator extends AnnotationGenerator
     {
         return parent::determineResponses($rules, $plugin, $method, $reflectionMethod, $paramsData);
     }
+
+    public function normaliseConfiguredParameterExample($example, array $typesMap = []): ?string
+    {
+        return parent::normaliseConfiguredParameterExample($example, $typesMap);
+    }
+
+    public function isBasicExampleArray(array $example): bool
+    {
+        return parent::isBasicExampleArray($example);
+    }
+
+    public function supportsBasicArrayExample(array $typesMap): bool
+    {
+        return parent::supportsBasicArrayExample($typesMap);
+    }
+
+    public function shouldUseParameterLevelExample(array $typesMap, string $example): bool
+    {
+        return parent::shouldUseParameterLevelExample($typesMap, $example);
+    }
+
 }
