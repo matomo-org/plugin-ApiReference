@@ -72,8 +72,8 @@ return [
         1,
         2,
     ],
-    'period:\'day\'|\'week\'|\'month\'' => 'week',
-    'period:"day"|"week"|"month"' => 'week',
+    'period:\'day\'|\'week\'|\'month\'' => 'day',
+    'period:"day"|"week"|"month"' => 'day',
     'emailMe:bool' => true,
     'additionalEmails:list<string>' => [
         'alice@example.org',
