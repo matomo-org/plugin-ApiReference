@@ -544,6 +544,16 @@ class AnnotationGeneratorTest extends TestCase
             'default' => 'false',
             'example' => '',
         ]];
+        yield 'should not include null as a default value' => ['someParam', [
+            'default' => null,
+        ], [], [
+            'name' => 'someParam',
+            'types' => ['string' => null],
+            'description' => '',
+            'required' => 'false',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
         yield 'should still count empty string as a default value' => ['someParam', [
             'default' => '',
         ], [], [

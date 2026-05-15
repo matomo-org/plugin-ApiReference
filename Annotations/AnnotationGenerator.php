@@ -520,7 +520,9 @@ class AnnotationGenerator
         $description = $this->normaliseDescriptionText($description);
 
         $default = $paramMetadata['default'] ?? null;
-        if (!is_string($default)) {
+        if ($default === null) {
+            $default = NoDefaultValue::class;
+        } elseif (!is_string($default)) {
             $default = json_encode($default);
         }
 
