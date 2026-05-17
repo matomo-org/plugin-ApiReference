@@ -544,6 +544,16 @@ class AnnotationGeneratorTest extends TestCase
             'default' => 'false',
             'example' => '',
         ]];
+        yield 'should not include null as a default value' => ['someParam', [
+            'default' => null,
+        ], [], [
+            'name' => 'someParam',
+            'types' => ['string' => null],
+            'description' => '',
+            'required' => 'false',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
         yield 'should still count empty string as a default value' => ['someParam', [
             'default' => '',
         ], [], [
@@ -688,7 +698,7 @@ class AnnotationGeneratorTest extends TestCase
             'description' => '',
             'required' => 'true',
             'default' => 'Piwik\API\NoDefaultValue',
-            'example' => '',
+            'example' => 'day',
             'enum' => ['day', 'week', 'month'],
         ]];
         yield 'should extract enum values when docInfo uses double-quoted string literals' => ['format', [], [
@@ -719,6 +729,26 @@ class AnnotationGeneratorTest extends TestCase
         ], [
             'name' => 'someParam',
             'types' => ['string' => null, 'integer' => null, 'array' => 'integer'],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
+        ]];
+        yield 'should allow union with generic string array type' => ['statuses', [], [
+            'type' => 'string|array<int, string>',
+        ], [
+            'name' => 'statuses',
+            'types' => ['string' => null, 'array' => 'string'],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '["running","finished"]',
+        ]];
+        yield 'should determine subtype for list syntax' => ['someParam', [], [
+            'type' => 'list<string>',
+        ], [
+            'name' => 'someParam',
+            'types' => ['array' => 'string'],
             'description' => '',
             'required' => 'true',
             'default' => 'Piwik\API\NoDefaultValue',
@@ -820,6 +850,53 @@ class AnnotationGeneratorTest extends TestCase
             'required' => 'true',
             'default' => 'Piwik\API\NoDefaultValue',
             'example' => '[{"key1":"value1","key2":"value2"},{"key3":"value3","key4":"value4"}]',
+        ]];
+        yield 'should use config example when docblock example is absent' => ['idSite', [
+            'type' => 'string',
+        ], [
+            'type' => 'int|string',
+        ], [
+            'name' => 'idSite',
+            'types' => ['integer' => null, 'string' => null],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '1',
+        ]];
+        yield 'should not use config example when parameter is optional' => ['statuses', [
+            'default' => [],
+        ], [
+            'type' => 'string|array<int, string>',
+        ], [
+            'name' => 'statuses',
+            'types' => ['string' => null, 'array' => 'string'],
+            'description' => '',
+            'required' => 'false',
+            'default' => '[]',
+            'example' => '',
+        ]];
+        yield 'should prefer docblock example over config example' => ['idSite', [
+            'type' => 'string',
+        ], [
+            'type' => 'int|string',
+            'description' => 'Some test description. [@example=99]',
+        ], [
+            'name' => 'idSite',
+            'types' => ['integer' => null, 'string' => null],
+            'description' => 'Some test description.',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '99',
+        ]];
+        yield 'should preserve integer and integer array union type' => ['idSites', [], [
+            'type' => 'int|int[]',
+        ], [
+            'name' => 'idSites',
+            'types' => ['integer' => null, 'array' => 'integer'],
+            'description' => '',
+            'required' => 'true',
+            'default' => 'Piwik\API\NoDefaultValue',
+            'example' => '',
         ]];
     }
 
@@ -1220,6 +1297,28 @@ class AnnotationGeneratorTest extends TestCase
         $this->assertEquals($expectedWithoutEnum, $this->annotationGenerator->buildSchemaObjectArray('integer', '', NoDefaultValue::class, '1', ['1', '2']));
     }
 
+    public function testNormaliseConfiguredParameterExampleSupportsOnlySimpleValues(): void
+    {
+        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+
+        $this->assertSame('true', $annotationGenerator->normaliseConfiguredParameterExample(true));
+        $this->assertSame('1.5', $annotationGenerator->normaliseConfiguredParameterExample(1.5));
+        $this->assertSame('["one","two"]', $annotationGenerator->normaliseConfiguredParameterExample(['one', 'two'], ['array' => 'string']));
+        $this->assertNull($annotationGenerator->normaliseConfiguredParameterExample(['one', 'two'], ['string' => null]));
+        $this->assertSame('["one","two"]', $annotationGenerator->normaliseConfiguredParameterExample(['one', 'two'], ['array' => 'string', 'string' => null]));
+        $this->assertNull($annotationGenerator->normaliseConfiguredParameterExample(['key' => 'value'], ['array' => 'string']));
+        $this->assertNull($annotationGenerator->normaliseConfiguredParameterExample([['nested']], ['array' => 'string']));
+    }
+
+    public function testShouldUseParameterLevelExampleForScalarArrayUnions(): void
+    {
+        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+
+        $this->assertTrue($annotationGenerator->shouldUseParameterLevelExample(['string' => null, 'array' => 'string'], '["one","two"]'));
+        $this->assertFalse($annotationGenerator->shouldUseParameterLevelExample(['array' => 'string'], '["one","two"]'));
+        $this->assertFalse($annotationGenerator->shouldUseParameterLevelExample(['string' => null, 'array' => 'string'], 'one'));
+    }
+
     /**
      * @dataProvider getTestDataForWrapStringWithQuotes
      *
@@ -1243,6 +1342,7 @@ class AnnotationGeneratorTest extends TestCase
         yield 'should be empty quoted string if everything is empty' => ['', '', null, '""'];
         yield 'should be empty quoted string if string type and empty value' => ['', 'string', null, '""'];
         yield 'should be empty string if integer type and empty value' => ['', 'integer', null, ''];
+        yield 'should be empty string if number type and empty value' => ['', 'number', null, ''];
         yield 'should be empty string if boolean type and empty value' => ['', 'boolean', null, ''];
         yield 'should be empty string if array type and empty value' => ['', 'array', null, ''];
         yield 'should be empty quoted string if string type and quoted empty string value' => ['""', 'string', null, '""'];
@@ -1253,6 +1353,7 @@ class AnnotationGeneratorTest extends TestCase
         yield 'should be quoted string if no type and string value' => ['test', '', null, '"test"'];
         yield 'should be quoted string if string type and string value' => ['test', 'string', null, '"test"'];
         yield 'should be integer string if integer type and integer string value' => ['12', 'integer', null, '12'];
+        yield 'should be number string if number type and float string value' => ['1.5', 'number', null, '1.5'];
         yield 'should be boolean string if boolean type and boolean string value' => ['true', 'boolean', null, 'true'];
         yield 'should be array string if array type and array string value' => ['[]', 'array', null, '[]'];
         yield 'should be use the custom quote character when provided even when not quote' => ['test', 'string', '|', "|test|"];
