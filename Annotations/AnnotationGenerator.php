@@ -379,8 +379,8 @@ class AnnotationGenerator
 
         $paramTypes = [];
         foreach ($matches as $match) {
-            $type = trim($match[1] ?? '');
-            $name = trim($match[2] ?? '');
+            $type = trim($match[1]);
+            $name = trim($match[2]);
             if ($type === '' || $name === '') {
                 continue;
             }
@@ -867,8 +867,8 @@ class AnnotationGenerator
         preg_match_all('/@phpstan-type\s+([A-Za-z_][A-Za-z0-9_]*)\s+([^\n\r*]+)/', $docBlock, $matches, PREG_SET_ORDER);
         $aliases = [];
         foreach ($matches as $match) {
-            $aliasName = trim($match[1] ?? '');
-            $aliasType = trim($match[2] ?? '');
+            $aliasName = trim($match[1]);
+            $aliasType = trim($match[2]);
             if ($aliasName === '' || $aliasType === '') {
                 continue;
             }
