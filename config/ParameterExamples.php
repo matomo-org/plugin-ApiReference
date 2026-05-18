@@ -157,8 +157,8 @@ return [
     'format:string' => 'html',
     'visits:array<int,VisitDescriptor>' => [
         [
-            'idVisit' => 12345,
-            'idSite' => 1,
+            'idvisit' => 12345,
+            'idsite' => 1,
         ],
     ],
     'segment:string' => 'countryCode==NZ',

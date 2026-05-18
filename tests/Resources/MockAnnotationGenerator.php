@@ -110,4 +110,29 @@ class MockAnnotationGenerator extends AnnotationGenerator
     {
         return parent::shouldUseParameterLevelExample($typesMap, $example);
     }
+
+    public function isComplexParameter(array $param): bool
+    {
+        return parent::isComplexParameter($param);
+    }
+
+    public function buildRequestBodyAnnotation(array $bodyParams): array
+    {
+        return parent::buildRequestBodyAnnotation($bodyParams);
+    }
+
+    public function expandTypeAliases(string $type): string
+    {
+        return parent::expandTypeAliases($type);
+    }
+
+    public function resolveEffectiveParameterType(array $paramMetadata, array $paramDocInfo): string
+    {
+        return parent::resolveEffectiveParameterType($paramMetadata, $paramDocInfo);
+    }
+
+    public function setCurrentTypeAliases(array $aliases): void
+    {
+        $this->currentTypeAliases = $aliases;
+    }
 }

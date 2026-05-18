@@ -96,13 +96,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "003e":
-/***/ (function(module, exports, __webpack_require__) {
-
-// extracted by mini-css-extract-plugin
-
-/***/ }),
-
 /***/ "0edb":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -121,14 +114,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__19dc__;
 
 /***/ }),
 
-/***/ "848d":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ "601d":
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_7_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_7_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_oneOf_1_2_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_1_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_1_1_SwaggerUiPanel_vue_vue_type_style_index_0_id_7e9c9564_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("003e");
-/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_7_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_7_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_oneOf_1_2_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_1_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_1_1_SwaggerUiPanel_vue_vue_type_style_index_0_id_7e9c9564_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_7_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_7_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_oneOf_1_2_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_1_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_1_1_SwaggerUiPanel_vue_vue_type_style_index_0_id_7e9c9564_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
-/* unused harmony reexport * */
-
+// extracted by mini-css-extract-plugin
 
 /***/ }),
 
@@ -136,6 +125,17 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__19dc__;
 /***/ (function(module, exports) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__8bbf__;
+
+/***/ }),
+
+/***/ "b66b":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_7_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_7_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_oneOf_1_2_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_1_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_1_1_SwaggerUiPanel_vue_vue_type_style_index_0_id_767b88f2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("601d");
+/* harmony import */ var _node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_7_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_7_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_oneOf_1_2_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_1_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_1_1_SwaggerUiPanel_vue_vue_type_style_index_0_id_767b88f2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_cli_service_node_modules_mini_css_extract_plugin_dist_loader_js_ref_7_oneOf_1_0_node_modules_vue_cli_service_node_modules_css_loader_dist_cjs_js_ref_7_oneOf_1_1_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_oneOf_1_2_node_modules_vue_cli_service_node_modules_cache_loader_dist_cjs_js_ref_1_0_node_modules_vue_cli_service_node_modules_vue_loader_v16_dist_index_js_ref_1_1_SwaggerUiPanel_vue_vue_type_style_index_0_id_767b88f2_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__);
+/* unused harmony reexport * */
+
 
 /***/ }),
 
@@ -294,18 +294,18 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 // EXTERNAL MODULE: external "CoreHome"
 var external_CoreHome_ = __webpack_require__("19dc");
 
-// CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-babel/node_modules/cache-loader/dist/cjs.js??ref--13-0!./node_modules/@vue/cli-plugin-babel/node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--1-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--1-1!./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerUiPanel.vue?vue&type=template&id=7e9c9564&scoped=true
+// CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-babel/node_modules/cache-loader/dist/cjs.js??ref--13-0!./node_modules/@vue/cli-plugin-babel/node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist/templateLoader.js??ref--6!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--1-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--1-1!./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerUiPanel.vue?vue&type=template&id=767b88f2&scoped=true
 
-const SwaggerUiPanelvue_type_template_id_7e9c9564_scoped_true_withScopeId = n => (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["pushScopeId"])("data-v-7e9c9564"), n = n(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["popScopeId"])(), n);
-const SwaggerUiPanelvue_type_template_id_7e9c9564_scoped_true_hoisted_1 = {
+const SwaggerUiPanelvue_type_template_id_767b88f2_scoped_true_withScopeId = n => (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["pushScopeId"])("data-v-767b88f2"), n = n(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["popScopeId"])(), n);
+const SwaggerUiPanelvue_type_template_id_767b88f2_scoped_true_hoisted_1 = {
   key: 0,
   class: "swaggerLoader"
 };
-const SwaggerUiPanelvue_type_template_id_7e9c9564_scoped_true_hoisted_2 = ["id"];
-function SwaggerUiPanelvue_type_template_id_7e9c9564_scoped_true_render(_ctx, _cache, $props, $setup, $data, $options) {
+const SwaggerUiPanelvue_type_template_id_767b88f2_scoped_true_hoisted_2 = ["id"];
+function SwaggerUiPanelvue_type_template_id_767b88f2_scoped_true_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_ActivityIndicator = Object(external_commonjs_vue_commonjs2_vue_root_Vue_["resolveComponent"])("ActivityIndicator");
   const _component_Alert = Object(external_commonjs_vue_commonjs2_vue_root_Vue_["resolveComponent"])("Alert");
-  return Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createElementBlock"])(external_commonjs_vue_commonjs2_vue_root_Vue_["Fragment"], null, [_ctx.isLoading && !_ctx.spec && !_ctx.displayError ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createElementBlock"])("div", SwaggerUiPanelvue_type_template_id_7e9c9564_scoped_true_hoisted_1, [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])(_component_ActivityIndicator, {
+  return Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createElementBlock"])(external_commonjs_vue_commonjs2_vue_root_Vue_["Fragment"], null, [_ctx.isLoading && !_ctx.spec && !_ctx.displayError ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createElementBlock"])("div", SwaggerUiPanelvue_type_template_id_767b88f2_scoped_true_hoisted_1, [Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createVNode"])(_component_ActivityIndicator, {
     loading: true
   })])) : Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createCommentVNode"])("", true), _ctx.displayError ? (Object(external_commonjs_vue_commonjs2_vue_root_Vue_["openBlock"])(), Object(external_commonjs_vue_commonjs2_vue_root_Vue_["createBlock"])(_component_Alert, {
     key: 1,
@@ -318,9 +318,9 @@ function SwaggerUiPanelvue_type_template_id_7e9c9564_scoped_true_render(_ctx, _c
     class: Object(external_commonjs_vue_commonjs2_vue_root_Vue_["normalizeClass"])(['swaggerMount', {
       'swaggerMount--ready': _ctx.isReady
     }])
-  }, null, 10, SwaggerUiPanelvue_type_template_id_7e9c9564_scoped_true_hoisted_2)], 64);
+  }, null, 10, SwaggerUiPanelvue_type_template_id_767b88f2_scoped_true_hoisted_2)], 64);
 }
-// CONCATENATED MODULE: ./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerUiPanel.vue?vue&type=template&id=7e9c9564&scoped=true
+// CONCATENATED MODULE: ./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerUiPanel.vue?vue&type=template&id=767b88f2&scoped=true
 
 // CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-typescript/node_modules/cache-loader/dist/cjs.js??ref--15-0!./node_modules/babel-loader/lib!./node_modules/@vue/cli-plugin-typescript/node_modules/ts-loader??ref--15-2!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--1-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--1-1!./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerUiPanel.vue?vue&type=script&lang=ts
 
@@ -404,6 +404,273 @@ const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-
           url: this.piwikUrl
         }]
       });
+    },
+    getOperationForRequest(spec, requestUrl, requestMethod) {
+      const operationId = new URL(requestUrl, window.location.href).searchParams.get('method');
+      const {
+        paths
+      } = spec;
+      if (!operationId || !paths || typeof paths !== 'object') {
+        return null;
+      }
+      const methodName = requestMethod.toLowerCase();
+      return Object.values(paths).reduce((found, pathItem) => {
+        if (found || !pathItem || typeof pathItem !== 'object') {
+          return found;
+        }
+        const operation = pathItem[methodName];
+        if (!operation || typeof operation !== 'object') {
+          return found;
+        }
+        return operation.operationId === operationId ? operation : found;
+      }, null);
+    },
+    resolveParameterSpec(spec, parameter) {
+      if (!parameter || typeof parameter !== 'object') {
+        return null;
+      }
+      const ref = parameter.$ref;
+      if (typeof ref !== 'string' || !ref.startsWith('#/components/parameters/')) {
+        return parameter;
+      }
+      const componentName = ref.substring('#/components/parameters/'.length);
+      const components = spec.components;
+      const {
+        parameters
+      } = components || {};
+      if (!parameters || typeof parameters !== 'object') {
+        return null;
+      }
+      const resolved = parameters[componentName];
+      return resolved && typeof resolved === 'object' ? resolved : null;
+    },
+    resolveSchemaSpec(spec, schema) {
+      if (!schema || typeof schema !== 'object') {
+        return null;
+      }
+      const ref = schema.$ref;
+      if (typeof ref !== 'string' || !ref.startsWith('#/components/schemas/')) {
+        return schema;
+      }
+      const componentName = ref.substring('#/components/schemas/'.length);
+      const components = spec.components;
+      const {
+        schemas
+      } = components || {};
+      if (!schemas || typeof schemas !== 'object') {
+        return null;
+      }
+      const resolved = schemas[componentName];
+      return resolved && typeof resolved === 'object' ? resolved : null;
+    },
+    isArrayQueryParameter(parameter) {
+      if (parameter.in !== 'query') {
+        return false;
+      }
+      const {
+        schema
+      } = parameter;
+      if (!schema || typeof schema !== 'object') {
+        return false;
+      }
+      const schemaObject = schema;
+      if (schemaObject.type === 'array') {
+        return true;
+      }
+      const {
+        oneOf
+      } = schemaObject;
+      if (!Array.isArray(oneOf)) {
+        return false;
+      }
+      return oneOf.some(branch => branch && typeof branch === 'object' && branch.type === 'array');
+    },
+    getArrayQueryParameterNamesForRequest(spec, requestUrl, requestMethod) {
+      const operation = this.getOperationForRequest(spec, requestUrl, requestMethod);
+      const parameters = operation === null || operation === void 0 ? void 0 : operation.parameters;
+      if (!Array.isArray(parameters)) {
+        return [];
+      }
+      return parameters.map(parameter => this.resolveParameterSpec(spec, parameter)).filter(parameter => Boolean(parameter)).filter(parameter => this.isArrayQueryParameter(parameter)).map(parameter => parameter.name).filter(name => typeof name === 'string' && name.length > 0);
+    },
+    rewriteMatomoArrayQueryParams(request, spec) {
+      if (!request.url) {
+        return request;
+      }
+      const arrayQueryParameterNames = this.getArrayQueryParameterNamesForRequest(spec, request.url, request.method || 'get');
+      if (!arrayQueryParameterNames.length) {
+        return request;
+      }
+      const parsedUrl = new URL(request.url, window.location.href);
+      let didRewriteUrl = false;
+      arrayQueryParameterNames.forEach(parameterName => {
+        const values = parsedUrl.searchParams.getAll(parameterName);
+        if (!values.length) {
+          return;
+        }
+        parsedUrl.searchParams.delete(parameterName);
+        values.forEach((value, index) => {
+          parsedUrl.searchParams.append(`${parameterName}[${index}]`, value);
+        });
+        didRewriteUrl = true;
+      });
+      if (didRewriteUrl) {
+        request.url = parsedUrl.toString();
+      }
+      return request;
+    },
+    resolveFormRequestBodySchema(spec, requestUrl, requestMethod) {
+      const operation = this.getOperationForRequest(spec, requestUrl, requestMethod);
+      const requestBody = operation === null || operation === void 0 ? void 0 : operation.requestBody;
+      if (!requestBody || typeof requestBody !== 'object') {
+        return null;
+      }
+      const {
+        content
+      } = requestBody;
+      if (!content || typeof content !== 'object') {
+        return null;
+      }
+      const formContent = content['application/x-www-form-urlencoded'];
+      if (!formContent || typeof formContent !== 'object') {
+        return null;
+      }
+      return this.resolveSchemaSpec(spec, formContent.schema);
+    },
+    isObjectLikeFormSchema(spec, schema) {
+      if (schema.type === 'object') {
+        return true;
+      }
+      if (schema.type !== 'array') {
+        return false;
+      }
+      const items = this.resolveSchemaSpec(spec, schema.items);
+      return Boolean((items === null || items === void 0 ? void 0 : items.type) === 'object');
+    },
+    getObjectFormSchemasForRequest(spec, requestUrl, requestMethod) {
+      const schema = this.resolveFormRequestBodySchema(spec, requestUrl, requestMethod);
+      const properties = schema === null || schema === void 0 ? void 0 : schema.properties;
+      if (!properties || typeof properties !== 'object') {
+        return {};
+      }
+      return Object.entries(properties).reduce((result, [name, propertySchema]) => {
+        const resolved = this.resolveSchemaSpec(spec, propertySchema);
+        if (resolved && this.isObjectLikeFormSchema(spec, resolved)) {
+          result[name] = resolved;
+        }
+        return result;
+      }, {});
+    },
+    getRequestContentType(request) {
+      const {
+        headers
+      } = request;
+      if (!headers || typeof headers !== 'object') {
+        return '';
+      }
+      const match = Object.entries(headers).find(([headerName]) => headerName.toLowerCase() === 'content-type');
+      return typeof (match === null || match === void 0 ? void 0 : match[1]) === 'string' ? match[1] : '';
+    },
+    appendPhpFormEntries(target, keyPrefix, value) {
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          this.appendPhpFormEntries(target, `${keyPrefix}[${index}]`, item);
+        });
+        return;
+      }
+      if (value && typeof value === 'object') {
+        Object.entries(value).forEach(([key, nestedValue]) => {
+          this.appendPhpFormEntries(target, `${keyPrefix}[${key}]`, nestedValue);
+        });
+        return;
+      }
+      target.append(keyPrefix, value == null ? '' : String(value));
+    },
+    parseObjectLikeFormValue(rawValue, schema) {
+      const normaliseArrayValue = parsedValue => {
+        if (schema.type === 'array' && parsedValue && !Array.isArray(parsedValue) && typeof parsedValue === 'object') {
+          return [parsedValue];
+        }
+        return parsedValue;
+      };
+      const tryParseJson = jsonValue => {
+        try {
+          return normaliseArrayValue(JSON.parse(jsonValue));
+        } catch (error) {
+          return null;
+        }
+      };
+      const tryParseJsonLikeObject = () => {
+        const trimmedValue = rawValue.trim();
+        if (!trimmedValue.startsWith('{') || !trimmedValue.endsWith('}')) {
+          return null;
+        }
+        const withInsertedCommas = trimmedValue.replace(/((?:"(?:\\.|[^"])*")|true|false|null|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\}|\])(\s*")/g, '$1,$2');
+        if (schema.type === 'array') {
+          return tryParseJson(`[${withInsertedCommas}]`);
+        }
+        return tryParseJson(withInsertedCommas);
+      };
+      const parsedJson = tryParseJson(rawValue);
+      if (parsedJson !== null) {
+        return parsedJson;
+      }
+      const parsedJsonLikeObject = tryParseJsonLikeObject();
+      if (parsedJsonLikeObject !== null) {
+        return parsedJsonLikeObject;
+      }
+      if (schema.type !== 'array') {
+        return null;
+      }
+      const trimmedValue = rawValue.trim();
+      if (!trimmedValue.startsWith('{') || !trimmedValue.endsWith('}')) {
+        return null;
+      }
+      return tryParseJson(`[${trimmedValue}]`);
+    },
+    rewriteMatomoObjectFormParams(request, spec) {
+      if (!request.url) {
+        return request;
+      }
+      const contentType = this.getRequestContentType(request);
+      if (!contentType.includes('application/x-www-form-urlencoded')) {
+        return request;
+      }
+      const objectFormSchemas = this.getObjectFormSchemasForRequest(spec, request.url, request.method || 'get');
+      const objectFormParameterNames = Object.keys(objectFormSchemas);
+      if (!objectFormParameterNames.length) {
+        return request;
+      }
+      let rawBody = '';
+      if (request.body instanceof URLSearchParams) {
+        rawBody = request.body.toString();
+      } else if (typeof request.body === 'string') {
+        rawBody = request.body;
+      }
+      if (!rawBody) {
+        return request;
+      }
+      const parsedBody = new URLSearchParams(rawBody);
+      const rewrittenBody = new URLSearchParams();
+      let didRewriteBody = false;
+      parsedBody.forEach((value, key) => {
+        if (!objectFormParameterNames.includes(key)) {
+          rewrittenBody.append(key, value);
+          return;
+        }
+        const schema = objectFormSchemas[key];
+        const parsedValue = this.parseObjectLikeFormValue(value, schema);
+        if (!parsedValue || typeof parsedValue !== 'object') {
+          rewrittenBody.append(key, value);
+          return;
+        }
+        this.appendPhpFormEntries(rewrittenBody, key, parsedValue);
+        didRewriteBody = true;
+      });
+      if (didRewriteBody) {
+        request.body = rewrittenBody.toString();
+      }
+      return request;
     },
     shortenSummaryPaths(swaggerRoot) {
       const summaryPaths = swaggerRoot.querySelectorAll('.opblock-summary-path');
@@ -540,15 +807,17 @@ const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-
         return;
       }
       container.innerHTML = '';
+      const specWithCurrentInstanceUrl = this.getSpecWithCurrentInstanceUrl(this.spec);
       swaggerUiBundle({
         dom_id: `#${this.swaggerContainerId}`,
-        spec: this.getSpecWithCurrentInstanceUrl(this.spec),
+        spec: specWithCurrentInstanceUrl,
         deepLinking: false,
         docExpansion: 'list',
         defaultModelsExpandDepth: -1,
         layout: 'BaseLayout',
         tagsSorter: 'alpha',
         presets: (_swaggerUiBundle$pres = swaggerUiBundle.presets) !== null && _swaggerUiBundle$pres !== void 0 && _swaggerUiBundle$pres.apis ? [swaggerUiBundle.presets.apis] : [],
+        requestInterceptor: request => this.rewriteMatomoObjectFormParams(this.rewriteMatomoArrayQueryParams(request, specWithCurrentInstanceUrl), specWithCurrentInstanceUrl),
         onComplete: () => {
           window.setTimeout(() => {
             this.normalizeSwaggerUi(container);
@@ -562,8 +831,8 @@ const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-
 }));
 // CONCATENATED MODULE: ./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerUiPanel.vue?vue&type=script&lang=ts
  
-// EXTERNAL MODULE: ./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerUiPanel.vue?vue&type=style&index=0&id=7e9c9564&scoped=true&lang=css
-var SwaggerUiPanelvue_type_style_index_0_id_7e9c9564_scoped_true_lang_css = __webpack_require__("848d");
+// EXTERNAL MODULE: ./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerUiPanel.vue?vue&type=style&index=0&id=767b88f2&scoped=true&lang=css
+var SwaggerUiPanelvue_type_style_index_0_id_767b88f2_scoped_true_lang_css = __webpack_require__("b66b");
 
 // CONCATENATED MODULE: ./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerUiPanel.vue
 
@@ -571,8 +840,8 @@ var SwaggerUiPanelvue_type_style_index_0_id_7e9c9564_scoped_true_lang_css = __we
 
 
 
-SwaggerUiPanelvue_type_script_lang_ts.render = SwaggerUiPanelvue_type_template_id_7e9c9564_scoped_true_render
-SwaggerUiPanelvue_type_script_lang_ts.__scopeId = "data-v-7e9c9564"
+SwaggerUiPanelvue_type_script_lang_ts.render = SwaggerUiPanelvue_type_template_id_767b88f2_scoped_true_render
+SwaggerUiPanelvue_type_script_lang_ts.__scopeId = "data-v-767b88f2"
 
 /* harmony default export */ var SwaggerUiPanel = (SwaggerUiPanelvue_type_script_lang_ts);
 // CONCATENATED MODULE: ./node_modules/@vue/cli-plugin-typescript/node_modules/cache-loader/dist/cjs.js??ref--15-0!./node_modules/babel-loader/lib!./node_modules/@vue/cli-plugin-typescript/node_modules/ts-loader??ref--15-2!./node_modules/@vue/cli-service/node_modules/cache-loader/dist/cjs.js??ref--1-0!./node_modules/@vue/cli-service/node_modules/vue-loader-v16/dist??ref--1-1!./plugins/OpenApiDocs/vue/src/SwaggerPage/SwaggerPage.vue?vue&type=script&lang=ts

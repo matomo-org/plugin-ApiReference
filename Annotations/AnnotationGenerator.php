@@ -104,6 +104,11 @@ class AnnotationGenerator
      */
     protected $parameterExamples;
 
+    /**
+     * @var array<string, string>
+     */
+    protected $currentTypeAliases;
+
     public function __construct(
         DocumentationGenerator $generator,
         ?PathResolver $pathResolver = null,
@@ -116,6 +121,7 @@ class AnnotationGenerator
         $this->missingImportantDataWarnings = [];
         $this->allowLocalRequests = $allowLocalRequests;
         $this->parameterExamples = null;
+        $this->currentTypeAliases = [];
         $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
     }
 
@@ -288,13 +294,16 @@ class AnnotationGenerator
             $pluginName,
             $methodName
         );
+        $this->currentTypeAliases = $this->getTypeAliasesFromClassDocBlock($reflectionMethod->getDeclaringClass());
 
         $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
         $responses = $this->determineResponses($rules, $pluginName, $methodName, $reflectionMethod, $params);
         $description = $this->determineDescription($pluginName, $methodName, $reflectionMethod);
+        $hasComplexParams = $this->methodHasComplexParams($params);
 
         $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
             && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
+        $isPost = $isPost || $hasComplexParams;
 
         return $this->compileOperationLines($path, $opId, $pluginName, $params, $responses, $description, $isPost);
     }
@@ -339,6 +348,7 @@ class AnnotationGenerator
     {
         $factory = DocBlockFactory::createInstance();
         $docBlockObject = $factory->create($docBlock);
+        $rawParamTypes = $this->extractRawParamTypesFromDocBlock($docBlock);
 
         $params = [];
         foreach ($docBlockObject->getTagsByName('param') as $param) {
@@ -347,7 +357,7 @@ class AnnotationGenerator
             }
             $name = ltrim($param->getVariableName(), '$');
             $params[$name] = [
-                'type' => (string) $param->getType(),
+                'type' => $rawParamTypes[$name] ?? (string) $param->getType(),
                 // Normalise the description. E.g. remove linebreaks and indentation
                 'description' => trim(preg_replace(['/^\h+/m', '/\R+/u',], ['', ' '], (string) $param->getDescription())),
                 'byRef' => $param->isReference(),
@@ -355,6 +365,30 @@ class AnnotationGenerator
             ];
         }
         return $params;
+    }
+
+    /**
+     * Preserve raw @param type text so phpstan aliases and array-shape syntax are not normalised away before
+     * downstream alias expansion and schema generation.
+     *
+     * @return array<string, string>
+     */
+    protected function extractRawParamTypesFromDocBlock(string $docBlock): array
+    {
+        preg_match_all('/@param\s+(.+?)\s+\$([A-Za-z_][A-Za-z0-9_]*)/m', $docBlock, $matches, PREG_SET_ORDER);
+
+        $paramTypes = [];
+        foreach ($matches as $match) {
+            $type = trim($match[1] ?? '');
+            $name = trim($match[2] ?? '');
+            if ($type === '' || $name === '') {
+                continue;
+            }
+
+            $paramTypes[$name] = $type;
+        }
+
+        return $paramTypes;
     }
 
     /**
@@ -456,14 +490,7 @@ class AnnotationGenerator
         if (empty($docType)) {
             $this->addMissingImportantDataWarning($methodName, $paramName, 'Type is not specified in comment block.');
         }
-        $metaType = strtolower(trim($paramMetadata['type'] ?? $docType));
-        $type = in_array($metaType, ['string', 'bool']) && !empty($docType) && $docType !== $metaType ? $docType : $metaType;
-        // Sometimes, doc-block can wrap type hinting with parenthesis. Remove them.
-        $type = trim($type, '()');
-        // If the signature type is array, but the type hinting provides more, use that instead
-        if ($type === 'array' && $this->hasSpecificArrayShape($docType) && strpos($docType, '|') === false) {
-            $type = $docType;
-        }
+        $type = $this->resolveEffectiveParameterType($paramMetadata, $paramDocInfo);
         $typesMap = [];
         // Check for pipes and try to list possible types
         $typeHints = array_map(function ($typeHint) {
@@ -569,7 +596,29 @@ class AnnotationGenerator
 
     protected function hasSpecificArrayShape(string $type): bool
     {
-        return strpos($type, '[]') !== false || preg_match('/^(array|list)<.+>$/', trim($type)) === 1;
+        $type = trim($type);
+        return strpos($type, '[]') !== false
+            || preg_match('/^(array|list)<.+>$/', $type) === 1
+            || preg_match('/^array\s*\{.+\}$/', $type) === 1;
+    }
+
+    protected function resolveEffectiveParameterType(array $paramMetadata, array $paramDocInfo): string
+    {
+        $docType = trim($paramDocInfo['type'] ?? '');
+        $metaType = trim($paramMetadata['type'] ?? $docType);
+        $docTypeNormalised = strtolower($docType);
+        $metaTypeNormalised = strtolower($metaType);
+        $type = in_array($metaTypeNormalised, ['string', 'bool'], true)
+            && $docType !== ''
+            && $docTypeNormalised !== $metaTypeNormalised
+            ? $docType
+            : $metaType;
+        $type = trim($type, '()');
+        if (strtolower($type) === 'array' && $this->hasSpecificArrayShape($docType) && strpos($docType, '|') === false) {
+            $type = $docType;
+        }
+
+        return $type;
     }
 
     protected function getArraySubTypeFromPhpType(string $typePart, string $normalisedType): ?string
@@ -592,6 +641,25 @@ class AnnotationGenerator
         }
 
         return $genericParts[1];
+    }
+
+    protected function getRawArraySubType(string $typePart): ?string
+    {
+        $typePart = trim($typePart);
+        if (strpos($typePart, '[]') !== false) {
+            return substr($typePart, 0, strpos($typePart, '[]'));
+        }
+
+        if (preg_match('/^(array|list)<(.+)>$/', $typePart, $matches) !== 1) {
+            return null;
+        }
+
+        $genericParts = $this->splitTopLevel($matches[2], ',');
+        if (count($genericParts) === 1) {
+            return trim($genericParts[0]);
+        }
+
+        return trim($genericParts[1]);
     }
 
     /**
@@ -618,9 +686,9 @@ class AnnotationGenerator
     }
 
     /**
-     * Return a config-backed example string if the configured example is intentionally simple enough to support.
+     * @return array{found: bool, value: mixed}
      */
-    protected function getParameterExampleFromConfig(string $paramName, string $type, array $typesMap): ?string
+    protected function getConfiguredParameterExampleValue(string $paramName, string $type): array
     {
         $config = $this->getParameterExamplesConfig();
         $keysToTry = [
@@ -628,23 +696,34 @@ class AnnotationGenerator
             $paramName . ':' . preg_replace('/\s+/', '', $type),
         ];
 
-        $configValue = null;
-        $foundConfigValue = false;
         foreach (array_unique($keysToTry) as $key) {
             if (!array_key_exists($key, $config)) {
                 continue;
             }
 
-            $configValue = $config[$key];
-            $foundConfigValue = true;
-            break;
+            return [
+                'found' => true,
+                'value' => $config[$key],
+            ];
         }
 
-        if (!$foundConfigValue) {
+        return [
+            'found' => false,
+            'value' => null,
+        ];
+    }
+
+    /**
+     * Return a config-backed example string if the configured example is intentionally simple enough to support.
+     */
+    protected function getParameterExampleFromConfig(string $paramName, string $type, array $typesMap): ?string
+    {
+        $configuredExample = $this->getConfiguredParameterExampleValue($paramName, $type);
+        if (!$configuredExample['found']) {
             return null;
         }
 
-        return $this->normaliseConfiguredParameterExample($configValue, $typesMap);
+        return $this->normaliseConfiguredParameterExample($configuredExample['value'], $typesMap);
     }
 
     /**
@@ -679,6 +758,143 @@ class AnnotationGenerator
     protected function supportsBasicArrayExample(array $typesMap): bool
     {
         return array_key_exists('array', $typesMap);
+    }
+
+    protected function methodHasComplexParams(array $params): bool
+    {
+        foreach ($params['custom'] ?? [] as $param) {
+            if (is_array($param) && !empty($param['_isComplex'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function isComplexParameter(array $param): bool
+    {
+        $typesMap = $param['types'] ?? [];
+        if (!array_key_exists('array', $typesMap)) {
+            return false;
+        }
+
+        $docType = trim(strval($param['_docType'] ?? ''));
+        if ($docType !== '') {
+            $typeHints = array_map('trim', explode('|', $docType));
+            $hasAmbiguousArray = false;
+            foreach ($typeHints as $typeHint) {
+                $typeHint = trim($typeHint, ' ()');
+                if ($this->isInlineArrayShapeType($typeHint)) {
+                    return true;
+                }
+
+                if (!$this->hasSpecificArrayShape($typeHint) && strtolower($typeHint) !== 'array') {
+                    continue;
+                }
+
+                if (strtolower($typeHint) === 'array') {
+                    $hasAmbiguousArray = true;
+                    continue;
+                }
+
+                $rawSubType = $this->getRawArraySubType($typeHint);
+                if ($rawSubType === null || $rawSubType === '') {
+                    $hasAmbiguousArray = true;
+                    continue;
+                }
+
+                if ($this->isInlineArrayShapeType($rawSubType)) {
+                    return true;
+                }
+
+                $rawSubType = strtolower(trim($rawSubType));
+                if ($this->isScalarPhpType($rawSubType)) {
+                    continue;
+                }
+
+                return true;
+            }
+
+            if ($hasAmbiguousArray) {
+                return $this->isComplexArrayExample($param['_configExample'] ?? null);
+            }
+
+            return false;
+        }
+
+        $arraySubType = $typesMap['array'];
+        if (is_string($arraySubType) && $this->isScalarOpenApiType($arraySubType)) {
+            return false;
+        }
+
+        return $this->isComplexArrayExample($param['_configExample'] ?? null);
+    }
+
+    protected function isComplexArrayExample($example): bool
+    {
+        if (!is_array($example)) {
+            return true;
+        }
+
+        return !$this->isBasicExampleArray($example);
+    }
+
+    protected function isScalarPhpType(string $type): bool
+    {
+        return in_array($type, ['string', 'int', 'integer', 'float', 'double', 'bool', 'boolean', 'number'], true);
+    }
+
+    protected function isScalarOpenApiType(string $type): bool
+    {
+        return in_array($type, ['string', 'integer', 'number', 'boolean'], true);
+    }
+
+    protected function isInlineArrayShapeType(string $type): bool
+    {
+        return preg_match('/array\s*\{/', trim($type)) === 1;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function getTypeAliasesFromClassDocBlock(\ReflectionClass $reflectionClass): array
+    {
+        $docBlock = $reflectionClass->getDocComment();
+        if ($docBlock === false || $docBlock === '') {
+            return [];
+        }
+
+        preg_match_all('/@phpstan-type\s+([A-Za-z_][A-Za-z0-9_]*)\s+([^\n\r*]+)/', $docBlock, $matches, PREG_SET_ORDER);
+        $aliases = [];
+        foreach ($matches as $match) {
+            $aliasName = trim($match[1] ?? '');
+            $aliasType = trim($match[2] ?? '');
+            if ($aliasName === '' || $aliasType === '') {
+                continue;
+            }
+
+            $aliases[$aliasName] = $aliasType;
+        }
+
+        return $aliases;
+    }
+
+    protected function expandTypeAliases(string $type): string
+    {
+        if ($type === '' || empty($this->currentTypeAliases)) {
+            return $type;
+        }
+
+        $expandedType = $type;
+        foreach ($this->currentTypeAliases as $aliasName => $aliasType) {
+            $expandedType = preg_replace(
+                '/(?<![A-Za-z0-9_])' . preg_quote($aliasName, '/') . '(?![A-Za-z0-9_])/',
+                $aliasType,
+                $expandedType
+            ) ?? $expandedType;
+        }
+
+        return $expandedType;
     }
 
     /**
@@ -805,6 +1021,7 @@ class AnnotationGenerator
         $customParams = [];
         foreach ($paramsMetadata as $name => $paramMetadata) {
             $paramInfo = $paramsInfo[$name] ?? [];
+            $effectiveType = $this->resolveEffectiveParameterType($paramMetadata, $paramInfo);
             // Skip references and variadic for now
             // TODO - determine whether these can be handled automatically or if they have to be manual
             if (!empty($paramInfo['byRef']) || !empty($paramInfo['variadic'])) {
@@ -825,6 +1042,11 @@ class AnnotationGenerator
                 continue;
             }
 
+            $expandedEffectiveType = $this->expandTypeAliases($effectiveType);
+            $configuredExample = $this->getConfiguredParameterExampleValue($name, $effectiveType);
+            $customParamData['_docType'] = $expandedEffectiveType;
+            $customParamData['_configExample'] = $configuredExample['found'] ? $configuredExample['value'] : null;
+            $customParamData['_isComplex'] = $this->isComplexParameter($customParamData);
             $customParams[] = $customParamData;
         }
 
@@ -2072,6 +2294,346 @@ class AnnotationGenerator
         return ['@OA\Schema' => ['oneOf={' => $schemas]];
     }
 
+    protected function buildRequestBodyAnnotation(array $bodyParams): array
+    {
+        $requiredParamNames = [];
+        $schemaProperties = ['type="object"'];
+        $requestBodyExample = [];
+        foreach ($bodyParams as $param) {
+            if (($param['required'] ?? 'false') === 'true') {
+                $requiredParamNames[] = '"' . $param['name'] . '"';
+            }
+
+            $schemaProperties[] = $this->buildRequestBodyProperty($param);
+            if (($param['required'] ?? 'false') === 'true' && array_key_exists('_configExample', $param) && $param['_configExample'] !== null) {
+                $requestBodyExample[$param['name']] = $param['_configExample'];
+            }
+        }
+
+        if (!empty($requiredParamNames)) {
+            $schemaProperties[] = 'required={' . implode(',', $requiredParamNames) . '}';
+        }
+
+        $mediaTypeProperties = [
+            'mediaType="application/x-www-form-urlencoded"',
+            '@OA\Schema' => $schemaProperties,
+        ];
+        if (!empty($requestBodyExample)) {
+            $mediaTypeProperties[] = 'example=' . $this->buildAnnotationLiteralFromValue($requestBodyExample);
+        }
+
+        return [
+            '@OA\RequestBody' => [
+                'required=' . (!empty($requiredParamNames) ? 'true' : 'false'),
+                '@OA\MediaType' => $mediaTypeProperties,
+            ],
+        ];
+    }
+
+    protected function buildRequestBodyProperty(array $param): array
+    {
+        $propertyLines = [
+            'property="' . $param['name'] . '"',
+        ];
+        if (!empty($param['description'])) {
+            $propertyLines[] = 'description="' . $param['description'] . '"';
+        }
+
+        $schemaDefinition = $this->buildRequestBodySchemaDefinition(
+            strval($param['_docType'] ?? ''),
+            $param['types'] ?? [],
+            $param['_configExample'] ?? null
+        );
+        $propertyLines = array_merge($propertyLines, $this->buildSchemaLinesFromDefinition($schemaDefinition));
+
+        if (($param['required'] ?? 'false') === 'true' && array_key_exists('_configExample', $param) && $param['_configExample'] !== null) {
+            $propertyLines[] = 'example=' . $this->buildAnnotationLiteralFromValue($param['_configExample']);
+        }
+
+        return ['@OA\Property' => $propertyLines];
+    }
+
+    protected function buildRequestBodySchemaDefinition(string $type, array $typesMap, $example = null): array
+    {
+        $type = trim($type);
+        if ($this->isInlineArrayShapeType($type)) {
+            return $this->parseShapeTypeDefinition($type);
+        }
+
+        if (preg_match('/^(array|list)<(.+)>$/', $type, $matches) === 1) {
+            $genericParts = $this->splitTopLevel($matches[2], ',');
+            if (count($genericParts) === 2 && strtolower(trim($genericParts[0])) === 'string') {
+                $valueType = trim($genericParts[1]);
+                if ($this->isInlineArrayShapeType($valueType)) {
+                    return $this->parseShapeTypeDefinition($valueType);
+                }
+
+                return [
+                    'type' => 'object',
+                    'additionalProperties' => true,
+                ];
+            }
+
+            $valueType = trim(end($genericParts));
+            if ($this->isInlineArrayShapeType($valueType)) {
+                return [
+                    'type' => 'array',
+                    'items' => $this->parseShapeTypeDefinition($valueType),
+                ];
+            }
+
+            if ($this->isScalarPhpType(strtolower($valueType))) {
+                return [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => $this->getOpenApiTypeFromPhpType($valueType),
+                    ],
+                ];
+            }
+
+            return [
+                'type' => 'array',
+                'items' => [
+                    'type' => 'object',
+                    'additionalProperties' => true,
+                ],
+            ];
+        }
+
+        if (strpos($type, '[]') !== false) {
+            $subType = trim(substr($type, 0, strpos($type, '[]')));
+            if ($this->isInlineArrayShapeType($subType)) {
+                return [
+                    'type' => 'array',
+                    'items' => $this->parseShapeTypeDefinition($subType),
+                ];
+            }
+
+            if ($this->isScalarPhpType(strtolower($subType))) {
+                return [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => $this->getOpenApiTypeFromPhpType($subType),
+                    ],
+                ];
+            }
+
+            return [
+                'type' => 'array',
+                'items' => [
+                    'type' => 'object',
+                    'additionalProperties' => true,
+                ],
+            ];
+        }
+
+        if (strtolower($type) === 'array<string,mixed>') {
+            return [
+                'type' => 'object',
+                'additionalProperties' => true,
+            ];
+        }
+
+        if (is_array($example)) {
+            if (array_values($example) !== $example) {
+                return [
+                    'type' => 'object',
+                    'additionalProperties' => true,
+                ];
+            }
+
+            if (!empty($example) && is_array(reset($example))) {
+                return [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object',
+                        'additionalProperties' => true,
+                    ],
+                ];
+            }
+        }
+
+        if (array_key_exists('array', $typesMap)) {
+            return [
+                'type' => 'array',
+                'items' => [
+                    'type' => 'object',
+                    'additionalProperties' => true,
+                ],
+            ];
+        }
+
+        return [
+            'type' => 'object',
+            'additionalProperties' => true,
+        ];
+    }
+
+    protected function parseShapeTypeDefinition(string $type): array
+    {
+        $type = trim($type);
+        if (preg_match('/^(array|list)<(.+)>$/', $type, $matches) === 1) {
+            $genericParts = $this->splitTopLevel($matches[2], ',');
+            $valueType = trim(end($genericParts));
+
+            return [
+                'type' => 'array',
+                'items' => $this->parseShapeTypeDefinition($valueType),
+            ];
+        }
+
+        if (strpos($type, '[]') !== false) {
+            $subType = trim(substr($type, 0, strpos($type, '[]')));
+
+            return [
+                'type' => 'array',
+                'items' => $this->parseShapeTypeDefinition($subType),
+            ];
+        }
+
+        if (preg_match('/^array\s*\{(.+)\}$/', $type, $matches) === 1) {
+            $properties = [];
+            $required = [];
+            foreach ($this->splitTopLevel($matches[1], ',') as $fieldDefinition) {
+                [$name, $fieldType] = array_pad($this->splitTopLevel($fieldDefinition, ':'), 2, '');
+                $name = trim($name);
+                $isRequired = !str_ends_with($name, '?');
+                $name = rtrim($name, '?');
+                if ($name === '' || trim($fieldType) === '') {
+                    continue;
+                }
+
+                if ($isRequired) {
+                    $required[] = $name;
+                }
+
+                $properties[] = [
+                    'name' => $name,
+                    'schema' => $this->parseShapeTypeDefinition(trim($fieldType)),
+                ];
+            }
+
+            return [
+                'type' => 'object',
+                'properties' => $properties,
+                'required' => $required,
+            ];
+        }
+
+        $normalisedType = $this->getOpenApiTypeFromPhpType($type);
+        if ($this->isScalarOpenApiType($normalisedType)) {
+            return [
+                'type' => $normalisedType,
+            ];
+        }
+
+        if (strtolower($type) === 'mixed') {
+            return [
+                'type' => 'object',
+                'additionalProperties' => true,
+            ];
+        }
+
+        return [
+            'type' => 'object',
+            'additionalProperties' => true,
+        ];
+    }
+
+    protected function buildSchemaLinesFromDefinition(array $definition): array
+    {
+        $schemaLines = [];
+        if (!empty($definition['type'])) {
+            $schemaLines[] = 'type="' . $definition['type'] . '"';
+        }
+        if (!empty($definition['additionalProperties'])) {
+            $schemaLines[] = 'additionalProperties=true';
+        }
+        if (!empty($definition['required'])) {
+            $requiredProperties = array_map(static function ($propertyName) {
+                return '"' . $propertyName . '"';
+            }, $definition['required']);
+            $schemaLines[] = 'required={' . implode(',', $requiredProperties) . '}';
+        }
+        if (!empty($definition['items']) && is_array($definition['items'])) {
+            $schemaLines[] = ['@OA\Items' => $this->buildSchemaLinesFromDefinition($definition['items'])];
+        }
+        if (!empty($definition['properties']) && is_array($definition['properties'])) {
+            foreach ($definition['properties'] as $property) {
+                $schemaLines[] = ['@OA\Property' => array_merge(
+                    ['property="' . $property['name'] . '"'],
+                    $this->buildSchemaLinesFromDefinition($property['schema'])
+                )];
+            }
+        }
+
+        return $schemaLines;
+    }
+
+    protected function buildAnnotationLiteralFromValue($value): string
+    {
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return strval($value);
+        }
+
+        if (is_string($value)) {
+            return '"' . str_replace('"', '\"', $value) . '"';
+        }
+
+        if (is_array($value)) {
+            $encoded = json_encode($value);
+            if (!is_string($encoded)) {
+                return '{}';
+            }
+
+            return str_replace(['[', ']'], ['{', '}'], $encoded);
+        }
+
+        return '{}';
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function splitTopLevel(string $value, string $delimiter): array
+    {
+        $parts = [];
+        $current = '';
+        $braceDepth = 0;
+        $angleDepth = 0;
+        $length = strlen($value);
+        for ($index = 0; $index < $length; $index++) {
+            $character = $value[$index];
+            if ($character === '{') {
+                $braceDepth++;
+            } elseif ($character === '}') {
+                $braceDepth--;
+            } elseif ($character === '<') {
+                $angleDepth++;
+            } elseif ($character === '>') {
+                $angleDepth--;
+            }
+
+            if ($character === $delimiter && $braceDepth === 0 && $angleDepth === 0) {
+                $parts[] = trim($current);
+                $current = '';
+                continue;
+            }
+
+            $current .= $character;
+        }
+
+        if ($current !== '') {
+            $parts[] = trim($current);
+        }
+
+        return $parts;
+    }
+
     /**
      * Build the full array of lines for an OA operation. E.g. OA\Get or OA\Post
      *
@@ -2097,6 +2659,7 @@ class AnnotationGenerator
         foreach ($params['refs'] ?? [] as $ref) {
             $operationValuesMap[] = '@OA\Parameter(ref="' . $ref . '")';
         }
+        $bodyParams = [];
         foreach ($params['custom'] ?? [] as $param) {
             if (!is_array($param)) {
                 if (!is_string($param) || stripos($param, '#/components/parameters/') === false) {
@@ -2104,6 +2667,11 @@ class AnnotationGenerator
                 }
 
                 $operationValuesMap[] = '@OA\Parameter(ref="' . $param . '")';
+                continue;
+            }
+
+            if (!empty($param['_isComplex'])) {
+                $bodyParams[] = $param;
                 continue;
             }
 
@@ -2134,6 +2702,9 @@ class AnnotationGenerator
                 $param['enum'] ?? []
             );
             $operationValuesMap[] = ['@OA\Parameter' => $paramMap];
+        }
+        if (!empty($bodyParams)) {
+            $operationValuesMap[] = $this->buildRequestBodyAnnotation($bodyParams);
         }
         foreach ($responses as $response) {
             $responseDescription = $this->getDescriptionText($response['description'] ?? null);
