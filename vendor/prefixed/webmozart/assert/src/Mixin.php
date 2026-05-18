@@ -1,6 +1,6 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs\Webmozart\Assert;
+namespace Matomo\Dependencies\ApiReference\Webmozart\Assert;
 
 use ArrayAccess;
 use Closure;

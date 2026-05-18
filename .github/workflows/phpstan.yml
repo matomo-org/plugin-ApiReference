@@ -15,7 +15,7 @@ permissions:
   statuses: read
 
 env:
-  PLUGIN_NAME: OpenApiDocs
+  PLUGIN_NAME: ApiReference
 
 jobs:
   phpstan:

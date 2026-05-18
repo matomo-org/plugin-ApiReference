@@ -10,13 +10,13 @@
  *
  */
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoTypes;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoType;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Array_;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\ArrayKey;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Mixed_;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoType;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Array_;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\ArrayKey;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Mixed_;
 use function implode;
 /** @psalm-immutable */
 class ArrayShape implements PseudoType

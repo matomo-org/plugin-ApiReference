@@ -4,10 +4,10 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi;
+namespace Matomo\Dependencies\ApiReference\OpenApi;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Yaml;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Yaml;
 /**
  * Allows to serialize/de-serialize annotations from/to JSON.
  */

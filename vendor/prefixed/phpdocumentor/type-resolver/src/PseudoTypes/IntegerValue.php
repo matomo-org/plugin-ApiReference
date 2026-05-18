@@ -10,11 +10,11 @@
  *
  */
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoTypes;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoType;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Integer;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoType;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Integer;
 /** @psalm-immutable */
 final class IntegerValue implements PseudoType
 {

@@ -1,17 +1,17 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Lexer\Lexer;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\ParserConfig;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Lexer\Lexer;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig;
 use function str_replace;
 use function strtolower;
 class ConstExprParser
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\ParserConfig
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig
      */
     private $config;
     /**

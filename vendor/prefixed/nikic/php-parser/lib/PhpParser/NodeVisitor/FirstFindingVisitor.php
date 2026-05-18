@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitor;
+namespace Matomo\Dependencies\ApiReference\PhpParser\NodeVisitor;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitor;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitorAbstract;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeVisitor;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeVisitorAbstract;
 /**
  * This visitor can be used to find the first node satisfying some criterion determined by
  * a filter callback.

@@ -9,7 +9,7 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection;
 
 /**
  * Interface for Api Elements

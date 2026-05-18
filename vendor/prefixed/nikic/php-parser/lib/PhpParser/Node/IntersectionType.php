@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node;
 
 class IntersectionType extends ComplexType
 {

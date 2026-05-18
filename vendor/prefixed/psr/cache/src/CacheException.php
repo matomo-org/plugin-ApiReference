@@ -1,6 +1,6 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs\Psr\Cache;
+namespace Matomo\Dependencies\ApiReference\Psr\Cache;
 
 /**
  * Exception interface for all exceptions thrown by an Implementing Library.

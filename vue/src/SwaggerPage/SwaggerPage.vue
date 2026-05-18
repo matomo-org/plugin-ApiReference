@@ -8,19 +8,19 @@
 <template>
   <div class="page">
     <div v-content-intro>
-      <h2>{{ translate('OpenApiDocs_SwaggerApi') }}</h2>
+      <h2>{{ translate('ApiReference_SwaggerApi') }}</h2>
     </div>
 
-    <ContentBlock :content-title="translate('OpenApiDocs_ReportingApiReference')">
-      <p>{{ translate('OpenApiDocs_ReportingApiSummary') }}</p>
+    <ContentBlock :content-title="translate('ApiReference_ReportingApiReference')">
+      <p>{{ translate('ApiReference_ReportingApiSummary') }}</p>
       <p v-html="$sanitize(reportingApiMoreInformation)" />
     </ContentBlock>
 
-    <ContentBlock :content-title="translate('OpenApiDocs_UserAuthentication')">
+    <ContentBlock :content-title="translate('ApiReference_UserAuthentication')">
       <p v-html="$sanitize(userAuthenticationHelp)" />
       <p>
         <a :href="userSecurityUrl">
-          {{ translate('OpenApiDocs_UserAuthenticationManageTokens') }}
+          {{ translate('ApiReference_UserAuthenticationManageTokens') }}
         </a>
       </p>
     </ContentBlock>
@@ -32,7 +32,7 @@
       </Alert>
 
       <p v-else-if="!isLoading && plugins.length === 0">
-        {{ translate('OpenApiDocs_SwaggerPagePluginEmpty') }}
+        {{ translate('ApiReference_SwaggerPagePluginEmpty') }}
       </p>
 
       <div v-else-if="!isLoading">
@@ -42,12 +42,12 @@
             v-model="searchTerm"
             type="text"
             class="searchInput browser-default"
-            :placeholder="translate('OpenApiDocs_SwaggerPageSearchPlaceholder')"
+            :placeholder="translate('ApiReference_SwaggerPageSearchPlaceholder')"
           >
         </div>
 
         <p v-if="filteredPlugins.length === 0" class="emptyText">
-          {{ translate('OpenApiDocs_SwaggerPageSearchNoResults') }}
+          {{ translate('ApiReference_SwaggerPageSearchNoResults') }}
         </p>
 
         <div
@@ -167,7 +167,7 @@ export default defineComponent({
   computed: {
     reportingApiMoreInformation(): string {
       return translate(
-        'OpenApiDocs_ReportingApiMoreInformation',
+        'ApiReference_ReportingApiMoreInformation',
         externalLink('https://matomo.org/docs/analytics-api'),
         '</a>',
         externalLink('https://developer.matomo.org/api-reference/reporting-api'),
@@ -176,7 +176,7 @@ export default defineComponent({
     },
     userAuthenticationHelp(): string {
       const usingTokenAuth = translate(
-        'OpenApiDocs_UserAuthenticationUsingTokenAuth',
+        'ApiReference_UserAuthenticationUsingTokenAuth',
         '',
         '',
         '<code>token_auth</code>',
@@ -283,7 +283,7 @@ export default defineComponent({
       try {
         const plugins = await AjaxHelper.fetch<string[]>(
           {
-            method: 'OpenApiDocs.getAllowedPlugins',
+            method: 'ApiReference.getAllowedPlugins',
           },
           {
             createErrorNotification: false,
@@ -291,7 +291,7 @@ export default defineComponent({
         );
         this.plugins = [...plugins].sort((left, right) => left.localeCompare(right));
       } catch {
-        this.loadError = translate('OpenApiDocs_SwaggerPageRequestFailed');
+        this.loadError = translate('ApiReference_SwaggerPageRequestFailed');
       } finally {
         this.isLoading = false;
       }
@@ -331,7 +331,7 @@ export default defineComponent({
         try {
           const spec = await AjaxHelper.fetch<OpenApiSpec>(
             {
-              method: 'OpenApiDocs.getOpenApiSpec',
+              method: 'ApiReference.getOpenApiSpec',
               pluginName: plugin,
               format: 'json',
             },
@@ -345,7 +345,7 @@ export default defineComponent({
         } catch {
           state.spec = null;
           state.status = 'error';
-          state.loadError = translate('OpenApiDocs_SwaggerPageSpecLoadFailed');
+          state.loadError = translate('ApiReference_SwaggerPageSpecLoadFailed');
           return null;
         } finally {
           state.request = null;

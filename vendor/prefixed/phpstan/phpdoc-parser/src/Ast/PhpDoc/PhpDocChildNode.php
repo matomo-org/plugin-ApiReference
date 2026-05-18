@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Node;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Node;
 interface PhpDocChildNode extends Node
 {
 }

@@ -8,20 +8,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder;
+namespace Matomo\Dependencies\ApiReference\Symfony\Component\Finder;
 
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Comparator\DateComparator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Comparator\NumberComparator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Exception\DirectoryNotFoundException;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator\CustomFilterIterator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator\DateRangeFilterIterator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator\DepthRangeFilterIterator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator\ExcludeDirectoryFilterIterator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator\FilecontentFilterIterator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator\FilenameFilterIterator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator\LazyIterator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator\SizeRangeFilterIterator;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator\SortableIterator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Comparator\DateComparator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Comparator\NumberComparator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Exception\DirectoryNotFoundException;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator\CustomFilterIterator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator\DateRangeFilterIterator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator\DepthRangeFilterIterator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator\ExcludeDirectoryFilterIterator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator\FilecontentFilterIterator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator\FilenameFilterIterator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator\LazyIterator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator\SizeRangeFilterIterator;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator\SortableIterator;
 /**
  * Finder allows to build rules to find files and directories.
  *

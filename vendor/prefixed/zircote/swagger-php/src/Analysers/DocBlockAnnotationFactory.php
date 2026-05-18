@@ -4,17 +4,17 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Analysers;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Context;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\GeneratorAwareTrait;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Context;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\GeneratorAwareTrait;
 class DocBlockAnnotationFactory implements AnnotationFactoryInterface
 {
     use GeneratorAwareTrait;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers\DocBlockParser|null
+     * @var \Matomo\Dependencies\ApiReference\OpenApi\Analysers\DocBlockParser|null
      */
     protected $docBlockParser;
     public function __construct(?DocBlockParser $docBlockParser = null)

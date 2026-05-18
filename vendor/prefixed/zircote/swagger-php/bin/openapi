@@ -1,14 +1,14 @@
 #!/usr/bin/env php
 <?php 
-namespace Matomo\Dependencies\OpenApiDocs;
+namespace Matomo\Dependencies\ApiReference;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers\AttributeAnnotationFactory;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers\DocBlockAnnotationFactory;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers\ReflectionAnalyser;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations\OpenApi;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Util;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Loggers\ConsoleLogger;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysers\AttributeAnnotationFactory;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysers\DocBlockAnnotationFactory;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysers\ReflectionAnalyser;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations\OpenApi;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Util;
+use Matomo\Dependencies\ApiReference\OpenApi\Loggers\ConsoleLogger;
 if (\class_exists(Generator::class) === \false) {
     if (\file_exists(__DIR__ . '/../vendor/autoload.php')) {
         // cloned / dev environment?

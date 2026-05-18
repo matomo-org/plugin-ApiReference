@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Lexer;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Lexer;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\ParserConfig;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig;
 use function implode;
 use function preg_match_all;
 use const PREG_SET_ORDER;
@@ -55,7 +55,7 @@ class Lexer
     public const TYPE_OFFSET = 1;
     public const LINE_OFFSET = 2;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\ParserConfig
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig
      */
     private $config;
     // @phpstan-ignore property.onlyWritten

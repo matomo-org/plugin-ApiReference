@@ -1,12 +1,12 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations;
+namespace Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\Annotation\Attribute;
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\Annotation\Attributes;
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\Annotation\Enum;
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\Annotation\Target;
+use Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\Annotation\Attribute;
+use Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\Annotation\Attributes;
+use Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\Annotation\Enum;
+use Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\Annotation\Target;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;

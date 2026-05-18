@@ -4,14 +4,14 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi;
+namespace Matomo\Dependencies\ApiReference\OpenApi;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers\AnalyserInterface;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers\AttributeAnnotationFactory;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers\DocBlockAnnotationFactory;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers\ReflectionAnalyser;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Loggers\DefaultLogger;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysers\AnalyserInterface;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysers\AttributeAnnotationFactory;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysers\DocBlockAnnotationFactory;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysers\ReflectionAnalyser;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Loggers\DefaultLogger;
 use Psr\Log\LoggerInterface;
 /**
  * OpenApi spec generator.
@@ -25,13 +25,13 @@ class Generator
 {
     /**
      * Allows Annotation classes to know the context of the annotation that is being processed.
-     * @var \Matomo\Dependencies\OpenApiDocs\OpenApi\Context|null
+     * @var \Matomo\Dependencies\ApiReference\OpenApi\Context|null
      */
     public static $context;
     /** @var string Magic value to differentiate between null and undefined. */
     public const UNDEFINED = '@OA\\Generator::UNDEFINED🙈';
     /** @var array<string,string> */
-    public const DEFAULT_ALIASES = ['oa' => 'Matomo\\Dependencies\\OpenApiDocs\\OpenApi\\Annotations'];
+    public const DEFAULT_ALIASES = ['oa' => 'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations'];
     /** @var array<string> */
     public const DEFAULT_NAMESPACES = ['OpenApi\\Annotations\\'];
     /** @var array<string,string> Map of namespace aliases to be supported by doctrine. */
@@ -39,13 +39,13 @@ class Generator
     /** @var array<string>|null List of annotation namespaces to be autoloaded by doctrine. */
     protected $namespaces;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers\AnalyserInterface|null
+     * @var \Matomo\Dependencies\ApiReference\OpenApi\Analysers\AnalyserInterface|null
      */
     protected $analyser;
     /** @var array<string,mixed> */
     protected $config = [];
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\OpenApi\Pipeline|null
+     * @var \Matomo\Dependencies\ApiReference\OpenApi\Pipeline|null
      */
     protected $processorPipeline;
     /**

@@ -4,10 +4,10 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi;
+namespace Matomo\Dependencies\ApiReference\OpenApi;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Loggers\DefaultLogger;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Loggers\DefaultLogger;
 use Psr\Log\LoggerInterface;
 /**
  * The context in which the annotation is parsed.
@@ -47,7 +47,7 @@ class Context
 {
     /**
      * Prototypical inheritance for properties.
-     * @var \Matomo\Dependencies\OpenApiDocs\OpenApi\Context|null
+     * @var \Matomo\Dependencies\ApiReference\OpenApi\Context|null
      */
     protected $parent;
     public function __construct(array $properties = [], ?Context $parent = null)

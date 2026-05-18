@@ -1,6 +1,6 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs;
+namespace Matomo\Dependencies\ApiReference;
 
 /*
  * This file is part of the Symfony package.

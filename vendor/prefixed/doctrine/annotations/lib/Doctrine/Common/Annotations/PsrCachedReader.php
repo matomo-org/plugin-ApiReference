@@ -1,8 +1,8 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations;
+namespace Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\Psr\Cache\CacheItemPoolInterface;
+use Matomo\Dependencies\ApiReference\Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;

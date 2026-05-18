@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs;
+namespace Piwik\Plugins\ApiReference;
 
 use Piwik\Piwik;
-use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
+use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
-use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
+use Piwik\Plugins\ApiReference\Specs\SpecGenerator;
+use Piwik\Plugins\ApiReference\Specs\PathResolver;
 
 /**
  * Provides Reporting API endpoints for reading OpenAPI plugin configuration and specifications.
@@ -21,12 +21,12 @@ use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
  * Exposes endpoints to return the effective plugin list for spec generation, read pre-generated spec files,
  * or generate plugin OpenAPI specifications on demand.
  *
- * @method static \Piwik\Plugins\OpenApiDocs\API getInstance()
+ * @method static \Piwik\Plugins\ApiReference\API getInstance()
  */
 class API extends \Piwik\Plugin\API
 {
     /**
-     * Returns the plugin names used for OpenApiDocs spec generation.
+     * Returns the plugin names used for ApiReference spec generation.
      *
      * @return array<int, string>
      */
@@ -38,7 +38,7 @@ class API extends \Piwik\Plugin\API
     }
 
     /**
-     * Returns metadata for the plugins used by OpenApiDocs spec generation.
+     * Returns metadata for the plugins used by ApiReference spec generation.
      *
      * @return array<string, array{description: string}>
      */

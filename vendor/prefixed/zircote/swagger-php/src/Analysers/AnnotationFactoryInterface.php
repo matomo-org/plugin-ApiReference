@@ -4,11 +4,11 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Analysers;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Context;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\GeneratorAwareInterface;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Context;
+use Matomo\Dependencies\ApiReference\OpenApi\GeneratorAwareInterface;
 interface AnnotationFactoryInterface extends GeneratorAwareInterface
 {
     /**

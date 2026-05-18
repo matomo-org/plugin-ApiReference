@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Error;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar;
+use Matomo\Dependencies\ApiReference\PhpParser\Error;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar;
 class Int_ extends Scalar
 {
     /* For use in "kind" attribute */

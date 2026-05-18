@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\InterpolatedStringPart;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\InterpolatedStringPart;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar;
 class InterpolatedString extends Scalar
 {
     /** @var (Expr|InterpolatedStringPart)[] list of string parts */

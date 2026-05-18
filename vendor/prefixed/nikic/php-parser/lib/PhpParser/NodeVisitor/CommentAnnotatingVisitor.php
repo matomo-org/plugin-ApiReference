@@ -1,12 +1,12 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitor;
+namespace Matomo\Dependencies\ApiReference\PhpParser\NodeVisitor;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Comment;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitorAbstract;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Token;
+use Matomo\Dependencies\ApiReference\PhpParser\Comment;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeVisitorAbstract;
+use Matomo\Dependencies\ApiReference\PhpParser\Token;
 class CommentAnnotatingVisitor extends NodeVisitorAbstract
 {
     /** @var int Last seen token start position */

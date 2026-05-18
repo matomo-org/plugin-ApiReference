@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs\Annotations;
+namespace Piwik\Plugins\ApiReference\Annotations;
 
 /**
  * Global components for generating OpenAPI specs for the Matomo Reporting API.

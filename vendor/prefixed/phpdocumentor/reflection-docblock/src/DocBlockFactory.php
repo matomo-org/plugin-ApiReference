@@ -9,29 +9,29 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection;
 
 use InvalidArgumentException;
 use LogicException;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\StandardTagFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\TagFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\AbstractPHPStanFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\ExtendsFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\ImplementsFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\MethodFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\ParamFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyReadFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyWriteFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\ReturnFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateExtendsFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateImplementsFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\VarFactory;
-use Matomo\Dependencies\OpenApiDocs\Webmozart\Assert\Assert;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\StandardTagFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\TagFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\AbstractPHPStanFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\ExtendsFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\ImplementsFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\MethodFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\ParamFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyReadFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyWriteFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\ReturnFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateExtendsFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateImplementsFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\VarFactory;
+use Matomo\Dependencies\ApiReference\Webmozart\Assert\Assert;
 use function array_shift;
 use function count;
 use function explode;
@@ -46,11 +46,11 @@ use function trim;
 final class DocBlockFactory implements DocBlockFactoryInterface
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\DescriptionFactory
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory
      */
     private $descriptionFactory;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\TagFactory
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\TagFactory
      */
     private $tagFactory;
     /**

@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Node;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\NodeAttributes;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Node;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
 use function sprintf;
 class ObjectShapeItemNode implements Node
 {
@@ -17,7 +17,7 @@ class ObjectShapeItemNode implements Node
      */
     public $optional;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\TypeNode
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
      */
     public $valueType;
     /**

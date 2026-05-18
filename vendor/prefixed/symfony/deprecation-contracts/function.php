@@ -1,6 +1,6 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs;
+namespace Matomo\Dependencies\ApiReference;
 
 /*
  * This file is part of the Symfony package.
@@ -10,7 +10,7 @@ namespace Matomo\Dependencies\OpenApiDocs;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-if (!\function_exists('Matomo\\Dependencies\\OpenApiDocs\\trigger_deprecation')) {
+if (!\function_exists('Matomo\\Dependencies\\ApiReference\\trigger_deprecation')) {
     /**
      * Triggers a silenced deprecation notice.
      *

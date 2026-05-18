@@ -1,24 +1,24 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Internal\DiffElem;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Internal\Differ;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Internal\PrintableNewAnonClassNode;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Internal\TokenStream;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\AttributeGroup;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\AssignOp;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\BinaryOp;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Cast;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\IntersectionType;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\MatchArm;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Param;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\PropertyHook;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\UnionType;
+use Matomo\Dependencies\ApiReference\PhpParser\Internal\DiffElem;
+use Matomo\Dependencies\ApiReference\PhpParser\Internal\Differ;
+use Matomo\Dependencies\ApiReference\PhpParser\Internal\PrintableNewAnonClassNode;
+use Matomo\Dependencies\ApiReference\PhpParser\Internal\TokenStream;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\AttributeGroup;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\AssignOp;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\BinaryOp;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Cast;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\IntersectionType;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\MatchArm;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Param;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\PropertyHook;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\UnionType;
 abstract class PrettyPrinterAbstract implements PrettyPrinter
 {
     protected const FIXUP_PREC_LEFT = 0;

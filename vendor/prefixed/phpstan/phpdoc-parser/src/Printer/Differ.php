@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Printer;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Printer;
 
 use Exception;
 use function array_reverse;

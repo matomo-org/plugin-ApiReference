@@ -4,7 +4,7 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Annotations;
 
 /**
  * The description of an item in a Schema with type <code>array</code>.

@@ -9,10 +9,10 @@ declare (strict_types=1);
  *
  * @link http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock;
 
 use InvalidArgumentException;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
 interface TagFactory extends Factory
 {
     /**

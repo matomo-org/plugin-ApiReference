@@ -1,13 +1,13 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Builder;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Builder;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Builder;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\BuilderHelpers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Modifiers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser\Builder;
+use Matomo\Dependencies\ApiReference\PhpParser\BuilderHelpers;
+use Matomo\Dependencies\ApiReference\PhpParser\Modifiers;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 class TraitUseAdaptation implements Builder
 {
     private const TYPE_UNDEFINED = 0;
@@ -18,11 +18,11 @@ class TraitUseAdaptation implements Builder
      */
     protected $type;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name|null
+     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Name|null
      */
     protected $trait;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Identifier
+     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier
      */
     protected $method;
     /**
@@ -30,7 +30,7 @@ class TraitUseAdaptation implements Builder
      */
     protected $modifier;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Identifier|null
+     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier|null
      */
     protected $alias;
     /** @var Node\Name[] */

@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar;
 abstract class MagicConst extends Scalar
 {
     /**

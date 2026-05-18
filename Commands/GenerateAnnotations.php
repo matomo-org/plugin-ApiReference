@@ -7,12 +7,12 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs\Commands;
+namespace Piwik\Plugins\ApiReference\Commands;
 
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
-use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
-use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
+use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
+use Piwik\Plugins\ApiReference\Specs\PathResolver;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on

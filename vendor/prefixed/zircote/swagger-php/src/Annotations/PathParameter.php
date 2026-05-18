@@ -4,9 +4,9 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
 /**
  * A <code>@OA\Request</code> path parameter.
  *

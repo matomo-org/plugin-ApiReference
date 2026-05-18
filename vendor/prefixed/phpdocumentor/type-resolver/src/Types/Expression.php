@@ -9,9 +9,9 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
 /**
  * Represents an expression type as described in the PSR-5, the PHPDoc Standard.
  *

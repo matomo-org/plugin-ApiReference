@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\StaticVar;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\StaticVar;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 class Static_ extends Stmt
 {
     /** @var StaticVar[] Variable definitions */

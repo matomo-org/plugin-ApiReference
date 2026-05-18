@@ -1,13 +1,13 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Arg;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Identifier;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\VariadicPlaceholder;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Arg;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\VariadicPlaceholder;
 class MethodCall extends CallLike
 {
     /** @var Expr Variable holding object */

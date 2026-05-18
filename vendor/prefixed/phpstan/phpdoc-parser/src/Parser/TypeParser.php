@@ -1,13 +1,13 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser;
 
 use LogicException;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\TemplateTagValueNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Lexer\Lexer;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\ParserConfig;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\TemplateTagValueNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Lexer\Lexer;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig;
 use function in_array;
 use function str_replace;
 use function strlen;
@@ -16,11 +16,11 @@ use function substr_compare;
 class TypeParser
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\ParserConfig
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig
      */
     private $config;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\ConstExprParser
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\ConstExprParser
      */
     private $constExprParser;
     public function __construct(ParserConfig $config, ConstExprParser $constExprParser)

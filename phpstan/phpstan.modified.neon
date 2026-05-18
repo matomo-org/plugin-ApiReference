@@ -2,4 +2,4 @@ includes:
     - ../phpstan.neon
 parameters:
     level: 5
-    tmpDir: /tmp/phpstan/OpenApiDocs/modified
+    tmpDir: /tmp/phpstan/ApiReference/modified

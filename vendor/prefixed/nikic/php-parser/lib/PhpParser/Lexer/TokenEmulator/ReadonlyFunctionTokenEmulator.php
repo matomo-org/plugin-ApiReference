@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\PhpVersion;
+use Matomo\Dependencies\ApiReference\PhpParser\PhpVersion;
 /*
  * In PHP 8.1, "readonly(" was special cased in the lexer in order to support functions with
  * name readonly. In PHP 8.2, this may conflict with readonly properties having a DNF type. For

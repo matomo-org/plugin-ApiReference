@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Name;
 
-class Relative extends \Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name
+class Relative extends \Matomo\Dependencies\ApiReference\PhpParser\Node\Name
 {
     /**
      * Checks whether the name is unqualified. (E.g. Name)

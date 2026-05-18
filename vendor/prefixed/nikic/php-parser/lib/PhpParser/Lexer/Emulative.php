@@ -1,26 +1,26 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Lexer;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Error;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\ErrorHandler;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\AsymmetricVisibilityTokenEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\AttributeEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\EnumTokenEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\ExplicitOctalEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\MatchTokenEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\NullsafeTokenEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\PipeOperatorEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\PropertyTokenEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\ReadonlyFunctionTokenEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\ReadonlyTokenEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\ReverseEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\TokenEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\VoidCastEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\PhpVersion;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Token;
+use Matomo\Dependencies\ApiReference\PhpParser\Error;
+use Matomo\Dependencies\ApiReference\PhpParser\ErrorHandler;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\AsymmetricVisibilityTokenEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\AttributeEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\EnumTokenEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\ExplicitOctalEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\MatchTokenEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\NullsafeTokenEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\PipeOperatorEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\PropertyTokenEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\ReadonlyFunctionTokenEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\ReadonlyTokenEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\ReverseEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\TokenEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\VoidCastEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\PhpVersion;
+use Matomo\Dependencies\ApiReference\PhpParser\Token;
 class Emulative extends Lexer
 {
     /** @var array{int, string, string}[] Patches used to reverse changes introduced in the code */
@@ -28,11 +28,11 @@ class Emulative extends Lexer
     /** @var list<TokenEmulator> */
     private $emulators = [];
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PhpParser\PhpVersion
+     * @var \Matomo\Dependencies\ApiReference\PhpParser\PhpVersion
      */
     private $targetPhpVersion;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PhpParser\PhpVersion
+     * @var \Matomo\Dependencies\ApiReference\PhpParser\PhpVersion
      */
     private $hostPhpVersion;
     /**

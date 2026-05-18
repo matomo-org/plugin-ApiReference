@@ -9,14 +9,14 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags;
 
 use InvalidArgumentException;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Description;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\StandardTagFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Context as TypeContext;
-use Matomo\Dependencies\OpenApiDocs\Webmozart\Assert\Assert;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Description;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\StandardTagFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Context as TypeContext;
+use Matomo\Dependencies\ApiReference\Webmozart\Assert\Assert;
 use function preg_match;
 /**
  * Parses a tag definition for a DocBlock.

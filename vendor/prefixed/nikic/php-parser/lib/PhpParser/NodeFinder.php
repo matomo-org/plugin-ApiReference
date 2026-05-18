@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitor\FindingVisitor;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitor\FirstFindingVisitor;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeVisitor\FindingVisitor;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeVisitor\FirstFindingVisitor;
 class NodeFinder
 {
     /**

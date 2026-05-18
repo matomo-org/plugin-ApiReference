@@ -7,17 +7,17 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs\Specs;
+namespace Piwik\Plugins\ApiReference\Specs;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations\OpenApi;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations\OpenApi;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Piwik\Container\StaticContainer;
 use Piwik\Exception\PluginNotFoundException;
 use Piwik\Log\LoggerInterface;
 use Piwik\Log\NullLogger;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
+use Piwik\Plugins\ApiReference\Artifact\ArtifactWriter;
+use Piwik\Plugins\ApiReference\ApiReference;
 use Piwik\SettingsPiwik;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
@@ -56,7 +56,7 @@ class SpecGenerator
      * @return string
      * @throws \Exception
      */
-    public function generatePluginDoc(string $pluginName, string $format = 'json', string $version = OpenApiDocs::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
+    public function generatePluginDoc(string $pluginName, string $format = 'json', string $version = ApiReference::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
     {
         return $this->generateSpec(explode(',', $pluginName), $format, $version, $writeToFile);
     }
@@ -75,13 +75,13 @@ class SpecGenerator
      * @throws PluginNotFoundException
      * @throws \Exception
      */
-    public function generateSpec(array $pluginNames, string $format = 'json', string $version = OpenApiDocs::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
+    public function generateSpec(array $pluginNames, string $format = 'json', string $version = ApiReference::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
     {
         BaseValidator::check('pluginNames', $pluginNames, [new NotEmpty()]);
-        $currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
+        $currentPluginDir = Manager::getInstance()::getPluginDirectory('ApiReference');
 
         foreach ($pluginNames as $currentPluginName) {
-            if (in_array($currentPluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
+            if (in_array($currentPluginName, ApiReference::PLUGIN_BLOCKLIST, true)) {
                 throw new \RuntimeException('OpenAPI doc generation is blocked for ' . $currentPluginName . '.');
             }
         }
@@ -124,7 +124,7 @@ class SpecGenerator
             $specFileBaseName = $pluginNames[0];
         }
 
-        $openapi->info->version = $version ?: OpenApiDocs::DEFAULT_SPEC_VERSION;
+        $openapi->info->version = $version ?: ApiReference::DEFAULT_SPEC_VERSION;
 
         // Remove the current server so that it isn't used when saving the spec file. It should only leave demo
         if ($writeToFile && is_array($openapi->servers) && count($openapi->servers) > 1) {

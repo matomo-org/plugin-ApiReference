@@ -1,15 +1,15 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Arg;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\BinaryOp\Concat;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Identifier;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar\String_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Use_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Arg;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\BinaryOp\Concat;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Name;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar\String_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Use_;
 class BuilderFactory
 {
     /**

@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\ErrorHandler;
+namespace Matomo\Dependencies\ApiReference\PhpParser\ErrorHandler;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Error;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\ErrorHandler;
+use Matomo\Dependencies\ApiReference\PhpParser\Error;
+use Matomo\Dependencies\ApiReference\PhpParser\ErrorHandler;
 /**
  * Error handler that collects all errors into an array.
  *

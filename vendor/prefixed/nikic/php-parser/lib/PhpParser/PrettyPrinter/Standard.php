@@ -1,18 +1,18 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\PrettyPrinter;
+namespace Matomo\Dependencies\ApiReference\PhpParser\PrettyPrinter;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\AssignOp;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\BinaryOp;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Cast;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar\MagicConst;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\PrettyPrinterAbstract;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\AssignOp;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\BinaryOp;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Cast;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Name;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar\MagicConst;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser\PrettyPrinterAbstract;
 class Standard extends PrettyPrinterAbstract
 {
     // Special nodes

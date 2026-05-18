@@ -9,12 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\Commands;
+namespace Piwik\Plugins\ApiReference\Commands;
 
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
-use Piwik\Plugins\OpenApiDocs\Annotations\ApiMethodInfoExtractor;
-use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
+use Piwik\Plugins\ApiReference\Annotations\ApiMethodInfoExtractor;
+use Piwik\Plugins\ApiReference\Specs\PathResolver;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on

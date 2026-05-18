@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\TraitUseAdaptation;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\TraitUseAdaptation;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Alias extends Node\Stmt\TraitUseAdaptation
 {
     /** @var null|int New modifier */

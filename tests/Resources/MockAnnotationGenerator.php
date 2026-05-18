@@ -9,10 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\tests\Resources;
+namespace Piwik\Plugins\ApiReference\tests\Resources;
 
 use Piwik\API\DocumentationGenerator;
-use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
+use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
 
 class MockAnnotationGenerator extends AnnotationGenerator
 {

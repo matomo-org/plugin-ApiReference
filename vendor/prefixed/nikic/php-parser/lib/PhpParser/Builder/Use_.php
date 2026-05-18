@@ -1,16 +1,16 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Builder;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Builder;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Builder;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\BuilderHelpers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser\Builder;
+use Matomo\Dependencies\ApiReference\PhpParser\BuilderHelpers;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 class Use_ implements Builder
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name
+     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Name
      */
     protected $name;
     /** @var Stmt\Use_::TYPE_* */

@@ -9,12 +9,12 @@ declare (strict_types=1);
  *
  * @link http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags;
 
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Deprecations\Deprecation;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Description;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\Doctrine\Deprecations\Deprecation;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Description;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
 /**
  * Reflection class for a {@}template tag in a Docblock.
  */
@@ -25,7 +25,7 @@ final class Template extends BaseTag
     /** @var ?Type The real type */
     private $bound;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type|null
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type|null
      */
     private $default;
     /** @param non-empty-string $templateName */

@@ -1,15 +1,15 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Builder;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Builder;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\BuilderHelpers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Modifiers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Const_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Identifier;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser;
+use Matomo\Dependencies\ApiReference\PhpParser\BuilderHelpers;
+use Matomo\Dependencies\ApiReference\PhpParser\Modifiers;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Const_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 class ClassConst implements PhpParser\Builder
 {
     /**

@@ -9,12 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs;
+namespace Piwik\Plugins\ApiReference;
 
 use Piwik\Config;
 use Piwik\Log\LoggerInterface;
-use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
-use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
+use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
+use Piwik\Plugins\ApiReference\Generation\SpecGenerationService;
 
 class Tasks extends \Piwik\Plugin\Tasks
 {
@@ -59,13 +59,13 @@ class Tasks extends \Piwik\Plugin\Tasks
                 $this->specGenerationService->generateSpecForPlugins(
                     $pluginName,
                     'json',
-                    OpenApiDocs::DEFAULT_SPEC_VERSION,
+                    ApiReference::DEFAULT_SPEC_VERSION,
                     true,
                     true
                 );
             } catch (\Throwable $e) {
                 $this->logger->error(
-                    'OpenApiDocs scheduled generation failed for plugin {plugin}: {error}',
+                    'ApiReference scheduled generation failed for plugin {plugin}: {error}',
                     [
                         'plugin' => $pluginName,
                         'error' => $e->getMessage(),
@@ -77,6 +77,6 @@ class Tasks extends \Piwik\Plugin\Tasks
 
     private function isSpecGenerationEnabled(): bool
     {
-        return (bool) (Config::getInstance()->OpenApiDocs['enable_spec_generation_task'] ?? 0);
+        return (bool) (Config::getInstance()->ApiReference['enable_spec_generation_task'] ?? 0);
     }
 }

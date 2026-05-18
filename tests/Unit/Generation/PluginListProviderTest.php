@@ -9,18 +9,18 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\tests\Unit\Generation;
+namespace Piwik\Plugins\ApiReference\tests\Unit\Generation;
 
-require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
+require_once PIWIK_INCLUDE_PATH . '/plugins/ApiReference/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
+use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
 
 /**
- * @group OpenApiDocs
- * @group OpenApiDocs_Unit
- * @group OpenApiDocs_PluginListProviderTest
+ * @group ApiReference
+ * @group ApiReference_Unit
+ * @group ApiReference_PluginListProviderTest
  */
 class PluginListProviderTest extends TestCase
 {

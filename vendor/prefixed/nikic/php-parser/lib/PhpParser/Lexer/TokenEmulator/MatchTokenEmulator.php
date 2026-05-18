@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\PhpVersion;
+use Matomo\Dependencies\ApiReference\PhpParser\PhpVersion;
 final class MatchTokenEmulator extends KeywordEmulator
 {
     public function getPhpVersion() : PhpVersion

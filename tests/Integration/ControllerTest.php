@@ -9,18 +9,18 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\tests\Integration;
+namespace Piwik\Plugins\ApiReference\tests\Integration;
 
 use Piwik\Access;
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\Controller;
+use Piwik\Plugins\ApiReference\Controller;
 use Piwik\Tests\Framework\Fixture;
 use Piwik\Tests\Framework\Mock\FakeAccess;
 use Piwik\Tests\Framework\TestCase\IntegrationTestCase;
 
 /**
- * @group OpenApiDocs
+ * @group ApiReference
  * @group ControllerTest
  * @group Plugins
  */
@@ -56,7 +56,7 @@ class ControllerTest extends IntegrationTestCase
         Fixture::resetTranslations();
         Fixture::loadAllTranslations();
 
-        Manager::getInstance()->loadPlugin('OpenApiDocs');
+        Manager::getInstance()->loadPlugin('ApiReference');
 
         $_GET = [
             'idSite' => 1,
@@ -90,11 +90,11 @@ class ControllerTest extends IntegrationTestCase
         $html = $this->controller->swagger();
 
         $this->assertNotSame('', $html);
-        $this->assertStringContainsString('vue-entry="OpenApiDocs.SwaggerPage"', $html);
+        $this->assertStringContainsString('vue-entry="ApiReference.SwaggerPage"', $html);
         $this->assertStringContainsString('piwik-url=', $html);
-        $this->assertStringContainsString('plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui.css', $html);
-        $this->assertStringContainsString('plugins/OpenApiDocs/vue/src/SwaggerPage/swagger-ui-overrides.css', $html);
-        $this->assertStringContainsString('plugins/OpenApiDocs/vue/lib/swagger-ui/swagger-ui-bundle.js', $html);
+        $this->assertStringContainsString('plugins/ApiReference/vue/lib/swagger-ui/swagger-ui.css', $html);
+        $this->assertStringContainsString('plugins/ApiReference/vue/src/SwaggerPage/swagger-ui-overrides.css', $html);
+        $this->assertStringContainsString('plugins/ApiReference/vue/lib/swagger-ui/swagger-ui-bundle.js', $html);
         $this->assertStringContainsString('Swagger', $html);
     }
 

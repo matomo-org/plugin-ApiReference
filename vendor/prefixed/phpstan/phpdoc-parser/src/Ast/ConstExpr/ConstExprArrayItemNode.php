@@ -1,19 +1,19 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\NodeAttributes;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
 use function sprintf;
 class ConstExprArrayItemNode implements ConstExprNode
 {
     use NodeAttributes;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprNode|null
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprNode|null
      */
     public $key;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprNode
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprNode
      */
     public $value;
     public function __construct(?ConstExprNode $key, ConstExprNode $value)

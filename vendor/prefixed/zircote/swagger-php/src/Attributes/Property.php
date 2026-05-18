@@ -4,10 +4,10 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Attributes;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
 #[\Attribute(\Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::TARGET_PARAMETER | \Attribute::TARGET_CLASS_CONSTANT | \Attribute::IS_REPEATABLE)]
 class Property extends OA\Property
 {
@@ -26,7 +26,7 @@ class Property extends OA\Property
      * @param Attachable[]|null                                             $attachables
      * @param bool|int|float|null $exclusiveMaximum
      * @param bool|int|float|null $exclusiveMinimum
-     * @param \Matomo\Dependencies\OpenApiDocs\OpenApi\Attributes\AdditionalProperties|bool|null $additionalProperties
+     * @param \Matomo\Dependencies\ApiReference\OpenApi\Attributes\AdditionalProperties|bool|null $additionalProperties
      * @param mixed $default
      * @param mixed $example
      */

@@ -4,14 +4,14 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Context;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\OpenApiException;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Util;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Yaml;
+use Matomo\Dependencies\ApiReference\OpenApi\Context;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\OpenApiException;
+use Matomo\Dependencies\ApiReference\OpenApi\Util;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Yaml;
 /**
  * The openapi annotation base class.
  */
@@ -601,7 +601,7 @@ abstract class AbstractAnnotation implements \JsonSerializable
     {
         $class = get_class($this);
         do {
-            if (0 === strpos($class, 'Matomo\\Dependencies\\OpenApiDocs\\OpenApi\\Annotations\\')) {
+            if (0 === strpos($class, 'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\')) {
                 break;
             }
         } while ($class = get_parent_class($class));

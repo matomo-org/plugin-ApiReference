@@ -9,11 +9,11 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Context as TypeContext;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Utils;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Context as TypeContext;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Utils;
 use function count;
 use function implode;
 use function ltrim;
@@ -44,7 +44,7 @@ use const PREG_SPLIT_DELIM_CAPTURE;
 class DescriptionFactory
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory
      */
     private $tagFactory;
     /**

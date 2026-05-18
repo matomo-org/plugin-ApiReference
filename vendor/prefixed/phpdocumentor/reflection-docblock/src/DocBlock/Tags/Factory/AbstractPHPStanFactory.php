@@ -10,17 +10,17 @@
  *
  */
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\InvalidTag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Context as TypeContext;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Lexer\Lexer;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\ConstExprParser;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\PhpDocParser;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\TokenIterator;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\TypeParser;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\ParserConfig;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\InvalidTag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Context as TypeContext;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Lexer\Lexer;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\ConstExprParser;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\PhpDocParser;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\TokenIterator;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\TypeParser;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig;
 use RuntimeException;
 use function class_exists;
 use function ltrim;
@@ -37,11 +37,11 @@ use function rtrim;
 class AbstractPHPStanFactory implements Factory
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\PhpDocParser
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\PhpDocParser
      */
     private $parser;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Lexer\Lexer
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Lexer\Lexer
      */
     private $lexer;
     /** @var PHPStanFactory[] */

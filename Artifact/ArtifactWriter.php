@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\Artifact;
+namespace Piwik\Plugins\ApiReference\Artifact;
 
 use Piwik\Filesystem;
 

@@ -9,22 +9,22 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\tests\Unit;
+namespace Piwik\Plugins\ApiReference\tests\Unit;
 
-require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
+require_once PIWIK_INCLUDE_PATH . '/plugins/ApiReference/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 use Piwik\Config;
-use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
-use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
-use Piwik\Plugins\OpenApiDocs\Tasks;
+use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
+use Piwik\Plugins\ApiReference\Generation\SpecGenerationService;
+use Piwik\Plugins\ApiReference\Tasks;
 use Piwik\Scheduler\Schedule\Daily;
 use Piwik\Tests\Framework\Mock\FakeLogger;
 
 /**
- * @group OpenApiDocs
- * @group OpenApiDocs_Unit
- * @group OpenApiDocs_TasksTest
+ * @group ApiReference
+ * @group ApiReference_Unit
+ * @group ApiReference_TasksTest
  */
 class TasksTest extends TestCase
 {
@@ -37,19 +37,19 @@ class TasksTest extends TestCase
     {
         parent::setUp();
 
-        $this->originalConfig = Config::getInstance()->OpenApiDocs ?? null;
+        $this->originalConfig = Config::getInstance()->ApiReference ?? null;
     }
 
     protected function tearDown(): void
     {
-        Config::getInstance()->OpenApiDocs = $this->originalConfig;
+        Config::getInstance()->ApiReference = $this->originalConfig;
 
         parent::tearDown();
     }
 
     public function testScheduleDoesNotRegisterTaskWhenDisabled(): void
     {
-        Config::getInstance()->OpenApiDocs = ['enable_spec_generation_task' => 0];
+        Config::getInstance()->ApiReference = ['enable_spec_generation_task' => 0];
 
         $tasks = new Tasks($this->createMock(SpecGenerationService::class), new FakeLogger());
         $tasks->schedule();
@@ -59,7 +59,7 @@ class TasksTest extends TestCase
 
     public function testScheduleRegistersDailyTaskWhenEnabled(): void
     {
-        Config::getInstance()->OpenApiDocs = ['enable_spec_generation_task' => 1];
+        Config::getInstance()->ApiReference = ['enable_spec_generation_task' => 1];
 
         $tasks = new Tasks($this->createMock(SpecGenerationService::class), new FakeLogger());
         $tasks->schedule();
@@ -98,6 +98,6 @@ class TasksTest extends TestCase
 
         $this->assertSame('RollUpReporting', $calledPlugins[0]);
         $this->assertSame('Login', $calledPlugins[1]);
-        $this->assertStringContainsString('OpenApiDocs scheduled generation failed for plugin RollUpReporting: Foo failed', $logger->output);
+        $this->assertStringContainsString('ApiReference scheduled generation failed for plugin RollUpReporting: Foo failed', $logger->output);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast;
 
 interface Node
 {

@@ -10,7 +10,7 @@
  *
  */
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoTypes;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes;
 
 class ArrayShapeItem extends ShapeItem
 {

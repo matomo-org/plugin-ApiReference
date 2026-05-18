@@ -9,14 +9,14 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoTypes;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoType;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\AggregatedType;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Compound;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Float_;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Integer;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoType;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\AggregatedType;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Compound;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Float_;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Integer;
 /**
  * Value Object representing the 'numeric' pseudo-type, which is either a numeric-string, integer or float.
  *

@@ -9,11 +9,11 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\Specs;
+namespace Piwik\Plugins\ApiReference\Specs;
 
 use Piwik\Plugin\Manager;
 use Piwik\Piwik;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
+use Piwik\Plugins\ApiReference\ApiReference;
 
 class PathResolver
 {
@@ -29,7 +29,7 @@ class PathResolver
 
     public function __construct(?string $pluginDirectory = null)
     {
-        $this->pluginDirectory = $pluginDirectory ?? Manager::getInstance()::getPluginDirectory('OpenApiDocs');
+        $this->pluginDirectory = $pluginDirectory ?? Manager::getInstance()::getPluginDirectory('ApiReference');
     }
 
     public function getSpecDirectory(): string
@@ -39,7 +39,7 @@ class PathResolver
 
     public function getSpecFilePath(
         string $specFileBaseName,
-        string $version = OpenApiDocs::DEFAULT_SPEC_VERSION,
+        string $version = ApiReference::DEFAULT_SPEC_VERSION,
         string $format = 'json'
     ): string {
         return $this->getSpecDirectory() . $specFileBaseName . '_openapi_spec_v' . $version . '.' . strtolower($format);
@@ -90,6 +90,6 @@ class PathResolver
 
     protected function dispatchArtifactBasePathEvent(?string &$artifactBasePath): void
     {
-        Piwik::postEvent('OpenApiDocs.getArtifactBasePath', [&$artifactBasePath]);
+        Piwik::postEvent('ApiReference.getArtifactBasePath', [&$artifactBasePath]);
     }
 }

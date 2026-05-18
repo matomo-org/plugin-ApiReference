@@ -9,11 +9,11 @@ declare (strict_types=1);
  *
  * @link https://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoTypes;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoType;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Boolean;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoType;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Boolean;
 use function class_alias;
 /**
  * Value Object representing the PseudoType 'False', which is a Boolean type.
@@ -31,4 +31,4 @@ final class True_ extends Boolean implements PseudoType
         return 'true';
     }
 }
-class_alias(True_::class, 'Matomo\\Dependencies\\OpenApiDocs\\phpDocumentor\\Reflection\\Types\\True_', \false);
+class_alias(True_::class, 'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\Types\\True_', \false);

@@ -1,16 +1,16 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\TemplateExtends;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\TypeResolver;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Context;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\ExtendsTagValueNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
-use Matomo\Dependencies\OpenApiDocs\Webmozart\Assert\Assert;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\TemplateExtends;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\TypeResolver;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Context;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\ExtendsTagValueNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
+use Matomo\Dependencies\ApiReference\Webmozart\Assert\Assert;
 use function is_string;
 /**
  * @internal This class is not part of the BC promise of this library.
@@ -18,11 +18,11 @@ use function is_string;
 final class TemplateExtendsFactory implements PHPStanFactory
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\DescriptionFactory
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory
      */
     private $descriptionFactory;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\TypeResolver
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\TypeResolver
      */
     private $typeResolver;
     public function __construct(TypeResolver $typeResolver, DescriptionFactory $descriptionFactory)

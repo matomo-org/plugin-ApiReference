@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs\Commands;
+namespace Piwik\Plugins\ApiReference\Commands;
 
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
-use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
-use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
+use Piwik\Plugins\ApiReference\Generation\SpecGenerationService;
+use Piwik\Plugins\ApiReference\ApiReference;
+use Piwik\Plugins\ApiReference\Specs\PathResolver;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on
@@ -105,7 +105,7 @@ class GenerateSpecFile extends ConsoleCommand
             return $pluginName !== '';
         }));
         $format = $input->getOption('format') ?: 'json';
-        $version = $input->getOption('api-version') ?: OpenApiDocs::DEFAULT_SPEC_VERSION;
+        $version = $input->getOption('api-version') ?: ApiReference::DEFAULT_SPEC_VERSION;
         $notDryRun = $input->getOption('not-dry-run') ?: false;
         $addAnnotations = $input->getOption('add-annotations') ?: false;
 

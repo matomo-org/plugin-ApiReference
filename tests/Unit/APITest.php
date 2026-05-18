@@ -9,22 +9,22 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\tests\Unit;
+namespace Piwik\Plugins\ApiReference\tests\Unit;
 
-require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
+require_once PIWIK_INCLUDE_PATH . '/plugins/ApiReference/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 use Piwik\Access;
 use Piwik\Container\StaticContainer;
-use Piwik\Plugins\OpenApiDocs\API;
-use Piwik\Plugins\OpenApiDocs\Generation\PluginListProvider;
-use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
+use Piwik\Plugins\ApiReference\API;
+use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
+use Piwik\Plugins\ApiReference\Specs\PathResolver;
 use Piwik\Tests\Framework\Mock\FakeAccess;
 
 /**
- * @group OpenApiDocs
- * @group OpenApiDocs_Unit
- * @group OpenApiDocs_APITest
+ * @group ApiReference
+ * @group ApiReference_Unit
+ * @group ApiReference_APITest
  */
 class APITest extends TestCase
 {
