@@ -1311,17 +1311,16 @@ DOC;
         $this->assertEquals($expectedWithoutEnum, $this->annotationGenerator->buildSchemaObjectArray('integer', '', NoDefaultValue::class, '1', ['1', '2']));
     }
 
-    public function testNormaliseConfiguredParameterExampleSupportsOnlySimpleValues(): void
+    public function testBuildParameterAnnotationDataUsesConfiguredArrayExample(): void
     {
-        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+        $result = $this->annotationGenerator->buildParameterAnnotationData(
+            'someMethodName',
+            'statuses',
+            [],
+            ['type' => 'string|array<int, string>']
+        );
 
-        $this->assertSame('true', $annotationGenerator->normaliseConfiguredParameterExample(true));
-        $this->assertSame('1.5', $annotationGenerator->normaliseConfiguredParameterExample(1.5));
-        $this->assertSame('["one","two"]', $annotationGenerator->normaliseConfiguredParameterExample(['one', 'two'], ['array' => 'string']));
-        $this->assertNull($annotationGenerator->normaliseConfiguredParameterExample(['one', 'two'], ['string' => null]));
-        $this->assertSame('["one","two"]', $annotationGenerator->normaliseConfiguredParameterExample(['one', 'two'], ['array' => 'string', 'string' => null]));
-        $this->assertNull($annotationGenerator->normaliseConfiguredParameterExample(['key' => 'value'], ['array' => 'string']));
-        $this->assertNull($annotationGenerator->normaliseConfiguredParameterExample([['nested']], ['array' => 'string']));
+        $this->assertSame('["running","finished"]', $result['example']);
     }
 
     public function testShouldUseParameterLevelExampleForScalarArrayUnions(): void
@@ -1424,70 +1423,6 @@ DOC;
         $this->expectNotToPerformAssertions();
     }
 
-    public function testIsComplexParameterKeepsScalarArraysInQuery(): void
-    {
-        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
-
-        $this->assertFalse($annotationGenerator->isComplexParameter([
-            'types' => ['string' => null, 'array' => 'string'],
-            '_docType' => 'string|array<int,string>',
-            '_configExample' => ['running', 'finished'],
-        ]));
-    }
-
-    public function testIsComplexParameterPromotesNestedArrayShapesToBody(): void
-    {
-        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
-
-        $this->assertTrue($annotationGenerator->isComplexParameter([
-            'types' => ['array' => 'string'],
-            '_docType' => 'array<int,VisitDescriptor>',
-            '_configExample' => [
-                [
-                    'idsite' => 1,
-                    'idvisit' => 2,
-                ],
-            ],
-        ]));
-    }
-
-    public function testBuildRequestBodyAnnotationUsesWrappedFormEncodedSchema(): void
-    {
-        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
-
-        $requestBody = $annotationGenerator->buildRequestBodyAnnotation([
-            [
-                'name' => 'visits',
-                'description' => 'Visit descriptors.',
-                'required' => 'true',
-                'types' => ['array' => 'string'],
-                '_docType' => 'array<int,array{idsite:int,idvisit:int}>',
-                '_configExample' => [
-                    [
-                        'idsite' => 1,
-                        'idvisit' => 12345,
-                    ],
-                ],
-            ],
-        ]);
-        $lines = $annotationGenerator->buildLinesForAnnotationObject('@OA\Post', [
-            'path="/index.php"',
-            'operationId="PrivacyManager.exportDataSubjects"',
-            'tags={"PrivacyManager"}',
-            'description=""',
-            $requestBody,
-        ]);
-        $annotation = implode("\n", $lines);
-
-        $this->assertStringContainsString('@OA\RequestBody(', $annotation);
-        $this->assertStringContainsString('mediaType="application/x-www-form-urlencoded"', $annotation);
-        $this->assertStringContainsString('property="visits"', $annotation);
-        $this->assertStringContainsString('property="idsite"', $annotation);
-        $this->assertStringContainsString('property="idvisit"', $annotation);
-        $this->assertStringContainsString('required={"visits"}', $annotation);
-        $this->assertStringContainsString('example={"visits":{{"idsite":1,"idvisit":12345}}}', $annotation);
-    }
-
     public function testExpandTypeAliasesExpandsNamedArrayShapeAliases(): void
     {
         $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
@@ -1501,17 +1436,55 @@ DOC;
         );
     }
 
-    public function testResolveEffectiveParameterTypePreservesAliasCasingFromDocBlock(): void
+    public function testParseArrayLikeTypeDefinitionReturnsScalarArraySchema(): void
     {
         $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
 
-        $this->assertSame(
-            'array<int, VisitDescriptor>',
-            $annotationGenerator->resolveEffectiveParameterType(
-                ['type' => 'string'],
-                ['type' => 'array<int, VisitDescriptor>']
-            )
-        );
+        $this->assertSame([
+            'type' => 'array',
+            'items' => [
+                'type' => 'integer',
+            ],
+        ], $annotationGenerator->parseArrayLikeTypeDefinition('list<int>'));
+    }
+
+    public function testParseArrayLikeTypeDefinitionReturnsArrayShapeItemSchema(): void
+    {
+        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+
+        $this->assertSame([
+            'type' => 'array',
+            'items' => [
+                'type' => 'object',
+                'properties' => [
+                    [
+                        'name' => 'idsite',
+                        'schema' => [
+                            'type' => 'integer',
+                        ],
+                    ],
+                ],
+                'required' => ['idsite'],
+            ],
+        ], $annotationGenerator->parseArrayLikeTypeDefinition('array<int,array{idsite:int}>'));
+    }
+
+    public function testParseArrayLikeTypeDefinitionReturnsStringKeyedShapeSchema(): void
+    {
+        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+
+        $this->assertSame([
+            'type' => 'object',
+            'properties' => [
+                [
+                    'name' => 'idsite',
+                    'schema' => [
+                        'type' => 'integer',
+                    ],
+                ],
+            ],
+            'required' => ['idsite'],
+        ], $annotationGenerator->parseArrayLikeTypeDefinition('array<string,array{idsite:int}>'));
     }
 
     public function testCompileOperationLines(): void

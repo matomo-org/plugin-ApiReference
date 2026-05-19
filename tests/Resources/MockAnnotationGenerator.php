@@ -19,91 +19,6 @@ class MockAnnotationGenerator extends AnnotationGenerator
     public function __construct(DocumentationGenerator $generator)
     {
         parent::__construct($generator);
-
-        // TODO - Extend the constructor behaviour
-    }
-
-    // TODO - Refactor the methods below to use dependency injection so that they can more easily be tested
-
-    /**
-     * @inheritDoc
-     */
-    public function buildAnnotationForMethod(array $rules, string $pluginName, \ReflectionMethod $reflectionMethod): array
-    {
-        return parent::buildAnnotationForMethod($rules, $pluginName, $reflectionMethod);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function determineParameters(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
-    {
-        return parent::determineParameters($rules, $plugin, $method, $reflectionMethod);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getApplicableDemoExampleUrls(string $pluginName, string $methodName, array $paramsData): array
-    {
-        return parent::getApplicableDemoExampleUrls($pluginName, $methodName, $paramsData);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getDemoReportMetadata(): array
-    {
-        return parent::getDemoReportMetadata();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getExampleIfAvailable(string $url, bool $useLocalToken = false, bool $ignoreCached = false): string
-    {
-        return parent::getExampleIfAvailable($url, $useLocalToken, $ignoreCached);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getReportExampleUrlFromMetadata(string $pluginName, string $methodName): string
-    {
-        return parent::getReportExampleUrlFromMetadata($pluginName, $methodName);
-    }
-
-    public function getReportMetadataUrl(): string
-    {
-        return parent::getReportMetadataUrl();
-    }
-
-    public function prependInstanceUrl(string $path): string
-    {
-        return parent::prependInstanceUrl($path);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function determineResponses(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod, array $paramsData): array
-    {
-        return parent::determineResponses($rules, $plugin, $method, $reflectionMethod, $paramsData);
-    }
-
-    public function normaliseConfiguredParameterExample($example, array $typesMap = []): ?string
-    {
-        return parent::normaliseConfiguredParameterExample($example, $typesMap);
-    }
-
-    public function isBasicExampleArray(array $example): bool
-    {
-        return parent::isBasicExampleArray($example);
-    }
-
-    public function supportsBasicArrayExample(array $typesMap): bool
-    {
-        return parent::supportsBasicArrayExample($typesMap);
     }
 
     public function shouldUseParameterLevelExample(array $typesMap, string $example): bool
@@ -111,14 +26,19 @@ class MockAnnotationGenerator extends AnnotationGenerator
         return parent::shouldUseParameterLevelExample($typesMap, $example);
     }
 
-    public function isComplexParameter(array $param): bool
+    public function getApplicableDemoExampleUrls(string $pluginName, string $methodName, array $paramsData): array
     {
-        return parent::isComplexParameter($param);
+        return parent::getApplicableDemoExampleUrls($pluginName, $methodName, $paramsData);
     }
 
-    public function buildRequestBodyAnnotation(array $bodyParams): array
+    public function getReportMetadataUrl(): string
     {
-        return parent::buildRequestBodyAnnotation($bodyParams);
+        return parent::getReportMetadataUrl();
+    }
+
+    public function getReportExampleUrlFromMetadata(string $pluginName, string $methodName): string
+    {
+        return parent::getReportExampleUrlFromMetadata($pluginName, $methodName);
     }
 
     public function expandTypeAliases(string $type): string
@@ -126,9 +46,9 @@ class MockAnnotationGenerator extends AnnotationGenerator
         return parent::expandTypeAliases($type);
     }
 
-    public function resolveEffectiveParameterType(array $paramMetadata, array $paramDocInfo): string
+    public function parseArrayLikeTypeDefinition(string $type): ?array
     {
-        return parent::resolveEffectiveParameterType($paramMetadata, $paramDocInfo);
+        return parent::parseArrayLikeTypeDefinition($type);
     }
 
     public function setCurrentTypeAliases(array $aliases): void

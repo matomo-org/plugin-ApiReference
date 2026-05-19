@@ -196,45 +196,36 @@ export default defineComponent({
             : found;
         }, null);
     },
-    resolveParameterSpec(spec: OpenApiSpec, parameter: unknown): Record<string, unknown> | null {
-      if (!parameter || typeof parameter !== 'object') {
+    resolveComponentSpec(
+      spec: OpenApiSpec,
+      componentType: 'parameters' | 'schemas',
+      refPrefix: string,
+      value: unknown,
+    ): Record<string, unknown> | null {
+      if (!value || typeof value !== 'object') {
         return null;
       }
 
-      const ref = (parameter as Record<string, unknown>).$ref;
-      if (typeof ref !== 'string' || !ref.startsWith('#/components/parameters/')) {
-        return parameter as Record<string, unknown>;
+      const ref = (value as Record<string, unknown>).$ref;
+      if (typeof ref !== 'string' || !ref.startsWith(refPrefix)) {
+        return value as Record<string, unknown>;
       }
 
-      const componentName = ref.substring('#/components/parameters/'.length);
+      const componentName = ref.substring(refPrefix.length);
       const components = spec.components as Record<string, unknown> | undefined;
-      const { parameters } = components || {};
-      if (!parameters || typeof parameters !== 'object') {
+      const componentGroup = components?.[componentType];
+      if (!componentGroup || typeof componentGroup !== 'object') {
         return null;
       }
 
-      const resolved = (parameters as Record<string, unknown>)[componentName];
+      const resolved = (componentGroup as Record<string, unknown>)[componentName];
       return resolved && typeof resolved === 'object' ? resolved as Record<string, unknown> : null;
     },
+    resolveParameterSpec(spec: OpenApiSpec, parameter: unknown): Record<string, unknown> | null {
+      return this.resolveComponentSpec(spec, 'parameters', '#/components/parameters/', parameter);
+    },
     resolveSchemaSpec(spec: OpenApiSpec, schema: unknown): Record<string, unknown> | null {
-      if (!schema || typeof schema !== 'object') {
-        return null;
-      }
-
-      const ref = (schema as Record<string, unknown>).$ref;
-      if (typeof ref !== 'string' || !ref.startsWith('#/components/schemas/')) {
-        return schema as Record<string, unknown>;
-      }
-
-      const componentName = ref.substring('#/components/schemas/'.length);
-      const components = spec.components as Record<string, unknown> | undefined;
-      const { schemas } = components || {};
-      if (!schemas || typeof schemas !== 'object') {
-        return null;
-      }
-
-      const resolved = (schemas as Record<string, unknown>)[componentName];
-      return resolved && typeof resolved === 'object' ? resolved as Record<string, unknown> : null;
+      return this.resolveComponentSpec(spec, 'schemas', '#/components/schemas/', schema);
     },
     isArrayQueryParameter(parameter: Record<string, unknown>): boolean {
       if (parameter.in !== 'query') {
@@ -262,10 +253,8 @@ export default defineComponent({
     },
     getArrayQueryParameterNamesForRequest(
       spec: OpenApiSpec,
-      requestUrl: string,
-      requestMethod: string,
+      operation: Record<string, unknown> | null,
     ): string[] {
-      const operation = this.getOperationForRequest(spec, requestUrl, requestMethod);
       const parameters = operation?.parameters;
 
       if (!Array.isArray(parameters)) {
@@ -279,12 +268,16 @@ export default defineComponent({
         .map((parameter) => parameter.name)
         .filter((name): name is string => typeof name === 'string' && name.length > 0);
     },
-    rewriteMatomoArrayQueryParams(request: SwaggerUiRequest, spec: OpenApiSpec): SwaggerUiRequest {
+    rewriteMatomoArrayQueryParams(
+      request: SwaggerUiRequest,
+      spec: OpenApiSpec,
+      operation: Record<string, unknown> | null,
+    ): SwaggerUiRequest {
       if (!request.url) {
         return request;
       }
 
-      const arrayQueryParameterNames = this.getArrayQueryParameterNamesForRequest(spec, request.url, request.method || 'get');
+      const arrayQueryParameterNames = this.getArrayQueryParameterNamesForRequest(spec, operation);
       if (!arrayQueryParameterNames.length) {
         return request;
       }
@@ -313,10 +306,8 @@ export default defineComponent({
     },
     resolveFormRequestBodySchema(
       spec: OpenApiSpec,
-      requestUrl: string,
-      requestMethod: string,
+      operation: Record<string, unknown> | null,
     ): Record<string, unknown> | null {
-      const operation = this.getOperationForRequest(spec, requestUrl, requestMethod);
       const requestBody = operation?.requestBody;
       if (!requestBody || typeof requestBody !== 'object') {
         return null;
@@ -348,10 +339,9 @@ export default defineComponent({
     },
     getObjectFormSchemasForRequest(
       spec: OpenApiSpec,
-      requestUrl: string,
-      requestMethod: string,
+      operation: Record<string, unknown> | null,
     ): Record<string, Record<string, unknown>> {
-      const schema = this.resolveFormRequestBodySchema(spec, requestUrl, requestMethod);
+      const schema = this.resolveFormRequestBodySchema(spec, operation);
       const properties = schema?.properties;
 
       if (!properties || typeof properties !== 'object') {
@@ -405,36 +395,18 @@ export default defineComponent({
       rawValue: string,
       schema: Record<string, unknown>,
     ): unknown | null {
-      const normaliseArrayValue = (parsedValue: unknown): unknown => {
-        if (schema.type === 'array' && parsedValue && !Array.isArray(parsedValue) && typeof parsedValue === 'object') {
-          return [parsedValue];
-        }
-
-        return parsedValue;
-      };
       const tryParseJson = (jsonValue: string): unknown | null => {
         try {
-          return normaliseArrayValue(JSON.parse(jsonValue) as unknown);
+          const parsedValue = JSON.parse(jsonValue) as unknown;
+
+          if (schema.type === 'array' && parsedValue && typeof parsedValue === 'object' && !Array.isArray(parsedValue)) {
+            return [parsedValue];
+          }
+
+          return parsedValue;
         } catch (error) {
           return null;
         }
-      };
-      const tryParseJsonLikeObject = (): unknown | null => {
-        const trimmedValue = rawValue.trim();
-        if (!trimmedValue.startsWith('{') || !trimmedValue.endsWith('}')) {
-          return null;
-        }
-
-        const withInsertedCommas = trimmedValue.replace(
-          /((?:"(?:\\.|[^"])*")|true|false|null|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\}|\])(\s*")/g,
-          '$1,$2',
-        );
-
-        if (schema.type === 'array') {
-          return tryParseJson(`[${withInsertedCommas}]`);
-        }
-
-        return tryParseJson(withInsertedCommas);
       };
 
       const parsedJson = tryParseJson(rawValue);
@@ -442,23 +414,34 @@ export default defineComponent({
         return parsedJson;
       }
 
-      const parsedJsonLikeObject = tryParseJsonLikeObject();
-      if (parsedJsonLikeObject !== null) {
-        return parsedJsonLikeObject;
-      }
-
-      if (schema.type !== 'array') {
-        return null;
-      }
-
       const trimmedValue = rawValue.trim();
       if (!trimmedValue.startsWith('{') || !trimmedValue.endsWith('}')) {
         return null;
       }
 
-      return tryParseJson(`[${trimmedValue}]`);
+      const parsedJsonLikeObject = tryParseJson(
+        schema.type === 'array'
+          ? `[${trimmedValue.replace(
+            /((?:"(?:\\.|[^"])*")|true|false|null|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\}|\])(\s*")/g,
+            '$1,$2',
+          )}]`
+          : trimmedValue.replace(
+            /((?:"(?:\\.|[^"])*")|true|false|null|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\}|\])(\s*")/g,
+            '$1,$2',
+          ),
+      );
+
+      if (parsedJsonLikeObject !== null) {
+        return parsedJsonLikeObject;
+      }
+
+      return schema.type === 'array' ? tryParseJson(`[${trimmedValue}]`) : null;
     },
-    rewriteMatomoObjectFormParams(request: SwaggerUiRequest, spec: OpenApiSpec): SwaggerUiRequest {
+    rewriteMatomoObjectFormParams(
+      request: SwaggerUiRequest,
+      spec: OpenApiSpec,
+      operation: Record<string, unknown> | null,
+    ): SwaggerUiRequest {
       if (!request.url) {
         return request;
       }
@@ -468,13 +451,10 @@ export default defineComponent({
         return request;
       }
 
-      const objectFormSchemas = this.getObjectFormSchemasForRequest(
-        spec,
-        request.url,
-        request.method || 'get',
-      );
-      const objectFormParameterNames = Object.keys(objectFormSchemas);
-      if (!objectFormParameterNames.length) {
+      const objectFormSchemas = this.getObjectFormSchemasForRequest(spec, operation);
+      const objectFormParameterNames = new Set(Object.keys(objectFormSchemas));
+
+      if (!objectFormParameterNames.size) {
         return request;
       }
 
@@ -494,7 +474,7 @@ export default defineComponent({
       let didRewriteBody = false;
 
       parsedBody.forEach((value, key) => {
-        if (!objectFormParameterNames.includes(key)) {
+        if (!objectFormParameterNames.has(key)) {
           rewrittenBody.append(key, value);
           return;
         }
@@ -689,13 +669,21 @@ export default defineComponent({
         layout: 'BaseLayout',
         tagsSorter: 'alpha',
         presets: swaggerUiBundle.presets?.apis ? [swaggerUiBundle.presets.apis] : [],
-        requestInterceptor: (request) => this.rewriteMatomoObjectFormParams(
-          this.rewriteMatomoArrayQueryParams(
+        requestInterceptor: (request) => {
+          const operation = request.url
+            ? this.getOperationForRequest(specWithCurrentInstanceUrl, request.url, request.method || 'get')
+            : null;
+          const requestWithArrayQueryParams = this.rewriteMatomoArrayQueryParams(
             request,
             specWithCurrentInstanceUrl,
-          ),
-          specWithCurrentInstanceUrl,
-        ),
+            operation,
+          );
+          return this.rewriteMatomoObjectFormParams(
+            requestWithArrayQueryParams,
+            specWithCurrentInstanceUrl,
+            operation,
+          );
+        },
         onComplete: () => {
           window.setTimeout(() => {
             this.normalizeSwaggerUi(container);

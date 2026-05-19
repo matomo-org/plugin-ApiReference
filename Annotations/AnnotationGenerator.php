@@ -299,11 +299,10 @@ class AnnotationGenerator
         $params = $this->determineParameters($rules, $pluginName, $methodName, $reflectionMethod);
         $responses = $this->determineResponses($rules, $pluginName, $methodName, $reflectionMethod, $params);
         $description = $this->determineDescription($pluginName, $methodName, $reflectionMethod);
-        $hasComplexParams = $this->methodHasComplexParams($params);
 
         $isPost = !empty($rules['plugins'][$pluginName]['methodsRequiringPost'])
             && in_array($methodName, $rules['plugins'][$pluginName]['methodsRequiringPost']);
-        $isPost = $isPost || $hasComplexParams;
+        $isPost = $isPost || !empty($params['body']);
 
         return $this->compileOperationLines($path, $opId, $pluginName, $params, $responses, $description, $isPost);
     }
@@ -491,33 +490,10 @@ class AnnotationGenerator
             $this->addMissingImportantDataWarning($methodName, $paramName, 'Type is not specified in comment block.');
         }
         $type = $this->resolveEffectiveParameterType($paramMetadata, $paramDocInfo);
-        $typesMap = [];
-        // Check for pipes and try to list possible types
-        $typeHints = array_map(function ($typeHint) {
-            return trim($typeHint);
-        }, explode('|', $type));
-        // If there's more than 1 type hinted and one is bool, remove bool. This is because many params default to false regardless of expected type
-        if (count($typeHints) > 1 && in_array('bool', $typeHints)) {
-            $typeHints = array_diff($typeHints, ['bool']);
-        }
-
         $isRequired = !key_exists('default', $paramMetadata) || $paramMetadata['default'] instanceof NoDefaultValue;
-        $allTypeHintsAreStringLiterals = $this->areAllTypeHintsStringLiterals($typeHints);
-        $enumValues = [];
-        if ($allTypeHintsAreStringLiterals) {
-            $typesMap['string'] = null;
-            foreach ($typeHints as $typeHint) {
-                $enumValues[] = trim(trim($typeHint), '\'"');
-            }
-        } else {
-            foreach ($typeHints as $typePart) {
-                $typePart = trim($typePart, ' ()');
-                $normalisedType = $this->hasSpecificArrayShape($typePart) ? 'array' : $this->getOpenApiTypeFromPhpType($typePart);
-                // If the type is array, check if there's a subType
-                $subType = $this->getArraySubTypeFromPhpType($typePart, $normalisedType);
-                $typesMap[$normalisedType] = $subType !== null ? $this->getOpenApiTypeFromPhpType($subType) : $subType;
-            }
-        }
+        $typeMetadata = $this->getParameterTypeMetadata($type);
+        $typesMap = $typeMetadata['types'];
+        $enumValues = $typeMetadata['enum'];
 
         $description = $paramDocInfo['description'] ?? '';
         if (empty($description)) {
@@ -567,6 +543,74 @@ class AnnotationGenerator
         }
 
         return $paramData;
+    }
+
+    protected function buildResolvedParameterAnnotationData(
+        string $methodName,
+        string $paramName,
+        array $paramMetadata,
+        array $paramDocInfo
+    ): array {
+        $paramData = $this->buildParameterAnnotationData($methodName, $paramName, $paramMetadata, $paramDocInfo);
+        $effectiveType = $this->resolveEffectiveParameterType($paramMetadata, $paramDocInfo);
+        $configuredExample = $this->getConfiguredParameterExampleValue($paramName, $effectiveType);
+
+        $paramData['_docType'] = $this->expandTypeAliases($effectiveType);
+        $paramData['_configExample'] = $configuredExample['found'] ? $configuredExample['value'] : null;
+        $paramData['_isComplex'] = $this->isComplexParameter($paramData);
+        if ($paramData['_isComplex']) {
+            $paramData['_schemaDefinition'] = $this->buildRequestBodySchemaDefinition(
+                strval($paramData['_docType']),
+                $paramData['types'] ?? [],
+                $paramData['_configExample']
+            );
+        }
+
+        return $paramData;
+    }
+
+    /**
+     * Parse the raw type string into the normalized OpenAPI type map and enum values.
+     *
+     * @param string $type
+     *
+     * @return array{types: array<string, string|null>, enum: array<int, string>}
+     */
+    protected function getParameterTypeMetadata(string $type): array
+    {
+        $typesMap = [];
+        $enumValues = [];
+
+        $typeHints = array_map(static function ($typeHint) {
+            return trim($typeHint);
+        }, explode('|', $type));
+        if (count($typeHints) > 1 && in_array('bool', $typeHints, true)) {
+            $typeHints = array_values(array_diff($typeHints, ['bool']));
+        }
+
+        if ($this->areAllTypeHintsStringLiterals($typeHints)) {
+            $typesMap['string'] = null;
+            foreach ($typeHints as $typeHint) {
+                $enumValues[] = trim(trim($typeHint), '\'"');
+            }
+
+            return [
+                'types' => $typesMap,
+                'enum' => $enumValues,
+            ];
+        }
+
+        foreach ($typeHints as $typePart) {
+            $typePart = trim($typePart, ' ()');
+            $normalisedType = $this->hasSpecificArrayShape($typePart) ? 'array' : $this->getOpenApiTypeFromPhpType($typePart);
+            $subType = $this->getArraySubTypeFromPhpType($typePart, $normalisedType);
+            $typesMap[$normalisedType] = $subType !== null ? $this->getOpenApiTypeFromPhpType($subType) : $subType;
+        }
+
+        return [
+            'types' => $typesMap,
+            'enum' => $enumValues,
+        ];
     }
 
     /**
@@ -742,7 +786,7 @@ class AnnotationGenerator
         if (
             !is_array($example)
             || !$this->isBasicExampleArray($example)
-            || !$this->supportsBasicArrayExample($typesMap)
+            || !array_key_exists('array', $typesMap)
         ) {
             return null;
         }
@@ -750,25 +794,6 @@ class AnnotationGenerator
         $encoded = json_encode(array_values($example));
 
         return is_string($encoded) ? $encoded : null;
-    }
-
-    /**
-     * Only use array config examples when the emitted schema includes an array shape.
-     */
-    protected function supportsBasicArrayExample(array $typesMap): bool
-    {
-        return array_key_exists('array', $typesMap);
-    }
-
-    protected function methodHasComplexParams(array $params): bool
-    {
-        foreach ($params['custom'] ?? [] as $param) {
-            if (is_array($param) && !empty($param['_isComplex'])) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     protected function isComplexParameter(array $param): bool
@@ -1002,6 +1027,9 @@ class AnnotationGenerator
     protected function determineParameters(array $rules, string $plugin, string $method, \ReflectionMethod $reflectionMethod): array
     {
         $refs = [];
+        $queryParams = [];
+        $bodyParams = [];
+        $customParams = [];
 
         if (!empty($rules['defaultParamRefs'])) {
             $refs = array_merge($refs, $rules['defaultParamRefs']);
@@ -1018,10 +1046,8 @@ class AnnotationGenerator
             $paramsInfo = $this->getParamInfoFromDocBlock($docBlock);
         }
 
-        $customParams = [];
         foreach ($paramsMetadata as $name => $paramMetadata) {
             $paramInfo = $paramsInfo[$name] ?? [];
-            $effectiveType = $this->resolveEffectiveParameterType($paramMetadata, $paramInfo);
             // Skip references and variadic for now
             // TODO - determine whether these can be handled automatically or if they have to be manual
             if (!empty($paramInfo['byRef']) || !empty($paramInfo['variadic'])) {
@@ -1029,7 +1055,7 @@ class AnnotationGenerator
             }
 
             // If the parameter doesn't have a description and matches a global, use a reference to the global instead.
-            $customParamData = $this->buildParameterAnnotationData($method, $name, $paramMetadata, $paramInfo);
+            $customParamData = $this->buildResolvedParameterAnnotationData($method, $name, $paramMetadata, $paramInfo);
             if (empty($customParamData['description']) && in_array($name, self::GLOBAL_PARAMETER_NAMES)) {
                 $globalParamSuffix = $customParamData['required'] === 'true' ? 'Required' : 'Optional';
                 $paramRef = '#/components/parameters/' . $name . $globalParamSuffix;
@@ -1042,17 +1068,19 @@ class AnnotationGenerator
                 continue;
             }
 
-            $expandedEffectiveType = $this->expandTypeAliases($effectiveType);
-            $configuredExample = $this->getConfiguredParameterExampleValue($name, $effectiveType);
-            $customParamData['_docType'] = $expandedEffectiveType;
-            $customParamData['_configExample'] = $configuredExample['found'] ? $configuredExample['value'] : null;
-            $customParamData['_isComplex'] = $this->isComplexParameter($customParamData);
             $customParams[] = $customParamData;
+            if ($customParamData['_isComplex']) {
+                $bodyParams[] = $customParamData;
+            } else {
+                $queryParams[] = $customParamData;
+            }
         }
 
         return [
             'refs' => array_values(array_unique($refs)),
             'custom' => $customParams,
+            'query' => $queryParams,
+            'body' => $bodyParams,
         ];
     }
 
@@ -1162,8 +1190,9 @@ class AnnotationGenerator
         }
 
         $parametersToReplace = [];
-        if (!empty($paramsData['custom'])) {
-            foreach ($paramsData['custom'] as $customParam) {
+        $queryParams = $paramsData['query'] ?? ($paramsData['custom'] ?? []);
+        if (!empty($queryParams)) {
+            foreach ($queryParams as $customParam) {
                 // Skip any which might be references.
                 if (!is_array($customParam)) {
                     continue;
@@ -2339,7 +2368,7 @@ class AnnotationGenerator
             $propertyLines[] = 'description="' . $param['description'] . '"';
         }
 
-        $schemaDefinition = $this->buildRequestBodySchemaDefinition(
+        $schemaDefinition = $param['_schemaDefinition'] ?? $this->buildRequestBodySchemaDefinition(
             strval($param['_docType'] ?? ''),
             $param['types'] ?? [],
             $param['_configExample'] ?? null
@@ -2360,71 +2389,9 @@ class AnnotationGenerator
             return $this->parseShapeTypeDefinition($type);
         }
 
-        if (preg_match('/^(array|list)<(.+)>$/', $type, $matches) === 1) {
-            $genericParts = $this->splitTopLevel($matches[2], ',');
-            if (count($genericParts) === 2 && strtolower(trim($genericParts[0])) === 'string') {
-                $valueType = trim($genericParts[1]);
-                if ($this->isInlineArrayShapeType($valueType)) {
-                    return $this->parseShapeTypeDefinition($valueType);
-                }
-
-                return [
-                    'type' => 'object',
-                    'additionalProperties' => true,
-                ];
-            }
-
-            $valueType = trim(end($genericParts));
-            if ($this->isInlineArrayShapeType($valueType)) {
-                return [
-                    'type' => 'array',
-                    'items' => $this->parseShapeTypeDefinition($valueType),
-                ];
-            }
-
-            if ($this->isScalarPhpType(strtolower($valueType))) {
-                return [
-                    'type' => 'array',
-                    'items' => [
-                        'type' => $this->getOpenApiTypeFromPhpType($valueType),
-                    ],
-                ];
-            }
-
-            return [
-                'type' => 'array',
-                'items' => [
-                    'type' => 'object',
-                    'additionalProperties' => true,
-                ],
-            ];
-        }
-
-        if (strpos($type, '[]') !== false) {
-            $subType = trim(substr($type, 0, strpos($type, '[]')));
-            if ($this->isInlineArrayShapeType($subType)) {
-                return [
-                    'type' => 'array',
-                    'items' => $this->parseShapeTypeDefinition($subType),
-                ];
-            }
-
-            if ($this->isScalarPhpType(strtolower($subType))) {
-                return [
-                    'type' => 'array',
-                    'items' => [
-                        'type' => $this->getOpenApiTypeFromPhpType($subType),
-                    ],
-                ];
-            }
-
-            return [
-                'type' => 'array',
-                'items' => [
-                    'type' => 'object',
-                    'additionalProperties' => true,
-                ],
-            ];
+        $arrayDefinition = $this->parseArrayLikeTypeDefinition($type);
+        if ($arrayDefinition !== null) {
+            return $arrayDefinition;
         }
 
         if (strtolower($type) === 'array<string,mixed>') {
@@ -2472,23 +2439,9 @@ class AnnotationGenerator
     protected function parseShapeTypeDefinition(string $type): array
     {
         $type = trim($type);
-        if (preg_match('/^(array|list)<(.+)>$/', $type, $matches) === 1) {
-            $genericParts = $this->splitTopLevel($matches[2], ',');
-            $valueType = trim(end($genericParts));
-
-            return [
-                'type' => 'array',
-                'items' => $this->parseShapeTypeDefinition($valueType),
-            ];
-        }
-
-        if (strpos($type, '[]') !== false) {
-            $subType = trim(substr($type, 0, strpos($type, '[]')));
-
-            return [
-                'type' => 'array',
-                'items' => $this->parseShapeTypeDefinition($subType),
-            ];
+        $arrayDefinition = $this->parseArrayLikeTypeDefinition($type);
+        if ($arrayDefinition !== null) {
+            return $arrayDefinition;
         }
 
         if (preg_match('/^array\s*\{(.+)\}$/', $type, $matches) === 1) {
@@ -2531,6 +2484,87 @@ class AnnotationGenerator
             return [
                 'type' => 'object',
                 'additionalProperties' => true,
+            ];
+        }
+
+        return [
+            'type' => 'object',
+            'additionalProperties' => true,
+        ];
+    }
+
+    protected function parseArrayLikeTypeDefinition(string $type): ?array
+    {
+        $type = trim($type);
+        $arrayLikeType = $this->extractArrayLikeValueType($type);
+        if ($arrayLikeType === null) {
+            return null;
+        }
+
+        if ($arrayLikeType['keyType'] === 'string') {
+            return $this->buildStringKeyedArraySchemaDefinition($arrayLikeType['valueType']);
+        }
+
+        return [
+            'type' => 'array',
+            'items' => $this->buildArrayItemSchemaDefinition($arrayLikeType['valueType']),
+        ];
+    }
+
+    /**
+     * @return array{keyType: string|null, valueType: string}|null
+     */
+    protected function extractArrayLikeValueType(string $type): ?array
+    {
+        if (preg_match('/^(array|list)<(.+)>$/', $type, $matches) === 1) {
+            $genericParts = $this->splitTopLevel($matches[2], ',');
+            if (empty($genericParts)) {
+                return null;
+            }
+
+            $keyType = null;
+            $valueType = trim(end($genericParts));
+            if (count($genericParts) === 2) {
+                $keyType = strtolower(trim($genericParts[0]));
+            }
+
+            return [
+                'keyType' => $keyType,
+                'valueType' => $valueType,
+            ];
+        }
+
+        if (strpos($type, '[]') === false) {
+            return null;
+        }
+
+        return [
+            'keyType' => null,
+            'valueType' => trim(substr($type, 0, strpos($type, '[]'))),
+        ];
+    }
+
+    protected function buildStringKeyedArraySchemaDefinition(string $valueType): array
+    {
+        if ($this->isInlineArrayShapeType($valueType)) {
+            return $this->parseShapeTypeDefinition($valueType);
+        }
+
+        return [
+            'type' => 'object',
+            'additionalProperties' => true,
+        ];
+    }
+
+    protected function buildArrayItemSchemaDefinition(string $valueType): array
+    {
+        if ($this->isInlineArrayShapeType($valueType)) {
+            return $this->parseShapeTypeDefinition($valueType);
+        }
+
+        if ($this->isScalarPhpType(strtolower($valueType))) {
+            return [
+                'type' => $this->getOpenApiTypeFromPhpType($valueType),
             ];
         }
 
@@ -2659,8 +2693,22 @@ class AnnotationGenerator
         foreach ($params['refs'] ?? [] as $ref) {
             $operationValuesMap[] = '@OA\Parameter(ref="' . $ref . '")';
         }
-        $bodyParams = [];
-        foreach ($params['custom'] ?? [] as $param) {
+        $queryParams = $params['query'] ?? null;
+        $bodyParams = $params['body'] ?? null;
+        if ($queryParams === null || $bodyParams === null) {
+            $queryParams = [];
+            $bodyParams = [];
+            foreach ($params['custom'] ?? [] as $param) {
+                if (is_array($param) && !empty($param['_isComplex'])) {
+                    $bodyParams[] = $param;
+                    continue;
+                }
+
+                $queryParams[] = $param;
+            }
+        }
+
+        foreach ($queryParams as $param) {
             if (!is_array($param)) {
                 if (!is_string($param) || stripos($param, '#/components/parameters/') === false) {
                     throw new \Exception('Invalid custom param: ' . strval($param));
@@ -2706,6 +2754,8 @@ class AnnotationGenerator
         if (!empty($bodyParams)) {
             $operationValuesMap[] = $this->buildRequestBodyAnnotation($bodyParams);
         }
+        $isPost = $isPost || !empty($bodyParams);
+        $operationName = '@OA\\' . ($isPost ? 'Post' : 'Get');
         foreach ($responses as $response) {
             $responseDescription = $this->getDescriptionText($response['description'] ?? null);
 
@@ -2733,7 +2783,7 @@ class AnnotationGenerator
             }
         }
 
-        $lines = $this->buildLinesForAnnotationObject('@OA\\' . ($isPost ? 'Post' : 'Get'), $operationValuesMap);
+        $lines = $this->buildLinesForAnnotationObject($operationName, $operationValuesMap);
 
         // Trim the comma off the very last item at this level and return the array
         $this->removeTrailingCommaFromLastLine($lines);
