@@ -48,7 +48,7 @@ class GenerateSpecFile extends ConsoleCommand
      */
     protected function configure()
     {
-        $this->setName('openapidocs:generate-spec-file');
+        $this->setName('apireference:generate-spec-file');
         $this->setDescription('Generate the OpenAPI documentation file for the Matomo APIs.');
         $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to document. Multiple plugins can be comma-separated');
         $this->addRequiredValueOption('format', 'f', 'Format of the spec file (JSON or YAML). Default is JSON');
@@ -88,7 +88,7 @@ class GenerateSpecFile extends ConsoleCommand
      * Ideally, the actual command is quite short as it acts like a controller. It should only receive the input values,
      * execute the task by calling a method of another class and output any useful information.
      *
-     * Execute the command like: ./console openapidocs:generate-spec-file --plugin=TagManager --not-dry-run
+     * Execute the command like: ./console apireference:generate-spec-file --plugin=TagManager --not-dry-run
      */
     protected function doExecute(): int
     {

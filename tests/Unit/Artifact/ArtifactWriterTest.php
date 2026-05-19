@@ -29,7 +29,7 @@ class ArtifactWriterTest extends TestCase
     {
         parent::setUp();
 
-        $this->temporaryDirectory = sys_get_temp_dir() . '/openapidocs_artifact_writer_' . uniqid('', true);
+        $this->temporaryDirectory = sys_get_temp_dir() . '/apireference_artifact_writer_' . uniqid('', true);
     }
 
     protected function tearDown(): void

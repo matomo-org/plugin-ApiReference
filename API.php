@@ -74,7 +74,7 @@ class API extends \Piwik\Plugin\API
 
         $filePath = $this->getSpecFilePath($pluginName);
         if (!$this->isSpecFileReadable($filePath)) {
-            throw new \Exception('OpenAPI spec file was not found. Generate it first via openapidocs:generate-spec-file.');
+            throw new \Exception('OpenAPI spec file was not found. Generate it first via apireference:generate-spec-file.');
         }
 
         $specContents = $this->readSpecFile($filePath);

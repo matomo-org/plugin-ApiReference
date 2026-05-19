@@ -31,7 +31,7 @@ class ExtractReportingApiMethodInfo extends ConsoleCommand
      */
     protected function configure()
     {
-        $this->setName('openapidocs:extract-api-method-info');
+        $this->setName('apireference:extract-api-method-info');
         $this->setDescription('Extract the comment block and basic information about methods for the Matomo Reporting API.');
         $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to inspect');
         $this->addNoValueOption('not-dry-run', null, 'Flag to allow writing to file instead of outputting a dry run.');
@@ -68,7 +68,7 @@ class ExtractReportingApiMethodInfo extends ConsoleCommand
      * Ideally, the actual command is quite short as it acts like a controller. It should only receive the input values,
      * execute the task by calling a method of another class and output any useful information.
      *
-     * Execute the command like: ./console openapidocs:extract-api-method-info --plugin=TagManager --not-dry-run
+     * Execute the command like: ./console apireference:extract-api-method-info --plugin=TagManager --not-dry-run
      */
     protected function doExecute(): int
     {
