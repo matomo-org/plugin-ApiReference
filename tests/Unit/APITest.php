@@ -62,6 +62,46 @@ class APITest extends TestCase
         $this->assertSame($expectedSpec, $result);
     }
 
+    public function testGetOpenApiSpecKeepsSuccessfulExamplesForUsersWithSiteOneAccess(): void
+    {
+        StaticContainer::getContainer()->set(Access::class, new FakeAccess(false, [], [1], 'siteOneViewer'));
+
+        $expectedSpec = $this->getSpecFixtureWithResponseExamples();
+        $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, json_encode($expectedSpec));
+
+        $result = $api->getOpenApiSpec('CustomAlerts');
+
+        $this->assertSame($expectedSpec, $result);
+    }
+
+    public function testGetOpenApiSpecRemovesOnlySuccessfulExamplesForUsersWithoutSiteOneAccess(): void
+    {
+        StaticContainer::getContainer()->set(Access::class, new FakeAccess(false, [], [2], 'otherViewer'));
+
+        $api = $this->buildApiMock(
+            '/tmp/CustomAlerts_openapi_spec_v1.0.0.json',
+            true,
+            json_encode($this->getSpecFixtureWithResponseExamples())
+        );
+
+        $result = $api->getOpenApiSpec('CustomAlerts');
+
+        $this->assertArrayNotHasKey('example', $result['paths']['/endpoint']['get']['responses']['200']['content']['application/json']);
+        $this->assertArrayNotHasKey('examples', $result['paths']['/endpoint']['get']['responses']['200']['content']['application/json']);
+        $this->assertSame(
+            'kept error example',
+            $result['paths']['/endpoint']['get']['responses']['400']['content']['application/json']['example']
+        );
+        $this->assertSame(
+            ['type' => 'string', 'example' => 'stay put'],
+            $result['paths']['/endpoint']['get']['parameters'][0]['schema']
+        );
+        $this->assertSame(
+            ['value' => ['id' => 99]],
+            $result['paths']['/endpoint']['get']['requestBody']['content']['application/json']['examples']['request']
+        );
+    }
+
     public function testGetAllowedPluginsReturnsProviderValues(): void
     {
         $provider = $this->createMock(PluginListProvider::class);
@@ -169,6 +209,65 @@ class APITest extends TestCase
         $api->method('readSpecFile')->willReturn($fileContents);
 
         return $api;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getSpecFixtureWithResponseExamples(): array
+    {
+        return [
+            'openapi' => '3.1.0',
+            'paths' => [
+                '/endpoint' => [
+                    'get' => [
+                        'parameters' => [
+                            [
+                                'name' => 'label',
+                                'schema' => [
+                                    'type' => 'string',
+                                    'example' => 'stay put',
+                                ],
+                            ],
+                        ],
+                        'requestBody' => [
+                            'content' => [
+                                'application/json' => [
+                                    'examples' => [
+                                        'request' => [
+                                            'value' => ['id' => 99],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Success',
+                                'content' => [
+                                    'application/json' => [
+                                        'example' => ['value' => 'remove me'],
+                                        'examples' => [
+                                            'success' => [
+                                                'value' => ['another' => 'remove me'],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            '400' => [
+                                'description' => 'Error',
+                                'content' => [
+                                    'application/json' => [
+                                        'example' => 'kept error example',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**

@@ -20,6 +20,7 @@ use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\API\Proxy;
 use Piwik\API\Request;
+use Piwik\Development;
 use Piwik\Http;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
@@ -1026,7 +1027,7 @@ class AnnotationGenerator
                 $file = null,
                 $followDepth = 0,
                 $acceptLanguage = false,
-                $acceptInvalidSslCertificate = true,
+                $acceptInvalidSslCertificate = $this->shouldAcceptInvalidSslCertificate(),
                 $byteRange = false,
                 $getExtendedInfo = true,
                 $httpMethod = 'GET'
@@ -1102,7 +1103,7 @@ class AnnotationGenerator
                 $file = null,
                 $followDepth = 0,
                 $acceptLanguage = false,
-                $acceptInvalidSslCertificate = true,
+                $acceptInvalidSslCertificate = $this->shouldAcceptInvalidSslCertificate(),
                 $byteRange = false,
                 $getExtendedInfo = true,
                 $httpMethod = 'GET'
@@ -1190,6 +1191,11 @@ class AnnotationGenerator
     protected function writeFile(string $filePath, string $contents)
     {
         return $this->artifactWriter->writeFile($filePath, $contents);
+    }
+
+    protected function shouldAcceptInvalidSslCertificate(): bool
+    {
+        return Development::isEnabled();
     }
 
     protected function getInstanceUrl(): string

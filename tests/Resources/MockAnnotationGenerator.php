@@ -110,4 +110,9 @@ class MockAnnotationGenerator extends AnnotationGenerator
     {
         return parent::shouldUseParameterLevelExample($typesMap, $example);
     }
+
+    public function shouldAcceptInvalidSslCertificate(): bool
+    {
+        return parent::shouldAcceptInvalidSslCertificate();
+    }
 }
