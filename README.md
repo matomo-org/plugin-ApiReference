@@ -129,4 +129,3 @@ vendor/bin/rector process {path_to_this_plugin/vendor/prefixed} --config={path_t
 ```
 
 > NOTE: Internal Matomo development environments may include the `DevPluginCommands` plugin, which provides commands to automate dependency scoping and Rector processing. See the `SearchEngineKeywordsPerformance` plugin README for additional details.
-
