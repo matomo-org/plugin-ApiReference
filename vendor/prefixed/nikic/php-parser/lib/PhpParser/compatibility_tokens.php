@@ -7,6 +7,9 @@ if (!\function_exists('Matomo\\Dependencies\\ApiReference\\PhpParser\\defineComp
     function defineCompatibilityTokens() : void
     {
         $compatTokens = [
+            // PHP 7.4
+            'T_COALESCE_EQUAL',
+            'T_FN',
             // PHP 8.0
             'T_NAME_QUALIFIED',
             'T_NAME_FULLY_QUALIFIED',
