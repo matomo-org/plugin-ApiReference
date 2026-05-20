@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Parser\Php7;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Parser\Php8;
+use Matomo\Dependencies\ApiReference\PhpParser\Parser\Php7;
+use Matomo\Dependencies\ApiReference\PhpParser\Parser\Php8;
 class ParserFactory
 {
     /**

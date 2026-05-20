@@ -10,20 +10,20 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\tests\Unit;
+namespace Piwik\Plugins\ApiReference\tests\Unit;
 
-require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
+require_once PIWIK_INCLUDE_PATH . '/plugins/ApiReference/vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
-use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
-use Piwik\Plugins\OpenApiDocs\tests\Resources\MockAnnotationGenerator;
+use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
+use Piwik\Plugins\ApiReference\ApiReference;
+use Piwik\Plugins\ApiReference\tests\Resources\MockAnnotationGenerator;
 
 /**
- * @group OpenApiDocs
- * @group OpenApiDocs_Unit
- * @group OpenApiDocs_AnnotationGeneratorTest
+ * @group ApiReference
+ * @group ApiReference_Unit
+ * @group ApiReference_AnnotationGeneratorTest
  */
 class AnnotationGeneratorTest extends TestCase
 {
@@ -1109,7 +1109,7 @@ class AnnotationGeneratorTest extends TestCase
         $this->assertNotEmpty($normalisedObject, 'The decoded example response should not be empty for endpoint: ' . $endpoint);
         $result = $this->annotationGenerator->buildSchemaAnnotationFromXmlExample($normalisedObject);
         $this->assertEquals(json_encode($expected), json_encode($result), "The XML schema was not as expected for endpoint $endpoint.");
-        $this->assertStringNotContainsString(OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME, json_encode($normalisedObject), "The XML example object should no longer contain the temp attribute property for endpoint $endpoint.");
+        $this->assertStringNotContainsString(ApiReference::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME, json_encode($normalisedObject), "The XML example object should no longer contain the temp attribute property for endpoint $endpoint.");
     }
 
     /**
@@ -1383,7 +1383,7 @@ class AnnotationGeneratorTest extends TestCase
     {
         yield 'should be false for empty strings' => ['', '', false];
         yield 'should be false for empty type and no default' => ['', NoDefaultValue::class, false];
-        foreach (OpenApiDocs::AVAILABLE_PROPERTY_TYPES as $type) {
+        foreach (ApiReference::AVAILABLE_PROPERTY_TYPES as $type) {
             $emptyStringExpected = $type === 'string' ? 'true' : 'false';
             yield "should be $emptyStringExpected for $type type and empty string default" => [$type, '', $emptyStringExpected === 'true'];
             yield "should be false for $type type and no default" => [$type, NoDefaultValue::class, false];

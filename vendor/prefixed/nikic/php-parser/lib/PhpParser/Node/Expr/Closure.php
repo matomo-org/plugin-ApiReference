@@ -1,12 +1,12 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\ClosureUse;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\FunctionLike;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\ClosureUse;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\FunctionLike;
 class Closure extends Expr implements FunctionLike
 {
     /** @var bool Whether the closure is static */

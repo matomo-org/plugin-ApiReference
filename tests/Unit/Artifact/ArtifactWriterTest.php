@@ -9,17 +9,17 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\tests\Unit\Artifact;
+namespace Piwik\Plugins\ApiReference\tests\Unit\Artifact;
 
-require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
+require_once PIWIK_INCLUDE_PATH . '/plugins/ApiReference/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
+use Piwik\Plugins\ApiReference\Artifact\ArtifactWriter;
 
 /**
- * @group OpenApiDocs
- * @group OpenApiDocs_Unit
- * @group OpenApiDocs_ArtifactWriterTest
+ * @group ApiReference
+ * @group ApiReference_Unit
+ * @group ApiReference_ArtifactWriterTest
  */
 class ArtifactWriterTest extends TestCase
 {
@@ -29,7 +29,7 @@ class ArtifactWriterTest extends TestCase
     {
         parent::setUp();
 
-        $this->temporaryDirectory = sys_get_temp_dir() . '/openapidocs_artifact_writer_' . uniqid('', true);
+        $this->temporaryDirectory = sys_get_temp_dir() . '/apireference_artifact_writer_' . uniqid('', true);
     }
 
     protected function tearDown(): void

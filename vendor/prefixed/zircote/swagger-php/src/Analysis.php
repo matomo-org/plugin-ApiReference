@@ -4,9 +4,9 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi;
+namespace Matomo\Dependencies\ApiReference\OpenApi;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
 /**
  * Result of the analyser.
  *
@@ -45,7 +45,7 @@ class Analysis
      */
     public $openapi;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\OpenApi\Context|null
+     * @var \Matomo\Dependencies\ApiReference\OpenApi\Context|null
      */
     public $context;
     public function __construct(array $annotations = [], ?Context $context = null)

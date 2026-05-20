@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\NodeAttributes;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\TypeNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use function count;
 use function implode;
 class MethodTagValueNode implements PhpDocTagValueNode
@@ -15,7 +15,7 @@ class MethodTagValueNode implements PhpDocTagValueNode
      */
     public $isStatic;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\TypeNode|null
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode|null
      */
     public $returnType;
     /**

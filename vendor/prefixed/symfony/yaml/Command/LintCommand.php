@@ -8,7 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Command;
+namespace Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\CI\GithubActionReporter;
@@ -22,9 +22,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Exception\ParseException;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Parser;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Yaml;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Exception\ParseException;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Parser;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Yaml;
 /**
  * Validates YAML files syntax and outputs encountered errors.
  *
@@ -35,7 +35,7 @@ use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Yaml;
 class LintCommand extends Command
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Parser
+     * @var \Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Parser
      */
     private $parser;
     /**

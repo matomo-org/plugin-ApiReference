@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\BinaryOp;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\BinaryOp;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\BinaryOp;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\BinaryOp;
 class Pow extends BinaryOp
 {
     public function getOperatorSigil() : string

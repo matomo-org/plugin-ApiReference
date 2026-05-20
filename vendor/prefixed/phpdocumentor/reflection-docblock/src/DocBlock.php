@@ -9,11 +9,11 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
-use Matomo\Dependencies\OpenApiDocs\Webmozart\Assert\Assert;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
+use Matomo\Dependencies\ApiReference\Webmozart\Assert\Assert;
 final class DocBlock
 {
     /** @var string The opening line for this docblock. */

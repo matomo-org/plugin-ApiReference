@@ -1,6 +1,6 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations;
+namespace Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations;
 
 use Exception;
 use Throwable;

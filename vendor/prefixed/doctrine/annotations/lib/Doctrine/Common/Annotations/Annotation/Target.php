@@ -1,6 +1,6 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\Annotation;
+namespace Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\Annotation;
 
 use InvalidArgumentException;
 use function array_keys;

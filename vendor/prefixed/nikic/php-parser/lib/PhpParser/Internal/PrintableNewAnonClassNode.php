@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Internal;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Internal;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 /**
  * This node is used internally by the format-preserving pretty printer to print anonymous classes.
  *

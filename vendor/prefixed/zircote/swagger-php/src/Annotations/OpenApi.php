@@ -4,12 +4,12 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysis;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\OpenApiException;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Util;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysis;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\OpenApiException;
+use Matomo\Dependencies\ApiReference\OpenApi\Util;
 /**
  * This is the root document object for the API specification.
  *

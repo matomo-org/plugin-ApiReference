@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Internal;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Internal;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Token;
+use Matomo\Dependencies\ApiReference\PhpParser\Token;
 /**
  * Provides operations on token streams, for use by pretty printer.
  *

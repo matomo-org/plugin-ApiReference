@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeAbstract;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Use_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Use_;
 class UseItem extends NodeAbstract
 {
     /**

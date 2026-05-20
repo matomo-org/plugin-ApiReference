@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\PhpVersion;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Token;
+use Matomo\Dependencies\ApiReference\PhpParser\PhpVersion;
+use Matomo\Dependencies\ApiReference\PhpParser\Token;
 final class AsymmetricVisibilityTokenEmulator extends TokenEmulator
 {
     public function getPhpVersion() : PhpVersion
@@ -18,7 +18,7 @@ final class AsymmetricVisibilityTokenEmulator extends TokenEmulator
     }
     public function emulate(string $code, array $tokens) : array
     {
-        $map = [\T_PUBLIC => \Matomo\Dependencies\OpenApiDocs\T_PUBLIC_SET, \T_PROTECTED => \Matomo\Dependencies\OpenApiDocs\T_PROTECTED_SET, \T_PRIVATE => \Matomo\Dependencies\OpenApiDocs\T_PRIVATE_SET];
+        $map = [\T_PUBLIC => \Matomo\Dependencies\ApiReference\T_PUBLIC_SET, \T_PROTECTED => \Matomo\Dependencies\ApiReference\T_PROTECTED_SET, \T_PRIVATE => \Matomo\Dependencies\ApiReference\T_PRIVATE_SET];
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
             if (isset($map[$token->id]) && $i + 3 < $c && $tokens[$i + 1]->text === '(' && $tokens[$i + 2]->id === \T_STRING && \strtolower($tokens[$i + 2]->text) === 'set' && $tokens[$i + 3]->text === ')' && $this->isKeywordContext($tokens, $i)) {
@@ -30,7 +30,7 @@ final class AsymmetricVisibilityTokenEmulator extends TokenEmulator
     }
     public function reverseEmulate(string $code, array $tokens) : array
     {
-        $reverseMap = [\Matomo\Dependencies\OpenApiDocs\T_PUBLIC_SET => \T_PUBLIC, \Matomo\Dependencies\OpenApiDocs\T_PROTECTED_SET => \T_PROTECTED, \Matomo\Dependencies\OpenApiDocs\T_PRIVATE_SET => \T_PRIVATE];
+        $reverseMap = [\Matomo\Dependencies\ApiReference\T_PUBLIC_SET => \T_PUBLIC, \Matomo\Dependencies\ApiReference\T_PROTECTED_SET => \T_PROTECTED, \Matomo\Dependencies\ApiReference\T_PRIVATE_SET => \T_PRIVATE];
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
             if (isset($reverseMap[$token->id]) && \preg_match('/(public|protected|private)\\((set)\\)/i', $token->text, $matches)) {

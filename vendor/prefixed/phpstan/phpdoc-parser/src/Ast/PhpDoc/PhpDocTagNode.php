@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\NodeAttributes;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\Doctrine\DoctrineTagValueNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\Doctrine\DoctrineTagValueNode;
 use function trim;
 class PhpDocTagNode implements PhpDocChildNode
 {
@@ -14,7 +14,7 @@ class PhpDocTagNode implements PhpDocChildNode
      */
     public $name;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagValueNode
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagValueNode
      */
     public $value;
     public function __construct(string $name, PhpDocTagValueNode $value)

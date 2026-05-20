@@ -4,12 +4,12 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Processors\Concerns;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Processors\Concerns;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysis;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Context;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysis;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Context;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 /**
  * Steps:
  * 1. Determine direct parent / interfaces / traits

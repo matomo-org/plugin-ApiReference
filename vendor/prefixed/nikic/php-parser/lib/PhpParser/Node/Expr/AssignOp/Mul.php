@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\AssignOp;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\AssignOp;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\AssignOp;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\AssignOp;
 class Mul extends AssignOp
 {
     public function getType() : string

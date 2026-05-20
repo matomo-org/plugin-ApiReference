@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Builder;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Builder;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\BuilderHelpers;
+use Matomo\Dependencies\ApiReference\PhpParser;
+use Matomo\Dependencies\ApiReference\PhpParser\BuilderHelpers;
 abstract class Declaration implements PhpParser\Builder
 {
     /** @var array<string, mixed> */

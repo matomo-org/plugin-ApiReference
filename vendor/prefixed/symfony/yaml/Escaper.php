@@ -8,7 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml;
+namespace Matomo\Dependencies\ApiReference\Symfony\Component\Yaml;
 
 /**
  * Escaper encapsulates escaping rules for single and double-quoted

@@ -8,11 +8,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml;
+namespace Matomo\Dependencies\ApiReference\Symfony\Component\Yaml;
 
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Exception\DumpException;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Exception\ParseException;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Tag\TaggedValue;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Exception\DumpException;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Exception\ParseException;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Tag\TaggedValue;
 /**
  * Inline implements a YAML parser/dumper for the YAML inline syntax.
  *
@@ -672,7 +672,7 @@ class Inline
                             if (\false !== ($scalar = $time->getTimestamp())) {
                                 return $scalar;
                             }
-                        } catch (\Matomo\Dependencies\OpenApiDocs\DateRangeError|\ValueError $exception) {
+                        } catch (\Matomo\Dependencies\ApiReference\DateRangeError|\ValueError $exception) {
                             // no-op
                         }
                         return $time->format('U');

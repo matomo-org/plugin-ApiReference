@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php 
-namespace Matomo\Dependencies\OpenApiDocs;
+namespace Matomo\Dependencies\ApiReference;
 
 /*
  * This file is part of the Symfony package.
@@ -19,7 +19,7 @@ if ('cli' !== \PHP_SAPI) {
  * @author Jan Schädlich <jan.schaedlich@sensiolabs.de>
  */
 use Symfony\Component\Console\Application;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Command\LintCommand;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Command\LintCommand;
 function includeIfExists(string $file) : bool
 {
     return \file_exists($file) && (include $file);

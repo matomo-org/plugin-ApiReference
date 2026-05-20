@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\NodeAttributes;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
 use function implode;
 use function sprintf;
 class GenericTypeNode implements TypeNode
@@ -14,7 +14,7 @@ class GenericTypeNode implements TypeNode
     public const VARIANCE_BIVARIANT = 'bivariant';
     use NodeAttributes;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode
      */
     public $type;
     /** @var TypeNode[] */

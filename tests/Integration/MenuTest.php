@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\tests\Integration;
+namespace Piwik\Plugins\ApiReference\tests\Integration;
 
 use Piwik\Cache;
 use Piwik\Menu\MenuAdmin;
@@ -19,7 +19,7 @@ use Piwik\Tests\Framework\Mock\FakeAccess;
 use Piwik\Tests\Framework\TestCase\IntegrationTestCase;
 
 /**
- * @group OpenApiDocs
+ * @group ApiReference
  * @group MenuTest
  * @group Plugins
  */
@@ -34,7 +34,7 @@ class MenuTest extends IntegrationTestCase
             Fixture::createWebsite('2012-01-01 00:00:00');
         }
 
-        Manager::getInstance()->loadPlugin('OpenApiDocs');
+        Manager::getInstance()->loadPlugin('ApiReference');
     }
 
     public function provideContainerConfig(): array
@@ -62,7 +62,7 @@ class MenuTest extends IntegrationTestCase
         $items = $this->buildConfiguredMenu()->getMenu();
 
         $this->assertArrayHasKey('CorePluginsAdmin_MenuPlatform', $items);
-        $this->assertArrayHasKey('OpenApiDocs_SwaggerApi', $items['CorePluginsAdmin_MenuPlatform']);
+        $this->assertArrayHasKey('ApiReference_SwaggerApi', $items['CorePluginsAdmin_MenuPlatform']);
     }
 
     public function testConfigureAdminMenuSkipsSwaggerItemWithoutViewAccess(): void
@@ -81,7 +81,7 @@ class MenuTest extends IntegrationTestCase
             return;
         }
 
-        $this->assertArrayNotHasKey('OpenApiDocs_SwaggerApi', $items['CorePluginsAdmin_MenuPlatform']);
+        $this->assertArrayNotHasKey('ApiReference_SwaggerApi', $items['CorePluginsAdmin_MenuPlatform']);
     }
 
     private function buildConfiguredMenu(): MenuAdmin

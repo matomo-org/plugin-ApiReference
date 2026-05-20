@@ -1,14 +1,14 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\Doctrine;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\Doctrine;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprIntegerNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstFetchNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Node;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\NodeAttributes;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprIntegerNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstFetchNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Node;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 /**
  * @phpstan-import-type ValueType from DoctrineArgument
  * @phpstan-type KeyType = ConstExprIntegerNode|ConstExprStringNode|IdentifierTypeNode|ConstFetchNode|null

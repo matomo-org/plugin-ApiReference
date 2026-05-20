@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\NodeAttributes;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
 use function implode;
 class ArrayShapeNode implements TypeNode
 {
@@ -21,7 +21,7 @@ class ArrayShapeNode implements TypeNode
     /** @var self::KIND_* */
     public $kind;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\ArrayShapeUnsealedTypeNode|null
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\ArrayShapeUnsealedTypeNode|null
      */
     public $unsealedType;
     /**

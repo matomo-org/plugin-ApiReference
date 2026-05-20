@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs;
+namespace Piwik\Plugins\ApiReference;
 
 use Piwik\Piwik;
 use Piwik\View;
@@ -20,7 +20,7 @@ class Controller extends \Piwik\Plugin\ControllerAdmin
     {
         Piwik::checkUserHasSomeViewAccess();
 
-        $view = new View('@OpenApiDocs/swagger');
+        $view = new View('@ApiReference/swagger');
         $this->setBasicVariablesView($view);
 
         return $view->render();

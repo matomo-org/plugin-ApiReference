@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser;
 
 use PHPStan\ShouldNotHappenException;
 use function chr;

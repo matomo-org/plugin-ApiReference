@@ -1,17 +1,17 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser;
 
 use LogicException;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprIntegerNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstFetchNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\Doctrine;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Lexer\Lexer;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\ParserConfig;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprIntegerNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstFetchNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\Doctrine;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Lexer\Lexer;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig;
 use PHPStan\ShouldNotHappenException;
 use function array_key_exists;
 use function count;
@@ -25,19 +25,19 @@ class PhpDocParser
 {
     private const DISALLOWED_DESCRIPTION_START_TOKENS = [Lexer::TOKEN_UNION, Lexer::TOKEN_INTERSECTION];
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\ParserConfig
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig
      */
     private $config;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\TypeParser
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\TypeParser
      */
     private $typeParser;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\ConstExprParser
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\ConstExprParser
      */
     private $constantExprParser;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser\ConstExprParser
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\ConstExprParser
      */
     private $doctrineConstantExprParser;
     public function __construct(ParserConfig $config, TypeParser $typeParser, ConstExprParser $constantExprParser)

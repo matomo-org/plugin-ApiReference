@@ -9,11 +9,11 @@
  * @link      http://phpdoc.org
  */
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types;
 
 use ArrayIterator;
 use IteratorAggregate;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
 use function array_key_exists;
 use function implode;
 /**

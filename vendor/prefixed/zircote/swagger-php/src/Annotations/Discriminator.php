@@ -4,9 +4,9 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 /**
  * The discriminator is a specific object in a schema which is used to inform the consumer of
  * the specification of an alternative schema based on the value associated with it.

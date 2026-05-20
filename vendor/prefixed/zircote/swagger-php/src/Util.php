@@ -4,9 +4,9 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi;
+namespace Matomo\Dependencies\ApiReference\OpenApi;
 
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Finder;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Finder;
 /**
  * Convenient utility functions that don't neatly fit anywhere else.
  *

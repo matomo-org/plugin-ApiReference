@@ -8,9 +8,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml;
+namespace Matomo\Dependencies\ApiReference\Symfony\Component\Yaml;
 
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Exception\ParseException;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Exception\ParseException;
 /**
  * Unescaper encapsulates unescaping rules for single and double-quoted
  * YAML strings.

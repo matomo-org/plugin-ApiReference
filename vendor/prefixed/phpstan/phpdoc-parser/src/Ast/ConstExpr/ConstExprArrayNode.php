@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\NodeAttributes;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
 use function implode;
 class ConstExprArrayNode implements ConstExprNode
 {

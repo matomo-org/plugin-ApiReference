@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\InterpolatedStringPart;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\InterpolatedStringPart;
 class ShellExec extends Expr
 {
     /** @var (Expr|InterpolatedStringPart)[] Interpolated string array */

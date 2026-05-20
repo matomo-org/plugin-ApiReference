@@ -7,13 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs\Commands;
+namespace Piwik\Plugins\ApiReference\Commands;
 
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\ConsoleCommand;
-use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
-use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
+use Piwik\Plugins\ApiReference\Generation\SpecGenerationService;
+use Piwik\Plugins\ApiReference\ApiReference;
+use Piwik\Plugins\ApiReference\Specs\PathResolver;
 
 /**
  * This class lets you define a new command. To read more about commands have a look at our Matomo Console guide on
@@ -48,7 +48,7 @@ class GenerateSpecFile extends ConsoleCommand
      */
     protected function configure()
     {
-        $this->setName('openapidocs:generate-spec-file');
+        $this->setName('apireference:generate-spec-file');
         $this->setDescription('Generate the OpenAPI documentation file for the Matomo APIs.');
         $this->addRequiredValueOption('plugin', 'p', 'Name of the plugin to document. Multiple plugins can be comma-separated');
         $this->addRequiredValueOption('format', 'f', 'Format of the spec file (JSON or YAML). Default is JSON');
@@ -88,7 +88,7 @@ class GenerateSpecFile extends ConsoleCommand
      * Ideally, the actual command is quite short as it acts like a controller. It should only receive the input values,
      * execute the task by calling a method of another class and output any useful information.
      *
-     * Execute the command like: ./console openapidocs:generate-spec-file --plugin=TagManager --not-dry-run
+     * Execute the command like: ./console apireference:generate-spec-file --plugin=TagManager --not-dry-run
      */
     protected function doExecute(): int
     {
@@ -105,7 +105,7 @@ class GenerateSpecFile extends ConsoleCommand
             return $pluginName !== '';
         }));
         $format = $input->getOption('format') ?: 'json';
-        $version = $input->getOption('api-version') ?: OpenApiDocs::DEFAULT_SPEC_VERSION;
+        $version = $input->getOption('api-version') ?: ApiReference::DEFAULT_SPEC_VERSION;
         $notDryRun = $input->getOption('not-dry-run') ?: false;
         $addAnnotations = $input->getOption('add-annotations') ?: false;
 

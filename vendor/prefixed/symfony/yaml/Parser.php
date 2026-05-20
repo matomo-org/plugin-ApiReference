@@ -8,10 +8,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml;
+namespace Matomo\Dependencies\ApiReference\Symfony\Component\Yaml;
 
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Exception\ParseException;
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Yaml\Tag\TaggedValue;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Exception\ParseException;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Tag\TaggedValue;
 /**
  * Parser parses YAML strings to convert them to PHP arrays.
  *

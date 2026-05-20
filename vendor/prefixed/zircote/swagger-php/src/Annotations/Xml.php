@@ -4,9 +4,9 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 /**
  * @see [XML Object](https://spec.openapis.org/oas/v3.1.1.html#xml-object)
  *

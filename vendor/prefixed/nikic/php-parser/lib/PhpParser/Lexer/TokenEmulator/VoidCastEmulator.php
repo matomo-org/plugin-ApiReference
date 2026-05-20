@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\PhpVersion;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Token;
+use Matomo\Dependencies\ApiReference\PhpParser\PhpVersion;
+use Matomo\Dependencies\ApiReference\PhpParser\Token;
 class VoidCastEmulator extends TokenEmulator
 {
     public function getPhpVersion() : PhpVersion
@@ -46,7 +46,7 @@ class VoidCastEmulator extends TokenEmulator
             }
             $text .= ')';
             $numTokens++;
-            array_splice($tokens, $i, $numTokens, [new Token(\Matomo\Dependencies\OpenApiDocs\T_VOID_CAST, $text, $token->line, $token->pos)]);
+            array_splice($tokens, $i, $numTokens, [new Token(\Matomo\Dependencies\ApiReference\T_VOID_CAST, $text, $token->line, $token->pos)]);
             $c -= $numTokens - 1;
         }
         return $tokens;
@@ -55,7 +55,7 @@ class VoidCastEmulator extends TokenEmulator
     {
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
-            if ($token->id !== \Matomo\Dependencies\OpenApiDocs\T_VOID_CAST) {
+            if ($token->id !== \Matomo\Dependencies\ApiReference\T_VOID_CAST) {
                 continue;
             }
             if (!preg_match('/^\\(([ \\t]*)(void)([ \\t]*)\\)$/i', $token->text, $match)) {

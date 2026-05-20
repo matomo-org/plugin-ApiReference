@@ -1,8 +1,8 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations;
+namespace Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Lexer\AbstractLexer;
+use Matomo\Dependencies\ApiReference\Doctrine\Common\Lexer\AbstractLexer;
 use function ctype_alpha;
 use function is_numeric;
 use function str_replace;

@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\Doctrine\Deprecations;
+namespace Matomo\Dependencies\ApiReference\Doctrine\Deprecations;
 
 use Psr\Log\LoggerInterface;
 use function array_key_exists;

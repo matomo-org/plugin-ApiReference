@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Exception;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Exception;
 
 use InvalidArgumentException;
 use const PREG_BACKTRACK_LIMIT_ERROR;

@@ -1,13 +1,14 @@
 {
-    "name": "OpenApiDocs",
-    "description": "Generate API documentation for Matomo in the OpenAPI format.",
-    "version": "5.0.2-b1",
+    "name": "ApiReference",
+    "description": "Generate and view API documentation for Matomo in the OpenAPI format.",
+    "version": "5.0.0",
     "theme": false,
     "keywords": [
         "API",
         "Documentation",
         "Swagger",
-        "OpenAPI"
+        "OpenAPI",
+        "Reference"
     ],
     "license": "GPL v3+",
     "homepage": "https:\/\/matomo.org",
@@ -23,9 +24,9 @@
     ],
     "support": {
         "email": "hello@matomo.org",
-        "issues": "https:\/\/github.com\/matomo-org\/plugin-OpenApiDocs\/issues",
+        "issues": "https:\/\/github.com\/matomo-org\/plugin-ApiReference\/issues",
         "forum": "https:\/\/forum.matomo.org",
-        "source": "https:\/\/github.com\/matomo-org\/plugin-OpenApiDocs"
+        "source": "https:\/\/github.com\/matomo-org\/plugin-ApiReference"
     },
     "category": "development"
 }

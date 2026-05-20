@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
 /**
  * A PHP token. On PHP 8.0 this extends from PhpToken.

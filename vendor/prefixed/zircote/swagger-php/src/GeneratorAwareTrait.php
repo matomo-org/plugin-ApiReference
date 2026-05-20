@@ -4,12 +4,12 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi;
+namespace Matomo\Dependencies\ApiReference\OpenApi;
 
 trait GeneratorAwareTrait
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\OpenApi\Generator|null
+     * @var \Matomo\Dependencies\ApiReference\OpenApi\Generator|null
      */
     protected $generator;
     public function setGenerator(Generator $generator)

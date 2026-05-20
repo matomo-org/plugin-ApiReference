@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\Generation;
+namespace Piwik\Plugins\ApiReference\Generation;
 
 use Piwik\API\Proxy;
 use Piwik\API\Request;
@@ -93,7 +93,7 @@ class PluginListProvider
      */
     private function dispatchUpdatePluginListEvent(array &$pluginNames): void
     {
-        $this->postEvent('OpenApiDocs.updatePluginList', [&$pluginNames]);
+        $this->postEvent('ApiReference.updatePluginList', [&$pluginNames]);
     }
 
     /**

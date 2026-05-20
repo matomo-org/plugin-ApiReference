@@ -9,10 +9,10 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tag;
-use Matomo\Dependencies\OpenApiDocs\Webmozart\Assert\Assert;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tag;
+use Matomo\Dependencies\ApiReference\Webmozart\Assert\Assert;
 use function array_key_exists;
 use function preg_match;
 use function rawurlencode;

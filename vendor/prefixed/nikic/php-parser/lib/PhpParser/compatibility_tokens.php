@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
-if (!\function_exists('Matomo\\Dependencies\\OpenApiDocs\\PhpParser\\defineCompatibilityTokens')) {
+if (!\function_exists('Matomo\\Dependencies\\ApiReference\\PhpParser\\defineCompatibilityTokens')) {
     function defineCompatibilityTokens() : void
     {
         $compatTokens = [

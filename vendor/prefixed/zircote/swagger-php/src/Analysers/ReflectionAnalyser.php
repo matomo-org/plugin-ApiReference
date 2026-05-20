@@ -4,14 +4,14 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Analysers;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysis;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Context;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\GeneratorAwareTrait;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\OpenApiException;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysis;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Context;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\GeneratorAwareTrait;
+use Matomo\Dependencies\ApiReference\OpenApi\OpenApiException;
 /**
  * OpenApi analyser using reflection.
  *

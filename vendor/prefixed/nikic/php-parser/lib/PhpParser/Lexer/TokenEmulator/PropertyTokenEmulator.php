@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\PhpVersion;
+use Matomo\Dependencies\ApiReference\PhpParser\PhpVersion;
 final class PropertyTokenEmulator extends KeywordEmulator
 {
     public function getPhpVersion() : PhpVersion
@@ -16,6 +16,6 @@ final class PropertyTokenEmulator extends KeywordEmulator
     }
     public function getKeywordToken() : int
     {
-        return \Matomo\Dependencies\OpenApiDocs\T_PROPERTY_C;
+        return \Matomo\Dependencies\ApiReference\T_PROPERTY_C;
     }
 }

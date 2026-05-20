@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator\TokenEmulator;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\PhpVersion;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Token;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\TokenEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\PhpVersion;
+use Matomo\Dependencies\ApiReference\PhpParser\Token;
 class PipeOperatorEmulator extends TokenEmulator
 {
     public function getPhpVersion() : PhpVersion
@@ -21,7 +21,7 @@ class PipeOperatorEmulator extends TokenEmulator
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
             if ($token->text === '|' && isset($tokens[$i + 1]) && $tokens[$i + 1]->text === '>') {
-                array_splice($tokens, $i, 2, [new Token(\Matomo\Dependencies\OpenApiDocs\T_PIPE, '|>', $token->line, $token->pos)]);
+                array_splice($tokens, $i, 2, [new Token(\Matomo\Dependencies\ApiReference\T_PIPE, '|>', $token->line, $token->pos)]);
                 $c--;
             }
         }
@@ -31,7 +31,7 @@ class PipeOperatorEmulator extends TokenEmulator
     {
         for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
             $token = $tokens[$i];
-            if ($token->id === \Matomo\Dependencies\OpenApiDocs\T_PIPE) {
+            if ($token->id === \Matomo\Dependencies\ApiReference\T_PIPE) {
                 array_splice($tokens, $i, 1, [new Token(\ord('|'), '|', $token->line, $token->pos), new Token(\ord('>'), '>', $token->line, $token->pos + 1)]);
                 $i++;
                 $c++;

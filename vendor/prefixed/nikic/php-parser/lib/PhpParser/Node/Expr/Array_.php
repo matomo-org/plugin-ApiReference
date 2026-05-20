@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\ArrayItem;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\ArrayItem;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class Array_ extends Expr
 {
     // For use in "kind" attribute

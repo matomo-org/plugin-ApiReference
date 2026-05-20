@@ -9,10 +9,10 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoType;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoType;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
 /**
  * Value Object representing a array-key Type.
  *

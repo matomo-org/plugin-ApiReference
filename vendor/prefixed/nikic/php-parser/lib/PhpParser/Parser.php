@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
 interface Parser
 {

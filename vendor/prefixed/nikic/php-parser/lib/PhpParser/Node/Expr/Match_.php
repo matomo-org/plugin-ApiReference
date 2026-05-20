@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\MatchArm;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\MatchArm;
 class Match_ extends Node\Expr
 {
     /** @var Node\Expr Condition */

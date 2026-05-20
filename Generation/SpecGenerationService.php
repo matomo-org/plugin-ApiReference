@@ -9,11 +9,11 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\Generation;
+namespace Piwik\Plugins\ApiReference\Generation;
 
-use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
-use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
+use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
+use Piwik\Plugins\ApiReference\ApiReference;
+use Piwik\Plugins\ApiReference\Specs\SpecGenerator;
 
 class SpecGenerationService
 {
@@ -47,7 +47,7 @@ class SpecGenerationService
     public function generateSpecForPlugins(
         string $pluginNames,
         string $format = 'json',
-        string $version = OpenApiDocs::DEFAULT_SPEC_VERSION,
+        string $version = ApiReference::DEFAULT_SPEC_VERSION,
         bool $writeToFile = false,
         bool $addAnnotations = false
     ): string {

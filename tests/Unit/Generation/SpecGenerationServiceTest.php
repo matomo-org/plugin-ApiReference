@@ -9,19 +9,19 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\tests\Unit\Generation;
+namespace Piwik\Plugins\ApiReference\tests\Unit\Generation;
 
-require_once PIWIK_INCLUDE_PATH . '/plugins/OpenApiDocs/vendor/autoload.php';
+require_once PIWIK_INCLUDE_PATH . '/plugins/ApiReference/vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use Piwik\Plugins\OpenApiDocs\Annotations\AnnotationGenerator;
-use Piwik\Plugins\OpenApiDocs\Generation\SpecGenerationService;
-use Piwik\Plugins\OpenApiDocs\Specs\SpecGenerator;
+use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
+use Piwik\Plugins\ApiReference\Generation\SpecGenerationService;
+use Piwik\Plugins\ApiReference\Specs\SpecGenerator;
 
 /**
- * @group OpenApiDocs
- * @group OpenApiDocs_Unit
- * @group OpenApiDocs_SpecGenerationServiceTest
+ * @group ApiReference
+ * @group ApiReference_Unit
+ * @group ApiReference_SpecGenerationServiceTest
  */
 class SpecGenerationServiceTest extends TestCase
 {

@@ -1,16 +1,16 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeAbstract;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class MatchArm extends NodeAbstract
 {
     /** @var null|list<Node\Expr> */
     public $conds;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr
+     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Expr
      */
     public $body;
     /**

@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\AttributeGroup;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\AttributeGroup;
 class EnumCase extends Node\Stmt
 {
     /** @var Node\Identifier Enum case name */

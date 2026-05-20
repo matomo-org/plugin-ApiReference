@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs;
+namespace Piwik\Plugins\ApiReference;
 
 use Piwik\Menu\MenuAdmin;
 use Piwik\Piwik;
@@ -21,7 +21,7 @@ class Menu extends \Piwik\Plugin\Menu
         }
 
         $menu->addPlatformItem(
-            'OpenApiDocs_SwaggerApi',
+            'ApiReference_SwaggerApi',
             $this->urlForAction('swagger'),
             30
         );

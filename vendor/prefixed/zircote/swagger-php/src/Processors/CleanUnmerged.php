@@ -4,10 +4,10 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Processors;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Processors;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysis;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysis;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
 class CleanUnmerged
 {
     public function __invoke(Analysis $analysis) : void

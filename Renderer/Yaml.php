@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs\Renderer;
+namespace Piwik\Plugins\ApiReference\Renderer;
 
 use Piwik\API\ApiRenderer;
 use Piwik\Common;

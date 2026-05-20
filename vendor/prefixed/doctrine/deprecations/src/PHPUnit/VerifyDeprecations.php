@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\Doctrine\Deprecations\PHPUnit;
+namespace Matomo\Dependencies\ApiReference\Doctrine\Deprecations\PHPUnit;
 
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Deprecations\Deprecation;
+use Matomo\Dependencies\ApiReference\Doctrine\Deprecations\Deprecation;
 use PHPUnit\Framework\Attributes\After;
 use PHPUnit\Framework\Attributes\Before;
 use function sprintf;

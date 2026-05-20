@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
 /**
  * Modifiers used (as a bit mask) by various flags subnodes, for example on classes, functions,

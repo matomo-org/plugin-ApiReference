@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Internal;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Internal;
 
 if (\PHP_VERSION_ID >= 80000) {
     class TokenPolyfill extends \PhpToken

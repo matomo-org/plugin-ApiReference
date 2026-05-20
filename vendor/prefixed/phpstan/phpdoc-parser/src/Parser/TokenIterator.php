@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Parser;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser;
 
 use LogicException;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Comment;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Lexer\Lexer;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Comment;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Lexer\Lexer;
 use function array_pop;
 use function assert;
 use function count;

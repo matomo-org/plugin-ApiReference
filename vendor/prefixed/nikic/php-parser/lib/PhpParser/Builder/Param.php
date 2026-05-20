@@ -1,12 +1,12 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Builder;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Builder;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\BuilderHelpers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Modifiers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser;
+use Matomo\Dependencies\ApiReference\PhpParser\BuilderHelpers;
+use Matomo\Dependencies\ApiReference\PhpParser\Modifiers;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Param implements PhpParser\Builder
 {
     /**
@@ -14,7 +14,7 @@ class Param implements PhpParser\Builder
      */
     protected $name;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr|null
+     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Expr|null
      */
     protected $default;
     /** @var Node\Identifier|Node\Name|Node\ComplexType|null */

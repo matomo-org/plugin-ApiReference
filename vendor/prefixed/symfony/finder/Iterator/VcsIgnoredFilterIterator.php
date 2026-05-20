@@ -8,9 +8,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator;
+namespace Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator;
 
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Gitignore;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Gitignore;
 /**
  * @extends \FilterIterator<string, \SplFileInfo>
  */

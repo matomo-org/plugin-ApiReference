@@ -1,16 +1,16 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitor;
+namespace Matomo\Dependencies\ApiReference\PhpParser\NodeVisitor;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\ErrorHandler;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NameContext;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name\FullyQualified;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitorAbstract;
+use Matomo\Dependencies\ApiReference\PhpParser\ErrorHandler;
+use Matomo\Dependencies\ApiReference\PhpParser\NameContext;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Name;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Name\FullyQualified;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeVisitorAbstract;
 class NameResolver extends NodeVisitorAbstract
 {
     /** @var NameContext Naming context */

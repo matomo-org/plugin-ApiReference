@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser;
 
 class ParserConfig
 {

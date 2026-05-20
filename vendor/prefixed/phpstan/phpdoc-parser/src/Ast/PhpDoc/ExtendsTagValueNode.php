@@ -1,16 +1,16 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc;
 
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\NodeAttributes;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use function trim;
 class ExtendsTagValueNode implements PhpDocTagValueNode
 {
     use NodeAttributes;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\GenericTypeNode
+     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\GenericTypeNode
      */
     public $type;
     /** @var string (may be empty) */

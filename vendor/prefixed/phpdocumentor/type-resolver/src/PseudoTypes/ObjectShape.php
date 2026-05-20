@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoTypes;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoType;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Object_;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoType;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Object_;
 use function implode;
 /** @psalm-immutable */
 final class ObjectShape implements PseudoType

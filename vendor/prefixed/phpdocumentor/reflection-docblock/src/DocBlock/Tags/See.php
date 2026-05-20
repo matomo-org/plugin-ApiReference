@@ -9,18 +9,18 @@ declare (strict_types=1);
  *
  * @link http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Description;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Reference\Fqsen as FqsenRef;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Reference\Reference;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Reference\Url;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Fqsen;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\FqsenResolver;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Context as TypeContext;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Utils;
-use Matomo\Dependencies\OpenApiDocs\Webmozart\Assert\Assert;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Description;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Reference\Fqsen as FqsenRef;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Reference\Reference;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Reference\Url;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Fqsen;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\FqsenResolver;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Context as TypeContext;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Utils;
+use Matomo\Dependencies\ApiReference\Webmozart\Assert\Assert;
 use function array_key_exists;
 use function explode;
 use function preg_match;
@@ -34,7 +34,7 @@ final class See extends BaseTag implements Factory\StaticMethod
      */
     protected $name = 'see';
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Reference\Reference
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Reference\Reference
      */
     protected $refers;
     /**

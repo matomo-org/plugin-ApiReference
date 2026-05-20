@@ -314,7 +314,7 @@ export default defineComponent({
         }
 
         this.isReady = true;
-        this.loadError = translate('OpenApiDocs_SwaggerPageSpecLoadFailed');
+        this.loadError = translate('ApiReference_SwaggerPageSpecLoadFailed');
         return;
       }
 

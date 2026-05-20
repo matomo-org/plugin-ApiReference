@@ -1,10 +1,10 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeAbstract;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class PropertyItem extends NodeAbstract
 {
     /** @var Node\VarLikeIdentifier Name */

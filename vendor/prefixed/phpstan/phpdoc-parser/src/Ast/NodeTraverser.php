@@ -1,13 +1,13 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast;
+namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast;
 
 use LogicException;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocChildNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagValueNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\Type\TypeNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocChildNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagValueNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use function array_keys;
 use function array_pop;
 use function array_splice;

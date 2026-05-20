@@ -4,9 +4,9 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 /**
  * The Link object represents a possible design-time link for a response.
  *

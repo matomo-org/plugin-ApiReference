@@ -1,15 +1,15 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Modifiers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Assign;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\PropertyFetch;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Variable;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Expression;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Return_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeAbstract;
+use Matomo\Dependencies\ApiReference\PhpParser\Modifiers;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Assign;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\PropertyFetch;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Variable;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Expression;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Return_;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class PropertyHook extends NodeAbstract implements FunctionLike
 {
     /** @var AttributeGroup[] PHP attribute groups */

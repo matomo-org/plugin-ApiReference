@@ -1,14 +1,14 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Modifiers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\ComplexType;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Identifier;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\PropertyItem;
+use Matomo\Dependencies\ApiReference\PhpParser\Modifiers;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\ComplexType;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Name;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\PropertyItem;
 class Property extends Node\Stmt
 {
     /** @var int Modifiers */

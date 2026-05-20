@@ -9,37 +9,37 @@ declare (strict_types=1);
  *
  * @link http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock;
 
 use InvalidArgumentException;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Author;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Covers;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Deprecated;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Generic;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\InvalidTag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Link as LinkTag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Method;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Mixin;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Param;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Property;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\PropertyRead;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\PropertyWrite;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Return_;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\See as SeeTag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Since;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Source;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\TemplateCovariant;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Throws;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Uses;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Var_;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Version;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\FqsenResolver;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Context as TypeContext;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Author;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Covers;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Deprecated;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Generic;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\InvalidTag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Link as LinkTag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Method;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Mixin;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Param;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Property;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\PropertyRead;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\PropertyWrite;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Return_;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\See as SeeTag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Since;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Source;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\TemplateCovariant;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Throws;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Uses;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Var_;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Version;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\FqsenResolver;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Context as TypeContext;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
-use Matomo\Dependencies\OpenApiDocs\Webmozart\Assert\Assert;
+use Matomo\Dependencies\ApiReference\Webmozart\Assert\Assert;
 use function array_key_exists;
 use function array_merge;
 use function array_slice;
@@ -109,7 +109,7 @@ final class StandardTagFactory implements TagFactory
      */
     private $tagHandlerParameterCache = [];
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\FqsenResolver
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\FqsenResolver
      */
     private $fqsenResolver;
     /**

@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Context;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Context;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 interface PHPStanFactory
 {
     public function create(PhpDocTagNode $node, Context $context) : Tag;

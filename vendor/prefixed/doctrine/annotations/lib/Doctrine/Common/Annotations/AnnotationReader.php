@@ -1,9 +1,9 @@
 <?php
 
-namespace Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations;
+namespace Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\Annotation\IgnoreAnnotation;
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\Annotation\Target;
+use Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\Annotation\IgnoreAnnotation;
+use Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\Annotation\Target;
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionMethod;

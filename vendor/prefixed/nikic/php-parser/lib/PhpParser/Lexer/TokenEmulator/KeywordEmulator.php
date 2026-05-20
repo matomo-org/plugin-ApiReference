@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Lexer\TokenEmulator;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Token;
+use Matomo\Dependencies\ApiReference\PhpParser\Token;
 abstract class KeywordEmulator extends TokenEmulator
 {
     public abstract function getKeywordString() : string;

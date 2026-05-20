@@ -1,21 +1,21 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tag;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Method;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\MethodParameter;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\TypeResolver;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Context;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Mixed_;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\Void_;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\MethodTagValueNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\MethodTagValueParameterNode;
-use Matomo\Dependencies\OpenApiDocs\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
-use Matomo\Dependencies\OpenApiDocs\Webmozart\Assert\Assert;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Method;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\MethodParameter;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\TypeResolver;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Context;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Mixed_;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Void_;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\MethodTagValueNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\MethodTagValueParameterNode;
+use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
+use Matomo\Dependencies\ApiReference\Webmozart\Assert\Assert;
 use function array_map;
 use function trim;
 /**
@@ -24,11 +24,11 @@ use function trim;
 final class MethodFactory implements PHPStanFactory
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\DescriptionFactory
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory
      */
     private $descriptionFactory;
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\TypeResolver
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\TypeResolver
      */
     private $typeResolver;
     public function __construct(TypeResolver $typeResolver, DescriptionFactory $descriptionFactory)

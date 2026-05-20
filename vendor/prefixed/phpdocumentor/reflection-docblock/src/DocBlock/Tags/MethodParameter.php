@@ -9,14 +9,14 @@
  *  @link      http://phpdoc.org
  */
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Factory\MethodParameterFactory;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\MethodParameterFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
 final class MethodParameter
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type
+     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type
      */
     private $type;
     /**

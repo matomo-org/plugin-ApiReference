@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags;
 
 use Closure;
 use Exception;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tag;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;

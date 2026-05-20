@@ -9,14 +9,14 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\Annotations;
+namespace Piwik\Plugins\ApiReference\Annotations;
 
 use Piwik\Exception\PluginNotFoundException;
 use Piwik\API\Proxy;
 use Piwik\API\Request;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
-use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
+use Piwik\Plugins\ApiReference\Artifact\ArtifactWriter;
+use Piwik\Plugins\ApiReference\Specs\PathResolver;
 use Piwik\Validators\BaseValidator;
 use Piwik\Validators\NotEmpty;
 

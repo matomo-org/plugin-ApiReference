@@ -1,11 +1,11 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\UseItem;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Name;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\UseItem;
 class GroupUse extends Stmt
 {
     /**

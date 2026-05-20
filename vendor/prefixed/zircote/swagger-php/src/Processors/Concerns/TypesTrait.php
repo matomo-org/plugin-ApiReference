@@ -4,10 +4,10 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Processors\Concerns;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Processors\Concerns;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 trait TypesTrait
 {
     protected static $NATIVE_TYPE_MAP = ['array' => 'array', 'byte' => ['string', 'byte'], 'boolean' => 'boolean', 'bool' => 'boolean', 'int' => 'integer', 'integer' => 'integer', 'long' => ['integer', 'long'], 'float' => ['number', 'float'], 'double' => ['number', 'double'], 'string' => 'string', 'date' => ['string', 'date'], 'datetime' => ['string', 'date-time'], '\\datetime' => ['string', 'date-time'], 'datetimeimmutable' => ['string', 'date-time'], '\\datetimeimmutable' => ['string', 'date-time'], 'datetimeinterface' => ['string', 'date-time'], '\\datetimeinterface' => ['string', 'date-time'], 'number' => 'number', 'object' => 'object'];

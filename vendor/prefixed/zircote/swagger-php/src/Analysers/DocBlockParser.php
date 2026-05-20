@@ -4,19 +4,19 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Analysers;
 
-use Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\DocParser;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Annotations as OA;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Context;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\DocParser;
+use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Context;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 /**
  * Extract swagger-php annotations from a [PHPDoc](http://en.wikipedia.org/wiki/PHPDoc) using Doctrine's DocParser.
  */
 class DocBlockParser
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Annotations\DocParser
+     * @var \Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\DocParser
      */
     protected $docParser;
     /**
@@ -36,7 +36,7 @@ class DocBlockParser
      */
     public static function isEnabled() : bool
     {
-        return class_exists('Matomo\\Dependencies\\OpenApiDocs\\Doctrine\\Common\\Annotations\\DocParser');
+        return class_exists('Matomo\\Dependencies\\ApiReference\\Doctrine\\Common\\Annotations\\DocParser');
     }
     /**
      * @param array<string, class-string> $aliases

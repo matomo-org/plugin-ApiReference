@@ -9,11 +9,11 @@ declare (strict_types=1);
  *
  * @link      http://phpdoc.org
  */
-namespace Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoTypes;
+namespace Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\PseudoType;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Type;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\Types\String_;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoType;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\String_;
 /**
  * Value Object representing the type 'string'.
  *

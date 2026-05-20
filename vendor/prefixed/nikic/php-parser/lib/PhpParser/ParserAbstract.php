@@ -1,40 +1,40 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
 /*
  * This parser is based on a skeleton written by Moriyoshi Koizumi, which in
  * turn is based on work by Masato Bito.
  */
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Arg;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Array_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Cast\Double;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Identifier;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\InterpolatedStringPart;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Param;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\PropertyHook;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar\InterpolatedString;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar\Int_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar\String_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Class_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\ClassConst;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\ClassMethod;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Const_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Else_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\ElseIf_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Enum_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Interface_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Namespace_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Nop;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Property;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\TryCatch;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\UseItem;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\VarLikeIdentifier;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\NodeVisitor\CommentAnnotatingVisitor;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Arg;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Array_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Cast\Double;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\InterpolatedStringPart;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Name;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Param;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\PropertyHook;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar\InterpolatedString;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar\Int_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar\String_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Class_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\ClassConst;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\ClassMethod;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Const_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Else_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\ElseIf_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Enum_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Interface_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Namespace_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Nop;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Property;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\TryCatch;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\UseItem;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\VarLikeIdentifier;
+use Matomo\Dependencies\ApiReference\PhpParser\NodeVisitor\CommentAnnotatingVisitor;
 abstract class ParserAbstract implements Parser
 {
     private const SYMBOL_NONE = -1;

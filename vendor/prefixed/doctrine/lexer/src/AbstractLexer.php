@@ -1,7 +1,7 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\Doctrine\Common\Lexer;
+namespace Matomo\Dependencies\ApiReference\Doctrine\Common\Lexer;
 
 use ReflectionClass;
 use UnitEnum;

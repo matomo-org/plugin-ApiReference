@@ -4,9 +4,9 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Attributes;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 trait ParameterTrait
 {
     /**

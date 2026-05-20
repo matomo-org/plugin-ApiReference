@@ -8,9 +8,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\Iterator;
+namespace Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator;
 
-use Matomo\Dependencies\OpenApiDocs\Symfony\Component\Finder\SplFileInfo;
+use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\SplFileInfo;
 /**
  * PathFilterIterator filters files by path patterns (e.g. some/special/dir).
  *

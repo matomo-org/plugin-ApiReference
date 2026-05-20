@@ -1,9 +1,9 @@
 # Action for running tests
 # This file has been automatically created.
 # To recreate it you can run this command
-# ./console generate:test-action --plugin="OpenApiDocs" --php-versions="7.2,8.4" --schedule-cron="0 19 * * 6"
+# ./console generate:test-action --plugin="ApiReference" --php-versions="7.2,8.4" --schedule-cron="0 19 * * 6"
 
-name: Plugin OpenApiDocs Tests
+name: Plugin ApiReference Tests
 
 on:
   pull_request:
@@ -49,7 +49,7 @@ jobs:
       - name: Run tests
         uses: matomo-org/github-action-tests@main
         with:
-          plugin-name: 'OpenApiDocs'
+          plugin-name: 'ApiReference'
           php-version: ${{ matrix.php }}
           test-type: 'PluginTests'
           matomo-test-branch: ${{ matrix.target }}

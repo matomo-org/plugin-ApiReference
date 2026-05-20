@@ -1,16 +1,16 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Builder;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Builder;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\BuilderHelpers;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt;
+use Matomo\Dependencies\ApiReference\PhpParser;
+use Matomo\Dependencies\ApiReference\PhpParser\BuilderHelpers;
+use Matomo\Dependencies\ApiReference\PhpParser\Node;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 class Namespace_ extends Declaration
 {
     /**
-     * @var \Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Name|null
+     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Name|null
      */
     private $name;
     /** @var Stmt[] */

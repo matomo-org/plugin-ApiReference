@@ -4,11 +4,11 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Processors;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Processors;
 
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Analysis;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Generator;
-use Matomo\Dependencies\OpenApiDocs\OpenApi\Processors\Concerns\AnnotationTrait;
+use Matomo\Dependencies\ApiReference\OpenApi\Analysis;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\Processors\Concerns\AnnotationTrait;
 /**
  * Allows to filter endpoints based on tags and/or path.
  *

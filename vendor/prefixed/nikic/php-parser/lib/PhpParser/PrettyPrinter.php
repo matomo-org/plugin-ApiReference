@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 interface PrettyPrinter
 {
     /**

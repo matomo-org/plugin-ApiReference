@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
-namespace Piwik\Plugins\OpenApiDocs;
+namespace Piwik\Plugins\ApiReference;
 
-class OpenApiDocs extends \Piwik\Plugin
+class ApiReference extends \Piwik\Plugin
 {
     public const DEFAULT_SPEC_VERSION = '1.0.0';
     public const OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME = 'oaXmlAttributes';
@@ -30,17 +30,17 @@ class OpenApiDocs extends \Piwik\Plugin
     public function getClientSideTranslationKeys(&$translationKeys): void
     {
         $translationKeys[] = 'CoreHome_LearnMoreFullStop';
-        $translationKeys[] = 'OpenApiDocs_ReportingApiMoreInformation';
-        $translationKeys[] = 'OpenApiDocs_ReportingApiReference';
-        $translationKeys[] = 'OpenApiDocs_ReportingApiSummary';
-        $translationKeys[] = 'OpenApiDocs_SwaggerApi';
-        $translationKeys[] = 'OpenApiDocs_SwaggerPagePluginEmpty';
-        $translationKeys[] = 'OpenApiDocs_SwaggerPageRequestFailed';
-        $translationKeys[] = 'OpenApiDocs_SwaggerPageSpecLoadFailed';
-        $translationKeys[] = 'OpenApiDocs_SwaggerPageSearchNoResults';
-        $translationKeys[] = 'OpenApiDocs_SwaggerPageSearchPlaceholder';
-        $translationKeys[] = 'OpenApiDocs_UserAuthentication';
-        $translationKeys[] = 'OpenApiDocs_UserAuthenticationManageTokens';
-        $translationKeys[] = 'OpenApiDocs_UserAuthenticationUsingTokenAuth';
+        $translationKeys[] = 'ApiReference_ReportingApiMoreInformation';
+        $translationKeys[] = 'ApiReference_ReportingApiReference';
+        $translationKeys[] = 'ApiReference_ReportingApiSummary';
+        $translationKeys[] = 'ApiReference_SwaggerApi';
+        $translationKeys[] = 'ApiReference_SwaggerPagePluginEmpty';
+        $translationKeys[] = 'ApiReference_SwaggerPageRequestFailed';
+        $translationKeys[] = 'ApiReference_SwaggerPageSpecLoadFailed';
+        $translationKeys[] = 'ApiReference_SwaggerPageSearchNoResults';
+        $translationKeys[] = 'ApiReference_SwaggerPageSearchPlaceholder';
+        $translationKeys[] = 'ApiReference_UserAuthentication';
+        $translationKeys[] = 'ApiReference_UserAuthenticationManageTokens';
+        $translationKeys[] = 'ApiReference_UserAuthenticationUsingTokenAuth';
     }
 }

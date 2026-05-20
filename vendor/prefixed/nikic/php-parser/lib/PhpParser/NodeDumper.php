@@ -1,17 +1,17 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser;
+namespace Matomo\Dependencies\ApiReference\PhpParser;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Array_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Include_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\List_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar\Int_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar\InterpolatedString;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Scalar\String_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\GroupUse;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Use_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\UseItem;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Array_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Include_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\List_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar\Int_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar\InterpolatedString;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Scalar\String_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\GroupUse;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Use_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\UseItem;
 class NodeDumper
 {
     /**

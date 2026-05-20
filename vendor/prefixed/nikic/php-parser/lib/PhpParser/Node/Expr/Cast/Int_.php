@@ -1,9 +1,9 @@
 <?php
 
 declare (strict_types=1);
-namespace Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Cast;
+namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Cast;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Expr\Cast;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr\Cast;
 class Int_ extends Cast
 {
     // For use in "kind" attribute

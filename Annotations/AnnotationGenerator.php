@@ -9,12 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Piwik\Plugins\OpenApiDocs\Annotations;
+namespace Piwik\Plugins\ApiReference\Annotations;
 
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Description;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\Param;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
-use Matomo\Dependencies\OpenApiDocs\phpDocumentor\Reflection\DocBlockFactory;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Description;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Param;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlockFactory;
 use Piwik\Exception\PluginNotFoundException;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
@@ -23,9 +23,9 @@ use Piwik\API\Request;
 use Piwik\Http;
 use Piwik\Piwik;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\OpenApiDocs\Artifact\ArtifactWriter;
-use Piwik\Plugins\OpenApiDocs\OpenApiDocs;
-use Piwik\Plugins\OpenApiDocs\Specs\PathResolver;
+use Piwik\Plugins\ApiReference\Artifact\ArtifactWriter;
+use Piwik\Plugins\ApiReference\ApiReference;
+use Piwik\Plugins\ApiReference\Specs\PathResolver;
 use Piwik\SettingsPiwik;
 use Piwik\Url;
 use Piwik\UrlHelper;
@@ -116,7 +116,7 @@ class AnnotationGenerator
         $this->missingImportantDataWarnings = [];
         $this->allowLocalRequests = $allowLocalRequests;
         $this->parameterExamples = null;
-        $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('OpenApiDocs');
+        $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('ApiReference');
     }
 
     /**
@@ -136,7 +136,7 @@ class AnnotationGenerator
     {
         BaseValidator::check('plugin', $pluginName, [new NotEmpty()]);
 
-        if (in_array($pluginName, OpenApiDocs::PLUGIN_BLOCKLIST, true)) {
+        if (in_array($pluginName, ApiReference::PLUGIN_BLOCKLIST, true)) {
             throw new \RuntimeException('OpenAPI doc generation is blocked for ' . $pluginName . '.');
         }
 
@@ -224,7 +224,7 @@ class AnnotationGenerator
         $lines = [
             '<?php',
             '',
-            'namespace Piwik\\Plugins\\OpenApiDocs\\tmp\\annotations;',
+            'namespace Piwik\\Plugins\\ApiReference\\tmp\\annotations;',
             '',
             '/**',
         ];
@@ -1089,7 +1089,7 @@ class AnnotationGenerator
         // If the flag to use a temp token is set, get a token and update the request URL
         $tempUrl = $url . '&hideIdSubDatable=1';
         if ($useLocalToken) {
-            $token = Piwik::requestTemporarySystemAuthToken('OpenApiDocs', 24);
+            $token = Piwik::requestTemporarySystemAuthToken('ApiReference', 24);
             $tempUrl = str_replace('&token_auth=anonymous', '&token_auth=' . $token, $tempUrl);
         }
         try {
@@ -1288,7 +1288,7 @@ class AnnotationGenerator
             // Handle any attributes
             $grouped = [];
             foreach ($node->attributes() as $attribute) {
-                $grouped[OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME][] = [$attribute->getName() => (string) $attribute];
+                $grouped[ApiReference::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME][] = [$attribute->getName() => (string) $attribute];
             }
 
             // Group children by tag name; repeated names become arrays
@@ -1476,7 +1476,7 @@ class AnnotationGenerator
         $jsonSchema = $format === 'json' ? $this->buildSchemaAnnotationFromJsonExample($decodedExampleValue) : [];
         $xmlSchema = $format === 'xml' ? $this->buildSchemaAnnotationFromXmlExample($decodedExampleValue) : [];
         // If the XML example contains the temporary property to assist in building XML attributes in the schema, replace with newly encoded array with property removed
-        if ($format === 'xml' && strpos($exampleValue, OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) !== false) {
+        if ($format === 'xml' && strpos($exampleValue, ApiReference::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) !== false) {
             $exampleValue = json_encode($decodedExampleValue);
         }
 
@@ -1718,7 +1718,7 @@ class AnnotationGenerator
     protected function removeTempOaXmlAttributeProperty(array &$decodedExampleValue): void
     {
         foreach ($decodedExampleValue as $key => &$value) {
-            if ($key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) {
+            if ($key === ApiReference::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME) {
                 unset($decodedExampleValue[$key]);
                 // Add the attributes as actual properties so that they are visible in the example
                 foreach ($value as $attributeName => $attributeValue) {
@@ -1794,8 +1794,8 @@ class AnnotationGenerator
                 $key = null;
                 foreach ($keys as $candidate) {
                     if (
-                        $candidate !== OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
-                        && $candidate !== OpenApiDocs::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
+                        $candidate !== ApiReference::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
+                        && $candidate !== ApiReference::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
                     ) {
                         $key = $candidate;
                         break;
@@ -1807,8 +1807,8 @@ class AnnotationGenerator
 
             // Special handling for XML attributes (metadata-only)
             if (
-                $key === OpenApiDocs::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
-                || $key === OpenApiDocs::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
+                $key === ApiReference::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
+                || $key === ApiReference::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
             ) {
                 $hasAttributes = true;
                 $childLines = array_merge($childLines, $this->buildXmlAttributeSchemaLines($value));

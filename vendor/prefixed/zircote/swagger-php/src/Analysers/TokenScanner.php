@@ -4,17 +4,17 @@ declare (strict_types=1);
 /**
  * @license Apache 2.0
  */
-namespace Matomo\Dependencies\OpenApiDocs\OpenApi\Analysers;
+namespace Matomo\Dependencies\ApiReference\OpenApi\Analysers;
 
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Error;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Class_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\ClassLike;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Enum_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Interface_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Namespace_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Trait_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\Node\Stmt\Use_;
-use Matomo\Dependencies\OpenApiDocs\PhpParser\ParserFactory;
+use Matomo\Dependencies\ApiReference\PhpParser\Error;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Class_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\ClassLike;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Enum_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Interface_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Namespace_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Trait_;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Use_;
+use Matomo\Dependencies\ApiReference\PhpParser\ParserFactory;
 /**
  * High level, PHP token based, scanner.
  */
