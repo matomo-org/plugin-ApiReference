@@ -126,7 +126,7 @@ import {
 } from 'CoreHome';
 import SwaggerUiPanel from './SwaggerUiPanel.vue';
 
-type PluginSpecStatus = 'idle' | 'loading' | 'loaded' | 'error';
+type PluginSpecStatus = 'idle' | 'loading' | 'loaded' | 'error' | 'missing';
 
 interface OpenApiSpec {
   [key: string]: unknown;
@@ -238,6 +238,16 @@ export default defineComponent({
     forceReflow(element: HTMLElement) {
       element.getBoundingClientRect();
     },
+    getExpandedPluginBody(): HTMLElement | null {
+      return document.querySelector('.pluginCard--expanded .pluginBody') as HTMLElement | null;
+    },
+    async compensateScrollAfterCollapse(plugin: string, removedHeight: number) {
+      await this.$nextTick();
+
+      if (this.expandedPluginName === plugin) {
+        window.scrollBy(0, -removedHeight);
+      }
+    },
     getPluginBodyTransitionDuration(height: number) {
       return Math.min(400, Math.max(180, Math.round(height / 4)));
     },
@@ -304,6 +314,19 @@ export default defineComponent({
         status: 'idle',
       };
     },
+    isMissingSpecError(error: unknown): boolean {
+      let message = '';
+
+      if (error instanceof Error) {
+        message = error.message;
+      } else if (typeof error === 'string') {
+        message = error;
+      } else if (typeof error === 'object' && error && 'message' in error) {
+        message = String((error as { message: unknown }).message);
+      }
+
+      return message.includes('OpenAPI spec file was not found.');
+    },
     getPluginSpecState(plugin: string): PluginSpecState {
       if (!this.pluginSpecs[plugin]) {
         this.pluginSpecs[plugin] = this.createPluginSpecState();
@@ -317,6 +340,10 @@ export default defineComponent({
       if (!forceReload) {
         if (state.status === 'loaded') {
           return state.spec;
+        }
+
+        if (state.status === 'missing') {
+          return null;
         }
 
         if (state.request) {
@@ -342,10 +369,15 @@ export default defineComponent({
           state.spec = spec;
           state.status = 'loaded';
           return spec;
-        } catch {
+        } catch (error) {
           state.spec = null;
-          state.status = 'error';
-          state.loadError = translate('ApiReference_SwaggerPageSpecLoadFailed');
+          if (this.isMissingSpecError(error)) {
+            state.status = 'missing';
+            state.loadError = null;
+          } else {
+            state.status = 'error';
+            state.loadError = translate('ApiReference_SwaggerPageSpecLoadFailed');
+          }
           return null;
         } finally {
           state.request = null;
@@ -360,11 +392,20 @@ export default defineComponent({
         return;
       }
 
+      const expandedPluginBody = this.getExpandedPluginBody();
+      const removedHeight = expandedPluginBody
+        ? Math.round(expandedPluginBody.getBoundingClientRect().height)
+        : 0;
+
       this.expandedPluginName = plugin;
 
       const state = this.getPluginSpecState(plugin);
-      if (state.status !== 'loaded') {
+      if (state.status !== 'loaded' && state.status !== 'missing') {
         this.prefetchPluginSpec(plugin, state.status === 'error');
+      }
+
+      if (removedHeight >= 450) {
+        this.compensateScrollAfterCollapse(plugin, removedHeight);
       }
     },
   },

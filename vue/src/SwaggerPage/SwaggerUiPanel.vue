@@ -20,11 +20,12 @@
     {{ displayError }}
   </Alert>
 
-  <p
+  <Alert
     v-else-if="!isLoading && !spec"
-    class="swaggerEmptyState"
-    v-html="$sanitize(missingSpecLearnMore)"
-  />
+    severity="warning"
+  >
+    <span v-html="$sanitize(missingSpecLearnMore)" />
+  </Alert>
 
   <div
     :id="swaggerContainerId"
@@ -42,6 +43,7 @@ import {
 } from 'CoreHome';
 
 const activeCopySuccessStateKey = '__matomoActiveCopySuccessState';
+const authAutocompleteObserverKey = '__matomoSwaggerAuthAutocompleteObserver';
 const summaryPathClickHandlerAttachedKey = '__matomoSummaryPathClickHandlerAttached';
 const summaryPrefix = '/index.php?module=API&method=';
 const interactiveSwaggerSelector = '.opblock-tag, .opblock-summary, .expand-operation, .opblock-summary-control';
@@ -75,6 +77,7 @@ type SwaggerRootElement = HTMLElement & {
     element: HTMLElement;
     resetTimeoutId: number;
   } | null;
+  [authAutocompleteObserverKey]?: MutationObserver | null;
   [summaryPathClickHandlerAttachedKey]?: boolean;
 };
 
@@ -160,6 +163,7 @@ export default defineComponent({
       return;
     }
 
+    this.clearSwaggerAuthAutocompleteObserver(container);
     this.clearCopySuccessState(container);
   },
   methods: {
@@ -217,6 +221,37 @@ export default defineComponent({
         element.innerHTML = copyIconMarkup;
       });
     },
+    suppressSwaggerAuthAutocomplete(swaggerRoot: ParentNode) {
+      const authInputs = swaggerRoot.querySelectorAll<HTMLInputElement>('.modal-ux .auth-container input');
+
+      authInputs.forEach((input) => {
+        input.setAttribute('autocomplete', 'new-password');
+        input.setAttribute('autocapitalize', 'off');
+        input.setAttribute('spellcheck', 'false');
+      });
+    },
+    attachSwaggerAuthAutocompleteObserver(swaggerRoot: SwaggerRootElement | null) {
+      if (!swaggerRoot) {
+        return;
+      }
+
+      this.suppressSwaggerAuthAutocomplete(swaggerRoot);
+
+      if (swaggerRoot[authAutocompleteObserverKey] || typeof MutationObserver === 'undefined') {
+        return;
+      }
+
+      const observer = new MutationObserver(() => {
+        this.suppressSwaggerAuthAutocomplete(swaggerRoot);
+      });
+
+      observer.observe(swaggerRoot, {
+        childList: true,
+        subtree: true,
+      });
+
+      swaggerRoot[authAutocompleteObserverKey] = observer;
+    },
     normalizeSwaggerUi(swaggerRoot: ParentNode) {
       this.shortenSummaryPaths(swaggerRoot);
       this.updateFlatSingleTag(swaggerRoot);
@@ -227,6 +262,16 @@ export default defineComponent({
     },
     getFlatTagHeader(target: Element | null) {
       return target?.closest('.opblock-tag-section.matomo-flat-tag > .opblock-tag') as HTMLElement | null;
+    },
+    clearSwaggerAuthAutocompleteObserver(swaggerRoot: SwaggerRootElement) {
+      const observer = swaggerRoot[authAutocompleteObserverKey];
+
+      if (!observer) {
+        return;
+      }
+
+      observer.disconnect();
+      swaggerRoot[authAutocompleteObserverKey] = null;
     },
     clearCopySuccessState(swaggerRoot: SwaggerRootElement) {
       const state = swaggerRoot[activeCopySuccessStateKey];
@@ -317,6 +362,7 @@ export default defineComponent({
         return;
       }
 
+      this.clearSwaggerAuthAutocompleteObserver(container);
       this.clearCopySuccessState(container);
       container.innerHTML = '';
     },
@@ -351,6 +397,7 @@ export default defineComponent({
         onComplete: () => {
           window.setTimeout(() => {
             this.normalizeSwaggerUi(container);
+            this.attachSwaggerAuthAutocompleteObserver(container);
             this.isReady = true;
           }, 0);
 
@@ -377,10 +424,6 @@ export default defineComponent({
 
 .swaggerMount--ready {
   visibility: visible;
-}
-
-.swaggerEmptyState {
-  margin: 0;
 }
 
 .swaggerMount :deep(.swagger-ui) {
