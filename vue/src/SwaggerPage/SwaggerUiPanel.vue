@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from 'vue';
+import { defineComponent, PropType } from 'vue';
 import {
   ActivityIndicator,
   Alert,
@@ -177,7 +177,7 @@ export default defineComponent({
 
       return {
         ...spec,
-        servers: [{url: this.piwikUrl} as OpenApiServer],
+        servers: [{ url: this.piwikUrl } as OpenApiServer],
       };
     },
     shortenSummaryPaths(swaggerRoot: ParentNode) {
@@ -280,7 +280,7 @@ export default defineComponent({
         return;
       }
 
-      const {element} = state;
+      const { element } = state;
 
       window.clearTimeout(state.resetTimeoutId);
       element.innerHTML = copyIconMarkup;
