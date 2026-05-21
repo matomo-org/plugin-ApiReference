@@ -74,7 +74,36 @@ class Tasks extends \Piwik\Plugin\Tasks
             }
         }
     }
+    public function getArchiveMaxRowsDefault()
+    {
+        $value = $this->getConfigValue(self::KEY_ARCHIVE_MAXIMUM_ROWS_CUSTOM_DIMENSIONS_DEFAULT, self::DEFAULT_ARCHIVE_MAXIMUM_ROWS_CUSTOM_DIMENSIONS_DEFAULT);
 
+        if ($value === false || $value === '' || $value === null) {
+            $value = self::DEFAULT_ARCHIVE_MAXIMUM_ROWS_CUSTOM_DIMENSIONS_DEFAULT;
+        }
+
+        return (int) $value;
+    }
+    public function getArchiveMaxRowsDefault()
+    {
+        $value = $this->getConfigValue(self::KEY_ARCHIVE_MAXIMUM_ROWS_CUSTOM_DIMENSIONS_DEFAULT, self::DEFAULT_ARCHIVE_MAXIMUM_ROWS_CUSTOM_DIMENSIONS_DEFAULT);
+
+        if ($value === false || $value === '' || $value === null) {
+            $value = self::DEFAULT_ARCHIVE_MAXIMUM_ROWS_CUSTOM_DIMENSIONS_DEFAULT;
+        }
+
+        return (int) $value;
+    }
+
+    private function getConfigValue($name, $default)
+    {
+        $config = $this->getConfig();
+        $attribution = $config->CustomReports;
+        if (isset($attribution[$name])) {
+            return $attribution[$name];
+        }
+        return $default;
+    }
     private function isSpecGenerationEnabled(): bool
     {
         return (bool) (Config::getInstance()->ApiReference['enable_spec_generation_task'] ?? 0);
