@@ -29,7 +29,7 @@ class Configuration
         $config = $this->getConfig();
 
         $apiReferenceConfig = $config->ApiReference;
-        if (empty($reports)) {
+        if (empty($apiReferenceConfig)) {
             $apiReferenceConfig = array();
         }
 

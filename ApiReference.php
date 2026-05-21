@@ -46,7 +46,6 @@ class ApiReference extends \Piwik\Plugin
         $translationKeys[] = 'ApiReference_UserAuthenticationUsingTokenAuth';
     }
 
-
     public function install()
     {
         $config = new Configuration();
