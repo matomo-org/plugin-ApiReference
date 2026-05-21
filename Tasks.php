@@ -11,11 +11,9 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\ApiReference;
 
-use Piwik\Config;
 use Piwik\Log\LoggerInterface;
 use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
 use Piwik\Plugins\ApiReference\Generation\SpecGenerationService;
-use Piwik\Plugins\ApiReference\Configuration;
 
 class Tasks extends \Piwik\Plugin\Tasks
 {

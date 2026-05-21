@@ -9,8 +9,6 @@
 
 namespace Piwik\Plugins\ApiReference;
 
-use Piwik\Plugins\CustomReports\Configuration;
-
 class ApiReference extends \Piwik\Plugin
 {
     public const DEFAULT_SPEC_VERSION = '1.0.0';

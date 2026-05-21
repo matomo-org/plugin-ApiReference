@@ -33,7 +33,7 @@ class Configuration
         }
 
         // we make sure to set a value only if none has been configured yet, eg in common config.
-        if (empty($apiReferenceConfig[self::KEY_ENABLE_SPEC_GENERATION])) {
+        if (!array_key_exists(self::KEY_ENABLE_SPEC_GENERATION, $apiReferenceConfig)) {
             $apiReferenceConfig[self::KEY_ENABLE_SPEC_GENERATION] = self::DEFAULT_ENABLE_SPEC_GENERATION;
         }
 
