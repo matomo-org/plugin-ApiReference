@@ -15,6 +15,7 @@ use Piwik\Config;
 use Piwik\Log\LoggerInterface;
 use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
 use Piwik\Plugins\ApiReference\Generation\SpecGenerationService;
+use Piwik\Plugins\ApiReference\Configuration;
 
 class Tasks extends \Piwik\Plugin\Tasks
 {
@@ -32,15 +33,21 @@ class Tasks extends \Piwik\Plugin\Tasks
      * @var PluginListProvider
      */
     private $pluginListProvider;
+    /**
+     * @var Configuration
+     */
+    private $config;
 
     public function __construct(
         SpecGenerationService $specGenerationService,
         LoggerInterface $logger,
-        ?PluginListProvider $pluginListProvider = null
+        ?PluginListProvider $pluginListProvider = null,
+        ?Configuration $config = null
     ) {
         $this->specGenerationService = $specGenerationService;
         $this->logger = $logger;
         $this->pluginListProvider = $pluginListProvider ?? new PluginListProvider();
+        $this->config = $config ?? new Configuration();
     }
 
     public function schedule()
@@ -77,6 +84,6 @@ class Tasks extends \Piwik\Plugin\Tasks
 
     private function isSpecGenerationEnabled(): bool
     {
-        return (bool) (Config::getInstance()->ApiReference['enable_spec_generation_task'] ?? 0);
+        return $this->config->specGenerationEnabled();
     }
 }

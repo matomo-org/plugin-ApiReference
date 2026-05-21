@@ -17,11 +17,10 @@
 namespace Piwik\Plugins\ApiReference;
 
 use Piwik\Config;
-use Piwik\Piwik;
 
 class Configuration
 {
-    public const DEFAULT_ENABLE_SPEC_GENERATION= 1;
+    public const DEFAULT_ENABLE_SPEC_GENERATION = 1;
     public const KEY_ENABLE_SPEC_GENERATION = 'enable_spec_generation_task';
 
     public function install()
@@ -47,6 +46,28 @@ class Configuration
         $config = $this->getConfig();
         $config->ApiReference = array();
         $config->forceSave();
+    }
+
+
+    public function specGenerationEnabled()
+    {
+        $value = $this->getConfigValue(self::KEY_ENABLE_SPEC_GENERATION, self::DEFAULT_ENABLE_SPEC_GENERATION);
+
+        if ($value === false || $value === '' || $value === null) {
+            $value = self::DEFAULT_ENABLE_SPEC_GENERATION;
+        }
+
+        return (bool) $value;
+    }
+
+    private function getConfigValue($name, $default)
+    {
+        $config = $this->getConfig();
+        $attribution = $config->ApiReference;
+        if (isset($attribution[$name])) {
+            return $attribution[$name];
+        }
+        return $default;
     }
 
     private function getConfig()
