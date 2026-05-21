@@ -62,9 +62,9 @@ class APITest extends TestCase
         $this->assertSame($expectedSpec, $result);
     }
 
-    public function testGetOpenApiSpecKeepsSuccessfulExamplesForUsersWithSiteOneAccess(): void
+    public function testGetOpenApiSpecKeepsSuccessfulExamplesForSuperUsers(): void
     {
-        StaticContainer::getContainer()->set(Access::class, new FakeAccess(false, [], [1], 'siteOneViewer'));
+        StaticContainer::getContainer()->set(Access::class, new FakeAccess(true, [], [1], 'superUser'));
 
         $expectedSpec = $this->getSpecFixtureWithResponseExamples();
         $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, json_encode($expectedSpec));
@@ -83,11 +83,13 @@ class APITest extends TestCase
             true,
             json_encode($this->getSpecFixtureWithResponseExamples())
         );
+        $expectedTryItOutNote = $this->callProtectedMethod($api, 'getTryItOutNote');
 
         $result = $api->getOpenApiSpec('CustomAlerts');
 
         $this->assertArrayNotHasKey('example', $result['paths']['/endpoint']['get']['responses']['200']['content']['application/json']);
         $this->assertArrayNotHasKey('examples', $result['paths']['/endpoint']['get']['responses']['200']['content']['application/json']);
+        $this->assertArrayNotHasKey('schema', $result['paths']['/endpoint']['get']['responses']['200']['content']['application/json']);
         $this->assertSame(
             'kept error example',
             $result['paths']['/endpoint']['get']['responses']['400']['content']['application/json']['example']
@@ -100,6 +102,69 @@ class APITest extends TestCase
             ['value' => ['id' => 99]],
             $result['paths']['/endpoint']['get']['requestBody']['content']['application/json']['examples']['request']
         );
+        $this->assertSame(
+            'Success' . $expectedTryItOutNote,
+            $result['paths']['/endpoint']['get']['responses']['200']['description']
+        );
+    }
+
+    public function testGetOpenApiSpecDoesNotDuplicateTryItOutNote(): void
+    {
+        StaticContainer::getContainer()->set(Access::class, new FakeAccess(false, [], [2], 'otherViewer'));
+
+        $spec = $this->getSpecFixtureWithResponseExamples();
+        $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, json_encode($spec));
+        $expectedTryItOutNote = $this->callProtectedMethod($api, 'getTryItOutNote');
+        $spec['paths']['/endpoint']['get']['responses']['200']['description'] .= $expectedTryItOutNote;
+        $api->method('readSpecFile')->willReturn(json_encode($spec));
+
+        $result = $api->getOpenApiSpec('CustomAlerts');
+
+        $this->assertSame(
+            'Success' . $expectedTryItOutNote,
+            $result['paths']['/endpoint']['get']['responses']['200']['description']
+        );
+    }
+
+    public function testRemoveSuccessfulResponseExamplesLeavesOperationWithoutResponsesUnchanged(): void
+    {
+        $api = new API();
+        $spec = [
+            'paths' => [
+                '/endpoint' => [
+                    'get' => [
+                        'summary' => 'No responses here',
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertSame($spec, $this->callProtectedMethod($api, 'removeSuccessfulResponseExamples', [$spec]));
+    }
+
+    public function testRemoveSuccessfulResponseExamplesLeavesOperationWithoutSuccessfulResponseUnchanged(): void
+    {
+        $api = new API();
+        $spec = [
+            'paths' => [
+                '/endpoint' => [
+                    'get' => [
+                        'responses' => [
+                            '400' => [
+                                'description' => 'Error',
+                                'content' => [
+                                    'application/json' => [
+                                        'example' => 'keep me',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertSame($spec, $this->callProtectedMethod($api, 'removeSuccessfulResponseExamples', [$spec]));
     }
 
     public function testGetAllowedPluginsReturnsProviderValues(): void
@@ -163,7 +228,7 @@ class APITest extends TestCase
         $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, '{}');
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage("Report format 'yaml' not valid");
+        $this->expectExceptionMessage('General_ExceptionInvalidReportRendererFormat');
 
         $api->getOpenApiSpec('CustomAlerts', 'yaml');
     }
@@ -246,6 +311,18 @@ class APITest extends TestCase
                                 'description' => 'Success',
                                 'content' => [
                                     'application/json' => [
+                                        'schema' => [
+                                            'type' => 'object',
+                                            'properties' => [
+                                                'row' => [
+                                                    'type' => 'array',
+                                                    'items' => [
+                                                        'type' => 'object',
+                                                        'additionalProperties' => true,
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
                                         'example' => ['value' => 'remove me'],
                                         'examples' => [
                                             'success' => [

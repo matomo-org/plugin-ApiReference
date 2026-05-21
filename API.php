@@ -113,44 +113,11 @@ class API extends \Piwik\Plugin\API
             }
 
             foreach ($pathItem as &$operation) {
-                if (
-                    !is_array($operation)
-                    || empty($operation['responses'])
-                    || !is_array($operation['responses'])
-                ) {
+                if (!is_array($operation)) {
                     continue;
                 }
 
-                foreach (['200', 200] as $responseCode) {
-                    if (
-                        empty($operation['responses'][$responseCode])
-                        || !is_array($operation['responses'][$responseCode])
-                    ) {
-                        continue;
-                    }
-
-                    if (
-                        !empty($operation['responses'][$responseCode]['description'])
-                        && is_string($operation['responses'][$responseCode]['description'])
-                        && strpos($operation['responses'][$responseCode]['description'], $this->getTryItOutNote()) === false
-                    ) {
-                        $operation['responses'][$responseCode]['description'] .= $this->getTryItOutNote();
-                    }
-
-                    if (
-                        empty($operation['responses'][$responseCode]['content'])
-                        || !is_array($operation['responses'][$responseCode]['content'])
-                    ) {
-                        continue;
-                    }
-
-                    foreach ($operation['responses'][$responseCode]['content'] as &$content) {
-                        if (is_array($content)) {
-                            unset($content['example'], $content['examples']);
-                        }
-                    }
-                    unset($content);
-                }
+                $this->sanitizeSuccessfulResponse($operation);
             }
             unset($operation);
         }
@@ -158,6 +125,44 @@ class API extends \Piwik\Plugin\API
 
         return $spec;
     }
+
+    /**
+     * Remove examples from a successful 200 response and append the try-it-out note once.
+     *
+     * @param array<string, mixed> $operation
+     */
+    protected function sanitizeSuccessfulResponse(array &$operation): void
+    {
+        if (empty($operation['responses']) || !is_array($operation['responses'])) {
+            return;
+        }
+
+        if (!isset($operation['responses']['200']) || !is_array($operation['responses']['200'])) {
+            return;
+        }
+
+        $successfulResponse = &$operation['responses']['200'];
+
+        if (
+            !empty($successfulResponse['description'])
+            && is_string($successfulResponse['description'])
+            && strpos($successfulResponse['description'], $this->getTryItOutNote()) === false
+        ) {
+            $successfulResponse['description'] .= $this->getTryItOutNote();
+        }
+
+        if (empty($successfulResponse['content']) || !is_array($successfulResponse['content'])) {
+            return;
+        }
+
+        foreach ($successfulResponse['content'] as &$content) {
+            if (is_array($content)) {
+                unset($content['example'], $content['examples'], $content['schema']);
+            }
+        }
+        unset($content);
+    }
+
     protected function getSpecFilePath(string $pluginName): string
     {
         return $this->getSpecPathResolver()->getSpecFilePath($pluginName);
