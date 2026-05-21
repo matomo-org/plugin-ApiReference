@@ -50,7 +50,7 @@ class MenuTest extends IntegrationTestCase
         parent::tearDown();
     }
 
-    public function testConfigureAdminMenuAddsSwaggerItemForViewAccess(): void
+    public function testConfigureAdminMenuAddsApiItemForViewAccess(): void
     {
         FakeAccess::clearAccess(
             $superUser = false,
@@ -62,10 +62,10 @@ class MenuTest extends IntegrationTestCase
         $items = $this->buildConfiguredMenu()->getMenu();
 
         $this->assertArrayHasKey('CorePluginsAdmin_MenuPlatform', $items);
-        $this->assertArrayHasKey('ApiReference_SwaggerApi', $items['CorePluginsAdmin_MenuPlatform']);
+        $this->assertArrayHasKey('General_API', $items['CorePluginsAdmin_MenuPlatform']);
     }
 
-    public function testConfigureAdminMenuSkipsSwaggerItemWithoutViewAccess(): void
+    public function testConfigureAdminMenuSkipsApiItemWithoutViewAccess(): void
     {
         FakeAccess::clearAccess(
             $superUser = false,
@@ -81,7 +81,7 @@ class MenuTest extends IntegrationTestCase
             return;
         }
 
-        $this->assertArrayNotHasKey('ApiReference_SwaggerApi', $items['CorePluginsAdmin_MenuPlatform']);
+        $this->assertArrayNotHasKey('General_API', $items['CorePluginsAdmin_MenuPlatform']);
     }
 
     private function buildConfiguredMenu(): MenuAdmin

@@ -8,12 +8,16 @@
 <template>
   <div class="page">
     <div v-content-intro>
-      <h2>{{ translate('ApiReference_SwaggerApi') }}</h2>
+      <h2>{{ translate('General_API') }}</h2>
     </div>
 
     <ContentBlock :content-title="translate('ApiReference_ReportingApiReference')">
       <p>{{ translate('ApiReference_ReportingApiSummary') }}</p>
       <p v-html="$sanitize(reportingApiMoreInformation)" />
+      <p
+        class="old-api-docs-paragraph"
+        v-html="$sanitize(lookingForOldApiReference)"
+      />
     </ContentBlock>
 
     <ContentBlock :content-title="translate('ApiReference_UserAuthentication')">
@@ -171,6 +175,24 @@ export default defineComponent({
         externalLink('https://matomo.org/docs/analytics-api'),
         '</a>',
         externalLink('https://developer.matomo.org/api-reference/reporting-api'),
+        '</a>',
+      );
+    },
+    lookingForOldApiReference(): string {
+      const legacyApiReferenceUrl = `?${MatomoUrl.stringify({
+        ...MatomoUrl.urlParsed.value,
+        module: 'API',
+        action: 'listAllAPI',
+        idSite: 1,
+        period: 'day',
+        date: 'yesterday',
+      })}`;
+
+      return translate(
+        'ApiReference_LookingForLegacyApiReference',
+        `<a href="${legacyApiReferenceUrl}">`,
+        '</a>',
+        externalLink('https://matomo.org/support/'),
         '</a>',
       );
     },
@@ -415,6 +437,11 @@ export default defineComponent({
 .emptyText {
   margin-bottom: 0;
   color: var(--theme-color-text-light, #646464);
+}
+
+.old-api-docs-paragraph {
+  font-size: 12px !important;
+  font-style: italic;
 }
 
 .pluginCard {
