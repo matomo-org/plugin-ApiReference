@@ -16,6 +16,7 @@ require_once PIWIK_INCLUDE_PATH . '/plugins/ApiReference/vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 use Piwik\Access;
 use Piwik\Container\StaticContainer;
+use Piwik\Piwik;
 use Piwik\Plugins\ApiReference\API;
 use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
 use Piwik\Plugins\ApiReference\Specs\PathResolver;
@@ -228,7 +229,9 @@ class APITest extends TestCase
         $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, '{}');
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('General_ExceptionInvalidReportRendererFormat');
+        $this->expectExceptionMessage(
+            Piwik::translate('General_ExceptionInvalidReportRendererFormat', ['yaml', 'json'])
+        );
 
         $api->getOpenApiSpec('CustomAlerts', 'yaml');
     }
