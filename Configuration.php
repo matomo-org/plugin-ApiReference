@@ -45,7 +45,12 @@ class Configuration
     public function uninstall()
     {
         $config = $this->getConfig();
-        $config->CustomReports = array();
+        $config->ApiReference = array();
         $config->forceSave();
+    }
+
+    private function getConfig()
+    {
+        return Config::getInstance();
     }
 }
