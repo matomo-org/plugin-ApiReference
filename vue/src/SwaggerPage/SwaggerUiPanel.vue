@@ -20,6 +20,12 @@
     {{ displayError }}
   </Alert>
 
+  <p
+    v-else-if="!isLoading && !spec"
+    class="swaggerEmptyState"
+    v-html="$sanitize(missingSpecLearnMore)"
+  />
+
   <div
     :id="swaggerContainerId"
     :class="['swaggerMount', { 'swaggerMount--ready': isReady }]"
@@ -28,7 +34,12 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { ActivityIndicator, Alert, translate } from 'CoreHome';
+import {
+  ActivityIndicator,
+  Alert,
+  externalLink,
+  translate,
+} from 'CoreHome';
 
 const activeCopySuccessStateKey = '__matomoActiveCopySuccessState';
 const summaryPathClickHandlerAttachedKey = '__matomoSummaryPathClickHandlerAttached';
@@ -116,6 +127,14 @@ export default defineComponent({
   computed: {
     displayError(): string | null {
       return this.specLoadError || this.loadError;
+    },
+    missingSpecLearnMore(): string {
+      // TODO: replace with the final FAQ page once it is published.
+      return translate(
+        'ApiReference_SwaggerPageSpecNotAvailable',
+        externalLink('https://matomo.org/?post_type=faq&p=96250&preview=true'),
+        '</a>',
+      );
     },
     swaggerContainerId(): string {
       return `swagger-ui-${this.plugin}`;
@@ -358,6 +377,10 @@ export default defineComponent({
 
 .swaggerMount--ready {
   visibility: visible;
+}
+
+.swaggerEmptyState {
+  margin: 0;
 }
 
 .swaggerMount :deep(.swagger-ui) {
