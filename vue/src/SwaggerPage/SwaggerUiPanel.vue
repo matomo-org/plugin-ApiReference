@@ -135,7 +135,7 @@ export default defineComponent({
       // TODO: replace with the final FAQ page once it is published.
       return translate(
         'ApiReference_SwaggerPageSpecNotAvailable',
-        externalLink('https://matomo.org/?post_type=faq&p=96250&preview=true#why-is-the-openapi-specification-file-not-generated'),
+        externalLink('https://matomo.org/faq/how-to/how-to-use-the-api-reference-in-matomo#why-is-the-openapi-specification-file-not-generated'),
         '</a>',
       );
     },
