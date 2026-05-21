@@ -9,7 +9,6 @@
 
 namespace Piwik\Plugins\ApiReference;
 
-use Piwik\Access;
 use Piwik\Piwik;
 use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
 use Piwik\Plugin\Manager;
@@ -25,6 +24,8 @@ use Piwik\Plugins\ApiReference\Specs\PathResolver;
  */
 class API extends \Piwik\Plugin\API
 {
+    private const TRY_IT_OUT_NOTE_TRANSLATION_KEY = 'ApiReference_UseTryItOutForLiveResponse';
+
     /**
      * Returns the plugin names used for ApiReference spec generation.
      *
@@ -87,8 +88,7 @@ class API extends \Piwik\Plugin\API
             throw new \Exception('OpenAPI spec file contains invalid JSON.');
         }
 
-        $canViewExampleSite = in_array(1, Access::getInstance()->getSitesIdWithAtLeastViewAccess(), true);
-        if (!$canViewExampleSite) {
+        if (!Piwik::hasUserSuperUserAccess()) {
             $decodedSpec = $this->removeSuccessfulResponseExamples($decodedSpec);
         }
 
@@ -125,18 +125,29 @@ class API extends \Piwik\Plugin\API
                     if (
                         empty($operation['responses'][$responseCode])
                         || !is_array($operation['responses'][$responseCode])
-                        || empty($operation['responses'][$responseCode]['content'])
+                    ) {
+                        continue;
+                    }
+
+                    if (
+                        !empty($operation['responses'][$responseCode]['description'])
+                        && is_string($operation['responses'][$responseCode]['description'])
+                        && strpos($operation['responses'][$responseCode]['description'], $this->getTryItOutNote()) === false
+                    ) {
+                        $operation['responses'][$responseCode]['description'] .= $this->getTryItOutNote();
+                    }
+
+                    if (
+                        empty($operation['responses'][$responseCode]['content'])
                         || !is_array($operation['responses'][$responseCode]['content'])
                     ) {
                         continue;
                     }
 
                     foreach ($operation['responses'][$responseCode]['content'] as &$content) {
-                        if (!is_array($content)) {
-                            continue;
+                        if (is_array($content)) {
+                            unset($content['example'], $content['examples']);
                         }
-
-                        unset($content['example'], $content['examples']);
                     }
                     unset($content);
                 }
@@ -176,6 +187,11 @@ class API extends \Piwik\Plugin\API
                 )
             );
         }
+    }
+
+    protected function getTryItOutNote(): string
+    {
+        return "\n\n" . Piwik::translate(self::TRY_IT_OUT_NOTE_TRANSLATION_KEY);
     }
 
     protected function getSpecPathResolver(): PathResolver

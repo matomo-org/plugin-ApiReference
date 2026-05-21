@@ -109,7 +109,7 @@ class AnnotationGenerator
         DocumentationGenerator $generator,
         ?PathResolver $pathResolver = null,
         ?ArtifactWriter $artifactWriter = null,
-        bool $allowLocalRequests = false
+        bool $allowLocalRequests = true
     ) {
         $this->generator = $generator;
         $this->pathResolver = $pathResolver ?? new PathResolver();
@@ -1404,7 +1404,7 @@ class AnnotationGenerator
                 $exampleValue = $this->getExampleIfAvailable($url);
                 // If the example lookup failed, try making the same request locally using a local token.
                 if (empty($exampleValue)) {
-                    if ($this->allowLocalRequests) {
+                    if ($this->shouldAllowLocalRequests()) {
                         $exampleValue = $this->getExampleIfAvailable($url, true);
                     }
                 }
@@ -2187,5 +2187,13 @@ class AnnotationGenerator
         }
 
         return is_array(json_decode($example, true));
+    }
+
+    protected function shouldAllowLocalRequests(): bool
+    {
+        $allowLocalRequests = $this->allowLocalRequests;
+        Piwik::postEvent('ApiReference.shouldAllowLocalRequests', [&$allowLocalRequests]);
+
+        return $allowLocalRequests;
     }
 }

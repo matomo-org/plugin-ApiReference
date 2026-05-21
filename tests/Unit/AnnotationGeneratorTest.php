@@ -18,6 +18,7 @@ use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\Config;
 use Piwik\Development;
+use Piwik\Piwik;
 use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
 use Piwik\Plugins\ApiReference\ApiReference;
 use Piwik\Plugins\ApiReference\tests\Resources\MockAnnotationGenerator;
@@ -177,9 +178,23 @@ class AnnotationGeneratorTest extends TestCase
     private static $exampleSchemas;
 
     /**
+     * @var bool
+     */
+    private static $disableLocalRequestsByEvent = false;
+
+    /**
      * @var AnnotationGenerator
      */
     private $annotationGenerator;
+
+    public static function setUpBeforeClass(): void
+    {
+        Piwik::addAction('ApiReference.shouldAllowLocalRequests', function (&$allowLocalRequests): void {
+            if (self::$disableLocalRequestsByEvent) {
+                $allowLocalRequests = false;
+            }
+        });
+    }
 
     public function setUp(): void
     {
@@ -370,6 +385,33 @@ class AnnotationGeneratorTest extends TestCase
             'https://local.matomo.test/index.php?module=API&method=VisitsSummary.get&idSite=1&period=day&date=today&format=JSON',
             $annotationGenerator->receivedUrl
         );
+    }
+
+    public function testShouldAllowLocalRequestsDefaultsToTrue(): void
+    {
+        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+
+        $this->assertTrue($annotationGenerator->shouldAllowLocalRequests());
+    }
+
+    public function testShouldAllowLocalRequestsCanBeDisabledByConstructor(): void
+    {
+        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator(), false);
+
+        $this->assertFalse($annotationGenerator->shouldAllowLocalRequests());
+    }
+
+    public function testShouldAllowLocalRequestsCanBeDisabledByEvent(): void
+    {
+        self::$disableLocalRequestsByEvent = true;
+
+        try {
+            $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+
+            $this->assertFalse($annotationGenerator->shouldAllowLocalRequests());
+        } finally {
+            self::$disableLocalRequestsByEvent = false;
+        }
     }
 
     public function testGetParamInfoFromDocBlock(): void
