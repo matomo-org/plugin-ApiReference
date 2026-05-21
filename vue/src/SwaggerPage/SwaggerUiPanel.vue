@@ -10,7 +10,7 @@
     v-if="isLoading && !spec && !displayError"
     class="swaggerLoader"
   >
-    <ActivityIndicator :loading="true" />
+    <ActivityIndicator :loading="true"/>
   </div>
 
   <Alert
@@ -24,7 +24,7 @@
     v-else-if="!isLoading && !spec"
     severity="warning"
   >
-    <span v-html="$sanitize(missingSpecLearnMore)" />
+    <span v-html="$sanitize(missingSpecLearnMore)"/>
   </Alert>
 
   <div
@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import {defineComponent, PropType} from 'vue';
 import {
   ActivityIndicator,
   Alert,
@@ -56,6 +56,7 @@ interface OpenApiSpec {
 
 interface OpenApiServer {
   url?: string;
+
   [key: string]: unknown;
 }
 
@@ -132,7 +133,6 @@ export default defineComponent({
       return this.specLoadError || this.loadError;
     },
     missingSpecLearnMore(): string {
-      // TODO: replace with the final FAQ page once it is published.
       return translate(
         'ApiReference_SwaggerPageSpecNotAvailable',
         externalLink('https://matomo.org/faq/how-to/how-to-use-the-api-reference-in-matomo#why-is-the-openapi-specification-file-not-generated'),
@@ -177,7 +177,7 @@ export default defineComponent({
 
       return {
         ...spec,
-        servers: [{ url: this.piwikUrl } as OpenApiServer],
+        servers: [{url: this.piwikUrl} as OpenApiServer],
       };
     },
     shortenSummaryPaths(swaggerRoot: ParentNode) {
@@ -280,7 +280,7 @@ export default defineComponent({
         return;
       }
 
-      const { element } = state;
+      const {element} = state;
 
       window.clearTimeout(state.resetTimeoutId);
       element.innerHTML = copyIconMarkup;
