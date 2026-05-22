@@ -20,7 +20,7 @@ The API Reference plugin improves API discoverability while supporting modern AP
 Navigate to:
 
 ```text
-Administration → System → SwaggerUI
+Administration → System → API
 ```
 
 The Swagger UI page will display API documentation for installed plugins.
@@ -36,6 +36,22 @@ To manually regenerate specifications:
 ```
 
 This is useful after installing, enabling, or updating plugins.
+
+**NOTE:** The initial generation process may take some time to complete, depending on the number of installed plugins.
+
+## Read Specs Via the Reporting API
+
+This plugin exposes a Reporting API method for reading generated OpenAPI specs directly.
+
+To read a previously generated spec for a plugin:
+
+```text
+index.php?module=API&method=ApiReference.getOpenApiSpec&pluginName=Login&format=json
+```
+
+This returns the JSON spec file for the requested plugin.
+
+If you are calling these endpoints outside the Matomo UI, include your usual authentication parameters such as `token_auth`.
 
 ## Authorise API Requests
 
