@@ -44,4 +44,16 @@ class ApiReference extends \Piwik\Plugin
         $translationKeys[] = 'ApiReference_UserAuthenticationManageTokens';
         $translationKeys[] = 'ApiReference_UserAuthenticationUsingTokenAuth';
     }
+
+    public function install()
+    {
+        $config = new Configuration();
+        $config->install();
+    }
+
+    public function uninstall()
+    {
+        $config = new Configuration();
+        $config->uninstall();
+    }
 }
