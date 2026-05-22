@@ -12,7 +12,6 @@ namespace Piwik\Plugins\ApiReference;
 use Piwik\Piwik;
 use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
 use Piwik\Plugin\Manager;
-use Piwik\Plugins\ApiReference\Specs\SpecGenerator;
 use Piwik\Plugins\ApiReference\Specs\PathResolver;
 
 /**
@@ -25,6 +24,8 @@ use Piwik\Plugins\ApiReference\Specs\PathResolver;
  */
 class API extends \Piwik\Plugin\API
 {
+    private const TRY_IT_OUT_NOTE_TRANSLATION_KEY = 'ApiReference_UseTryItOutForLiveResponse';
+
     /**
      * Returns the plugin names used for ApiReference spec generation.
      *
@@ -87,7 +88,79 @@ class API extends \Piwik\Plugin\API
             throw new \Exception('OpenAPI spec file contains invalid JSON.');
         }
 
+        if (!Piwik::hasUserSuperUserAccess()) {
+            $decodedSpec = $this->removeSuccessfulResponseExamples($decodedSpec);
+        }
+
         return $decodedSpec;
+    }
+
+    /**
+     * Remove embedded example payloads from successful 200 responses.
+     *
+     * @param array<string, mixed> $spec
+     * @return array<string, mixed>
+     */
+    protected function removeSuccessfulResponseExamples(array $spec): array
+    {
+        if (empty($spec['paths']) || !is_array($spec['paths'])) {
+            return $spec;
+        }
+
+        foreach ($spec['paths'] as &$pathItem) {
+            if (!is_array($pathItem)) {
+                continue;
+            }
+
+            foreach ($pathItem as &$operation) {
+                if (!is_array($operation)) {
+                    continue;
+                }
+
+                $this->sanitizeSuccessfulResponse($operation);
+            }
+            unset($operation);
+        }
+        unset($pathItem);
+
+        return $spec;
+    }
+
+    /**
+     * Remove examples from a successful 200 response and append the try-it-out note once.
+     *
+     * @param array<string, mixed> $operation
+     */
+    protected function sanitizeSuccessfulResponse(array &$operation): void
+    {
+        if (empty($operation['responses']) || !is_array($operation['responses'])) {
+            return;
+        }
+
+        if (!isset($operation['responses']['200']) || !is_array($operation['responses']['200'])) {
+            return;
+        }
+
+        $successfulResponse = &$operation['responses']['200'];
+
+        if (
+            !empty($successfulResponse['description'])
+            && is_string($successfulResponse['description'])
+            && strpos($successfulResponse['description'], $this->getTryItOutNote()) === false
+        ) {
+            $successfulResponse['description'] .= $this->getTryItOutNote();
+        }
+
+        if (empty($successfulResponse['content']) || !is_array($successfulResponse['content'])) {
+            return;
+        }
+
+        foreach ($successfulResponse['content'] as &$content) {
+            if (is_array($content)) {
+                unset($content['example'], $content['examples'], $content['schema']);
+            }
+        }
+        unset($content);
     }
 
     protected function getSpecFilePath(string $pluginName): string
@@ -121,6 +194,11 @@ class API extends \Piwik\Plugin\API
         }
     }
 
+    protected function getTryItOutNote(): string
+    {
+        return "\n\n" . Piwik::translate(self::TRY_IT_OUT_NOTE_TRANSLATION_KEY);
+    }
+
     protected function getSpecPathResolver(): PathResolver
     {
         return new PathResolver();
@@ -129,32 +207,5 @@ class API extends \Piwik\Plugin\API
     protected function getPluginListProvider(): PluginListProvider
     {
         return new PluginListProvider();
-    }
-
-    /**
-     * Generates an OpenAPI specification for one or more plugins and returns it immediately.
-     *
-     * @param string $plugin The plugin name to generate, or a comma-separated list of plugin names.
-     * @param string $format The response format to generate. Supported values are `json` and `yaml`.
-     * @return array<string, mixed>|string The generated OpenAPI specification as decoded JSON data for
-     *                                     `json`, or as a YAML string for `yaml`.
-     */
-    public function getGeneratedOpenApiSpec(string $plugin, string $format)
-    {
-        Piwik::checkUserHasSomeViewAccess();
-
-        // Return an error if format is something other than JSON or YAML
-        $allowedFormats = ['json', 'yaml'];
-        if (!in_array(strtolower($format), $allowedFormats)) {
-            throw new \Exception(
-                Piwik::translate(
-                    'General_ExceptionInvalidReportRendererFormat',
-                    [$format, implode(', ', $allowedFormats)]
-                )
-            );
-        }
-
-        $docString = (new SpecGenerator())->generatePluginDoc($plugin, $format);
-        return strtolower($format) === 'json' ? json_decode($docString, true) : $docString;
     }
 }

@@ -16,6 +16,9 @@ require_once PIWIK_INCLUDE_PATH . '/plugins/ApiReference/vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
+use Piwik\Config;
+use Piwik\Development;
+use Piwik\Piwik;
 use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
 use Piwik\Plugins\ApiReference\ApiReference;
 use Piwik\Plugins\ApiReference\tests\Resources\MockAnnotationGenerator;
@@ -175,9 +178,23 @@ class AnnotationGeneratorTest extends TestCase
     private static $exampleSchemas;
 
     /**
+     * @var bool
+     */
+    private static $disableLocalRequestsByEvent = false;
+
+    /**
      * @var AnnotationGenerator
      */
     private $annotationGenerator;
+
+    public static function setUpBeforeClass(): void
+    {
+        Piwik::addAction('ApiReference.shouldAllowLocalRequests', function (&$allowLocalRequests): void {
+            if (self::$disableLocalRequestsByEvent) {
+                $allowLocalRequests = false;
+            }
+        });
+    }
 
     public function setUp(): void
     {
@@ -368,6 +385,33 @@ class AnnotationGeneratorTest extends TestCase
             'https://local.matomo.test/index.php?module=API&method=VisitsSummary.get&idSite=1&period=day&date=today&format=JSON',
             $annotationGenerator->receivedUrl
         );
+    }
+
+    public function testShouldAllowLocalRequestsDefaultsToTrue(): void
+    {
+        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+
+        $this->assertTrue($annotationGenerator->shouldAllowLocalRequests());
+    }
+
+    public function testShouldAllowLocalRequestsCanBeDisabledByConstructor(): void
+    {
+        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator(), false);
+
+        $this->assertFalse($annotationGenerator->shouldAllowLocalRequests());
+    }
+
+    public function testShouldAllowLocalRequestsCanBeDisabledByEvent(): void
+    {
+        self::$disableLocalRequestsByEvent = true;
+
+        try {
+            $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+
+            $this->assertFalse($annotationGenerator->shouldAllowLocalRequests());
+        } finally {
+            self::$disableLocalRequestsByEvent = false;
+        }
     }
 
     public function testGetParamInfoFromDocBlock(): void
@@ -1319,6 +1363,25 @@ class AnnotationGeneratorTest extends TestCase
         $this->assertFalse($annotationGenerator->shouldUseParameterLevelExample(['string' => null, 'array' => 'string'], 'one'));
     }
 
+    public function testShouldAcceptInvalidSslCertificateMatchesDevelopmentMode(): void
+    {
+        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+        $defaultValue = Config::getInstance()->Development['enabled'] ?? 0;
+
+        try {
+            Config::getInstance()->Development['enabled'] = 0;
+            $this->resetDevelopmentModeCache();
+            $this->assertFalse($annotationGenerator->shouldAcceptInvalidSslCertificate());
+
+            Config::getInstance()->Development['enabled'] = 1;
+            $this->resetDevelopmentModeCache();
+            $this->assertTrue($annotationGenerator->shouldAcceptInvalidSslCertificate());
+        } finally {
+            Config::getInstance()->Development['enabled'] = $defaultValue;
+            $this->resetDevelopmentModeCache();
+        }
+    }
+
     /**
      * @dataProvider getTestDataForWrapStringWithQuotes
      *
@@ -1414,5 +1477,12 @@ class AnnotationGeneratorTest extends TestCase
     {
         // TODO - compileOperationLines method
         $this->expectNotToPerformAssertions();
+    }
+
+    private function resetDevelopmentModeCache(): void
+    {
+        $reflection = new \ReflectionProperty(Development::class, 'isEnabled');
+        $reflection->setAccessible(true);
+        $reflection->setValue(null, null);
     }
 }
