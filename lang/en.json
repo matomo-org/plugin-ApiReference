@@ -8,6 +8,7 @@
         "SwaggerPageRequestFailed": "The plugin whitelist could not be loaded.",
         "SwaggerPageSearchNoResults": "No plugins match your search.",
         "SwaggerPageSearchPlaceholder": "Search by plugin name",
+        "UseTryItOutForLiveResponse": "Example responses require Super User access. Use Try it out to see a live response.",
         "SwaggerPageSpecLoadFailed": "The OpenAPI spec could not be loaded for this plugin.",
         "SwaggerPageSpecNotAvailable": "The OpenAPI spec is not available for this plugin yet. %1$sLearn more%2$s",
         "UserAuthentication": "User authentication",

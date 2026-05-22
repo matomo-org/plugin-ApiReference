@@ -16,9 +16,9 @@ use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
 
 class MockAnnotationGenerator extends AnnotationGenerator
 {
-    public function __construct(DocumentationGenerator $generator)
+    public function __construct(DocumentationGenerator $generator, bool $allowLocalRequests = true)
     {
-        parent::__construct($generator);
+        parent::__construct($generator, null, null, $allowLocalRequests);
 
         // TODO - Extend the constructor behaviour
     }
@@ -109,5 +109,15 @@ class MockAnnotationGenerator extends AnnotationGenerator
     public function shouldUseParameterLevelExample(array $typesMap, string $example): bool
     {
         return parent::shouldUseParameterLevelExample($typesMap, $example);
+    }
+
+    public function shouldAcceptInvalidSslCertificate(): bool
+    {
+        return parent::shouldAcceptInvalidSslCertificate();
+    }
+
+    public function shouldAllowLocalRequests(): bool
+    {
+        return parent::shouldAllowLocalRequests();
     }
 }
