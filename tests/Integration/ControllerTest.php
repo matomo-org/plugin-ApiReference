@@ -91,6 +91,7 @@ class ControllerTest extends IntegrationTestCase
 
         $this->assertNotSame('', $html);
         $this->assertStringContainsString('vue-entry="ApiReference.SwaggerPage"', $html);
+        $this->assertStringContainsString('default-website-id="1"', $html);
         $this->assertStringContainsString('piwik-url=', $html);
         $this->assertStringContainsString('plugins/ApiReference/vue/lib/swagger-ui/swagger-ui.css', $html);
         $this->assertStringContainsString('plugins/ApiReference/vue/src/SwaggerPage/swagger-ui-overrides.css', $html);

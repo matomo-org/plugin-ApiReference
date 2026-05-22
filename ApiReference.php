@@ -29,18 +29,32 @@ class ApiReference extends \Piwik\Plugin
 
     public function getClientSideTranslationKeys(&$translationKeys): void
     {
+        $translationKeys[] = 'General_API';
         $translationKeys[] = 'CoreHome_LearnMoreFullStop';
+        $translationKeys[] = 'ApiReference_LookingForLegacyApiReference';
         $translationKeys[] = 'ApiReference_ReportingApiMoreInformation';
         $translationKeys[] = 'ApiReference_ReportingApiReference';
         $translationKeys[] = 'ApiReference_ReportingApiSummary';
-        $translationKeys[] = 'ApiReference_SwaggerApi';
         $translationKeys[] = 'ApiReference_SwaggerPagePluginEmpty';
         $translationKeys[] = 'ApiReference_SwaggerPageRequestFailed';
         $translationKeys[] = 'ApiReference_SwaggerPageSpecLoadFailed';
+        $translationKeys[] = 'ApiReference_SwaggerPageSpecNotAvailable';
         $translationKeys[] = 'ApiReference_SwaggerPageSearchNoResults';
         $translationKeys[] = 'ApiReference_SwaggerPageSearchPlaceholder';
         $translationKeys[] = 'ApiReference_UserAuthentication';
         $translationKeys[] = 'ApiReference_UserAuthenticationManageTokens';
         $translationKeys[] = 'ApiReference_UserAuthenticationUsingTokenAuth';
+    }
+
+    public function install()
+    {
+        $config = new Configuration();
+        $config->install();
+    }
+
+    public function uninstall()
+    {
+        $config = new Configuration();
+        $config->uninstall();
     }
 }
