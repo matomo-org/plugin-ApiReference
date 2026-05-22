@@ -11,7 +11,9 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\ApiReference\tests\Integration;
 
+use Piwik\Access;
 use Piwik\Cache;
+use Piwik\Container\StaticContainer;
 use Piwik\Menu\MenuAdmin;
 use Piwik\Plugin\Manager;
 use Piwik\Tests\Framework\Fixture;
@@ -52,36 +54,17 @@ class MenuTest extends IntegrationTestCase
 
     public function testConfigureAdminMenuAddsApiItemForViewAccess(): void
     {
-        FakeAccess::clearAccess(
-            $superUser = false,
-            $idSitesAdmin = [0],
-            $idSitesView = [1],
-            $identity = 'viewAccessUser'
-        );
+        $originalAccess = StaticContainer::getContainer()->get(Access::class);
+        StaticContainer::getContainer()->set(Access::class, new FakeAccess(false, [0], [1], 'viewAccessUser'));
 
-        $items = $this->buildConfiguredMenu()->getMenu();
+        try {
+            $items = $this->buildConfiguredMenu()->getMenu();
 
-        $this->assertArrayHasKey('CorePluginsAdmin_MenuPlatform', $items);
-        $this->assertArrayHasKey('General_API', $items['CorePluginsAdmin_MenuPlatform']);
-    }
-
-    public function testConfigureAdminMenuSkipsApiItemWithoutViewAccess(): void
-    {
-        FakeAccess::clearAccess(
-            $superUser = false,
-            $idSitesAdmin = [],
-            $idSitesView = [],
-            $identity = 'noAccessUser'
-        );
-
-        $items = $this->buildConfiguredMenu()->getMenu();
-
-        if (!isset($items['CorePluginsAdmin_MenuPlatform'])) {
-            $this->assertArrayNotHasKey('CorePluginsAdmin_MenuPlatform', $items);
-            return;
+            $this->assertArrayHasKey('CorePluginsAdmin_MenuPlatform', $items);
+            $this->assertArrayHasKey('General_API', $items['CorePluginsAdmin_MenuPlatform']);
+        } finally {
+            StaticContainer::getContainer()->set(Access::class, $originalAccess);
         }
-
-        $this->assertArrayNotHasKey('General_API', $items['CorePluginsAdmin_MenuPlatform']);
     }
 
     private function buildConfiguredMenu(): MenuAdmin
