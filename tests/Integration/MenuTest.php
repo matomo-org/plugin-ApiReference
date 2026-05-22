@@ -52,7 +52,7 @@ class MenuTest extends IntegrationTestCase
         parent::tearDown();
     }
 
-    public function testConfigureAdminMenuAddsApiItemForViewAccess(): void
+    public function testConfigureAdminMenuEditsApiItemUrlForViewAccess(): void
     {
         $originalAccess = StaticContainer::getContainer()->get(Access::class);
         StaticContainer::getContainer()->set(Access::class, new FakeAccess(false, [0], [1], 'viewAccessUser'));
@@ -62,6 +62,10 @@ class MenuTest extends IntegrationTestCase
 
             $this->assertArrayHasKey('CorePluginsAdmin_MenuPlatform', $items);
             $this->assertArrayHasKey('General_API', $items['CorePluginsAdmin_MenuPlatform']);
+            $this->assertSame(
+                ['action' => 'swagger', 'module' => 'ApiReference'],
+                $items['CorePluginsAdmin_MenuPlatform']['General_API']['_url']
+            );
         } finally {
             StaticContainer::getContainer()->set(Access::class, $originalAccess);
         }
