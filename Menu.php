@@ -20,10 +20,10 @@ class Menu extends \Piwik\Plugin\Menu
             return;
         }
 
-        $menu->addPlatformItem(
-            'ApiReference_SwaggerApi',
-            $this->urlForAction('swagger'),
-            30
+        $menu->editUrl(
+            'CorePluginsAdmin_MenuPlatform',
+            'General_API',
+            $this->urlForAction('swagger')
         );
     }
 }

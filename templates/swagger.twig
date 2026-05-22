@@ -7,11 +7,12 @@
     <script src="plugins/ApiReference/vue/lib/swagger-ui/swagger-ui-bundle.js"></script>
 {% endblock %}
 
-{% set title %}{{ 'ApiReference_SwaggerApi'|translate }}{% endset %}
+{% set title %}{{ 'General_API'|translate }}{% endset %}
 
 {% block content %}
     <div
         vue-entry="ApiReference.SwaggerPage"
+        default-website-id="{{ defaultWebsiteId|default(null)|json_encode }}"
         piwik-url="{{ piwikUrl|default(null)|json_encode }}"
     ></div>
 {% endblock %}
