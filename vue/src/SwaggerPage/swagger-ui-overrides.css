@@ -201,6 +201,20 @@
     padding: 3px 5px;
 }
 
+.swaggerMount .swagger-ui :is(
+    .highlight-code code,
+    .microlight code,
+    pre code,
+    .markdown pre code,
+    .renderedMarkdown pre code
+) {
+    background: transparent;
+    color: inherit !important;
+    font-size: inherit;
+    font-weight: inherit;
+    padding: 0;
+}
+
 .swaggerMount .swagger-ui a {
     color: var(--matomo-swagger-link);
 }

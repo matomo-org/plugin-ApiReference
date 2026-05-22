@@ -38,10 +38,23 @@ class ApiReference extends \Piwik\Plugin
         $translationKeys[] = 'ApiReference_SwaggerPagePluginEmpty';
         $translationKeys[] = 'ApiReference_SwaggerPageRequestFailed';
         $translationKeys[] = 'ApiReference_SwaggerPageSpecLoadFailed';
+        $translationKeys[] = 'ApiReference_SwaggerPageSpecNotAvailable';
         $translationKeys[] = 'ApiReference_SwaggerPageSearchNoResults';
         $translationKeys[] = 'ApiReference_SwaggerPageSearchPlaceholder';
         $translationKeys[] = 'ApiReference_UserAuthentication';
         $translationKeys[] = 'ApiReference_UserAuthenticationManageTokens';
         $translationKeys[] = 'ApiReference_UserAuthenticationUsingTokenAuth';
+    }
+
+    public function install()
+    {
+        $config = new Configuration();
+        $config->install();
+    }
+
+    public function uninstall()
+    {
+        $config = new Configuration();
+        $config->uninstall();
     }
 }
