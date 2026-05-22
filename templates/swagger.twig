@@ -12,6 +12,7 @@
 {% block content %}
     <div
         vue-entry="ApiReference.SwaggerPage"
+        default-website-id="{{ defaultWebsiteId|default(null)|json_encode }}"
         piwik-url="{{ piwikUrl|default(null)|json_encode }}"
     ></div>
 {% endblock %}

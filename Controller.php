@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Piwik\Plugins\ApiReference;
 
 use Piwik\Piwik;
+use Piwik\Plugins\UsersManager\UserPreferences;
 use Piwik\View;
 
 class Controller extends \Piwik\Plugin\ControllerAdmin
@@ -22,7 +23,19 @@ class Controller extends \Piwik\Plugin\ControllerAdmin
 
         $view = new View('@ApiReference/swagger');
         $this->setBasicVariablesView($view);
+        $view->defaultWebsiteId = $this->getDefaultWebsiteId();
 
         return $view->render();
+    }
+
+    private function getDefaultWebsiteId(): ?int
+    {
+        $defaultWebsiteId = (new UserPreferences())->getDefaultWebsiteId();
+
+        if (is_numeric($defaultWebsiteId)) {
+            return (int) $defaultWebsiteId;
+        }
+
+        return null;
     }
 }

@@ -154,6 +154,10 @@ interface SwaggerPageState {
 
 export default defineComponent({
   props: {
+    defaultWebsiteId: {
+      type: Number,
+      default: null,
+    },
     piwikUrl: {
       type: String,
       default: null,
@@ -179,14 +183,17 @@ export default defineComponent({
       );
     },
     lookingForOldApiReference(): string {
-      const legacyApiReferenceUrl = `?${MatomoUrl.stringify({
-        ...MatomoUrl.urlParsed.value,
+      const legacyApiReferenceParams: Record<string, unknown> = {
+        ...(MatomoUrl.urlParsed.value as Record<string, unknown>),
         module: 'API',
         action: 'listAllAPI',
-        idSite: 1,
-        period: 'day',
-        date: 'yesterday',
-      })}`;
+      };
+
+      if (!legacyApiReferenceParams.idSite && this.defaultWebsiteId) {
+        legacyApiReferenceParams.idSite = this.defaultWebsiteId;
+      }
+
+      const legacyApiReferenceUrl = `?${MatomoUrl.stringify(legacyApiReferenceParams)}`;
 
       return translate(
         'ApiReference_LookingForLegacyApiReference',
