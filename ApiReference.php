@@ -37,6 +37,7 @@ class ApiReference extends \Piwik\Plugin
         $translationKeys[] = 'ApiReference_SwaggerPagePluginEmpty';
         $translationKeys[] = 'ApiReference_SwaggerPageRequestFailed';
         $translationKeys[] = 'ApiReference_SwaggerPageSpecLoadFailed';
+        $translationKeys[] = 'ApiReference_SwaggerPageSpecNotAvailable';
         $translationKeys[] = 'ApiReference_SwaggerPageSearchNoResults';
         $translationKeys[] = 'ApiReference_SwaggerPageSearchPlaceholder';
         $translationKeys[] = 'ApiReference_UserAuthentication';
