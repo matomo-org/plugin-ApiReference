@@ -17,8 +17,8 @@ return [
     'segmentName:string' => 'New Zealand visitors',
     'idSite:int' => 1,
     'idExperiment:int' => 1,
-    'successMetric:string' => 'conversion_rate',
-    'name:string' => 'Pricing page signup test',
+    'successMetric:string' => 'nb_visits',
+    'name:string' => 'Pricing',
     'hypothesis:string' => 'A shorter signup flow will improve conversions.',
     'description:string' => 'Compare the pricing page signup experience for New Zealand traffic.',
     'variations:array<int,array<string,mixed>>' => [
@@ -95,7 +95,6 @@ return [
     'metricIds:string[]' => [
         'nb_visits',
         'nb_conversions',
-        'conversion_rate',
     ],
     'idSubtable:int|string|false' => 1,
     'login:string' => 'alice',
