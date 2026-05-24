@@ -82,6 +82,10 @@ type SwaggerRootElement = HTMLElement & {
   [summaryPathClickHandlerAttachedKey]?: boolean;
 };
 
+type ObjectWithOptionalHasOwn = ObjectConstructor & {
+  hasOwn?: (object: Record<string, unknown>, property: PropertyKey) => boolean;
+};
+
 type SwaggerWindow = Window & {
   SwaggerUIBundle?: SwaggerUiFactory & {
     presets?: {
@@ -167,6 +171,17 @@ export default defineComponent({
     this.clearCopySuccessState(container);
   },
   methods: {
+    ensureObjectHasOwnSupport() {
+      const objectWithHasOwn = Object as ObjectWithOptionalHasOwn;
+
+      if (typeof objectWithHasOwn.hasOwn === 'function') {
+        return;
+      }
+
+      objectWithHasOwn.hasOwn = (object: Record<string, unknown>, property: PropertyKey) => (
+        Object.prototype.hasOwnProperty.call(object, property)
+      );
+    },
     getSwaggerRoot(): SwaggerRootElement | null {
       return document.getElementById(this.swaggerContainerId) as SwaggerRootElement | null;
     },
@@ -367,6 +382,8 @@ export default defineComponent({
       container.innerHTML = '';
     },
     renderSwaggerUi() {
+      this.ensureObjectHasOwnSupport();
+
       const swaggerUiBundle = (window as SwaggerWindow).SwaggerUIBundle;
       const container = this.getSwaggerRoot();
 
