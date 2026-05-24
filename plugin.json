@@ -1,7 +1,7 @@
 {
     "name": "ApiReference",
     "description": "Generate and view API documentation for Matomo in the OpenAPI format.",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "theme": false,
     "keywords": [
         "API",
