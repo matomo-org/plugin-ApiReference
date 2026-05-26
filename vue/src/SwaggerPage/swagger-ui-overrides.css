@@ -17,14 +17,14 @@
     --matomo-swagger-code-background: var(--theme-color-code-background, rgba(0, 0, 0, 0.05));
     border-radius: 5px;
     color: var(--matomo-swagger-text);
-    font-family: inherit;
+    font-family: inherit !important;
     font-size: 14px;
     line-height: 1.4;
     padding-top: 10px;
 }
 
 .swaggerMount .swagger-ui *:not([class^="icon-"]):not([class*=" icon-"]) {
-    font-family: inherit;
+    font-family: inherit !important;
 }
 
 .swaggerMount .swagger-ui :is(
@@ -71,7 +71,7 @@
 .swaggerMount .swagger-ui button {
     color: inherit;
     box-shadow: none;
-    font-family: inherit;
+    font-family: inherit !important;
     font-size: inherit;
     height: inherit;
     line-height: inherit;
