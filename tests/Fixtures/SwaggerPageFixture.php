@@ -20,6 +20,8 @@ class SwaggerPageFixture extends Fixture
 {
     public $dateTime = '2010-01-03 00:00:00';
     public $idSite = 1;
+    private bool $hadOriginalSpecFixture = false;
+    private ?string $originalSpecFixtureContents = null;
 
     public function setUp(): void
     {
@@ -45,15 +47,19 @@ class SwaggerPageFixture extends Fixture
     {
         $resolver = new PathResolver();
         $specDirectory = $resolver->getSpecDirectory();
+        $specPath = $this->getBandwidthSpecPath();
 
         if (!is_dir($specDirectory)) {
             mkdir($specDirectory, 0777, true);
         }
 
-        file_put_contents(
-            $this->getReferrersSpecPath(),
-            json_encode($this->getReferrersSpec(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-        );
+        if (is_file($specPath)) {
+            $this->hadOriginalSpecFixture = true;
+            $originalContents = file_get_contents($specPath);
+            $this->originalSpecFixtureContents = $originalContents === false ? null : $originalContents;
+        }
+
+        copy($this->getBandwidthSpecFixturePath(), $specPath);
     }
 
     private function markApiReferenceAsInstalled(): void
@@ -63,125 +69,22 @@ class SwaggerPageFixture extends Fixture
 
     private function removeOpenApiSpecFixtures(): void
     {
-        $specPath = $this->getReferrersSpecPath();
+        $specPath = $this->getBandwidthSpecPath();
 
-        if (is_file($specPath)) {
+        if ($this->hadOriginalSpecFixture) {
+            file_put_contents($specPath, $this->originalSpecFixtureContents ?? '');
+        } elseif (is_file($specPath)) {
             unlink($specPath);
         }
     }
 
-    private function getReferrersSpecPath(): string
+    private function getBandwidthSpecPath(): string
     {
-        return (new PathResolver())->getSpecFilePath('Referrers', ApiReference::DEFAULT_SPEC_VERSION);
+        return (new PathResolver())->getSpecFilePath('Bandwidth', ApiReference::DEFAULT_SPEC_VERSION);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function getReferrersSpec(): array
+    private function getBandwidthSpecFixturePath(): string
     {
-        $description = 'Returns example reporting data for referrer types.';
-
-        return [
-            'openapi' => '3.1.0',
-            'info' => [
-                'title' => 'Reporting API for Referrers plugin',
-                'version' => ApiReference::DEFAULT_SPEC_VERSION,
-                'description' => 'Fixture-backed OpenAPI data for ApiReference UI screenshot tests.',
-            ],
-            'tags' => [
-                [
-                    'name' => 'Referrers',
-                    'description' => 'Referrer reporting endpoints.',
-                ],
-            ],
-            'paths' => [
-                '/index.php?module=API&method=Referrers.getReferrerType' => [
-                    'get' => [
-                        'tags' => ['Referrers'],
-                        'summary' => 'Get referrer types',
-                        'description' => $description,
-                        'parameters' => [
-                            [
-                                'name' => 'idSite',
-                                'in' => 'query',
-                                'required' => true,
-                                'schema' => ['type' => 'integer'],
-                            ],
-                            [
-                                'name' => 'period',
-                                'in' => 'query',
-                                'required' => true,
-                                'schema' => ['type' => 'string'],
-                            ],
-                            [
-                                'name' => 'date',
-                                'in' => 'query',
-                                'required' => true,
-                                'schema' => ['type' => 'string'],
-                            ],
-                        ],
-                        'responses' => [
-                            '200' => [
-                                'description' => 'Successful response',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            'type' => 'array',
-                                            'items' => [
-                                                'type' => 'object',
-                                                'properties' => [
-                                                    'label' => ['type' => 'string'],
-                                                    'nb_visits' => ['type' => 'integer'],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                '/index.php?module=API&method=Referrers.getCampaigns' => [
-                    'post' => [
-                        'tags' => ['Referrers'],
-                        'summary' => 'Get campaigns',
-                        'description' => 'Returns example campaign reporting data.',
-                        'requestBody' => [
-                            'required' => false,
-                            'content' => [
-                                'application/x-www-form-urlencoded' => [
-                                    'schema' => [
-                                        'type' => 'object',
-                                        'properties' => [
-                                            'segment' => ['type' => 'string'],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                        'responses' => [
-                            '200' => [
-                                'description' => 'Successful response',
-                                'content' => [
-                                    'application/json' => [
-                                        'schema' => [
-                                            'type' => 'array',
-                                            'items' => [
-                                                'type' => 'object',
-                                                'properties' => [
-                                                    'label' => ['type' => 'string'],
-                                                    'revenue' => ['type' => 'number'],
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ];
+        return __DIR__ . '/../Resources/SwaggerPage/Bandwidth_openapi_spec_v1.0.0.json';
     }
 }

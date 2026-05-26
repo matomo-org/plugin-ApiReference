@@ -11,11 +11,11 @@ describe('ApiReference', function () {
     this.fixture = 'Piwik\\Plugins\\ApiReference\\tests\\Fixtures\\SwaggerPageFixture';
 
     const pageUrl = '?module=ApiReference&action=swagger&idSite=1&period=day&date=2010-01-03';
-    const targetPlugin = 'Referrers';
+    const targetPlugin = 'Bandwidth';
     const searchInputSelector = '.searchInput';
 
     before(function () {
-        testEnvironment.pluginsToLoad = ['ApiReference'];
+        testEnvironment.pluginsToLoad = ['ApiReference', 'Bandwidth'];
         testEnvironment.testUseMockAuth = 1;
         testEnvironment.overrideConfig('General', 'enable_auto_update', 0);
         testEnvironment.save();
@@ -96,7 +96,7 @@ describe('ApiReference', function () {
 
     it('should render stable search and expansion states', async function () {
         await loadSwaggerPage();
-        await searchFor('referrers');
+        await searchFor('bandwidth');
         await waitForSingleVisiblePlugin(targetPlugin);
 
         expect(await page.screenshotSelector('.searchBar,.pluginList')).to.matchImage('filtered_plugin');
@@ -106,7 +106,7 @@ describe('ApiReference', function () {
 
         expect(await page.screenshotSelector('.searchBar,.emptyText')).to.matchImage('empty_search');
 
-        await searchFor('referrers');
+        await searchFor('bandwidth');
         await waitForSingleVisiblePlugin(targetPlugin);
         await expandPlugin(targetPlugin);
 
