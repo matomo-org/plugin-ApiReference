@@ -1,7 +1,7 @@
 {
     "name": "ApiReference",
-    "description": "Generate and view API documentation for Matomo in the OpenAPI format.",
-    "version": "5.0.0",
+    "description": "Modern interactive API documentation for Matomo based on OpenAPI (Swagger). Explore endpoints, parameters, and responses directly in your browser. ",
+    "version": "5.0.2",
     "theme": false,
     "keywords": [
         "API",

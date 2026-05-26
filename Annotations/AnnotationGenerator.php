@@ -933,7 +933,7 @@ class AnnotationGenerator
         ];
 
         // Don't build example URLs for anything that isn't the R in CRUD. E.g. No create, update, or delete.
-        $notAllowedExampleUrlOperations = ['create', 'add', 'save', 'set', 'update', 'delete', 'remove', 'copy', 'duplicate'];
+        $notAllowedExampleUrlOperations = ['create', 'add', 'save', 'set', 'update', 'delete', 'remove', 'copy', 'duplicate', 'generate'];
         foreach ($notAllowedExampleUrlOperations as $operation) {
             if (stripos($methodName, $operation) === 0) {
                 return [];

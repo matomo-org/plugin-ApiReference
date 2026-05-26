@@ -2,12 +2,13 @@
 
 ## Description
 
+The API Reference plugin generates an OpenAPI (Swagger) specification from Matomo API definitions and supported plugin metadata. 
+
 As APIs and plugins expose additional metadata, developers can browse available API endpoints, explore request parameters and response formats, and test API requests directly from the documentation interface.
 
 ### Features include:
 
 * Interactive Swagger/OpenAPI-based API documentation
-* Searchable API methods and endpoints
 * Request and response schema documentation
 * Parameter descriptions and example requests
 * Improved navigation and API discoverability
