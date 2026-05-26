@@ -9,6 +9,7 @@ vendor/**/phpunit.xml*
 vendor/**/phpcs.xml*
 vendor/**/composer.json
 vendor/**/composer.lock
+/tests/UI/processed-ui-screenshots/
 /vue/dist/demo.html
 /vue/dist/*.common.js
 /vue/dist/*.map
