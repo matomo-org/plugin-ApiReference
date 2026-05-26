@@ -94,18 +94,24 @@ describe('ApiReference', function () {
         }, {}, pluginName);
     }
 
-    it('should render stable search and expansion states', async function () {
+    it('should show the filtered plugin search result', async function () {
         await loadSwaggerPage();
         await searchFor('bandwidth');
         await waitForSingleVisiblePlugin(targetPlugin);
 
         expect(await page.screenshotSelector('.searchBar,.pluginList')).to.matchImage('filtered_plugin');
+    });
 
+    it('should show the empty plugin search result', async function () {
+        await loadSwaggerPage();
         await searchFor('no-plugin-match');
         await page.waitForSelector('.emptyText');
 
         expect(await page.screenshotSelector('.searchBar,.emptyText')).to.matchImage('empty_search');
+    });
 
+    it('should show the expanded Swagger UI for a plugin', async function () {
+        await loadSwaggerPage();
         await searchFor('bandwidth');
         await waitForSingleVisiblePlugin(targetPlugin);
         await expandPlugin(targetPlugin);
