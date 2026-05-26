@@ -116,6 +116,6 @@ describe('ApiReference', function () {
         await waitForSingleVisiblePlugin(targetPlugin);
         await expandPlugin(targetPlugin);
 
-        expect(await page.screenshotSelector('.pluginCard--expanded')).to.matchImage('expanded_plugin');
+        expect(await page.screenshotSelector('.searchBar,.pluginList')).to.matchImage('expanded_plugin');
     });
 });

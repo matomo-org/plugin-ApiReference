@@ -1,10 +1,10 @@
 .swaggerMount .swagger-ui {
     --matomo-swagger-get-main: var(--theme-color-link, #3152A0);
-    --matomo-swagger-get-background: color-mix(in srgb, var(--matomo-swagger-get-main) 9%, var(--theme-color-background-contrast, #fff));
-    --matomo-swagger-get-header-background: color-mix(in srgb, var(--matomo-swagger-get-background) 76%, var(--theme-color-background-contrast, #fff));
     --matomo-swagger-post-main: var(--theme-color-brand, #35C4C4);
-    --matomo-swagger-post-background: color-mix(in srgb, var(--matomo-swagger-post-main) 9%, var(--theme-color-background-contrast, #fff));
-    --matomo-swagger-post-header-background: color-mix(in srgb, var(--matomo-swagger-post-background) 76%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-get-background: var(--theme-color-api-get-background, #f3f7fd);
+    --matomo-swagger-get-header-background: var(--theme-color-api-get-header-background, #eaf1fb);
+    --matomo-swagger-post-background: var(--theme-color-api-post-background, #eefafb);
+    --matomo-swagger-post-header-background: var(--theme-color-api-post-header-background, #e4f6f7);
     --matomo-swagger-panel-background: var(--theme-color-background-contrast, #fff);
     --matomo-swagger-panel-background-muted: var(--theme-color-background-tinyContrast, #f2f2f2);
     --matomo-swagger-panel-background-subtle: var(--theme-color-background-base, #fafbfc);
