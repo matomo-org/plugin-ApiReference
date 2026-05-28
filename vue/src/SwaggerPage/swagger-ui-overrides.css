@@ -1,10 +1,10 @@
 .swaggerMount .swagger-ui {
     --matomo-swagger-get-main: var(--theme-color-link, #3152A0);
-    --matomo-swagger-get-background: color-mix(in srgb, var(--matomo-swagger-get-main) 9%, var(--theme-color-background-contrast, #fff));
-    --matomo-swagger-get-header-background: color-mix(in srgb, var(--matomo-swagger-get-background) 76%, var(--theme-color-background-contrast, #fff));
     --matomo-swagger-post-main: var(--theme-color-brand, #35C4C4);
-    --matomo-swagger-post-background: color-mix(in srgb, var(--matomo-swagger-post-main) 9%, var(--theme-color-background-contrast, #fff));
-    --matomo-swagger-post-header-background: color-mix(in srgb, var(--matomo-swagger-post-background) 76%, var(--theme-color-background-contrast, #fff));
+    --matomo-swagger-get-background: var(--theme-color-api-get-background, #f3f7fd);
+    --matomo-swagger-get-header-background: var(--theme-color-api-get-header-background, #eaf1fb);
+    --matomo-swagger-post-background: var(--theme-color-api-post-background, #eefafb);
+    --matomo-swagger-post-header-background: var(--theme-color-api-post-header-background, #e4f6f7);
     --matomo-swagger-panel-background: var(--theme-color-background-contrast, #fff);
     --matomo-swagger-panel-background-muted: var(--theme-color-background-tinyContrast, #f2f2f2);
     --matomo-swagger-panel-background-subtle: var(--theme-color-background-base, #fafbfc);
@@ -17,14 +17,9 @@
     --matomo-swagger-code-background: var(--theme-color-code-background, rgba(0, 0, 0, 0.05));
     border-radius: 5px;
     color: var(--matomo-swagger-text);
-    font-family: var(--theme-fontFamily-base, sans-serif);
     font-size: 14px;
     line-height: 1.4;
     padding-top: 10px;
-}
-
-.swaggerMount .swagger-ui *:not([class^="icon-"]):not([class*=" icon-"]) {
-    font-family: inherit;
 }
 
 .swaggerMount .swagger-ui :is(
@@ -71,7 +66,6 @@
 .swaggerMount .swagger-ui button {
     color: inherit;
     box-shadow: none;
-    font-family: inherit;
     font-size: inherit;
     height: inherit;
     line-height: inherit;
