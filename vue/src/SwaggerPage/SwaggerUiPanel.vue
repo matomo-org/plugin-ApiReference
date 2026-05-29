@@ -54,8 +54,6 @@ const copyIconMarkup = '<span class="icon-content-copy" aria-hidden="true"></spa
 const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-hidden="true"></i>';
 const authHeadingText = 'Connect your Matomo API token';
 const authConnectedHeadingText = 'Matomo API token connected';
-const authSchemeLabelText = 'Matomo API token';
-const authSchemeHelpText = 'Paste your token generated from Personal > Security. Swagger will send it as a Bearer token.';
 const authConnectedButtonText = 'Token connected';
 const swaggerTextReplacements = [
   { from: 'Authorized', to: authConnectedButtonText },
@@ -316,31 +314,6 @@ export default defineComponent({
       const authContainers = modal.querySelectorAll<HTMLElement>('.auth-container');
 
       authContainers.forEach((authContainer) => {
-        const label = authContainer.querySelector<HTMLElement>('h4, label');
-
-        if (label) {
-          label.textContent = authSchemeLabelText;
-        }
-
-        const paragraphs = authContainer.querySelectorAll<HTMLElement>('p');
-        let helperText = Array.from(paragraphs)
-          .find((paragraph) => paragraph.textContent?.toLowerCase().includes('bearer'));
-
-        if (!helperText) {
-          helperText = document.createElement('p');
-          helperText.className = 'matomo-auth-helper-text';
-
-          const input = authContainer.querySelector('input');
-
-          if (input?.parentElement) {
-            input.parentElement.insertAdjacentElement('afterend', helperText);
-          } else {
-            authContainer.appendChild(helperText);
-          }
-        }
-
-        helperText.textContent = authSchemeHelpText;
-
         const authButtons = authContainer.querySelectorAll<HTMLButtonElement>('button');
 
         authButtons.forEach((button) => {

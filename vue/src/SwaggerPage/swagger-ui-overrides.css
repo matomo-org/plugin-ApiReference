@@ -334,13 +334,6 @@
     border: 0;
 }
 
-.swaggerMount .swagger-ui .modal-ux .auth-container .matomo-auth-helper-text {
-    color: var(--matomo-swagger-text-light);
-    font-size: 12px;
-    line-height: 1.5;
-    margin: 10px 0 0;
-}
-
 .swaggerMount .swagger-ui .opblock.matomo-live-response-visible .responses-inner > div > div {
     background: rgba(30, 142, 62, 0.03);
     border: 1px solid var(--theme-color-success-border, #97c88f);
