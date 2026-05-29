@@ -44,12 +44,10 @@ import {
 
 const activeCopySuccessStateKey = '__matomoActiveCopySuccessState';
 const authAutocompleteObserverKey = '__matomoSwaggerAuthAutocompleteObserver';
-const executeResponseStateKey = '__matomoExecuteResponseState';
 const summaryPathClickHandlerAttachedKey = '__matomoSummaryPathClickHandlerAttached';
 const summaryPrefix = '/index.php?module=API&method=';
 const interactiveSwaggerSelector = '.opblock-tag, .opblock-summary, .expand-operation, .opblock-summary-control';
 const authInteractionSelector = '.scheme-container .authorize, .dialog-ux .modal-ux button';
-const executeTriggerSelector = '.execute-wrapper .btn.execute';
 const copyIconMarkup = '<span class="icon-content-copy" aria-hidden="true"></span>';
 const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-hidden="true"></i>';
 const authHeadingText = 'Connect your Matomo API token';
@@ -90,10 +88,6 @@ type SwaggerRootElement = HTMLElement & {
     resetTimeoutId: number;
   } | null;
   [authAutocompleteObserverKey]?: MutationObserver | null;
-  [executeResponseStateKey]?: {
-    opblock: HTMLElement;
-    timeoutId: number;
-  } | null;
   [summaryPathClickHandlerAttachedKey]?: boolean;
 };
 
@@ -325,36 +319,6 @@ export default defineComponent({
         });
       });
     },
-    clearExecuteResponseState(swaggerRoot: SwaggerRootElement) {
-      const state = swaggerRoot[executeResponseStateKey];
-
-      if (!state) {
-        return;
-      }
-
-      window.clearTimeout(state.timeoutId);
-      state.opblock.classList.remove('matomo-live-response-visible');
-      swaggerRoot[executeResponseStateKey] = null;
-    },
-    markLiveResponse(swaggerRoot: SwaggerRootElement, executeButton: HTMLElement) {
-      const opblock = executeButton.closest('.opblock') as HTMLElement | null;
-
-      if (!opblock) {
-        return;
-      }
-
-      this.clearExecuteResponseState(swaggerRoot);
-      opblock.classList.add('matomo-live-response-visible');
-
-      swaggerRoot[executeResponseStateKey] = {
-        opblock,
-        timeoutId: window.setTimeout(() => {
-          if (swaggerRoot[executeResponseStateKey]?.opblock === opblock) {
-            swaggerRoot[executeResponseStateKey] = null;
-          }
-        }, 10000),
-      };
-    },
     attachSwaggerAuthAutocompleteObserver(swaggerRoot: SwaggerRootElement | null) {
       if (!swaggerRoot) {
         return;
@@ -421,20 +385,6 @@ export default defineComponent({
       });
       swaggerRoot[activeCopySuccessStateKey] = null;
     },
-    maybeMarkLiveResponse(swaggerRoot: SwaggerRootElement, target: Element | null) {
-      const executeButton = target?.closest(executeTriggerSelector) as HTMLElement | null;
-
-      if (!executeButton) {
-        return;
-      }
-
-      window.setTimeout(() => {
-        if (executeButton.isConnected) {
-          this.markLiveResponse(swaggerRoot, executeButton);
-          this.normalizeSwaggerUi(swaggerRoot);
-        }
-      }, 0);
-    },
     showCopySuccessState(
       swaggerRoot: SwaggerRootElement,
       control: HTMLElement,
@@ -483,9 +433,6 @@ export default defineComponent({
             }
           }, 0);
         }
-
-        this.maybeMarkLiveResponse(swaggerRoot, target);
-
         if (target?.closest(authInteractionSelector)) {
           window.setTimeout(() => {
             this.updateSwaggerAuthCopy(swaggerRoot);
@@ -514,7 +461,6 @@ export default defineComponent({
 
       this.clearSwaggerAuthAutocompleteObserver(container);
       this.clearCopySuccessState(container);
-      this.clearExecuteResponseState(container);
       container.innerHTML = '';
     },
     renderSwaggerUi() {
