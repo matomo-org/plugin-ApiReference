@@ -50,14 +50,10 @@ const interactiveSwaggerSelector = '.opblock-tag, .opblock-summary, .expand-oper
 const authInteractionSelector = '.scheme-container .authorize, .dialog-ux .modal-ux button';
 const copyIconMarkup = '<span class="icon-content-copy" aria-hidden="true"></span>';
 const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-hidden="true"></i>';
-const authHeadingText = 'Connect your Matomo API token';
-const authConnectedHeadingText = 'Matomo API token connected';
-const authConnectedButtonText = 'Token connected';
-const swaggerTextReplacements = [
-  { from: 'Authorized', to: authConnectedButtonText },
-  { from: 'Authorised', to: authConnectedButtonText },
-  { from: 'Logout', to: 'Remove token' },
-];
+const connectTokenTranslationKey = 'ApiReference_SwaggerPageConnectToken';
+const removeTokenTranslationKey = 'ApiReference_SwaggerPageRemoveToken';
+const tokenConnectedTranslationKey = 'ApiReference_SwaggerPageTokenConnected';
+const tokenConnectedHeadingTranslationKey = 'ApiReference_SwaggerPageTokenConnectedHeading';
 
 interface OpenApiSpec {
   [key: string]: unknown;
@@ -254,7 +250,15 @@ export default defineComponent({
         input.setAttribute('spellcheck', 'false');
       });
     },
+    getSwaggerAuthTextReplacements() {
+      return [
+        { from: 'Authorized', to: translate(tokenConnectedTranslationKey) },
+        { from: 'Authorised', to: translate(tokenConnectedTranslationKey) },
+        { from: 'Logout', to: translate(removeTokenTranslationKey) },
+      ];
+    },
     replaceSwaggerText(swaggerRoot: ParentNode) {
+      const swaggerTextReplacements = this.getSwaggerAuthTextReplacements();
       const walker = document.createTreeWalker(
         swaggerRoot as unknown as Node,
         NodeFilter.SHOW_TEXT,
@@ -289,8 +293,8 @@ export default defineComponent({
 
       if (authStatus) {
         authStatus.textContent = isTokenConnected
-          ? authConnectedButtonText
-          : authHeadingText;
+          ? translate(tokenConnectedTranslationKey)
+          : translate(connectTokenTranslationKey);
       }
 
       if (!modal) {
@@ -301,8 +305,8 @@ export default defineComponent({
 
       if (modalHeading) {
         modalHeading.textContent = isTokenConnected
-          ? authConnectedHeadingText
-          : authHeadingText;
+          ? translate(tokenConnectedHeadingTranslationKey)
+          : translate(connectTokenTranslationKey);
       }
 
       const authContainers = modal.querySelectorAll<HTMLElement>('.auth-container');
@@ -314,7 +318,7 @@ export default defineComponent({
           const buttonText = button.textContent?.trim();
 
           if (buttonText === 'Logout') {
-            button.textContent = 'Remove token';
+            button.textContent = translate(removeTokenTranslationKey);
           }
         });
       });
