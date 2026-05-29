@@ -44,11 +44,24 @@ import {
 
 const activeCopySuccessStateKey = '__matomoActiveCopySuccessState';
 const authAutocompleteObserverKey = '__matomoSwaggerAuthAutocompleteObserver';
+const executeResponseStateKey = '__matomoExecuteResponseState';
 const summaryPathClickHandlerAttachedKey = '__matomoSummaryPathClickHandlerAttached';
 const summaryPrefix = '/index.php?module=API&method=';
 const interactiveSwaggerSelector = '.opblock-tag, .opblock-summary, .expand-operation, .opblock-summary-control';
+const authInteractionSelector = '.scheme-container .authorize, .dialog-ux .modal-ux button';
+const executeTriggerSelector = '.execute-wrapper .btn.execute';
 const copyIconMarkup = '<span class="icon-content-copy" aria-hidden="true"></span>';
 const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-hidden="true"></i>';
+const authHeadingText = 'Connect your Matomo API token';
+const authConnectedHeadingText = 'Matomo API token connected';
+const authSchemeLabelText = 'Matomo API token';
+const authSchemeHelpText = 'Paste your token generated from Personal > Security. Swagger will send it as a Bearer token.';
+const authConnectedButtonText = 'Token connected';
+const swaggerTextReplacements = [
+  { from: 'Authorized', to: authConnectedButtonText },
+  { from: 'Authorised', to: authConnectedButtonText },
+  { from: 'Logout', to: 'Remove token' },
+];
 
 interface OpenApiSpec {
   [key: string]: unknown;
@@ -79,6 +92,10 @@ type SwaggerRootElement = HTMLElement & {
     resetTimeoutId: number;
   } | null;
   [authAutocompleteObserverKey]?: MutationObserver | null;
+  [executeResponseStateKey]?: {
+    opblock: HTMLElement;
+    timeoutId: number;
+  } | null;
   [summaryPathClickHandlerAttachedKey]?: boolean;
 };
 
@@ -245,12 +262,133 @@ export default defineComponent({
         input.setAttribute('spellcheck', 'false');
       });
     },
+    replaceSwaggerText(swaggerRoot: ParentNode) {
+      const walker = document.createTreeWalker(
+        swaggerRoot as unknown as Node,
+        NodeFilter.SHOW_TEXT,
+      );
+      let currentNode = walker.nextNode();
+
+      while (currentNode) {
+        const text = currentNode.textContent?.trim();
+
+        if (text) {
+          const replacement = swaggerTextReplacements.find(({ from }) => text === from);
+
+          if (replacement) {
+            currentNode.textContent = replacement.to;
+          }
+        }
+
+        currentNode = walker.nextNode();
+      }
+    },
+    updateSwaggerAuthCopy(swaggerRoot: ParentNode) {
+      this.replaceSwaggerText(swaggerRoot);
+
+      const modal = document.querySelector('.dialog-ux .modal-ux');
+      const authButton = swaggerRoot.querySelector<HTMLElement>('.scheme-container .authorize');
+      const authStatus = authButton?.querySelector<HTMLElement>('span');
+      const isTokenConnected = !!authButton?.classList.contains('locked');
+
+      if (authButton) {
+        authButton.classList.toggle('matomo-token-connected', isTokenConnected);
+      }
+
+      if (authStatus) {
+        authStatus.textContent = isTokenConnected
+          ? authConnectedButtonText
+          : authHeadingText;
+      }
+
+      if (!modal) {
+        return;
+      }
+
+      const modalHeading = modal.querySelector<HTMLElement>('h3');
+
+      if (modalHeading) {
+        modalHeading.textContent = isTokenConnected
+          ? authConnectedHeadingText
+          : authHeadingText;
+      }
+
+      const authContainers = modal.querySelectorAll<HTMLElement>('.auth-container');
+
+      authContainers.forEach((authContainer) => {
+        const label = authContainer.querySelector<HTMLElement>('h4, label');
+
+        if (label) {
+          label.textContent = authSchemeLabelText;
+        }
+
+        const paragraphs = authContainer.querySelectorAll<HTMLElement>('p');
+        let helperText = Array.from(paragraphs)
+          .find((paragraph) => paragraph.textContent?.toLowerCase().includes('bearer'));
+
+        if (!helperText) {
+          helperText = document.createElement('p');
+          helperText.className = 'matomo-auth-helper-text';
+
+          const input = authContainer.querySelector('input');
+
+          if (input?.parentElement) {
+            input.parentElement.insertAdjacentElement('afterend', helperText);
+          } else {
+            authContainer.appendChild(helperText);
+          }
+        }
+
+        helperText.textContent = authSchemeHelpText;
+
+        const authButtons = authContainer.querySelectorAll<HTMLButtonElement>('button');
+
+        authButtons.forEach((button) => {
+          const buttonText = button.textContent?.trim();
+
+          if (buttonText === 'Logout') {
+            button.textContent = 'Remove token';
+          }
+        });
+      });
+    },
+    clearExecuteResponseState(swaggerRoot: SwaggerRootElement) {
+      const state = swaggerRoot[executeResponseStateKey];
+
+      if (!state) {
+        return;
+      }
+
+      window.clearTimeout(state.timeoutId);
+      state.opblock.classList.remove('matomo-live-response-visible');
+      swaggerRoot[executeResponseStateKey] = null;
+    },
+    markLiveResponse(swaggerRoot: SwaggerRootElement, executeButton: HTMLElement) {
+      const opblock = executeButton.closest('.opblock') as HTMLElement | null;
+
+      if (!opblock) {
+        return;
+      }
+
+      this.clearExecuteResponseState(swaggerRoot);
+      opblock.classList.add('matomo-live-response-visible');
+
+      swaggerRoot[executeResponseStateKey] = {
+        opblock,
+        timeoutId: window.setTimeout(() => {
+          if (swaggerRoot[executeResponseStateKey]?.opblock === opblock) {
+            swaggerRoot[executeResponseStateKey] = null;
+          }
+        }, 10000),
+      };
+    },
     attachSwaggerAuthAutocompleteObserver(swaggerRoot: SwaggerRootElement | null) {
       if (!swaggerRoot) {
         return;
       }
 
-      this.suppressSwaggerAuthAutocomplete(swaggerRoot);
+      this.suppressSwaggerAuthAutocomplete(document);
+      this.updateSwaggerAuthCopy(swaggerRoot);
 
       if (swaggerRoot[authAutocompleteObserverKey] || typeof MutationObserver === 'undefined') {
         return;
@@ -271,6 +409,7 @@ export default defineComponent({
       this.shortenSummaryPaths(swaggerRoot);
       this.updateFlatSingleTag(swaggerRoot);
       this.applyMatomoCopyIcons(swaggerRoot);
+      this.updateSwaggerAuthCopy(swaggerRoot);
     },
     getSummaryPathCopyControl(target: Element | null) {
       return target?.closest('.opblock-summary .view-line-link.copy-to-clipboard') as HTMLElement | null;
@@ -308,6 +447,20 @@ export default defineComponent({
         }, 300);
       });
       swaggerRoot[activeCopySuccessStateKey] = null;
+    },
+    maybeMarkLiveResponse(swaggerRoot: SwaggerRootElement, target: Element | null) {
+      const executeButton = target?.closest(executeTriggerSelector) as HTMLElement | null;
+
+      if (!executeButton) {
+        return;
+      }
+
+      window.setTimeout(() => {
+        if (executeButton.isConnected) {
+          this.markLiveResponse(swaggerRoot, executeButton);
+          this.normalizeSwaggerUi(swaggerRoot);
+        }
+      }, 0);
     },
     showCopySuccessState(
       swaggerRoot: SwaggerRootElement,
@@ -358,6 +511,15 @@ export default defineComponent({
           }, 0);
         }
 
+        this.maybeMarkLiveResponse(swaggerRoot, target);
+
+        if (target?.closest(authInteractionSelector)) {
+          window.setTimeout(() => {
+            this.updateSwaggerAuthCopy(swaggerRoot);
+            this.suppressSwaggerAuthAutocomplete(document);
+          }, 0);
+        }
+
         if (!target?.closest(interactiveSwaggerSelector)) {
           return;
         }
@@ -379,6 +541,7 @@ export default defineComponent({
 
       this.clearSwaggerAuthAutocompleteObserver(container);
       this.clearCopySuccessState(container);
+      this.clearExecuteResponseState(container);
       container.innerHTML = '';
     },
     renderSwaggerUi() {

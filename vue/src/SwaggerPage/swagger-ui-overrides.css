@@ -209,6 +209,10 @@
     padding: 0;
 }
 
+#content.admin .swaggerMount .swagger-ui pre {
+    max-width: none;
+}
+
 .swaggerMount .swagger-ui a {
     color: var(--matomo-swagger-link);
 }
@@ -304,6 +308,16 @@
     fill: var(--theme-color-link);
 }
 
+.swaggerMount .swagger-ui .authorize.matomo-token-connected {
+    background: var(--theme-color-success-background, #edf8ef);
+    border-color: var(--theme-color-success-border, #97c88f);
+    color: var(--theme-color-success, #1e8e3e) !important;
+}
+
+.swaggerMount .swagger-ui .authorize.matomo-token-connected svg {
+    fill: var(--theme-color-success, #1e8e3e);
+}
+
 .swaggerMount .swagger-ui :is(.btn, .authorize, .clear-btn, .download-contents) {
     background: var(--matomo-swagger-panel-background-muted);
     border-color: var(--matomo-swagger-border);
@@ -318,6 +332,20 @@
 
 .swaggerMount .swagger-ui .copy-to-clipboard {
     border: 0;
+}
+
+.swaggerMount .swagger-ui .modal-ux .auth-container .matomo-auth-helper-text {
+    color: var(--matomo-swagger-text-light);
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 10px 0 0;
+}
+
+.swaggerMount .swagger-ui .opblock.matomo-live-response-visible .responses-inner > div > div {
+    background: rgba(30, 142, 62, 0.03);
+    border: 1px solid var(--theme-color-success-border, #97c88f);
+    border-radius: 4px;
+    padding: 12px;
 }
 
 .swaggerMount .swagger-ui .opblock .opblock-summary .view-line-link.copy-to-clipboard,
