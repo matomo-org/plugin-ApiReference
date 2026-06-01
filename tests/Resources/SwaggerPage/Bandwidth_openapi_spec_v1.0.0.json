@@ -966,7 +966,7 @@
             }
         },
         "securitySchemes": {
-            "Matomo API token": {
+            "MatomoToken": {
                 "type": "http",
                 "description": "Paste your token generated from Personal > Security. Swagger will send it as a Bearer token.",
                 "scheme": "bearer"
@@ -975,7 +975,7 @@
     },
     "security": [
         {
-            "Matomo API token": []
+            "MatomoToken": []
         }
     ],
     "tags": [

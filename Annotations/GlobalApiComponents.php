@@ -15,7 +15,7 @@ namespace Piwik\Plugins\ApiReference\Annotations;
 
 /**
  * @OA\OpenApi(
- *     security={{"Matomo API token": {}}},
+ *     security={{"MatomoToken": {}}},
  *     @OA\ExternalDocumentation(
  *         description="Matomo Reporting API developer page",
  *         url="https://developer.matomo.org/api-reference/reporting-api/"
@@ -33,7 +33,7 @@ namespace Piwik\Plugins\ApiReference\Annotations;
  * )
  *
  * @OA\SecurityScheme(
- *     securityScheme="Matomo API token",
+ *     securityScheme="MatomoToken",
  *     type="http",
  *     scheme="bearer",
  *     description="Paste your token generated from Personal > Security. Swagger will send it as a Bearer token."
