@@ -36,7 +36,7 @@ namespace Piwik\Plugins\ApiReference\Annotations;
  *     securityScheme="MatomoToken",
  *     type="http",
  *     scheme="bearer",
- *     description="Matomo API token passed in the Authorization header as a bearer token."
+ *     description="Paste your token generated from Personal > Security. Swagger will send it as a Bearer token."
  * )
  *
  * @OA\Server(

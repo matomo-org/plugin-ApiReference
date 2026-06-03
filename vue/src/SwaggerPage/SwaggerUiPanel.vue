@@ -47,8 +47,13 @@ const authAutocompleteObserverKey = '__matomoSwaggerAuthAutocompleteObserver';
 const summaryPathClickHandlerAttachedKey = '__matomoSummaryPathClickHandlerAttached';
 const summaryPrefix = '/index.php?module=API&method=';
 const interactiveSwaggerSelector = '.opblock-tag, .opblock-summary, .expand-operation, .opblock-summary-control';
+const authInteractionSelector = '.scheme-container .authorize, .dialog-ux .modal-ux button';
 const copyIconMarkup = '<span class="icon-content-copy" aria-hidden="true"></span>';
 const copySuccessIconMarkup = '<i class="icon-ok matomo-copy-success-icon" aria-hidden="true"></i>';
+const connectTokenTranslationKey = 'ApiReference_SwaggerPageConnectToken';
+const removeTokenTranslationKey = 'ApiReference_SwaggerPageRemoveToken';
+const tokenConnectedTranslationKey = 'ApiReference_SwaggerPageTokenConnected';
+const tokenConnectedHeadingTranslationKey = 'ApiReference_SwaggerPageTokenConnectedHeading';
 
 interface OpenApiSpec {
   [key: string]: unknown;
@@ -245,12 +250,86 @@ export default defineComponent({
         input.setAttribute('spellcheck', 'false');
       });
     },
+    getSwaggerAuthTextReplacements() {
+      return [
+        { from: 'Authorized', to: translate(tokenConnectedTranslationKey) },
+        { from: 'Authorised', to: translate(tokenConnectedTranslationKey) },
+        { from: 'Logout', to: translate(removeTokenTranslationKey) },
+      ];
+    },
+    replaceSwaggerText(swaggerRoot: ParentNode) {
+      const swaggerTextReplacements = this.getSwaggerAuthTextReplacements();
+      const walker = document.createTreeWalker(
+        swaggerRoot as unknown as Node,
+        NodeFilter.SHOW_TEXT,
+      );
+      let currentNode = walker.nextNode();
+
+      while (currentNode) {
+        const text = currentNode.textContent?.trim();
+
+        if (text) {
+          const replacement = swaggerTextReplacements.find(({ from }) => text === from);
+
+          if (replacement) {
+            currentNode.textContent = replacement.to;
+          }
+        }
+
+        currentNode = walker.nextNode();
+      }
+    },
+    updateSwaggerAuthCopy(swaggerRoot: ParentNode) {
+      this.replaceSwaggerText(swaggerRoot);
+
+      const modal = document.querySelector('.dialog-ux .modal-ux');
+      const authButton = swaggerRoot.querySelector<HTMLElement>('.scheme-container .authorize');
+      const authStatus = authButton?.querySelector<HTMLElement>('span');
+      const isTokenConnected = !!authButton?.classList.contains('locked');
+
+      if (authButton) {
+        authButton.classList.toggle('matomo-token-connected', isTokenConnected);
+      }
+
+      if (authStatus) {
+        authStatus.textContent = isTokenConnected
+          ? translate(tokenConnectedTranslationKey)
+          : translate(connectTokenTranslationKey);
+      }
+
+      if (!modal) {
+        return;
+      }
+
+      const modalHeading = modal.querySelector<HTMLElement>('h3');
+
+      if (modalHeading) {
+        modalHeading.textContent = isTokenConnected
+          ? translate(tokenConnectedHeadingTranslationKey)
+          : translate(connectTokenTranslationKey);
+      }
+
+      const authContainers = modal.querySelectorAll<HTMLElement>('.auth-container');
+
+      authContainers.forEach((authContainer) => {
+        const authButtons = authContainer.querySelectorAll<HTMLButtonElement>('button');
+
+        authButtons.forEach((button) => {
+          const buttonText = button.textContent?.trim();
+
+          if (buttonText === 'Logout') {
+            button.textContent = translate(removeTokenTranslationKey);
+          }
+        });
+      });
+    },
     attachSwaggerAuthAutocompleteObserver(swaggerRoot: SwaggerRootElement | null) {
       if (!swaggerRoot) {
         return;
       }
 
-      this.suppressSwaggerAuthAutocomplete(swaggerRoot);
+      this.suppressSwaggerAuthAutocomplete(document);
+      this.updateSwaggerAuthCopy(swaggerRoot);
 
       if (swaggerRoot[authAutocompleteObserverKey] || typeof MutationObserver === 'undefined') {
         return;
@@ -271,6 +350,7 @@ export default defineComponent({
       this.shortenSummaryPaths(swaggerRoot);
       this.updateFlatSingleTag(swaggerRoot);
       this.applyMatomoCopyIcons(swaggerRoot);
+      this.updateSwaggerAuthCopy(swaggerRoot);
     },
     getSummaryPathCopyControl(target: Element | null) {
       return target?.closest('.opblock-summary .view-line-link.copy-to-clipboard') as HTMLElement | null;
@@ -355,6 +435,12 @@ export default defineComponent({
             if (summaryPathCopyControl.isConnected) {
               this.showCopySuccessState(swaggerRoot, summaryPathCopyControl);
             }
+          }, 0);
+        }
+        if (target?.closest(authInteractionSelector)) {
+          window.setTimeout(() => {
+            this.updateSwaggerAuthCopy(swaggerRoot);
+            this.suppressSwaggerAuthAutocomplete(document);
           }, 0);
         }
 
@@ -450,5 +536,16 @@ export default defineComponent({
   font-size: 14px;
   line-height: 1.5;
   padding-top: 0;
+}
+
+.swaggerMount :deep(.swagger-ui input[disabled]),
+.swaggerMount :deep(.swagger-ui select[disabled]),
+.swaggerMount :deep(.swagger-ui textarea[disabled]) {
+  background: var(--theme-color-background-tint, #f2f4f7);
+  border-color: var(--theme-color-border-subtle, #c5ced8);
+  border-style: dashed;
+  color: var(--theme-color-text-lighter, #98a2b3);
+  cursor: not-allowed;
+  opacity: 1;
 }
 </style>

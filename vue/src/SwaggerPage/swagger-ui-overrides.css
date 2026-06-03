@@ -209,6 +209,10 @@
     padding: 0;
 }
 
+#content.admin .swaggerMount .swagger-ui pre {
+    max-width: none;
+}
+
 .swaggerMount .swagger-ui a {
     color: var(--matomo-swagger-link);
 }
@@ -228,8 +232,11 @@
     background: transparent;
 }
 
+.swaggerMount .swagger-ui .parameters-col_description input {
+    background: #fff;
+}
+
 .swaggerMount .swagger-ui :is(
-    .parameters-col_description input,
     .response-control-media-type__accept-message,
     .responses-inner .highlight-code,
     .model-example .highlight-code
@@ -302,6 +309,16 @@
 
 .swaggerMount .swagger-ui .authorize svg {
     fill: var(--theme-color-link);
+}
+
+.swaggerMount .swagger-ui .authorize.matomo-token-connected {
+    background: var(--theme-color-success-background, #edf8ef);
+    border-color: var(--theme-color-success-border, #97c88f);
+    color: var(--theme-color-success, #1e8e3e) !important;
+}
+
+.swaggerMount .swagger-ui .authorize.matomo-token-connected svg {
+    fill: var(--theme-color-success, #1e8e3e);
 }
 
 .swaggerMount .swagger-ui :is(.btn, .authorize, .clear-btn, .download-contents) {

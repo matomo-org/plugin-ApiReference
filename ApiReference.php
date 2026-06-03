@@ -36,11 +36,15 @@ class ApiReference extends \Piwik\Plugin
         $translationKeys[] = 'ApiReference_ReportingApiReference';
         $translationKeys[] = 'ApiReference_ReportingApiSummary';
         $translationKeys[] = 'ApiReference_SwaggerPagePluginEmpty';
+        $translationKeys[] = 'ApiReference_SwaggerPageConnectToken';
         $translationKeys[] = 'ApiReference_SwaggerPageRequestFailed';
+        $translationKeys[] = 'ApiReference_SwaggerPageRemoveToken';
         $translationKeys[] = 'ApiReference_SwaggerPageSpecLoadFailed';
         $translationKeys[] = 'ApiReference_SwaggerPageSpecNotAvailable';
         $translationKeys[] = 'ApiReference_SwaggerPageSearchNoResults';
         $translationKeys[] = 'ApiReference_SwaggerPageSearchPlaceholder';
+        $translationKeys[] = 'ApiReference_SwaggerPageTokenConnected';
+        $translationKeys[] = 'ApiReference_SwaggerPageTokenConnectedHeading';
         $translationKeys[] = 'ApiReference_UserAuthentication';
         $translationKeys[] = 'ApiReference_UserAuthenticationManageTokens';
         $translationKeys[] = 'ApiReference_UserAuthenticationUsingTokenAuth';
