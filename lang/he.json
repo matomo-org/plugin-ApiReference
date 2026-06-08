@@ -1,1 +1,5 @@
-{}
+{
+    "ApiReference": {
+        "UserAuthentication": "אימות משתמש"
+    }
+}
