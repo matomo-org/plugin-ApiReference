@@ -1,6 +1,7 @@
 ## Changelog
 5.0.3 - 08/06/2026
-- Updated FAQ
+- Improved wording of authorization buttons and help text
+- Cleaned up styling on input fields
 
 5.0.2 - 25/05/2026
 - Updated FAQ
