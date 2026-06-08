@@ -1,1 +1,7 @@
-{}
+{
+    "ApiReference": {
+        "ReportingApiMoreInformation": "%1$sMatomoAPIの概要%2$sと%3$sMatomoAPIリファレンス%4$sで利用可能なMatomoAPIの詳細をご覧ください。",
+        "ReportingApiReference": "API リファレンスレポート",
+        "UserAuthentication": "ユーザー認証"
+    }
+}
