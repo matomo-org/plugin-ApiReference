@@ -1,1 +1,6 @@
-{}
+{
+    "ApiReference": {
+        "ReportingApiReference": "Rapporterings API Reference",
+        "UserAuthentication": "Brugergodkendelse"
+    }
+}
