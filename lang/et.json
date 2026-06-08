@@ -1,1 +1,5 @@
-{}
+{
+    "ApiReference": {
+        "UserAuthentication": "Kasutaja autentimine"
+    }
+}
