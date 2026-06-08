@@ -1,4 +1,7 @@
 ## Changelog
+5.0.3 - 08/06/2026
+- Updated FAQ
+
 5.0.2 - 25/05/2026
 - Updated FAQ
 
