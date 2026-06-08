@@ -1,1 +1,7 @@
-{}
+{
+    "ApiReference": {
+        "ReportingApiMoreInformation": "有关 Matomo API 的更多信息，请参阅 %1$sMatomo API 简介%2$s 和 %3$sMatomo API 参考%4$s。",
+        "ReportingApiReference": "報表 API 參考資料",
+        "UserAuthentication": "使用者驗證"
+    }
+}
