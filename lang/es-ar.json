@@ -1,1 +1,6 @@
-{}
+{
+    "ApiReference": {
+        "ReportingApiReference": "Informe de referencia de API",
+        "UserAuthentication": "Autenticación de usuario"
+    }
+}
