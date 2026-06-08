@@ -1,1 +1,7 @@
-{}
+{
+    "ApiReference": {
+        "ReportingApiMoreInformation": "Matomo API yazılımları hakkında ayrıntılı bilgi almak için %1$s Matomo API Yazılımları%2$s ve %3$s Matomo API Referansı %4$s belgelerine bakabilirsiniz.",
+        "ReportingApiReference": "Rapor API referansı",
+        "UserAuthentication": "Kullanıcı kimlik doğrulaması"
+    }
+}
