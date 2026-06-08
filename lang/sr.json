@@ -1,1 +1,6 @@
-{}
+{
+    "ApiReference": {
+        "ReportingApiReference": "Referenca API-ja za izveštavanje",
+        "UserAuthentication": "Autentifikacija korisnika"
+    }
+}
