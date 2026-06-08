@@ -1,1 +1,6 @@
-{}
+{
+    "ApiReference": {
+        "ReportingApiReference": "Referinţe API de raportare",
+        "UserAuthentication": "Identificare utilizator"
+    }
+}
