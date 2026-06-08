@@ -1,1 +1,7 @@
-{}
+{
+    "ApiReference": {
+        "ReportingApiMoreInformation": "Για περισσότερες πληροφορίες σχετικά με τα APIs του Matomo, δείτε στην %1$sΕισαγωγή για το Matomo API%2$s και στην %3$sΠηγή για το Matomo API%4$s.",
+        "ReportingApiReference": "Παραπομπή στο API Αναφορών",
+        "UserAuthentication": "Αυθεντικοποίηση χρήστη"
+    }
+}
