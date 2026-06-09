@@ -1,0 +1,7 @@
+{
+    "ApiReference": {
+        "ReportingApiMoreInformation": "Info lebih lanjut tentang Matomo API tersedia di %1$sPengantar Matomo API%2$s dan %3$sReferensi Matomo API%4$s.",
+        "ReportingApiReference": "Referensi Pelaporan API",
+        "UserAuthentication": "Autentikasi pengguna"
+    }
+}

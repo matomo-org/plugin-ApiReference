@@ -1,0 +1,7 @@
+{
+    "ApiReference": {
+        "ReportingApiMoreInformation": "Més informació sobre les API de Matomo disponible a %1$sIntroducció a l'API de Matomo%2$s i a la %3$sReferència de l'API de Matomo%4$s.",
+        "ReportingApiReference": "Referència de l'API d'informes",
+        "UserAuthentication": "Autentificació de l'usuari"
+    }
+}
