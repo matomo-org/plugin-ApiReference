@@ -38,11 +38,6 @@ class SpecGenerator
     {
         $this->specPathResolver = $specPathResolver ?? new PathResolver();
         $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
-
-        // Set the constant for the current instance's URL
-        if (!defined('LOCAL_MATOMO_SERVER_URL')) {
-            define('LOCAL_MATOMO_SERVER_URL', SettingsPiwik::getPiwikUrl());
-        }
     }
 
     /**
@@ -77,6 +72,11 @@ class SpecGenerator
      */
     public function generateSpec(array $pluginNames, string $format = 'json', string $version = ApiReference::DEFAULT_SPEC_VERSION, bool $writeToFile = false): string
     {
+        // Set the constant for the current instance's URL
+        if (!defined('LOCAL_MATOMO_SERVER_URL')) {
+            define('LOCAL_MATOMO_SERVER_URL', SettingsPiwik::getPiwikUrl());
+        }
+
         BaseValidator::check('pluginNames', $pluginNames, [new NotEmpty()]);
         $currentPluginDir = Manager::getInstance()::getPluginDirectory('ApiReference');
 
