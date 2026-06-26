@@ -1,4 +1,7 @@
 ## Changelog
+5.0.4 - 2026-06-29
+- Removed eager fetching of Matomo URL 
+
 5.0.3 - 08/06/2026
 - Improved wording of authorization buttons and help text
 - Cleaned up styling on input fields
