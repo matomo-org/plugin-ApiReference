@@ -1,5 +1,5 @@
 ## Changelog
-5.0.4 - 29/06/2026
+5.0.4 - 2026-06-29
 - Removed eager fetching of Matomo URL 
 
 5.0.3 - 08/06/2026
