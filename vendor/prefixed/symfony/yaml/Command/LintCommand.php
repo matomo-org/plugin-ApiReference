@@ -184,7 +184,7 @@ EOF
     private function displayJson(SymfonyStyle $io, array $filesInfo) : int
     {
         $errors = 0;
-        array_walk($filesInfo, function (&$v) use(&$errors) {
+        array_walk($filesInfo, static function (&$v) use(&$errors) {
             $v['file'] = (string) $v['file'];
             if (!$v['valid']) {
                 ++$errors;
@@ -203,7 +203,7 @@ EOF
             return;
         }
         foreach ($this->getDirectoryIterator($fileOrDirectory) as $file) {
-            if (!\in_array($file->getExtension(), ['yml', 'yaml'])) {
+            if (!\in_array($file->getExtension(), ['yml', 'yaml'], \true)) {
                 continue;
             }
             (yield $file);
@@ -215,7 +215,7 @@ EOF
     }
     private function getDirectoryIterator(string $directory) : iterable
     {
-        $default = function ($directory) {
+        $default = static function ($directory) {
             return new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS), \RecursiveIteratorIterator::LEAVES_ONLY);
         };
         if (null !== $this->directoryIteratorProvider) {
