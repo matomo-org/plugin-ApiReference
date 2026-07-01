@@ -555,6 +555,7 @@ return array(
     'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Exception\\RuntimeException' => $baseDir . '/symfony/yaml/Exception/RuntimeException.php',
     'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Inline' => $baseDir . '/symfony/yaml/Inline.php',
     'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Parser' => $baseDir . '/symfony/yaml/Parser.php',
+    'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\ParserState' => $baseDir . '/symfony/yaml/ParserState.php',
     'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Tag\\TaggedValue' => $baseDir . '/symfony/yaml/Tag/TaggedValue.php',
     'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Unescaper' => $baseDir . '/symfony/yaml/Unescaper.php',
     'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Yaml' => $baseDir . '/symfony/yaml/Yaml.php',

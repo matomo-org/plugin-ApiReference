@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit687941ea055bc304d2d4504ab6e8b4ea
+class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
 {
     public static $files = array (
         '66cfd3a7190309803b5cc0fea03a4cdc' => __DIR__ . '/../..' . '/symfony/deprecation-contracts/function.php',
@@ -561,6 +561,7 @@ class ComposerStaticInit687941ea055bc304d2d4504ab6e8b4ea
         'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Exception\\RuntimeException' => __DIR__ . '/../..' . '/symfony/yaml/Exception/RuntimeException.php',
         'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Inline' => __DIR__ . '/../..' . '/symfony/yaml/Inline.php',
         'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Parser' => __DIR__ . '/../..' . '/symfony/yaml/Parser.php',
+        'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\ParserState' => __DIR__ . '/../..' . '/symfony/yaml/ParserState.php',
         'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Tag\\TaggedValue' => __DIR__ . '/../..' . '/symfony/yaml/Tag/TaggedValue.php',
         'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Unescaper' => __DIR__ . '/../..' . '/symfony/yaml/Unescaper.php',
         'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Yaml' => __DIR__ . '/../..' . '/symfony/yaml/Yaml.php',
@@ -707,7 +708,7 @@ class ComposerStaticInit687941ea055bc304d2d4504ab6e8b4ea
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit687941ea055bc304d2d4504ab6e8b4ea::$classMap;
+            $loader->classMap = ComposerStaticInit5e8075107e43bdf6291719e5720b5514::$classMap;
 
         }, null, ClassLoader::class);
     }
