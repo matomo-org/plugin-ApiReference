@@ -1,4 +1,8 @@
 ## Changelog
+
+5.0.5 - 2027-07-06
+- Updated symfony/yaml to v7.4.14
+
 5.0.4 - 2026-06-29
 - Removed eager fetching of Matomo URL 
 
