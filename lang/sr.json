@@ -1,6 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "",
+        "ReportingApiMoreInformation": "",
         "ReportingApiReference": "Referenca API-ja za izveštavanje",
-        "UserAuthentication": "Autentifikacija korisnika"
+        "ReportingApiSummary": "",
+        "SwaggerPageConnectToken": "",
+        "SwaggerPagePluginEmpty": "",
+        "SwaggerPageRemoveToken": "",
+        "SwaggerPageRequestFailed": "",
+        "SwaggerPageSearchNoResults": "",
+        "SwaggerPageSearchPlaceholder": "",
+        "SwaggerPageSpecLoadFailed": "",
+        "SwaggerPageSpecNotAvailable": "",
+        "SwaggerPageTokenConnected": "",
+        "SwaggerPageTokenConnectedHeading": "",
+        "UseTryItOutForLiveResponse": "",
+        "UserAuthentication": "Autentifikacija korisnika",
+        "UserAuthenticationManageTokens": "",
+        "UserAuthenticationUsingTokenAuth": ""
     }
 }
