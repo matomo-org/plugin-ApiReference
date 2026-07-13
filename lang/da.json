@@ -1,22 +1,6 @@
 {
     "ApiReference": {
-        "LookingForLegacyApiReference": "",
-        "ReportingApiMoreInformation": "",
         "ReportingApiReference": "Rapporterings API Reference",
-        "ReportingApiSummary": "",
-        "SwaggerPageConnectToken": "",
-        "SwaggerPagePluginEmpty": "",
-        "SwaggerPageRemoveToken": "",
-        "SwaggerPageRequestFailed": "",
-        "SwaggerPageSearchNoResults": "",
-        "SwaggerPageSearchPlaceholder": "",
-        "SwaggerPageSpecLoadFailed": "",
-        "SwaggerPageSpecNotAvailable": "",
-        "SwaggerPageTokenConnected": "",
-        "SwaggerPageTokenConnectedHeading": "",
-        "UseTryItOutForLiveResponse": "",
-        "UserAuthentication": "Brugergodkendelse",
-        "UserAuthenticationManageTokens": "",
-        "UserAuthenticationUsingTokenAuth": ""
+        "UserAuthentication": "Brugergodkendelse"
     }
 }

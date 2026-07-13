@@ -1,22 +1,6 @@
 {
     "ApiReference": {
-        "LookingForLegacyApiReference": "",
-        "ReportingApiMoreInformation": "",
         "ReportingApiReference": "Referinţe API de raportare",
-        "ReportingApiSummary": "",
-        "SwaggerPageConnectToken": "",
-        "SwaggerPagePluginEmpty": "",
-        "SwaggerPageRemoveToken": "",
-        "SwaggerPageRequestFailed": "",
-        "SwaggerPageSearchNoResults": "",
-        "SwaggerPageSearchPlaceholder": "",
-        "SwaggerPageSpecLoadFailed": "",
-        "SwaggerPageSpecNotAvailable": "",
-        "SwaggerPageTokenConnected": "",
-        "SwaggerPageTokenConnectedHeading": "",
-        "UseTryItOutForLiveResponse": "",
-        "UserAuthentication": "Identificare utilizator",
-        "UserAuthenticationManageTokens": "",
-        "UserAuthenticationUsingTokenAuth": ""
+        "UserAuthentication": "Identificare utilizator"
     }
 }

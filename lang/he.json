@@ -1,22 +1,5 @@
 {
     "ApiReference": {
-        "LookingForLegacyApiReference": "",
-        "ReportingApiMoreInformation": "",
-        "ReportingApiReference": "",
-        "ReportingApiSummary": "",
-        "SwaggerPageConnectToken": "",
-        "SwaggerPagePluginEmpty": "",
-        "SwaggerPageRemoveToken": "",
-        "SwaggerPageRequestFailed": "",
-        "SwaggerPageSearchNoResults": "",
-        "SwaggerPageSearchPlaceholder": "",
-        "SwaggerPageSpecLoadFailed": "",
-        "SwaggerPageSpecNotAvailable": "",
-        "SwaggerPageTokenConnected": "",
-        "SwaggerPageTokenConnectedHeading": "",
-        "UseTryItOutForLiveResponse": "",
-        "UserAuthentication": "אימות משתמש",
-        "UserAuthenticationManageTokens": "",
-        "UserAuthenticationUsingTokenAuth": ""
+        "UserAuthentication": "אימות משתמש"
     }
 }

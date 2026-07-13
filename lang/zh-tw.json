@@ -1,22 +1,7 @@
 {
     "ApiReference": {
-        "LookingForLegacyApiReference": "",
         "ReportingApiMoreInformation": "更多關於 Matomo API 的資訊，請查看 %1$sMatomo API 介紹%2$s和 %3$sMatomo API 參考文檔%4$s。",
         "ReportingApiReference": "报告API参考",
-        "ReportingApiSummary": "",
-        "SwaggerPageConnectToken": "",
-        "SwaggerPagePluginEmpty": "",
-        "SwaggerPageRemoveToken": "",
-        "SwaggerPageRequestFailed": "",
-        "SwaggerPageSearchNoResults": "",
-        "SwaggerPageSearchPlaceholder": "",
-        "SwaggerPageSpecLoadFailed": "",
-        "SwaggerPageSpecNotAvailable": "",
-        "SwaggerPageTokenConnected": "",
-        "SwaggerPageTokenConnectedHeading": "",
-        "UseTryItOutForLiveResponse": "",
-        "UserAuthentication": "身份验证",
-        "UserAuthenticationManageTokens": "",
-        "UserAuthenticationUsingTokenAuth": ""
+        "UserAuthentication": "身份验证"
     }
 }

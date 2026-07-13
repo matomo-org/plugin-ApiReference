@@ -1,22 +1,7 @@
 {
     "ApiReference": {
-        "LookingForLegacyApiReference": "",
         "ReportingApiMoreInformation": "Info lebih lanjut tentang Matomo API tersedia di %1$sPengantar Matomo API%2$s dan %3$sReferensi Matomo API%4$s.",
         "ReportingApiReference": "Referensi Pelaporan API",
-        "ReportingApiSummary": "",
-        "SwaggerPageConnectToken": "",
-        "SwaggerPagePluginEmpty": "",
-        "SwaggerPageRemoveToken": "",
-        "SwaggerPageRequestFailed": "",
-        "SwaggerPageSearchNoResults": "",
-        "SwaggerPageSearchPlaceholder": "",
-        "SwaggerPageSpecLoadFailed": "",
-        "SwaggerPageSpecNotAvailable": "",
-        "SwaggerPageTokenConnected": "",
-        "SwaggerPageTokenConnectedHeading": "",
-        "UseTryItOutForLiveResponse": "",
-        "UserAuthentication": "Autentikasi pengguna",
-        "UserAuthenticationManageTokens": "",
-        "UserAuthenticationUsingTokenAuth": ""
+        "UserAuthentication": "Autentikasi pengguna"
     }
 }

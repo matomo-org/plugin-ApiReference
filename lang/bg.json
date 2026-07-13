@@ -1,22 +1,7 @@
 {
     "ApiReference": {
-        "LookingForLegacyApiReference": "",
         "ReportingApiMoreInformation": "Повече информация за API на Matomo, достъпна във %1$sВъведение в Matomo API%2$s и %3$sMatomo API Reference%4$s.",
         "ReportingApiReference": "Справка за API за отчитане",
-        "ReportingApiSummary": "",
-        "SwaggerPageConnectToken": "",
-        "SwaggerPagePluginEmpty": "",
-        "SwaggerPageRemoveToken": "",
-        "SwaggerPageRequestFailed": "",
-        "SwaggerPageSearchNoResults": "",
-        "SwaggerPageSearchPlaceholder": "",
-        "SwaggerPageSpecLoadFailed": "",
-        "SwaggerPageSpecNotAvailable": "",
-        "SwaggerPageTokenConnected": "",
-        "SwaggerPageTokenConnectedHeading": "",
-        "UseTryItOutForLiveResponse": "",
-        "UserAuthentication": "Удостоверяване на потребителя",
-        "UserAuthenticationManageTokens": "",
-        "UserAuthenticationUsingTokenAuth": ""
+        "UserAuthentication": "Удостоверяване на потребителя"
     }
 }

@@ -1,22 +1,7 @@
 {
     "ApiReference": {
-        "LookingForLegacyApiReference": "",
         "ReportingApiMoreInformation": "Podrobnosti o API Matoma najdete na stránce %1$s Úvod do API Matoma %2$s a v %3$s Referenci API Matoma %4$s.",
         "ReportingApiReference": "Reference API hlášení",
-        "ReportingApiSummary": "",
-        "SwaggerPageConnectToken": "",
-        "SwaggerPagePluginEmpty": "",
-        "SwaggerPageRemoveToken": "",
-        "SwaggerPageRequestFailed": "",
-        "SwaggerPageSearchNoResults": "",
-        "SwaggerPageSearchPlaceholder": "",
-        "SwaggerPageSpecLoadFailed": "",
-        "SwaggerPageSpecNotAvailable": "",
-        "SwaggerPageTokenConnected": "",
-        "SwaggerPageTokenConnectedHeading": "",
-        "UseTryItOutForLiveResponse": "",
-        "UserAuthentication": "Autentifikace uživatele",
-        "UserAuthenticationManageTokens": "",
-        "UserAuthenticationUsingTokenAuth": ""
+        "UserAuthentication": "Autentifikace uživatele"
     }
 }

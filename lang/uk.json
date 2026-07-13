@@ -1,22 +1,7 @@
 {
     "ApiReference": {
-        "LookingForLegacyApiReference": "",
         "ReportingApiMoreInformation": "Докладніше про API Matomo доступно у %1$sВступі до Matomo API%2$s та %3$sДовідковому описі Matomo API%4$s.",
         "ReportingApiReference": "Повідомлення довідкової інформації по API",
-        "ReportingApiSummary": "",
-        "SwaggerPageConnectToken": "",
-        "SwaggerPagePluginEmpty": "",
-        "SwaggerPageRemoveToken": "",
-        "SwaggerPageRequestFailed": "",
-        "SwaggerPageSearchNoResults": "",
-        "SwaggerPageSearchPlaceholder": "",
-        "SwaggerPageSpecLoadFailed": "",
-        "SwaggerPageSpecNotAvailable": "",
-        "SwaggerPageTokenConnected": "",
-        "SwaggerPageTokenConnectedHeading": "",
-        "UseTryItOutForLiveResponse": "",
-        "UserAuthentication": "Аутентифікація користоувача",
-        "UserAuthenticationManageTokens": "",
-        "UserAuthenticationUsingTokenAuth": ""
+        "UserAuthentication": "Аутентифікація користоувача"
     }
 }
