@@ -1,6 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "",
+        "ReportingApiMoreInformation": "",
         "ReportingApiReference": "Informe de referencia de API",
-        "UserAuthentication": "Autenticación de usuario"
+        "ReportingApiSummary": "",
+        "SwaggerPageConnectToken": "",
+        "SwaggerPagePluginEmpty": "",
+        "SwaggerPageRemoveToken": "",
+        "SwaggerPageRequestFailed": "",
+        "SwaggerPageSearchNoResults": "",
+        "SwaggerPageSearchPlaceholder": "",
+        "SwaggerPageSpecLoadFailed": "",
+        "SwaggerPageSpecNotAvailable": "",
+        "SwaggerPageTokenConnected": "",
+        "SwaggerPageTokenConnectedHeading": "",
+        "UseTryItOutForLiveResponse": "",
+        "UserAuthentication": "Autenticación de usuario",
+        "UserAuthenticationManageTokens": "",
+        "UserAuthenticationUsingTokenAuth": ""
     }
 }
