@@ -1,5 +1,22 @@
 {
     "ApiReference": {
-        "UserAuthentication": "Lietotāja autentifikācija"
+        "LookingForLegacyApiReference": "",
+        "ReportingApiMoreInformation": "",
+        "ReportingApiReference": "",
+        "ReportingApiSummary": "",
+        "SwaggerPageConnectToken": "",
+        "SwaggerPagePluginEmpty": "",
+        "SwaggerPageRemoveToken": "",
+        "SwaggerPageRequestFailed": "",
+        "SwaggerPageSearchNoResults": "",
+        "SwaggerPageSearchPlaceholder": "",
+        "SwaggerPageSpecLoadFailed": "",
+        "SwaggerPageSpecNotAvailable": "",
+        "SwaggerPageTokenConnected": "",
+        "SwaggerPageTokenConnectedHeading": "",
+        "UseTryItOutForLiveResponse": "",
+        "UserAuthentication": "Lietotāja autentifikācija",
+        "UserAuthenticationManageTokens": "",
+        "UserAuthenticationUsingTokenAuth": ""
     }
 }
