@@ -1,5 +1,22 @@
 {
     "ApiReference": {
-        "UserAuthentication": "Kasutaja autentimine"
+        "LookingForLegacyApiReference": "",
+        "ReportingApiMoreInformation": "",
+        "ReportingApiReference": "",
+        "ReportingApiSummary": "",
+        "SwaggerPageConnectToken": "",
+        "SwaggerPagePluginEmpty": "",
+        "SwaggerPageRemoveToken": "",
+        "SwaggerPageRequestFailed": "",
+        "SwaggerPageSearchNoResults": "",
+        "SwaggerPageSearchPlaceholder": "",
+        "SwaggerPageSpecLoadFailed": "",
+        "SwaggerPageSpecNotAvailable": "",
+        "SwaggerPageTokenConnected": "",
+        "SwaggerPageTokenConnectedHeading": "",
+        "UseTryItOutForLiveResponse": "",
+        "UserAuthentication": "Kasutaja autentimine",
+        "UserAuthenticationManageTokens": "",
+        "UserAuthenticationUsingTokenAuth": ""
     }
 }
