@@ -1,5 +1,22 @@
 {
     "ApiReference": {
-        "UserAuthentication": "प्रयोगकर्ता का प्रामाणीकरण"
+        "LookingForLegacyApiReference": "",
+        "ReportingApiMoreInformation": "",
+        "ReportingApiReference": "",
+        "ReportingApiSummary": "",
+        "SwaggerPageConnectToken": "",
+        "SwaggerPagePluginEmpty": "",
+        "SwaggerPageRemoveToken": "",
+        "SwaggerPageRequestFailed": "",
+        "SwaggerPageSearchNoResults": "",
+        "SwaggerPageSearchPlaceholder": "",
+        "SwaggerPageSpecLoadFailed": "",
+        "SwaggerPageSpecNotAvailable": "",
+        "SwaggerPageTokenConnected": "",
+        "SwaggerPageTokenConnectedHeading": "",
+        "UseTryItOutForLiveResponse": "",
+        "UserAuthentication": "प्रयोगकर्ता का प्रामाणीकरण",
+        "UserAuthenticationManageTokens": "",
+        "UserAuthenticationUsingTokenAuth": ""
     }
 }
