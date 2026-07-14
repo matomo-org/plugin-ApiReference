@@ -1,7 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "Suchen Sie nach der Referenz zur alten API? Die Seite %1$sReferenz zur alten API%2$s ist weiterhin verfügbar, während wir die Dokumentation zur neuen API weiter verbessern. Sollten in dieser neuen Version Inhalte fehlen oder sich etwas unerwartet verhalten, %3$steilen Sie uns dies bitte mit%4$s, damit wir die Benutzererfahrung verbessern können.",
         "ReportingApiMoreInformation": "Weitere Informationen über die Matomo-APIs sind in der %1$s Einführung zu Matomo-API %2$s und die %3$s Matomo-API-Referenz %4$s verfügbar.",
         "ReportingApiReference": "Reporting-API-Referenz",
-        "UserAuthentication": "Benutzerauthentifizierung"
+        "ReportingApiSummary": "Alle Daten in Matomo sind über einfache APIs verfügbar.",
+        "SwaggerPageConnectToken": "Mit einem Matomo-API-Token authentifizieren",
+        "SwaggerPagePluginEmpty": "In der Whitelist der API-Referenz sind keine Plugins konfiguriert.",
+        "SwaggerPageRemoveToken": "Token entfernen",
+        "SwaggerPageRequestFailed": "Die Whitelist für Plugins konnte nicht geladen werden.",
+        "SwaggerPageSearchNoResults": "Es wurden keine Plugins gefunden, die Ihrer Suche entsprechen.",
+        "SwaggerPageSearchPlaceholder": "Nach Plugin-Name suchen",
+        "SwaggerPageSpecLoadFailed": "Die OpenAPI-Spezifikation konnte für dieses Plugin nicht geladen werden.",
+        "SwaggerPageSpecNotAvailable": "Die OpenAPI-Spezifikation ist für dieses Plugin noch nicht verfügbar. %1$sWeitere Informationen%2$s",
+        "SwaggerPageTokenConnected": "Token verbunden",
+        "SwaggerPageTokenConnectedHeading": "Matomo API-Token verbunden",
+        "UseTryItOutForLiveResponse": "Für Beispielantworten ist Superuser-Zugriff erforderlich. Klicken Sie auf „Ausprobieren“, um eine Live-Antwort anzuzeigen.",
+        "UserAuthentication": "Benutzerauthentifizierung",
+        "UserAuthenticationManageTokens": "Verwalten Sie ihre Authentifizierungstoken auf Ihrer Sicherheitsseite.",
+        "UserAuthenticationUsingTokenAuth": "Wenn Sie Anfragedaten mit einem Script, einem Crontab usw. abfragen möchten, müssen Sie bei API-Aufrufen für URLs, die eine Authentifizierung erfordern, den URL-Parameter „%3$s“ hinzufügen."
     }
 }
