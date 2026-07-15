@@ -1,7 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "Ag lorg tagairt don API oidhreachta? Tá an leathanach tagairt don API %1$s oidhreachta ar fáil fós agus muid ag feabhsú an doiciméadachta API nua. Má tá aon rud ar iarraidh nó má iompraíonn sé go gan choinne sa leagan nua seo, %3$scuir in iúl dúinn le do thoil%4$s ionas gur féidir linn an taithí a fheabhsú.",
         "ReportingApiMoreInformation": "Tuilleadh eolais faoi na APInna Matomo atá ar fáil i %1$sRéamhrá ar Matomo API%2$s agus Tagairt API %3$sMatomo%4$s.",
         "ReportingApiReference": "Tagairt API Tuairiscithe",
-        "UserAuthentication": "Fíordheimhniú úsáideora"
+        "ReportingApiSummary": "Tá na sonraí go léir i Matomo ar fáil trí APIanna simplí.",
+        "SwaggerPageConnectToken": "Fíordheimhnigh le comhartha API Matomo",
+        "SwaggerPagePluginEmpty": "Níl aon bhreiseáin cumraithe i liosta bán ApiReference.",
+        "SwaggerPageRemoveToken": "Bain an comhartha",
+        "SwaggerPageRequestFailed": "Níorbh fhéidir an liosta bán breiseán a luchtú.",
+        "SwaggerPageSearchNoResults": "Níl aon bhreiseáin a oireann chun do chuardach.",
+        "SwaggerPageSearchPlaceholder": "Cuardaigh de réir ainm breiseáin",
+        "SwaggerPageSpecLoadFailed": "Níorbh fhéidir sonraíocht OpenAPI a luchtú don bhreiseán seo.",
+        "SwaggerPageSpecNotAvailable": "Níl an tsonraíocht OpenAPI ar fáil don bhreiseán seo go fóill. %1$sFoghlaim tuilleadh%2$s",
+        "SwaggerPageTokenConnected": "Comhartha ceangailte",
+        "SwaggerPageTokenConnectedHeading": "Comhartha API Matomo ceangailte",
+        "UseTryItOutForLiveResponse": "Éilíonn freagraí samplacha rochtain SuperÚsáideora. Bain triail as chun freagra beo a fheiceáil.",
+        "UserAuthentication": "Fíordheimhniú úsáideora",
+        "UserAuthenticationManageTokens": "Is féidir leat do chomharthaí fíordheimhnithe a bhainistiú ar do leathanach slándála.",
+        "UserAuthenticationUsingTokenAuth": "Más mian leat sonraí a iarraidh laistigh de script, crontab, srl., ní mór duit an paraiméadar URL '%3$s' a chur leis na glaonna API le haghaidh URLanna a bhfuil fíordheimhniú ag teastáil uathu."
     }
 }
