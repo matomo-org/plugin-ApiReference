@@ -1,7 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "Vous cherchez l'ancienne référence de l'API ? La page %1$sancienne référence de l'API%2$s reste disponible pendant que nous continuons d'améliorer la nouvelle documentation de l'API. Si quelque chose manque ou se comporte de façon inattendue dans cette nouvelle version, %3$sn'hésitez pas à nous le signaler%4$s afin que nous puissions améliorer l'expérience.",
         "ReportingApiMoreInformation": "Plus d'informations sur les API Matomo sont disponibles dans %1$sIntroduction à l'API Matomo%2$s et %3$sMatomo API Reference%4$s.",
         "ReportingApiReference": "Référence de l'API de rapports",
-        "UserAuthentication": "Authentification de l'utilisateur"
+        "ReportingApiSummary": "Toutes les données de Matomo sont accessibles via des API simples.",
+        "SwaggerPageConnectToken": "S'authentifier avec un jeton d'API Matomo",
+        "SwaggerPagePluginEmpty": "Aucun plugin n'est configuré dans la liste d'autorisation d'ApiReference.",
+        "SwaggerPageRemoveToken": "Supprimer le jeton",
+        "SwaggerPageRequestFailed": "La liste d'autorisation des plugins n'a pas pu être chargée.",
+        "SwaggerPageSearchNoResults": "Aucun plugin ne correspond à votre recherche.",
+        "SwaggerPageSearchPlaceholder": "Rechercher par nom de plugin",
+        "SwaggerPageSpecLoadFailed": "La spécification OpenAPI n'a pas pu être chargée pour ce plugin.",
+        "SwaggerPageSpecNotAvailable": "La spécification OpenAPI n'est pas encore disponible pour ce plugin. %1$sEn savoir plus%2$s",
+        "SwaggerPageTokenConnected": "Jeton connecté",
+        "SwaggerPageTokenConnectedHeading": "Jeton d'API Matomo connecté",
+        "UseTryItOutForLiveResponse": "Les exemples de réponses nécessitent un accès Super Utilisateur. Utilisez « Essayer » pour voir une réponse en direct.",
+        "UserAuthentication": "Authentification de l'utilisateur",
+        "UserAuthenticationManageTokens": "Vous pouvez gérer vos jetons d'authentification depuis votre page de sécurité.",
+        "UserAuthenticationUsingTokenAuth": "Si vous souhaitez récupérer des données depuis un script, une tâche cron, etc., vous devez ajouter le paramètre d'URL « %3$s » aux appels d'API pour les URLs qui nécessitent une authentification."
     }
 }
