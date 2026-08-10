@@ -1,13 +1,16 @@
 parameters:
     level: 5
-    phpVersion: 70200
+    phpVersion: 80100
+    # PHPDoc types describe the intended contract; runtime values reaching these
+    # guards can come from events and external input, so they are not certain.
+    treatPhpDocTypesAsCertain: false
     tmpDir: /tmp/phpstan/ApiReference/main
     paths:
         - .
     excludePaths:
         - tests/*
         - vendor/*
-        - github-action-tests
+        - github-action-tests/ (?)
         - scoper.inc.php
         - Specs/SpecGenerator.php
     bootstrapFiles:

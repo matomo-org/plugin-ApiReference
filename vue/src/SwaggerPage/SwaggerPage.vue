@@ -130,20 +130,20 @@ import {
 } from 'CoreHome';
 import SwaggerUiPanel from './SwaggerUiPanel.vue';
 
-type PluginSpecStatus = 'idle' | 'loading' | 'loaded' | 'error' | 'missing';
+export type PluginSpecStatus = 'idle' | 'loading' | 'loaded' | 'error' | 'missing';
 
-interface OpenApiSpec {
+export interface OpenApiSpec {
   [key: string]: unknown;
 }
 
-interface PluginSpecState {
+export interface PluginSpecState {
   loadError: string | null;
   request: Promise<OpenApiSpec | null> | null;
   spec: OpenApiSpec | null;
   status: PluginSpecStatus;
 }
 
-interface SwaggerPageState {
+export interface SwaggerPageState {
   expandedPluginName: string | null;
   isLoading: boolean;
   loadError: string | null;

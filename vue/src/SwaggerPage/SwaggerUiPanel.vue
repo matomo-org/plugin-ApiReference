@@ -55,17 +55,17 @@ const removeTokenTranslationKey = 'ApiReference_SwaggerPageRemoveToken';
 const tokenConnectedTranslationKey = 'ApiReference_SwaggerPageTokenConnected';
 const tokenConnectedHeadingTranslationKey = 'ApiReference_SwaggerPageTokenConnectedHeading';
 
-interface OpenApiSpec {
+export interface OpenApiSpec {
   [key: string]: unknown;
 }
 
-interface OpenApiServer {
+export interface OpenApiServer {
   url?: string;
 
   [key: string]: unknown;
 }
 
-type SwaggerUiFactory = (config: {
+export type SwaggerUiFactory = (config: {
   defaultModelsExpandDepth: number;
   deepLinking: boolean;
   docExpansion: 'list' | 'full' | 'none';
@@ -78,7 +78,7 @@ type SwaggerUiFactory = (config: {
   tagsSorter?: string;
 }) => unknown;
 
-type SwaggerRootElement = HTMLElement & {
+export type SwaggerRootElement = HTMLElement & {
   [activeCopySuccessStateKey]?: {
     element: HTMLElement;
     resetTimeoutId: number;
@@ -87,11 +87,11 @@ type SwaggerRootElement = HTMLElement & {
   [summaryPathClickHandlerAttachedKey]?: boolean;
 };
 
-type ObjectWithOptionalHasOwn = ObjectConstructor & {
+export type ObjectWithOptionalHasOwn = ObjectConstructor & {
   hasOwn?: (object: Record<string, unknown>, property: PropertyKey) => boolean;
 };
 
-type SwaggerWindow = Window & {
+export type SwaggerWindow = Window & {
   SwaggerUIBundle?: SwaggerUiFactory & {
     presets?: {
       apis?: unknown;
@@ -99,7 +99,7 @@ type SwaggerWindow = Window & {
   };
 };
 
-interface SwaggerUiPanelState {
+export interface SwaggerUiPanelState {
   isReady: boolean;
   loadError: string | null;
 }

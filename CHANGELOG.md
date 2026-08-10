@@ -1,5 +1,8 @@
 ## Changelog
 
+6.0.0 - 2026-08-10
+- Compatibility with Matomo 6
+
 5.0.5 - 2027-07-06
 - Updated symfony/yaml to v7.4.14
 
