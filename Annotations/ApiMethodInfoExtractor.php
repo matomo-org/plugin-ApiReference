@@ -186,7 +186,7 @@ class ApiMethodInfoExtractor
                 'name' => '$' . $reflectionParameter->getName(),
                 'php_type' => $reflectionParameter->hasType() ? strval($reflectionParameter->getType()) : null,
                 'required' => !$reflectionParameter->isOptional(),
-                'nullable' => $reflectionParameter->hasType() && $reflectionParameter->getType() !== null && $reflectionParameter->getType()->allowsNull(),
+                'nullable' => $reflectionParameter->hasType() && $reflectionParameter->getType()->allowsNull(),
                 'default' => $defaultValue,
                 'byRef' => $reflectionParameter->isPassedByReference(),
                 'variadic' => $reflectionParameter->isVariadic(),

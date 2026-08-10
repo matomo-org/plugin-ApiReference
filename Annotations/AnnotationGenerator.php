@@ -500,9 +500,7 @@ class AnnotationGenerator
         $example = '';
         // Check the description for the example value
         if (preg_match('/\[@example\s*=\s*([^\n]+)\]/', $description, $m)) {
-            if ($m[1] !== '') {
-                $example = $m[1];
-            }
+            $example = $m[1];
             // Remove the example from the description and trim any excess whitespace
             $description = trim(str_replace($m[0], '', $description));
             // Trim any excess whitespace and surrounding quotes from the example
@@ -1341,7 +1339,7 @@ class AnnotationGenerator
         if (!empty($docBlock)) {
             $responseInfo = $this->getResponseInfoFromDocBlock($docBlock);
         }
-        if (!empty($returnType) && $returnType->isBuiltin()) {
+        if ($returnType instanceof \ReflectionNamedType && $returnType->isBuiltin()) {
             $responseInfo['type'] = $this->getOpenApiTypeFromPhpType(strval($returnType));
         }
 
