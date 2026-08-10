@@ -1,7 +1,7 @@
 {
     "name": "ApiReference",
     "description": "Modern interactive API documentation for Matomo based on OpenAPI (Swagger). Explore endpoints, parameters, and responses directly in your browser. ",
-    "version": "5.0.5",
+    "version": "6.0.0",
     "theme": false,
     "keywords": [
         "API",
@@ -13,8 +13,8 @@
     "license": "GPL v3+",
     "homepage": "https:\/\/matomo.org",
     "require": {
-        "php": ">=7.4.0",
-        "matomo": ">=5.0.0-stable,<6.0.0-b1"
+        "php": ">=8.1.0",
+        "matomo": ">=6.0.0-b1,<7.0.0-b1"
     },
     "authors": [
         {
