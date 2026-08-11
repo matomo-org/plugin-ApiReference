@@ -18,7 +18,6 @@ use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\Config;
 use Piwik\Development;
-use Piwik\Piwik;
 use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
 use Piwik\Plugins\ApiReference\ApiReference;
 use Piwik\Plugins\ApiReference\tests\Resources\MockAnnotationGenerator;
@@ -178,23 +177,9 @@ class AnnotationGeneratorTest extends TestCase
     private static $exampleSchemas;
 
     /**
-     * @var bool
-     */
-    private static $disableLocalRequestsByEvent = false;
-
-    /**
      * @var AnnotationGenerator
      */
     private $annotationGenerator;
-
-    public static function setUpBeforeClass(): void
-    {
-        Piwik::addAction('ApiReference.shouldAllowLocalRequests', function (&$allowLocalRequests): void {
-            if (self::$disableLocalRequestsByEvent) {
-                $allowLocalRequests = false;
-            }
-        });
-    }
 
     public function setUp(): void
     {
@@ -368,7 +353,7 @@ class AnnotationGeneratorTest extends TestCase
                 ]];
             }
 
-            public function getExampleIfAvailable(string $url, bool $useLocalToken = false, bool $ignoreCached = false): string
+            public function getExampleIfAvailable(string $url, bool $ignoreCached = false): string
             {
                 $this->receivedUrl = $url;
                 return '{"result":"ok"}';
@@ -387,30 +372,61 @@ class AnnotationGeneratorTest extends TestCase
         );
     }
 
-    public function testShouldAllowLocalRequestsDefaultsToTrue(): void
+    /**
+     * @dataProvider getTestDataForIsReadOnlyApiMethod
+     */
+    public function testIsReadOnlyApiMethod(string $methodName, bool $expected): void
     {
         $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
 
-        $this->assertTrue($annotationGenerator->shouldAllowLocalRequests());
+        $this->assertSame($expected, $annotationGenerator->isReadOnlyApiMethod($methodName));
     }
 
-    public function testShouldAllowLocalRequestsCanBeDisabledByConstructor(): void
+    /**
+     * @return iterable<string, array{string, bool}>
+     */
+    public function getTestDataForIsReadOnlyApiMethod(): iterable
     {
-        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator(), false);
-
-        $this->assertFalse($annotationGenerator->shouldAllowLocalRequests());
+        yield 'bare get' => ['get', true];
+        yield 'getter' => ['getCustomReport', true];
+        yield 'is' => ['isPluginActivated', true];
+        yield 'has' => ['hasSuperUserAccess', true];
+        yield 'add' => ['addSite', false];
+        yield 'set' => ['setUserAccess', false];
+        yield 'delete' => ['deleteSite', false];
+        // These slipped through the denylist this guard replaced
+        yield 'invalidate' => ['invalidateArchivedReports', false];
+        yield 'regenerate' => ['regenerateToken', false];
+        yield 'unrecognised names are not executed' => ['doSomethingUnknown', false];
     }
 
-    public function testShouldAllowLocalRequestsCanBeDisabledByEvent(): void
+    /**
+     * @dataProvider getTestDataForIsReadOnlyApiMethod
+     */
+    public function testGetApplicableDemoExampleUrlsOnlyBuildsUrlsForReadOnlyMethods(string $methodName, bool $isReadOnly): void
     {
-        self::$disableLocalRequestsByEvent = true;
+        $generator = $this->getMockBuilder(DocumentationGenerator::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getExampleUrl'])
+            ->getMock();
+        // A method that is not read-only must be rejected before anything builds a URL for it
+        $generator->expects($isReadOnly ? $this->once() : $this->never())
+            ->method('getExampleUrl')
+            ->willReturn('index.php?module=API&method=API.' . $methodName);
 
-        try {
-            $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+        $annotationGenerator = new class ($generator) extends MockAnnotationGenerator {
+            protected function getInstanceUrl(): string
+            {
+                return 'https://local.matomo.test/';
+            }
+        };
 
-            $this->assertFalse($annotationGenerator->shouldAllowLocalRequests());
-        } finally {
-            self::$disableLocalRequestsByEvent = false;
+        $urls = $annotationGenerator->getApplicableDemoExampleUrls('API', $methodName, []);
+
+        if ($isReadOnly) {
+            $this->assertNotSame([], $urls);
+        } else {
+            $this->assertSame([], $urls);
         }
     }
 

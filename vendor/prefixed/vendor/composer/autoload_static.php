@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
+class ComposerStaticInit12576658d959eee6f32f22a94fce8576
 {
     public static $files = array (
         '66cfd3a7190309803b5cc0fea03a4cdc' => __DIR__ . '/../..' . '/symfony/deprecation-contracts/function.php',
@@ -296,6 +296,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\AttributeEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/AttributeEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\EnumTokenEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/EnumTokenEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\ExplicitOctalEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/ExplicitOctalEmulator.php',
+        'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\FnTokenEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/FnTokenEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\KeywordEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/KeywordEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\MatchTokenEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/MatchTokenEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\NullsafeTokenEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/NullsafeTokenEmulator.php',
@@ -708,7 +709,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit5e8075107e43bdf6291719e5720b5514::$classMap;
+            $loader->classMap = ComposerStaticInit12576658d959eee6f32f22a94fce8576::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -290,6 +290,7 @@ return array(
     'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\AttributeEmulator' => $baseDir . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/AttributeEmulator.php',
     'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\EnumTokenEmulator' => $baseDir . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/EnumTokenEmulator.php',
     'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\ExplicitOctalEmulator' => $baseDir . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/ExplicitOctalEmulator.php',
+    'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\FnTokenEmulator' => $baseDir . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/FnTokenEmulator.php',
     'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\KeywordEmulator' => $baseDir . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/KeywordEmulator.php',
     'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\MatchTokenEmulator' => $baseDir . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/MatchTokenEmulator.php',
     'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\NullsafeTokenEmulator' => $baseDir . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/NullsafeTokenEmulator.php',
