@@ -398,12 +398,21 @@ class AnnotationGeneratorTest extends TestCase
         yield 'invalidate' => ['CoreAdminHome', 'invalidateArchivedReports', false];
         yield 'regenerate' => ['AdvertisingConversionExport', 'regenerateAccessToken', false];
         yield 'unrecognised names are not executed' => ['API', 'doSomethingUnknown', false];
-        // Read-only methods that do not follow the naming conventions
-        yield 'exception: userExists' => ['UsersManager', 'userExists', true];
-        yield 'exception: doesInclude...' => ['CustomJsTracker', 'doesIncludePluginTrackersAutomatically', true];
+        // Every read-only method that does not follow the naming conventions. Several of these need authentication, so
+        // anonymously they only ever produce an example from a stored response, but they must still be allowed through
+        yield 'exception: doesIncludePluginTrackersAutomatically' => ['CustomJsTracker', 'doesIncludePluginTrackersAutomatically', true];
         yield 'exception: testUrlMatchesSteps' => ['Funnels', 'testUrlMatchesSteps', true];
+        yield 'exception: testUrlMatchPages' => ['HeatmapSessionRecording', 'testUrlMatchPages', true];
+        yield 'exception: wasJsTrackerInstallTestSuccessful' => ['JsTrackerInstallCheck', 'wasJsTrackerInstallTestSuccessful', true];
+        yield 'exception: uses12HourClockForUser' => ['LanguagesManager', 'uses12HourClockForUser', true];
+        yield 'exception: exportContainerVersion' => ['TagManager', 'exportContainerVersion', true];
+        yield 'exception: userEmailExists' => ['UsersManager', 'userEmailExists', true];
+        yield 'exception: userExists' => ['UsersManager', 'userExists', true];
         // An exception only applies to the plugin it is listed for
         yield 'exception is plugin scoped' => ['SomeOtherPlugin', 'userExists', false];
+        // Methods that mutate must stay out, even where the name reads like a query
+        yield 'initiate creates state' => ['JsTrackerInstallCheck', 'initiateJsTrackerInstallTest', false];
+        yield 'export of personal data' => ['PrivacyManager', 'exportDataSubjects', false];
     }
 
     /**

@@ -22,6 +22,7 @@ use Piwik\API\Proxy;
 use Piwik\API\Request;
 use Piwik\Development;
 use Piwik\Http;
+use Piwik\Piwik;
 use Piwik\Plugin\Manager;
 use Piwik\Plugins\ApiReference\Artifact\ArtifactWriter;
 use Piwik\Plugins\ApiReference\ApiReference;
@@ -44,6 +45,11 @@ class AnnotationGenerator
     /**
      * Read-only API methods whose names do not follow the conventions above. Qualified with the plugin name so that a
      * method of the same name in another plugin is not allowed through with them.
+     *
+     * Being listed here only permits an example to be produced; it does not grant access. Most of these require view,
+     * admin or write permission, and example requests are always made anonymously, so in practice they are
+     * cache-only: an example appears for them when a stored response already exists, and otherwise the request is
+     * refused and the endpoint is simply documented without one.
      */
     private const READ_ONLY_METHOD_EXCEPTIONS = [
         'CustomJsTracker.doesIncludePluginTrackersAutomatically',
@@ -156,6 +162,10 @@ class AnnotationGenerator
         if (!Manager::getInstance()->isPluginInFilesystem($pluginName)) {
             throw new PluginNotFoundException($pluginName);
         }
+
+        // Posted so that existing subscribers keep being called for the rest of the 5.x cycle. The result is
+        // deliberately ignored, since example responses are now always requested anonymously.
+        $this->shouldAllowLocalRequests();
 
         $rules = require $this->currentPluginDir . '/Annotations/config.php';
         $pluginAnnotationPath = $this->pathResolver->getAnnotationFilePath($pluginName);
@@ -2186,6 +2196,20 @@ class AnnotationGenerator
         }
 
         return is_array(json_decode($example, true));
+    }
+
+    /**
+     * @deprecated Kept for the 5.x cycle so that plugins subscribing to `ApiReference.shouldAllowLocalRequests` are
+     *             still called. Spec generation no longer acts on the result, because example responses are always
+     *             requested anonymously now. Both this method and the event will be removed in the next major version.
+     */
+    protected function shouldAllowLocalRequests(): bool
+    {
+        $allowLocalRequests = false;
+
+        Piwik::postEvent('ApiReference.shouldAllowLocalRequests', [&$allowLocalRequests]);
+
+        return $allowLocalRequests;
     }
 
     /**

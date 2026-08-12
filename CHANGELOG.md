@@ -2,7 +2,7 @@
 
 5.0.6 - 2026-08-17
 - Hardened OpenAPI example generation so that it only ever queries read-only endpoints, and only anonymously
-- Removed the `ApiReference.shouldAllowLocalRequests` event, which is no longer used
+- Deprecated the `ApiReference.shouldAllowLocalRequests` event, which no longer affects generation and will be removed in the next major version
 - Updated nikic/php-parser to v5.8.0 and Vue to 3.5.41
 
 5.0.5 - 2027-07-06
