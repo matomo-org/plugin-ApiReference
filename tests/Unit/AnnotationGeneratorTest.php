@@ -375,35 +375,41 @@ class AnnotationGeneratorTest extends TestCase
     /**
      * @dataProvider getTestDataForIsReadOnlyApiMethod
      */
-    public function testIsReadOnlyApiMethod(string $methodName, bool $expected): void
+    public function testIsReadOnlyApiMethod(string $pluginName, string $methodName, bool $expected): void
     {
         $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
 
-        $this->assertSame($expected, $annotationGenerator->isReadOnlyApiMethod($methodName));
+        $this->assertSame($expected, $annotationGenerator->isReadOnlyApiMethod($pluginName, $methodName));
     }
 
     /**
-     * @return iterable<string, array{string, bool}>
+     * @return iterable<string, array{string, string, bool}>
      */
     public function getTestDataForIsReadOnlyApiMethod(): iterable
     {
-        yield 'bare get' => ['get', true];
-        yield 'getter' => ['getCustomReport', true];
-        yield 'is' => ['isPluginActivated', true];
-        yield 'has' => ['hasSuperUserAccess', true];
-        yield 'add' => ['addSite', false];
-        yield 'set' => ['setUserAccess', false];
-        yield 'delete' => ['deleteSite', false];
+        yield 'bare get' => ['API', 'get', true];
+        yield 'getter' => ['CustomReports', 'getCustomReport', true];
+        yield 'is' => ['CorePluginsAdmin', 'isPluginActivated', true];
+        yield 'has' => ['UsersManager', 'hasSuperUserAccess', true];
+        yield 'add' => ['SitesManager', 'addSite', false];
+        yield 'set' => ['UsersManager', 'setUserAccess', false];
+        yield 'delete' => ['SitesManager', 'deleteSite', false];
         // These slipped through the denylist this guard replaced
-        yield 'invalidate' => ['invalidateArchivedReports', false];
-        yield 'regenerate' => ['regenerateToken', false];
-        yield 'unrecognised names are not executed' => ['doSomethingUnknown', false];
+        yield 'invalidate' => ['CoreAdminHome', 'invalidateArchivedReports', false];
+        yield 'regenerate' => ['AdvertisingConversionExport', 'regenerateAccessToken', false];
+        yield 'unrecognised names are not executed' => ['API', 'doSomethingUnknown', false];
+        // Read-only methods that do not follow the naming conventions
+        yield 'exception: userExists' => ['UsersManager', 'userExists', true];
+        yield 'exception: doesInclude...' => ['CustomJsTracker', 'doesIncludePluginTrackersAutomatically', true];
+        yield 'exception: testUrlMatchesSteps' => ['Funnels', 'testUrlMatchesSteps', true];
+        // An exception only applies to the plugin it is listed for
+        yield 'exception is plugin scoped' => ['SomeOtherPlugin', 'userExists', false];
     }
 
     /**
      * @dataProvider getTestDataForIsReadOnlyApiMethod
      */
-    public function testGetApplicableDemoExampleUrlsOnlyBuildsUrlsForReadOnlyMethods(string $methodName, bool $isReadOnly): void
+    public function testGetApplicableDemoExampleUrlsOnlyBuildsUrlsForReadOnlyMethods(string $pluginName, string $methodName, bool $isReadOnly): void
     {
         $generator = $this->getMockBuilder(DocumentationGenerator::class)
             ->disableOriginalConstructor()
@@ -412,7 +418,7 @@ class AnnotationGeneratorTest extends TestCase
         // A method that is not read-only must be rejected before anything builds a URL for it
         $generator->expects($isReadOnly ? $this->once() : $this->never())
             ->method('getExampleUrl')
-            ->willReturn('index.php?module=API&method=API.' . $methodName);
+            ->willReturn('index.php?module=API&method=' . $pluginName . '.' . $methodName);
 
         $annotationGenerator = new class ($generator) extends MockAnnotationGenerator {
             protected function getInstanceUrl(): string
@@ -421,7 +427,7 @@ class AnnotationGeneratorTest extends TestCase
             }
         };
 
-        $urls = $annotationGenerator->getApplicableDemoExampleUrls('API', $methodName, []);
+        $urls = $annotationGenerator->getApplicableDemoExampleUrls($pluginName, $methodName, []);
 
         if ($isReadOnly) {
             $this->assertNotSame([], $urls);

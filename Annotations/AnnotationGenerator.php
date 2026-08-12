@@ -41,6 +41,21 @@ class AnnotationGenerator
      */
     private const READ_ONLY_METHOD_PREFIXES = ['get', 'is', 'has', 'are', 'can', 'should'];
 
+    /**
+     * Read-only API methods whose names do not follow the conventions above. Qualified with the plugin name so that a
+     * method of the same name in another plugin is not allowed through with them.
+     */
+    private const READ_ONLY_METHOD_EXCEPTIONS = [
+        'CustomJsTracker.doesIncludePluginTrackersAutomatically',
+        'Funnels.testUrlMatchesSteps',
+        'HeatmapSessionRecording.testUrlMatchPages',
+        'JsTrackerInstallCheck.wasJsTrackerInstallTestSuccessful',
+        'LanguagesManager.uses12HourClockForUser',
+        'TagManager.exportContainerVersion',
+        'UsersManager.userEmailExists',
+        'UsersManager.userExists',
+    ];
+
     public const GLOBAL_PARAMETER_NAMES = [
         'idSite',
         'period',
@@ -931,7 +946,7 @@ class AnnotationGenerator
 
         // Example URLs get executed against a live Matomo, so only the R in CRUD may be requested. This is an
         // allowlist rather than a denylist so that a method whose name we don't recognise is never executed.
-        if (!$this->isReadOnlyApiMethod($methodName)) {
+        if (!$this->isReadOnlyApiMethod($pluginName, $methodName)) {
             return [];
         }
 
@@ -1406,7 +1421,7 @@ class AnnotationGenerator
 
         // Check if any example files exist even though there aren't any example URLs. Cached responses for anything
         // that isn't read-only are left over from before example generation was restricted, so they are ignored too.
-        if (empty($mediaTypes) && $this->isReadOnlyApiMethod($method)) {
+        if (empty($mediaTypes) && $this->isReadOnlyApiMethod($plugin, $method)) {
             $jsonExample = $this->getCachedExampleResponseFile($plugin, $method, 'json');
             $xmlExample = $this->getCachedExampleResponseFile($plugin, $method, 'xml');
             $jsonType = $this->buildMediaTypePropertiesArray('json', $jsonExample, $responseSchema);
@@ -2174,11 +2189,13 @@ class AnnotationGenerator
     }
 
     /**
-     * Whether an API method name follows one of Matomo's read-only naming conventions.
+     * Whether an API method only reads, either by following one of Matomo's read-only naming conventions or by being
+     * listed as a known exception to them.
      *
+     * @param string $pluginName The name of the plugin. E.g. UsersManager.
      * @param string $methodName The name of the plugin specific API method. E.g. getCustomReport.
      */
-    protected function isReadOnlyApiMethod(string $methodName): bool
+    protected function isReadOnlyApiMethod(string $pluginName, string $methodName): bool
     {
         foreach (self::READ_ONLY_METHOD_PREFIXES as $prefix) {
             if (stripos($methodName, $prefix) === 0) {
@@ -2186,6 +2203,6 @@ class AnnotationGenerator
             }
         }
 
-        return false;
+        return in_array($pluginName . '.' . $methodName, self::READ_ONLY_METHOD_EXCEPTIONS, true);
     }
 }

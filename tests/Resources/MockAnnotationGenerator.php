@@ -116,8 +116,8 @@ class MockAnnotationGenerator extends AnnotationGenerator
         return parent::shouldAcceptInvalidSslCertificate();
     }
 
-    public function isReadOnlyApiMethod(string $methodName): bool
+    public function isReadOnlyApiMethod(string $pluginName, string $methodName): bool
     {
-        return parent::isReadOnlyApiMethod($methodName);
+        return parent::isReadOnlyApiMethod($pluginName, $methodName);
     }
 }
