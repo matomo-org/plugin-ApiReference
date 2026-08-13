@@ -391,6 +391,8 @@ class AnnotationGeneratorTest extends TestCase
         yield 'getter' => ['CustomReports', 'getCustomReport', true];
         yield 'is' => ['CorePluginsAdmin', 'isPluginActivated', true];
         yield 'has' => ['UsersManager', 'hasSuperUserAccess', true];
+        yield 'find' => ['PrivacyManager', 'findDataSubjects', true];
+        yield 'search' => ['CrashAnalytics', 'searchCrashMessagesForMerge', true];
         yield 'add' => ['SitesManager', 'addSite', false];
         yield 'set' => ['UsersManager', 'setUserAccess', false];
         yield 'delete' => ['SitesManager', 'deleteSite', false];

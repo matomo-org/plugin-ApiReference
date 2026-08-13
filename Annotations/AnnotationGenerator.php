@@ -40,7 +40,7 @@ class AnnotationGenerator
     /**
      * Naming conventions Matomo uses for API methods that only read.
      */
-    private const READ_ONLY_METHOD_PREFIXES = ['get', 'is', 'has', 'are', 'can', 'should'];
+    private const READ_ONLY_METHOD_PREFIXES = ['get', 'is', 'has', 'are', 'can', 'should', 'find', 'search'];
 
     /**
      * Read-only API methods whose names do not follow the conventions above. Qualified with the plugin name so that a
