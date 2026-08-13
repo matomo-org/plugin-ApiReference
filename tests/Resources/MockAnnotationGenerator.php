@@ -16,9 +16,9 @@ use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
 
 class MockAnnotationGenerator extends AnnotationGenerator
 {
-    public function __construct(DocumentationGenerator $generator, bool $allowLocalRequests = true)
+    public function __construct(DocumentationGenerator $generator)
     {
-        parent::__construct($generator, null, null, $allowLocalRequests);
+        parent::__construct($generator);
 
         // TODO - Extend the constructor behaviour
     }
@@ -60,9 +60,9 @@ class MockAnnotationGenerator extends AnnotationGenerator
     /**
      * @inheritDoc
      */
-    public function getExampleIfAvailable(string $url, bool $useLocalToken = false, bool $ignoreCached = false): string
+    public function getExampleIfAvailable(string $url, bool $ignoreCached = false): string
     {
-        return parent::getExampleIfAvailable($url, $useLocalToken, $ignoreCached);
+        return parent::getExampleIfAvailable($url, $ignoreCached);
     }
 
     /**
@@ -116,8 +116,8 @@ class MockAnnotationGenerator extends AnnotationGenerator
         return parent::shouldAcceptInvalidSslCertificate();
     }
 
-    public function shouldAllowLocalRequests(): bool
+    public function isReadOnlyApiMethod(string $pluginName, string $methodName): bool
     {
-        return parent::shouldAllowLocalRequests();
+        return parent::isReadOnlyApiMethod($pluginName, $methodName);
     }
 }
