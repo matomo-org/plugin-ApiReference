@@ -1,7 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "Ψάχνετε για την αναφορά στο παρωχημένο API; Η σελίδα της %1$sαναφοράς του παρωχημένου API%2$s είναι ακόμη διαθέσιμη καθώς συνεχίζουμε να βελτιώνουμε την τεκμηρίωση για το νέο API. Αν κάτι λείπει ή δεν συμπεριφέρεται όπως αναμένεται στη νέα έκδοση, %3$sενημερώστε μας%4$ ώστε να βελτιώσουμε την εμπειρία.",
         "ReportingApiMoreInformation": "Για περισσότερες πληροφορίες σχετικά με τα APIs του Matomo, δείτε στην %1$sΕισαγωγή για το Matomo API%2$s και στην %3$sΠηγή για το Matomo API%4$s.",
         "ReportingApiReference": "Παραπομπή στο API Αναφορών",
-        "UserAuthentication": "Αυθεντικοποίηση χρήστη"
+        "ReportingApiSummary": "Όλα τα δεδομένα στο Matomo είναι διαθέσιμα μέσω απλών API.",
+        "SwaggerPageConnectToken": "Κάντε αυθεντικοποίηση με ένα τεκμήριο Matomo API",
+        "SwaggerPagePluginEmpty": "Δεν έχουν παραμετροποιηθεί πρόσθετα στην επιτρεπόμενη λίστα ApiReference.",
+        "SwaggerPageRemoveToken": "Αφαίρεση τεκμηρίου",
+        "SwaggerPageRequestFailed": "Η επιτρεπόμενη λίστα πρόσθετων δεν ήταν δυνατό να φορτωθεί.",
+        "SwaggerPageSearchNoResults": "Δεν υπάρχουν πρόσθετα που να συμφωνούν με την αναζήτησή σας.",
+        "SwaggerPageSearchPlaceholder": "Αναζήτηση με το όνομα πρόσθετου",
+        "SwaggerPageSpecLoadFailed": "Η προδιαγραφή OpenAPI δεν ήταν δυνατό να φορτωθεί για το πρόσθετο.",
+        "SwaggerPageSpecNotAvailable": "Η προδιαγραφή OpenAPI δεν είναι διαθέσιμη για το πρόσθετο ακόμη. %1$sΜάθετε περισσότερα%2$s",
+        "SwaggerPageTokenConnected": "Το τεκμήριο συνδέθηκε",
+        "SwaggerPageTokenConnectedHeading": "Το τεκμήριο του Matomo API συνδέθηκε",
+        "UseTryItOutForLiveResponse": "Παραδείγματα των αποκρίσεων απαιτούν πρόσβαση Υπέρ Χρήστη. Δείτε το Δοκιμή τώρα για να δείτε μια απόκριση σε πραγματικό χρόνο.",
+        "UserAuthentication": "Αυθεντικοποίηση χρήστη",
+        "UserAuthenticationManageTokens": "Μπορείτε να διαχειριστείτε τα τεκμήρια αυθεντικοποίησής σας στη σελίδα ασφάλειας.",
+        "UserAuthenticationUsingTokenAuth": "Αν θέλετε να αντλείτε δεδομένα μέσα από ένα σενάριο, ένα crontab, κτλ. θα χρειαστεί να προσθέσετε την παράμετρο URL '%3$s' στις κλήσεις του API για τις διευθύνσεις URL που απαιτούν αυθεντικοποίηση."
     }
 }
