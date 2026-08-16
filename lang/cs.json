@@ -1,7 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "Hledáte starší referenci API? Stránka %1$sstarší reference API%2$s je i nadále dostupná, zatímco pokračujeme ve vylepšování nové dokumentace API. Pokud v nové verzi něco chybí nebo se chová neočekávaně, %3$sdejte nám vědět%4$s, abychom ji mohli vylepšit.",
         "ReportingApiMoreInformation": "Podrobnosti o API Matoma najdete na stránce %1$s Úvod do API Matoma %2$s a v %3$s Referenci API Matoma %4$s.",
         "ReportingApiReference": "Reference API hlášení",
-        "UserAuthentication": "Autentifikace uživatele"
+        "ReportingApiSummary": "Ke všem datům v Matomu lze přistupovat prostřednictvím jednoduchých rozhraní API.",
+        "SwaggerPageConnectToken": "Ověřit pomocí tokenu API Matomo",
+        "SwaggerPagePluginEmpty": "V seznamu povolených pluginů komponenty ApiReference nejsou nakonfigurovány žádné pluginy.",
+        "SwaggerPageRemoveToken": "Odebrat token",
+        "SwaggerPageRequestFailed": "Seznam povolených pluginů se nepodařilo načíst.",
+        "SwaggerPageSearchNoResults": "Vašemu hledání neodpovídají žádné pluginy.",
+        "SwaggerPageSearchPlaceholder": "Hledat podle názvu pluginu",
+        "SwaggerPageSpecLoadFailed": "Specifikaci OpenAPI pro tento plugin se nepodařilo načíst.",
+        "SwaggerPageSpecNotAvailable": "Specifikace OpenAPI pro tento plugin zatím není k dispozici. %1$sDalší informace%2$s",
+        "SwaggerPageTokenConnected": "Token připojen",
+        "SwaggerPageTokenConnectedHeading": "Token API Matomo je připojen",
+        "UseTryItOutForLiveResponse": "Ukázkové odpovědi vyžadují přístup superuživatele. Živou odpověď zobrazíte pomocí „Try it out“.",
+        "UserAuthentication": "Autentifikace uživatele",
+        "UserAuthenticationManageTokens": "Ověřovací tokeny můžete spravovat na stránce Zabezpečení.",
+        "UserAuthenticationUsingTokenAuth": "Chcete-li data načítat ze skriptu, úlohy cronu apod., musíte do volání API pro adresy URL vyžadující ověření přidat parametr URL „%3$s“."
     }
 }
