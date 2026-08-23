@@ -1,7 +1,22 @@
 {
     "ApiReference": {
-        "ReportingApiMoreInformation": "更多關於 Matomo API 的資訊，請查看 %1$sMatomo API 介紹%2$s和 %3$sMatomo API 參考文檔%4$s。",
-        "ReportingApiReference": "报告API参考",
-        "UserAuthentication": "身份验证"
+        "LookingForLegacyApiReference": "想找舊版的 API 參考資料嗎？在我們持續改善新版 API 說明文件的期間，%1$s舊版 API 參考資料%2$s頁面仍然可以使用。如果新版有任何缺漏或行為不如預期，%3$s請告訴我們%4$s，讓我們能改善使用體驗。",
+        "ReportingApiMoreInformation": "更多關於 Matomo API 的資訊，請參閱 %1$sMatomo API 介紹%2$s和 %3$sMatomo API 參考資料%4$s。",
+        "ReportingApiReference": "報表 API 參考資料",
+        "ReportingApiSummary": "Matomo 內的所有資料都能透過簡單的 API 取得。",
+        "SwaggerPageConnectToken": "使用 Matomo API 權杖進行驗證",
+        "SwaggerPagePluginEmpty": "ApiReference 允許清單中沒有設定任何外掛。",
+        "SwaggerPageRemoveToken": "移除權杖",
+        "SwaggerPageRequestFailed": "無法載入外掛允許清單。",
+        "SwaggerPageSearchNoResults": "沒有符合你搜尋條件的外掛。",
+        "SwaggerPageSearchPlaceholder": "依外掛名稱搜尋",
+        "SwaggerPageSpecLoadFailed": "無法載入此外掛的 OpenAPI 規格。",
+        "SwaggerPageSpecNotAvailable": "此外掛尚未提供 OpenAPI 規格。%1$s了解更多%2$s",
+        "SwaggerPageTokenConnected": "權杖已連線",
+        "SwaggerPageTokenConnectedHeading": "Matomo API 權杖已連線",
+        "UseTryItOutForLiveResponse": "範例回應需要超級使用者權限。請使用「Try it out」查看即時回應。",
+        "UserAuthentication": "使用者驗證",
+        "UserAuthenticationManageTokens": "你可以在安全性頁面管理你的驗證權杖。",
+        "UserAuthenticationUsingTokenAuth": "如果你想經由腳本程式或工作排程等方式請求資料，就必須在需要驗證的 API 請求網址中加入「%3$s」網址參數。"
     }
 }
