@@ -1,5 +1,8 @@
 ## Changelog
 
+6.0.1 - 2026-08-31
+- Hardened generation of the API annotations file so untrusted characters in example responses cannot alter its structure
+
 6.0.0 - 2026-08-10
 - Compatibility with Matomo 6
 
