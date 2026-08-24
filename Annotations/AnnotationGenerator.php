@@ -254,7 +254,7 @@ class AnnotationGenerator
 
         foreach ($annotations as $annotation) {
             foreach ($annotation as $line) {
-                $lines[] = ' * ' . $line;
+                $lines[] = ' * ' . str_replace('*/', '*\/', $line);
             }
         }
 

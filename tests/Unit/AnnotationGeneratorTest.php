@@ -279,8 +279,54 @@ class AnnotationGeneratorTest extends TestCase
 
     public function testGetContentForGeneratedAnnotationsFile(): void
     {
-        // TODO - getContentForGeneratedAnnotationsFile method
-        $this->expectNotToPerformAssertions();
+        $content = $this->annotationGenerator->getContentForGeneratedAnnotationsFile(
+            [['@OA\\Get(', ')']],
+            'ExamplePlugin'
+        );
+
+        $this->assertStringStartsWith('<?php', $content);
+        $this->assertStringContainsString(' * @OA\\Get(', $content);
+        $this->assertStringContainsString('class ExamplePluginGeneratedAnnotations', $content);
+    }
+
+    /**
+     * A response-derived string containing a comment terminator must never end the generated docblock,
+     * otherwise the remainder would run as PHP when the file is loaded with require_once.
+     */
+    public function testGetContentForGeneratedAnnotationsFileNeutralisesCommentTerminatorInResponseData(): void
+    {
+        // Object keys in an example response are not controlled by us and may contain arbitrary
+        // characters, including a comment terminator, once embedded into the annotation.
+        $untrustedKey = '*/file_put_contents("proof", "x");/*';
+        $annotations = [
+            [
+                '@OA\\Get(',
+                'example={"' . $untrustedKey . '":"value"}',
+                '@OA\\Property(property="' . $untrustedKey . '", type="string")',
+                ')',
+            ],
+        ];
+
+        $content = $this->annotationGenerator->getContentForGeneratedAnnotationsFile($annotations, 'ExamplePlugin');
+
+        // The docblock opens once and everything between it and the closer stays inside the comment.
+        $openPos = strpos($content, '/**');
+        $classPos = strpos($content, 'class ExamplePluginGeneratedAnnotations');
+        $this->assertNotFalse($openPos);
+        $this->assertNotFalse($classPos);
+
+        // No */ may appear before the class declaration except the single intended docblock closer.
+        $body = substr($content, $openPos, $classPos - $openPos);
+        $this->assertSame(
+            1,
+            substr_count($body, '*/'),
+            'The generated docblock must be terminated exactly once, by its own closer.'
+        );
+
+        // The injected payload survives as escaped text rather than as executable PHP: the */ that
+        // would have closed the comment is now *\/, which does not terminate a block comment.
+        $this->assertStringContainsString('*\/file_put_contents', $content);
+        $this->assertStringNotContainsString('*/file_put_contents', $content);
     }
 
     public function testBuildAnnotationForMethod(): void

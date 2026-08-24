@@ -1,5 +1,8 @@
 ## Changelog
 
+5.0.7 - 2026-08-25
+- Hardened generation of the API annotations file so untrusted characters in example responses cannot alter its structure
+
 5.0.6 - 2026-08-17
 - Hardened OpenAPI example generation so that it only ever queries read-only endpoints, and only anonymously
 - Deprecated the `ApiReference.shouldAllowLocalRequests` event, which no longer affects generation and will be removed in the next major version
