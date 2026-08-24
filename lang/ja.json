@@ -1,7 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "レガシーAPIリファレンスを探していますか？%1$sレガシーAPIリファレンス%2$sのページは、新しいAPIドキュメントを改善している間も利用可能です。新しいバージョンで何かが欠けている、または予期せぬ動作をしている場合は、%3$sぜひお知らせください%4$s。より良い体験にするために改善します。",
         "ReportingApiMoreInformation": "%1$sMatomoAPIの概要%2$sと%3$sMatomoAPIリファレンス%4$sで利用可能なMatomoAPIの詳細をご覧ください。",
         "ReportingApiReference": "API リファレンスレポート",
-        "UserAuthentication": "ユーザー認証"
+        "ReportingApiSummary": "Matomoのすべてのデータは、簡単なAPIを通じて利用可能です。",
+        "SwaggerPageConnectToken": "MatomoのAPIトークンで認証する",
+        "SwaggerPagePluginEmpty": "ApiReferenceのホワイトリストにはプラグインが設定されていません。",
+        "SwaggerPageRemoveToken": "トークンを削除",
+        "SwaggerPageRequestFailed": "プラグインのホワイトリストを読み込めませんでした。",
+        "SwaggerPageSearchNoResults": "検索に一致するプラグインはありません。",
+        "SwaggerPageSearchPlaceholder": "プラグイン名で検索",
+        "SwaggerPageSpecLoadFailed": "このプラグインのOpenAPI仕様を読み込むことができませんでした。",
+        "SwaggerPageSpecNotAvailable": "このプラグインのOpenAPI仕様はまだ利用できません。%1$s詳しくはこちら%2$s",
+        "SwaggerPageTokenConnected": "トークンが接続されました",
+        "SwaggerPageTokenConnectedHeading": "Matomo APIトークンが接続されました",
+        "UseTryItOutForLiveResponse": "例の回答にはスーパー ユーザーアクセスが必要です。「試してみる」を使ってライブでの回答を見てみてください。",
+        "UserAuthentication": "ユーザー認証",
+        "UserAuthenticationManageTokens": "セキュリティページで認証トークンを管理できます。",
+        "UserAuthenticationUsingTokenAuth": "スクリプトやcrontabなどでデータをリクエストしたい場合、認証が必要なURLに対してAPIを呼び出すときに、'%3$s' のURLパラメータを追加する必要があります。"
     }
 }
