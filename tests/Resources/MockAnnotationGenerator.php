@@ -120,4 +120,9 @@ class MockAnnotationGenerator extends AnnotationGenerator
     {
         return parent::shouldAllowLocalRequests();
     }
+
+    public function buildMediaTypePropertiesArray(string $format, string $exampleValue, array $responseSchema = []): array
+    {
+        return parent::buildMediaTypePropertiesArray($format, $exampleValue, $responseSchema);
+    }
 }

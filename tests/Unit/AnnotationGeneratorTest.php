@@ -305,43 +305,47 @@ class AnnotationGeneratorTest extends TestCase
     }
 
     /**
-     * A response-derived string containing a comment terminator must never end the generated docblock,
-     * otherwise the remainder would run as PHP when the file is loaded with require_once.
+     * Untrusted example-response content must not be able to change the structure of the generated
+     * annotations file. The example lines are built through the real media-type builder so the quoting
+     * and escaping match production output, and the result is parsed with PHP's own tokenizer rather
+     * than by matching strings.
      */
-    public function testGetContentForGeneratedAnnotationsFileNeutralisesCommentTerminatorInResponseData(): void
+    public function testGeneratedAnnotationsFileStaysWellFormedWhenExampleContainsCommentSequence(): void
     {
-        // Object keys in an example response are not controlled by us and may contain arbitrary
-        // characters, including a comment terminator, once embedded into the annotation.
-        $untrustedKey = '*/file_put_contents("proof", "x");/*';
-        $annotations = [
-            [
-                '@OA\\Get(',
-                'example={"' . $untrustedKey . '":"value"}',
-                '@OA\\Property(property="' . $untrustedKey . '", type="string")',
-                ')',
-            ],
-        ];
+        $mock = new MockAnnotationGenerator(new DocumentationGenerator());
 
-        $content = $this->annotationGenerator->getContentForGeneratedAnnotationsFile($annotations, 'ExamplePlugin');
+        // A JSON example whose object key is untrusted and contains a docblock comment sequence. The
+        // marker would appear outside the docblock if that sequence changed the file's structure.
+        $exampleJson = '{"*/injectionMarker/*":"value"}';
+        $mediaTypeMap = $mock->buildMediaTypePropertiesArray('json', $exampleJson);
 
-        // The docblock opens once and everything between it and the closer stays inside the comment.
-        $openPos = strpos($content, '/**');
-        $classPos = strpos($content, 'class ExamplePluginGeneratedAnnotations');
-        $this->assertNotFalse($openPos);
-        $this->assertNotFalse($classPos);
+        // Flatten the nested annotation map into string lines exactly the way the generator does
+        // before the lines are assembled into the docblock.
+        $flatLines = $mock->buildLinesForAnnotationObject('@OA\\MediaType', $mediaTypeMap);
+        $content = $mock->getContentForGeneratedAnnotationsFile([$flatLines], 'ExamplePlugin');
 
-        // No */ may appear before the class declaration except the single intended docblock closer.
-        $body = substr($content, $openPos, $classPos - $openPos);
-        $this->assertSame(
-            1,
-            substr_count($body, '*/'),
-            'The generated docblock must be terminated exactly once, by its own closer.'
+        $tokens = token_get_all($content);
+
+        // The whole annotation block must remain a single, uninterrupted docblock.
+        $docComments = array_filter($tokens, static function ($token) {
+            return is_array($token) && $token[0] === T_DOC_COMMENT;
+        });
+        $this->assertCount(1, $docComments, 'The annotations must remain one uninterrupted docblock.');
+
+        // No part of the example may end up outside the docblock as its own token.
+        $identifiers = array_map(static function ($token) {
+            return $token[1];
+        }, array_filter($tokens, static function ($token) {
+            return is_array($token) && $token[0] === T_STRING;
+        }));
+        $this->assertNotContains(
+            'injectionMarker',
+            $identifiers,
+            'Example content must stay inside the docblock.'
         );
 
-        // The injected payload survives as escaped text rather than as executable PHP: the */ that
-        // would have closed the comment is now *\/, which does not terminate a block comment.
-        $this->assertStringContainsString('*\/file_put_contents', $content);
-        $this->assertStringNotContainsString('*/file_put_contents', $content);
+        // Sanity check: the file still parses into the expected class declaration.
+        $this->assertContains('ExamplePluginGeneratedAnnotations', $identifiers);
     }
 
     public function testBuildAnnotationForMethod(): void
