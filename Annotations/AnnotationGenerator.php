@@ -254,6 +254,11 @@ class AnnotationGenerator
 
         foreach ($annotations as $annotation) {
             foreach ($annotation as $line) {
+                // Example-response content is untrusted and reaches this docblock as flattened lines.
+                // A */ in that content would end the generated docblock and change the structure of the
+                // file, so neutralise it here, the single point every line passes through. This mirrors
+                // the slash escaping already present throughout generated examples, so it does not change
+                // how examples read.
                 $lines[] = ' * ' . str_replace('*/', '*\/', $line);
             }
         }
