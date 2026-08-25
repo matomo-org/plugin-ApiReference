@@ -279,8 +279,58 @@ class AnnotationGeneratorTest extends TestCase
 
     public function testGetContentForGeneratedAnnotationsFile(): void
     {
-        // TODO - getContentForGeneratedAnnotationsFile method
-        $this->expectNotToPerformAssertions();
+        $content = $this->annotationGenerator->getContentForGeneratedAnnotationsFile(
+            [['@OA\\Get(', ')']],
+            'ExamplePlugin'
+        );
+
+        $this->assertStringStartsWith('<?php', $content);
+        $this->assertStringContainsString(' * @OA\\Get(', $content);
+        $this->assertStringContainsString('class ExamplePluginGeneratedAnnotations', $content);
+    }
+
+    /**
+     * Untrusted example-response content must not be able to change the structure of the generated
+     * annotations file. The example lines are built through the real media-type builder so the quoting
+     * and escaping match production output, and the result is parsed with PHP's own tokenizer rather
+     * than by matching strings.
+     */
+    public function testGeneratedAnnotationsFileStaysWellFormedWhenExampleContainsCommentSequence(): void
+    {
+        $mock = new MockAnnotationGenerator(new DocumentationGenerator());
+
+        // A JSON example whose object key is untrusted and contains a docblock comment sequence. The
+        // marker would appear outside the docblock if that sequence changed the file's structure.
+        $exampleJson = '{"*/injectionMarker/*":"value"}';
+        $mediaTypeMap = $mock->buildMediaTypePropertiesArray('json', $exampleJson);
+
+        // Flatten the nested annotation map into string lines exactly the way the generator does
+        // before the lines are assembled into the docblock.
+        $flatLines = $mock->buildLinesForAnnotationObject('@OA\\MediaType', $mediaTypeMap);
+        $content = $mock->getContentForGeneratedAnnotationsFile([$flatLines], 'ExamplePlugin');
+
+        $tokens = token_get_all($content);
+
+        // The whole annotation block must remain a single, uninterrupted docblock.
+        $docComments = array_filter($tokens, static function ($token) {
+            return is_array($token) && $token[0] === T_DOC_COMMENT;
+        });
+        $this->assertCount(1, $docComments, 'The annotations must remain one uninterrupted docblock.');
+
+        // No part of the example may end up outside the docblock as its own token.
+        $identifiers = array_map(static function ($token) {
+            return $token[1];
+        }, array_filter($tokens, static function ($token) {
+            return is_array($token) && $token[0] === T_STRING;
+        }));
+        $this->assertNotContains(
+            'injectionMarker',
+            $identifiers,
+            'Example content must stay inside the docblock.'
+        );
+
+        // Sanity check: the file still parses into the expected class declaration.
+        $this->assertContains('ExamplePluginGeneratedAnnotations', $identifiers);
     }
 
     public function testBuildAnnotationForMethod(): void
