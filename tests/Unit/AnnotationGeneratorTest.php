@@ -18,7 +18,6 @@ use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\Config;
 use Piwik\Development;
-use Piwik\Piwik;
 use Piwik\Plugins\ApiReference\Annotations\AnnotationGenerator;
 use Piwik\Plugins\ApiReference\ApiReference;
 use Piwik\Plugins\ApiReference\tests\Resources\MockAnnotationGenerator;
@@ -178,23 +177,9 @@ class AnnotationGeneratorTest extends TestCase
     private static $exampleSchemas;
 
     /**
-     * @var bool
-     */
-    private static $disableLocalRequestsByEvent = false;
-
-    /**
      * @var AnnotationGenerator
      */
     private $annotationGenerator;
-
-    public static function setUpBeforeClass(): void
-    {
-        Piwik::addAction('ApiReference.shouldAllowLocalRequests', function (&$allowLocalRequests): void {
-            if (self::$disableLocalRequestsByEvent) {
-                $allowLocalRequests = false;
-            }
-        });
-    }
 
     public function setUp(): void
     {
@@ -294,8 +279,58 @@ class AnnotationGeneratorTest extends TestCase
 
     public function testGetContentForGeneratedAnnotationsFile(): void
     {
-        // TODO - getContentForGeneratedAnnotationsFile method
-        $this->expectNotToPerformAssertions();
+        $content = $this->annotationGenerator->getContentForGeneratedAnnotationsFile(
+            [['@OA\\Get(', ')']],
+            'ExamplePlugin'
+        );
+
+        $this->assertStringStartsWith('<?php', $content);
+        $this->assertStringContainsString(' * @OA\\Get(', $content);
+        $this->assertStringContainsString('class ExamplePluginGeneratedAnnotations', $content);
+    }
+
+    /**
+     * Untrusted example-response content must not be able to change the structure of the generated
+     * annotations file. The example lines are built through the real media-type builder so the quoting
+     * and escaping match production output, and the result is parsed with PHP's own tokenizer rather
+     * than by matching strings.
+     */
+    public function testGeneratedAnnotationsFileStaysWellFormedWhenExampleContainsCommentSequence(): void
+    {
+        $mock = new MockAnnotationGenerator(new DocumentationGenerator());
+
+        // A JSON example whose object key is untrusted and contains a docblock comment sequence. The
+        // marker would appear outside the docblock if that sequence changed the file's structure.
+        $exampleJson = '{"*/injectionMarker/*":"value"}';
+        $mediaTypeMap = $mock->buildMediaTypePropertiesArray('json', $exampleJson);
+
+        // Flatten the nested annotation map into string lines exactly the way the generator does
+        // before the lines are assembled into the docblock.
+        $flatLines = $mock->buildLinesForAnnotationObject('@OA\\MediaType', $mediaTypeMap);
+        $content = $mock->getContentForGeneratedAnnotationsFile([$flatLines], 'ExamplePlugin');
+
+        $tokens = token_get_all($content);
+
+        // The whole annotation block must remain a single, uninterrupted docblock.
+        $docComments = array_filter($tokens, static function ($token) {
+            return is_array($token) && $token[0] === T_DOC_COMMENT;
+        });
+        $this->assertCount(1, $docComments, 'The annotations must remain one uninterrupted docblock.');
+
+        // No part of the example may end up outside the docblock as its own token.
+        $identifiers = array_map(static function ($token) {
+            return $token[1];
+        }, array_filter($tokens, static function ($token) {
+            return is_array($token) && $token[0] === T_STRING;
+        }));
+        $this->assertNotContains(
+            'injectionMarker',
+            $identifiers,
+            'Example content must stay inside the docblock.'
+        );
+
+        // Sanity check: the file still parses into the expected class declaration.
+        $this->assertContains('ExamplePluginGeneratedAnnotations', $identifiers);
     }
 
     public function testBuildAnnotationForMethod(): void
@@ -368,7 +403,7 @@ class AnnotationGeneratorTest extends TestCase
                 ]];
             }
 
-            public function getExampleIfAvailable(string $url, bool $useLocalToken = false, bool $ignoreCached = false): string
+            public function getExampleIfAvailable(string $url, bool $ignoreCached = false): string
             {
                 $this->receivedUrl = $url;
                 return '{"result":"ok"}';
@@ -387,30 +422,78 @@ class AnnotationGeneratorTest extends TestCase
         );
     }
 
-    public function testShouldAllowLocalRequestsDefaultsToTrue(): void
+    /**
+     * @dataProvider getTestDataForIsReadOnlyApiMethod
+     */
+    public function testIsReadOnlyApiMethod(string $pluginName, string $methodName, bool $expected): void
     {
         $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
 
-        $this->assertTrue($annotationGenerator->shouldAllowLocalRequests());
+        $this->assertSame($expected, $annotationGenerator->isReadOnlyApiMethod($pluginName, $methodName));
     }
 
-    public function testShouldAllowLocalRequestsCanBeDisabledByConstructor(): void
+    /**
+     * @return iterable<string, array{string, string, bool}>
+     */
+    public function getTestDataForIsReadOnlyApiMethod(): iterable
     {
-        $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator(), false);
-
-        $this->assertFalse($annotationGenerator->shouldAllowLocalRequests());
+        yield 'bare get' => ['API', 'get', true];
+        yield 'getter' => ['CustomReports', 'getCustomReport', true];
+        yield 'is' => ['CorePluginsAdmin', 'isPluginActivated', true];
+        yield 'has' => ['UsersManager', 'hasSuperUserAccess', true];
+        yield 'find' => ['PrivacyManager', 'findDataSubjects', true];
+        yield 'search' => ['CrashAnalytics', 'searchCrashMessagesForMerge', true];
+        yield 'add' => ['SitesManager', 'addSite', false];
+        yield 'set' => ['UsersManager', 'setUserAccess', false];
+        yield 'delete' => ['SitesManager', 'deleteSite', false];
+        // These slipped through the denylist this guard replaced
+        yield 'invalidate' => ['CoreAdminHome', 'invalidateArchivedReports', false];
+        yield 'regenerate' => ['AdvertisingConversionExport', 'regenerateAccessToken', false];
+        yield 'unrecognised names are not executed' => ['API', 'doSomethingUnknown', false];
+        // Every read-only method that does not follow the naming conventions. Several of these need authentication, so
+        // anonymously they only ever produce an example from a stored response, but they must still be allowed through
+        yield 'exception: doesIncludePluginTrackersAutomatically' => ['CustomJsTracker', 'doesIncludePluginTrackersAutomatically', true];
+        yield 'exception: testUrlMatchesSteps' => ['Funnels', 'testUrlMatchesSteps', true];
+        yield 'exception: testUrlMatchPages' => ['HeatmapSessionRecording', 'testUrlMatchPages', true];
+        yield 'exception: wasJsTrackerInstallTestSuccessful' => ['JsTrackerInstallCheck', 'wasJsTrackerInstallTestSuccessful', true];
+        yield 'exception: uses12HourClockForUser' => ['LanguagesManager', 'uses12HourClockForUser', true];
+        yield 'exception: exportContainerVersion' => ['TagManager', 'exportContainerVersion', true];
+        yield 'exception: userEmailExists' => ['UsersManager', 'userEmailExists', true];
+        yield 'exception: userExists' => ['UsersManager', 'userExists', true];
+        // An exception only applies to the plugin it is listed for
+        yield 'exception is plugin scoped' => ['SomeOtherPlugin', 'userExists', false];
+        // Methods that mutate must stay out, even where the name reads like a query
+        yield 'initiate creates state' => ['JsTrackerInstallCheck', 'initiateJsTrackerInstallTest', false];
+        yield 'export of personal data' => ['PrivacyManager', 'exportDataSubjects', false];
     }
 
-    public function testShouldAllowLocalRequestsCanBeDisabledByEvent(): void
+    /**
+     * @dataProvider getTestDataForIsReadOnlyApiMethod
+     */
+    public function testGetApplicableDemoExampleUrlsOnlyBuildsUrlsForReadOnlyMethods(string $pluginName, string $methodName, bool $isReadOnly): void
     {
-        self::$disableLocalRequestsByEvent = true;
+        $generator = $this->getMockBuilder(DocumentationGenerator::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getExampleUrl'])
+            ->getMock();
+        // A method that is not read-only must be rejected before anything builds a URL for it
+        $generator->expects($isReadOnly ? $this->once() : $this->never())
+            ->method('getExampleUrl')
+            ->willReturn('index.php?module=API&method=' . $pluginName . '.' . $methodName);
 
-        try {
-            $annotationGenerator = new MockAnnotationGenerator(new DocumentationGenerator());
+        $annotationGenerator = new class ($generator) extends MockAnnotationGenerator {
+            protected function getInstanceUrl(): string
+            {
+                return 'https://local.matomo.test/';
+            }
+        };
 
-            $this->assertFalse($annotationGenerator->shouldAllowLocalRequests());
-        } finally {
-            self::$disableLocalRequestsByEvent = false;
+        $urls = $annotationGenerator->getApplicableDemoExampleUrls($pluginName, $methodName, []);
+
+        if ($isReadOnly) {
+            $this->assertNotSame([], $urls);
+        } else {
+            $this->assertSame([], $urls);
         }
     }
 

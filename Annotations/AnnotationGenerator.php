@@ -22,7 +22,6 @@ use Piwik\API\Proxy;
 use Piwik\API\Request;
 use Piwik\Development;
 use Piwik\Http;
-use Piwik\Piwik;
 use Piwik\Plugin\Manager;
 use Piwik\Plugins\ApiReference\Artifact\ArtifactWriter;
 use Piwik\Plugins\ApiReference\ApiReference;
@@ -36,6 +35,31 @@ use Piwik\Validators\NotEmpty;
 class AnnotationGenerator
 {
     public const EXAMPLE_CHAR_LIMIT = 3000;
+
+    /**
+     * Naming conventions Matomo uses for API methods that only read.
+     */
+    private const READ_ONLY_METHOD_PREFIXES = ['get', 'is', 'has', 'are', 'can', 'should', 'find', 'search'];
+
+    /**
+     * Read-only API methods whose names do not follow the conventions above. Qualified with the plugin name so that a
+     * method of the same name in another plugin is not allowed through with them.
+     *
+     * Being listed here only permits an example to be produced; it does not grant access. Most of these require view,
+     * admin or write permission, and example requests are always made anonymously, so in practice they are
+     * cache-only: an example appears for them when a stored response already exists, and otherwise the request is
+     * refused and the endpoint is simply documented without one.
+     */
+    private const READ_ONLY_METHOD_EXCEPTIONS = [
+        'CustomJsTracker.doesIncludePluginTrackersAutomatically',
+        'Funnels.testUrlMatchesSteps',
+        'HeatmapSessionRecording.testUrlMatchPages',
+        'JsTrackerInstallCheck.wasJsTrackerInstallTestSuccessful',
+        'LanguagesManager.uses12HourClockForUser',
+        'TagManager.exportContainerVersion',
+        'UsersManager.userEmailExists',
+        'UsersManager.userExists',
+    ];
 
     public const GLOBAL_PARAMETER_NAMES = [
         'idSite',
@@ -96,11 +120,6 @@ class AnnotationGenerator
     protected $missingImportantDataWarnings;
 
     /**
-     * @var bool
-     */
-    protected $allowLocalRequests;
-
-    /**
      * @var array<string, mixed>|null
      */
     protected $parameterExamples;
@@ -108,14 +127,12 @@ class AnnotationGenerator
     public function __construct(
         DocumentationGenerator $generator,
         ?PathResolver $pathResolver = null,
-        ?ArtifactWriter $artifactWriter = null,
-        bool $allowLocalRequests = true
+        ?ArtifactWriter $artifactWriter = null
     ) {
         $this->generator = $generator;
         $this->pathResolver = $pathResolver ?? new PathResolver();
         $this->artifactWriter = $artifactWriter ?? new ArtifactWriter();
         $this->missingImportantDataWarnings = [];
-        $this->allowLocalRequests = $allowLocalRequests;
         $this->parameterExamples = null;
         $this->currentPluginDir = Manager::getInstance()::getPluginDirectory('ApiReference');
     }
@@ -232,7 +249,12 @@ class AnnotationGenerator
 
         foreach ($annotations as $annotation) {
             foreach ($annotation as $line) {
-                $lines[] = ' * ' . $line;
+                // Example-response content is untrusted and reaches this docblock as flattened lines.
+                // A */ in that content would end the generated docblock and change the structure of the
+                // file, so neutralise it here, the single point every line passes through. This mirrors
+                // the slash escaping already present throughout generated examples, so it does not change
+                // how examples read.
+                $lines[] = ' * ' . str_replace('*/', '*\/', $line);
             }
         }
 
@@ -930,12 +952,10 @@ class AnnotationGenerator
             'date' => 'today',
         ];
 
-        // Don't build example URLs for anything that isn't the R in CRUD. E.g. No create, update, or delete.
-        $notAllowedExampleUrlOperations = ['create', 'add', 'save', 'set', 'update', 'delete', 'remove', 'copy', 'duplicate', 'generate'];
-        foreach ($notAllowedExampleUrlOperations as $operation) {
-            if (stripos($methodName, $operation) === 0) {
-                return [];
-            }
+        // Example URLs get executed against a live Matomo, so only the R in CRUD may be requested. This is an
+        // allowlist rather than a denylist so that a method whose name we don't recognise is never executed.
+        if (!$this->isReadOnlyApiMethod($pluginName, $methodName)) {
+            return [];
         }
 
         $parametersToReplace = [];
@@ -1045,13 +1065,13 @@ class AnnotationGenerator
     }
 
     /**
-     * Take the example URL and query the endpoint for an example response, hiding subtables. If a response isn't
-     * received, it can try using a temporary token to make the request against the current
-     * instance of Matomo.
+     * Take the example URL and query the endpoint for an example response, hiding subtables.
+     *
+     * The request is only ever made anonymously. Example responses must never be produced with elevated
+     * credentials, since the example URLs are built from API metadata and are not restricted to endpoints
+     * that are safe to execute.
      *
      * @param string $url The full example URL.
-     * @param bool $useLocalToken A boolean indicating whether to get a temporary token and try the request against the
-     * currently running Matomo instance.
      * @param bool $ignoreCached A boolean indicating whether the cached response file should be ignored. Default is
      * false. This is simply in case we want to replace the existing responses with new ones.
      *
@@ -1059,7 +1079,7 @@ class AnnotationGenerator
      * An empty string is returned by default.
      * @throws \Throwable
      */
-    protected function getExampleIfAvailable(string $url, bool $useLocalToken = false, bool $ignoreCached = false): string
+    protected function getExampleIfAvailable(string $url, bool $ignoreCached = false): string
     {
         $queryString = Url::getQueryStringFromUrl($url);
         $queryParams = UrlHelper::getArrayFromQueryString($queryString);
@@ -1085,12 +1105,7 @@ class AnnotationGenerator
             $url .= '&convertToUnicode=0';
         }
 
-        // If the flag to use a temp token is set, get a token and update the request URL
         $tempUrl = $url . '&hideIdSubDatable=1';
-        if ($useLocalToken) {
-            $token = Piwik::requestTemporarySystemAuthToken('ApiReference', 24);
-            $tempUrl = str_replace('&token_auth=anonymous', '&token_auth=' . $token, $tempUrl);
-        }
         try {
             $response = Http::sendHttpRequestBy(
                 Http::getTransportMethod(),
@@ -1396,16 +1411,9 @@ class AnnotationGenerator
         $mediaTypes = [];
         $exampleUrls = [];
         if (Manager::getInstance()->isPluginActivated($plugin)) {
-            // Only fetch live examples for activated plugins since their endpoints can be executed safely.
             $exampleUrls = $this->getApplicableDemoExampleUrls($plugin, $method, $paramsData);
             foreach ($exampleUrls as $type => $url) {
                 $exampleValue = $this->getExampleIfAvailable($url);
-                // If the example lookup failed, try making the same request locally using a local token.
-                if (empty($exampleValue)) {
-                    if ($this->shouldAllowLocalRequests()) {
-                        $exampleValue = $this->getExampleIfAvailable($url, true);
-                    }
-                }
                 if (strlen($exampleValue) > self::EXAMPLE_CHAR_LIMIT) {
                     $exampleValue = $this->cutExampleCloseToCharLimit($exampleValue, $type);
                 }
@@ -1419,8 +1427,9 @@ class AnnotationGenerator
             }
         }
 
-        // Check if any example files exist even though there aren't any example URLs
-        if (empty($mediaTypes)) {
+        // Check if any example files exist even though there aren't any example URLs. Cached responses for anything
+        // that isn't read-only are left over from before example generation was restricted, so they are ignored too.
+        if (empty($mediaTypes) && $this->isReadOnlyApiMethod($plugin, $method)) {
             $jsonExample = $this->getCachedExampleResponseFile($plugin, $method, 'json');
             $xmlExample = $this->getCachedExampleResponseFile($plugin, $method, 'xml');
             $jsonType = $this->buildMediaTypePropertiesArray('json', $jsonExample, $responseSchema);
@@ -2187,11 +2196,21 @@ class AnnotationGenerator
         return is_array(json_decode($example, true));
     }
 
-    protected function shouldAllowLocalRequests(): bool
+    /**
+     * Whether an API method only reads, either by following one of Matomo's read-only naming conventions or by being
+     * listed as a known exception to them.
+     *
+     * @param string $pluginName The name of the plugin. E.g. UsersManager.
+     * @param string $methodName The name of the plugin specific API method. E.g. getCustomReport.
+     */
+    protected function isReadOnlyApiMethod(string $pluginName, string $methodName): bool
     {
-        $allowLocalRequests = $this->allowLocalRequests;
-        Piwik::postEvent('ApiReference.shouldAllowLocalRequests', [&$allowLocalRequests]);
+        foreach (self::READ_ONLY_METHOD_PREFIXES as $prefix) {
+            if (stripos($methodName, $prefix) === 0) {
+                return true;
+            }
+        }
 
-        return $allowLocalRequests;
+        return in_array($pluginName . '.' . $methodName, self::READ_ONLY_METHOD_EXCEPTIONS, true);
     }
 }
