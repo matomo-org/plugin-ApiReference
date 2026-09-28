@@ -1337,6 +1337,156 @@ class AnnotationGeneratorTest extends TestCase
                 ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),']],
             ],
         ];
+        yield 'should return one annotation array per attribute name using the first example value' => [
+            [['testAttribute1' => ''], ['testAttribute1' => 'testValue1'], ['testAttribute2' => 'testValue2'], ['testAttribute1' => 'testValue3']],
+            [
+                ['@OA\Property' => ['property="testAttribute1",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue1"']],
+                ['@OA\Property' => ['property="testAttribute2",', 'type="string",', '@OA\Xml(attribute=true),', 'example="testValue2"']],
+            ],
+        ];
+    }
+
+    public function testBuildSchemaAnnotationFromXmlExampleDeclaresRepeatedRowAttributeOnce(): void
+    {
+        // How the XML renderer outputs an array keyed by ID, e.g. FormAnalytics.getAllGoals
+        $xml = '<?xml version="1.0" encoding="utf-8" ?>
+<result>
+	<row>
+		<row key=""/>
+		<row key="1">Goal A</row>
+		<row key="2">Goal B</row>
+	</row>
+</result>';
+        $xmlObject = $this->annotationGenerator->convertExampleXmlToObject($xml);
+        $schema = json_encode($this->annotationGenerator->buildSchemaAnnotationFromXmlExample($xmlObject));
+
+        $this->assertSame(1, substr_count($schema, json_encode('property="key",')), $schema);
+        $this->assertStringContainsString(json_encode('example="1"'), $schema);
+    }
+
+    /**
+     * @dataProvider getTestDataForSiblingRowsWithAttributesAndElements
+     *
+     * @param string[] $expectedProperties
+     */
+    public function testBuildSchemaAnnotationFromXmlExampleMergesSiblingRowsWithAttributesAndElements(string $xml, array $expectedProperties): void
+    {
+        $xmlObject = $this->annotationGenerator->convertExampleXmlToObject($xml);
+        $schema = json_encode($this->annotationGenerator->buildSchemaAnnotationFromXmlExample($xmlObject));
+
+        preg_match_all('/property=\\\\"([^\\\\]+)\\\\"/', $schema, $matches);
+        $this->assertSame($expectedProperties, $matches[1], $schema);
+    }
+
+    /**
+     * @dataProvider getTestDataForSiblingAttributeExamples
+     */
+    public function testBuildSchemaAnnotationFromXmlExampleUsesFirstNonEmptySiblingAttributeExample(string $xml): void
+    {
+        $xmlObject = $this->annotationGenerator->convertExampleXmlToObject($xml);
+        $schema = json_encode($this->annotationGenerator->buildSchemaAnnotationFromXmlExample($xmlObject));
+
+        preg_match_all('/example=\\\\"([^\\\\]*)\\\\"/', $schema, $matches);
+        $this->assertSame(['1'], $matches[1], $schema);
+    }
+
+    public static function getTestDataForSiblingAttributeExamples(): iterable
+    {
+        yield 'top-level rows' => [
+            '<result><row key="1"><x><v>1</v></x></row><row key="2"><x><v>2</v></x></row></result>',
+        ];
+        yield 'top-level rows ending with an empty value' => [
+            '<result><row key="1"><x><v>1</v></x></row><row key=""><x><v>2</v></x></row></result>',
+        ];
+        yield 'repeated nested element ending with an empty value' => [
+            '<result><row><row><sub a="1"><x><v>1</v></x></sub></row><row><sub a=""><x><v>2</v></x></sub></row></row></result>',
+        ];
+        yield 'repeated nested element starting with an empty value' => [
+            '<result><row><row><sub a=""><x><v>1</v></x></sub></row><row><sub a="1"><x><v>2</v></x></sub></row></row></result>',
+        ];
+    }
+
+    /**
+     * @dataProvider getTestDataForSiblingRowTypes
+     */
+    public function testBuildSchemaAnnotationFromXmlExampleDeclaresTypesOfMergedSiblingRows(string $xml, string $expectedTypes): void
+    {
+        $xmlObject = $this->annotationGenerator->convertExampleXmlToObject($xml);
+        $schema = json_encode($this->annotationGenerator->buildSchemaAnnotationFromXmlExample($xmlObject));
+
+        preg_match_all('/(property|type)=\\\\"([^\\\\]+)\\\\"/', $schema, $matches, PREG_SET_ORDER);
+        $tokens = implode(' ', array_map(function (array $match): string {
+            return $match[1] === 'property' ? $match[2] . ':' : $match[2];
+        }, $matches));
+        $this->assertSame($expectedTypes, $tokens, $schema);
+    }
+
+    public static function getTestDataForSiblingRowTypes(): iterable
+    {
+        yield 'should declare an element that repeats in only some rows as an array' => [
+            '<result><row><row><x><v>1</v></x><x><v>2</v></x></row><row><x><v>3</v></x></row></row></result>',
+            'object row: array object row: array object x: array object',
+        ];
+        yield 'should keep object rows whose first child a later row leaves empty' => [
+            '<result><row><sub><x><v>1</v></x></sub></row><row><sub/></row></result>',
+            'object row: array object sub: object x: object',
+        ];
+    }
+
+    public static function getTestDataForSiblingRowsWithAttributesAndElements(): iterable
+    {
+        yield 'should not lift the children of an element that is single in one row and repeated in another' => [
+            '<result><row><w><row><p><q><z>1</z></q></p></row></w></row><row><w><row><p><q><z>1</z></q></p></row><row><p><q><z>2</z></q></p></row></w></row></result>',
+            ['row', 'w', 'row', 'p', 'q'],
+        ];
+        yield 'should declare every attribute of rows with different numbers of attributes' => [
+            '<result><row a="1"/><row b="2"/><row a="3" c="4"/></result>',
+            ['row', 'a', 'b', 'c'],
+        ];
+        yield 'should declare the attribute and elements of a lone row' => [
+            '<result><row key="1"><sub><x><v>1</v></x></sub></row></result>',
+            ['row', 'key', 'sub', 'x'],
+        ];
+        yield 'should keep the children of a lone nested row' => [
+            '<result><row><w><row><p><q><z>1</z></q></p></row></w></row></result>',
+            ['row', 'w', 'row', 'p', 'q'],
+        ];
+        yield 'should keep the attribute of rows whose element holds text' => [
+            '<result><row><row key="1"><name>A</name></row><row key="2"><name>B</name></row></row></result>',
+            ['row', 'row', 'key'],
+        ];
+        yield 'should declare a repeated nested element once' => [
+            '<result><row><row key="1"><sub><x><v>1</v></x></sub></row><row key="2"><sub><x><v>2</v></x></sub></row></row></result>',
+            ['row', 'row', 'key', 'sub', 'x'],
+        ];
+        yield 'should merge the children of a repeated nested element across rows' => [
+            '<result><row><row key="1"><sub><x><v>1</v></x></sub></row><row key="2"><sub><y><v>2</v></y></sub></row></row></result>',
+            ['row', 'row', 'key', 'sub', 'x', 'y'],
+        ];
+        yield 'should merge the attributes of a repeated nested element across rows' => [
+            '<result><row><row key="1"><sub a="1"><x><v>1</v></x></sub></row><row key="2"><sub b="2"><x><v>2</v></x></sub></row></row></result>',
+            ['row', 'row', 'key', 'sub', 'a', 'b', 'x'],
+        ];
+        yield 'should merge grandchildren of a repeated nested element across rows' => [
+            '<result><row><row key="1"><sub><x><p><v>1</v></p></x></sub></row><row key="2"><sub><x><q><v>2</v></q></x></sub></row></row></result>',
+            ['row', 'row', 'key', 'sub', 'x', 'p', 'q'],
+        ];
+        yield 'should merge nested elements across rows without attributes' => [
+            '<result><row><row><sub><x><v>1</v></x></sub></row><row><sub><y><v>2</v></y></sub></row></row></result>',
+            ['row', 'row', 'sub', 'x', 'y'],
+        ];
+        yield 'should keep the children of an element that a later row leaves empty' => [
+            '<result><row><row><sub><x><v>1</v></x></sub></row><row><sub><x/></sub></row></row></result>',
+            ['row', 'row', 'sub', 'x'],
+        ];
+        yield 'should keep the children of an element that an earlier row leaves empty' => [
+            '<result><row><row><sub><x/></sub></row><row><sub><x><v>1</v></x></sub></row></row></result>',
+            ['row', 'row', 'sub', 'x'],
+        ];
+        yield 'should keep the elements of rows whose first child holds text' => [
+            '<result><row><row><label>A</label><sub><x><v>1</v></x></sub></row><row><label>B</label><sub><x><v>2</v></x></sub></row></row></result>',
+            ['row', 'row', 'sub', 'x'],
+        ];
     }
 
     /**

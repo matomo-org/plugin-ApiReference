@@ -1,5 +1,10 @@
 ## Changelog
 
+5.0.8 - 2026-10-05
+- Fixed the daily API specification task logging errors, and so failing scheduled archiving, for XML responses that list values keyed by ID, such as FormAnalytics.getAllGoals
+- Fixed the XML response schema for rows that combine attributes with nested elements, which lost the attributes, repeated the elements or made the daily task log an error
+- Fixed the XML response schema leaving out nested attributes and elements that only some rows have, such as the sub-widgets of API.getReportPagesMetadata
+
 5.0.7 - 2026-08-25
 - Hardened generation of the API annotations file so untrusted characters in example responses cannot alter its structure
 
