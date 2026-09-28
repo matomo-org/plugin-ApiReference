@@ -1762,24 +1762,14 @@ class AnnotationGenerator
         $treatAsArray = $propName !== 'row' && $isList;
         if ($treatAsArray) {
             $type = 'array';
-            $mergedValues = [];
-            foreach ($values as $value) {
-                if (is_array($value)) {
-                    $mergedValues = array_merge($mergedValues, $value);
-                }
-            }
-            $values = $mergedValues;
+            $values = $this->mergeXmlSiblingValues(...array_values(array_filter($values, 'is_array')));
         }
         if ($propName === 'row') {
             $type = 'array';
-            // Merge the rows together to get as many properties as possible
-            $mergedValues = [];
-            foreach ($values as $value) {
-                if (is_array($value)) {
-                    $mergedValues = array_merge($mergedValues, $value);
-                }
-            }
-            $values = $mergedValues;
+            // Merge the rows together to get as many properties as possible. A lone row arrives as a map of its own
+            // children rather than a list of rows.
+            $rows = $isList ? $values : [$values];
+            $values = $this->mergeXmlSiblingValues(...array_values(array_filter($rows, 'is_array')));
         }
 
         // Set the common properties
@@ -1789,33 +1779,26 @@ class AnnotationGenerator
         ];
 
         $hasAttributes = false;
+        $attributes = [];
+        $attributesPosition = 0;
         $childLines = [];
-        // Recursively check if any of the children are arrays
+        $elementValues = [];
+        // Merged sibling rows arrive as a list, so walk every entry of each row rather than only its first
+        $entries = [];
         foreach ($values as $key => $value) {
-            // If it's not an array, skip
-            if (!is_array($value)) {
+            if (!is_string($key) && is_array($value)) {
+                foreach ($value as $childKey => $childValue) {
+                    $entries[] = [$childKey, $childValue];
+                }
                 continue;
             }
-
-            // Handle nested arrays
-            if (!is_string($key)) {
-                if (!is_array(reset($value))) {
-                    continue;
-                }
-
-                $keys = array_keys($value);
-                $key = null;
-                foreach ($keys as $candidate) {
-                    if (
-                        $candidate !== ApiReference::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
-                        && $candidate !== ApiReference::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
-                    ) {
-                        $key = $candidate;
-                        break;
-                    }
-                }
-                $key = $key ?? reset($keys);
-                $value = $value[$key];
+            $entries[] = [$key, $value];
+        }
+        // Recursively check if any of the children are arrays
+        foreach ($entries as [$key, $value]) {
+            // If it's not an array, or it is an unnamed list of scalars, skip
+            if (!is_array($value) || (!is_string($key) && !is_array(reset($value)))) {
+                continue;
             }
 
             // Special handling for XML attributes (metadata-only)
@@ -1823,13 +1806,36 @@ class AnnotationGenerator
                 $key === ApiReference::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
                 || $key === ApiReference::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
             ) {
+                // Merged sibling rows each bring their own attributes, which must become a single set of properties
+                if (!$hasAttributes) {
+                    $attributesPosition = count($childLines);
+                }
                 $hasAttributes = true;
-                $childLines = array_merge($childLines, $this->buildXmlAttributeSchemaLines($value));
+                // A merge of single-attribute siblings can leave several attributes in one map, which
+                // buildXmlAttributeSchemaLines() would read as one nameless attribute
+                foreach ($value as $name => $attribute) {
+                    foreach (is_array($attribute) ? $attribute : [$name => $attribute] as $attributeName => $attributeValue) {
+                        $attributes[] = [$attributeName => $attributeValue];
+                    }
+                }
                 continue;
             }
 
-            $childLines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
+            // Hold the element's place by name until the values of every sibling that repeats it are known
+            if (!isset($elementValues[$key])) {
+                $childLines[] = $key;
+            }
+            $elementValues[$key][] = $value;
         }
+        foreach ($childLines as $index => $name) {
+            $childLines[$index] = $this->buildPropertyAnnotationFromXmlExample($name, $this->mergeXmlSiblingValues(...$elementValues[$name]));
+        }
+        if ($hasAttributes) {
+            array_splice($childLines, $attributesPosition, 0, $this->buildXmlAttributeSchemaLines($attributes));
+        }
+        $originalKeys = array_keys($originalValues);
+        $isListOfStrings = !is_string(reset($originalKeys)) && !$hasAttributes
+            && array_filter(array_keys($values), 'is_string') === [];
 
         // If the object is for row, merge any children with the items object
         if ($propName === 'row') {
@@ -1840,8 +1846,7 @@ class AnnotationGenerator
             ];
 
             // Handle arrays of strings which don't have named properties
-            $originalKeys = array_keys($originalValues);
-            if (!is_string(reset($originalKeys)) && !is_string(reset($values)) && !$hasAttributes) {
+            if ($isListOfStrings) {
                 $itemProperties = ['type="string"'];
             }
 
@@ -1854,8 +1859,7 @@ class AnnotationGenerator
                 'additionalProperties=true,',
             ];
 
-            $originalKeys = array_keys($originalValues);
-            if (!is_string(reset($originalKeys)) && !is_string(reset($values)) && !$hasAttributes) {
+            if ($isListOfStrings) {
                 $itemProperties = ['type="string"'];
             }
 
@@ -1866,8 +1870,43 @@ class AnnotationGenerator
     }
 
     /**
+     * Merge the values of sibling XML nodes so the schema declares every attribute and element any of them has. Unlike
+     * array_merge_recursive(), a scalar repeated across siblings stays a scalar, since an array in its place would be
+     * declared as a property. The first non-empty scalar is kept, matching buildXmlAttributeSchemaLines(), and a
+     * scalar never replaces an array: an empty or text-only sibling (<x/>) arrives as a string and must not erase the
+     * children of an earlier one.
+     */
+    private function mergeXmlSiblingValues(array ...$siblings): array
+    {
+        // A node that repeats in one sibling is a list but a lone one is a map, and mixing the two shapes would read
+        // the map's children as further repeats
+        $shapes = array_map(fn(array $sibling) => array_is_list($sibling), array_filter($siblings));
+        if (in_array(true, $shapes, true) && in_array(false, $shapes, true)) {
+            $siblings = array_map(fn(array $sibling) => array_is_list($sibling) ? $sibling : [$sibling], $siblings);
+        }
+
+        $merged = [];
+        foreach ($siblings as $sibling) {
+            foreach ($sibling as $key => $value) {
+                if (!is_string($key)) {
+                    $merged[] = $value;
+                } elseif (!isset($merged[$key]) || $merged[$key] === '') {
+                    $merged[$key] = $value;
+                } elseif (is_array($merged[$key]) && is_array($value)) {
+                    $merged[$key] = $this->mergeXmlSiblingValues($merged[$key], $value);
+                } elseif (is_array($value)) {
+                    $merged[$key] = $value;
+                }
+            }
+        }
+
+        return $merged;
+    }
+
+    /**
      * Build the array of lines for the attribute properties of an XML schema annotation object. It accepts an array of
-     * arrays representing the attributes of an XML node. It can also handle a single array of key/value pairs.
+     * arrays representing the attributes of an XML node. It can also handle a single array of key/value pairs. Each
+     * attribute name is declared once, using the first occurrence with a non-empty value as the example.
      *
      * @param array $attributes Collection of attributes and values. E.g. [['key1' => 'value1'],['key2' => 'value2']] or
      * ['key1' => 'value1', 'key2' => 'value2']
@@ -1878,6 +1917,7 @@ class AnnotationGenerator
     public function buildXmlAttributeSchemaLines(array $attributes): array
     {
         $attributeSchemaLines = [];
+        $hasExampleByName = [];
         foreach ($attributes as $index => $attribute) {
             $keys = is_array($attribute) ? array_keys($attribute) : [];
             $key = count($keys) === 1 ? $keys[0] : $index;
@@ -1886,6 +1926,13 @@ class AnnotationGenerator
             if (empty($key)) {
                 continue;
             }
+            // Sibling nodes repeat an attribute (<row key="1">, <row key="2">) but a schema may declare each property
+            // only once, so keep the first occurrence unless it lacked the example value a later one can supply
+            $hasExample = strlen($value) > 0;
+            if (isset($hasExampleByName[$key]) && ($hasExampleByName[$key] || !$hasExample)) {
+                continue;
+            }
+            $hasExampleByName[$key] = $hasExample;
             // Initialise with the lines that will always be present
             $propertyLines = [
                 sprintf('property="%s",', $key),
@@ -1893,13 +1940,13 @@ class AnnotationGenerator
                 '@OA\Xml(attribute=true),',
             ];
             // Add the example line if there's an actual value
-            if (!empty($value) || strlen($value) > 0) {
+            if ($hasExample) {
                 $propertyLines[] = sprintf('example="%s"', $value);
             }
-            $attributeSchemaLines[] = ['@OA\Property' => $propertyLines];
+            $attributeSchemaLines[$key] = ['@OA\Property' => $propertyLines];
         }
 
-        return $attributeSchemaLines;
+        return array_values($attributeSchemaLines);
     }
 
     /**
