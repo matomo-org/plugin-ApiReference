@@ -1799,7 +1799,6 @@ class AnnotationGenerator
                 $key === ApiReference::OA_XML_ATTRIBUTES_TEMP_PROPERTY_NAME
                 || $key === ApiReference::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
             ) {
-                // Merged sibling rows each bring their own attributes, which must become a single set of properties
                 $hasAttributes = true;
                 // A merge of single-attribute siblings can leave several attributes in one map, which
                 // buildXmlAttributeSchemaLines() would read as one nameless attribute
