@@ -1800,8 +1800,8 @@ class AnnotationGenerator
                 || $key === ApiReference::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
             ) {
                 $hasAttributes = true;
-                // A merge of single-attribute siblings can leave several attributes in one map, which
-                // buildXmlAttributeSchemaLines() would read as one nameless attribute
+                // Merged sibling rows can leave several attributes in one map, or a list of such maps, which
+                // buildXmlAttributeSchemaLines() would not read as separate attributes
                 foreach ($value as $name => $attribute) {
                     foreach (is_array($attribute) ? $attribute : [$name => $attribute] as $attributeName => $attributeValue) {
                         $attributes[] = [$attributeName => $attributeValue];
