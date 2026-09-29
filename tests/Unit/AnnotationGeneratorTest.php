@@ -1493,6 +1493,14 @@ class AnnotationGeneratorTest extends TestCase
             '<result><row><row><label>A</label><sub><x><v>1</v></x></sub></row><row><label>B</label><sub><x><v>2</v></x></sub></row></row></result>',
             ['row', 'row', 'sub', 'x'],
         ];
+        yield 'should declare attributes that only a later row has before its elements' => [
+            '<result><row><x><v>1</v></x></row><row key="1"><x><v>2</v></x></row></result>',
+            ['row', 'key', 'x'],
+        ];
+        yield 'should replace the text of an element with the children a later row gives it' => [
+            '<result><row><row><sub>text</sub></row><row><sub><x><v>1</v></x></sub></row></row></result>',
+            ['row', 'row', 'sub', 'x'],
+        ];
     }
 
     /**
