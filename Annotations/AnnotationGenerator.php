@@ -1780,7 +1780,6 @@ class AnnotationGenerator
 
         $hasAttributes = false;
         $attributes = [];
-        $attributesPosition = 0;
         $childLines = [];
         // Recursively check if any of the children are arrays
         foreach ($values as $key => $value) {
@@ -1794,9 +1793,6 @@ class AnnotationGenerator
                 || $key === ApiReference::OA_XML_ATTRIBUTES_DEFAULT_KEY_NAME
             ) {
                 // Merged sibling rows each bring their own attributes, which must become a single set of properties
-                if (!$hasAttributes) {
-                    $attributesPosition = count($childLines);
-                }
                 $hasAttributes = true;
                 // A merge of single-attribute siblings can leave several attributes in one map, which
                 // buildXmlAttributeSchemaLines() would read as one nameless attribute
@@ -1811,7 +1807,7 @@ class AnnotationGenerator
             $childLines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
         }
         if ($hasAttributes) {
-            array_splice($childLines, $attributesPosition, 0, $this->buildXmlAttributeSchemaLines($attributes));
+            $childLines = array_merge($this->buildXmlAttributeSchemaLines($attributes), $childLines);
         }
         $originalKeys = array_keys($originalValues);
         $isListOfStrings = !is_string(reset($originalKeys)) && !$hasAttributes
