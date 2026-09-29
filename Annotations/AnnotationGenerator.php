@@ -1784,8 +1784,7 @@ class AnnotationGenerator
         $childLines = [];
         // Recursively check if any of the children are arrays
         foreach ($values as $key => $value) {
-            // If it's not an array, or it is an unnamed list of scalars, skip
-            if (!is_array($value) || (!is_string($key) && !is_array(reset($value)))) {
+            if (!is_string($key) || !is_array($value)) {
                 continue;
             }
 
@@ -1871,7 +1870,7 @@ class AnnotationGenerator
             foreach ($sibling as $key => $value) {
                 if (!is_string($key)) {
                     $merged[] = $value;
-                } elseif (!isset($merged[$key]) || $merged[$key] === '') {
+                } elseif (!isset($merged[$key]) || (is_string($merged[$key]) && trim($merged[$key]) === '')) {
                     $merged[$key] = $value;
                 } elseif (is_array($merged[$key]) && is_array($value)) {
                     $merged[$key] = $this->mergeXmlSiblingValues($merged[$key], $value);

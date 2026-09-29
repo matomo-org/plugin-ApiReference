@@ -1404,6 +1404,12 @@ class AnnotationGeneratorTest extends TestCase
         yield 'repeated nested element starting with an empty value' => [
             '<result><row><row><sub a=""><x><v>1</v></x></sub></row><row><sub a="1"><x><v>2</v></x></sub></row></row></result>',
         ];
+        yield 'top-level rows starting with a whitespace-only value' => [
+            '<result><row key=" "><x><v>1</v></x></row><row key="1"><x><v>2</v></x></row></result>',
+        ];
+        yield 'nested rows starting with a whitespace-only value' => [
+            '<result><row><row key="   "/><row key="1"/></row></result>',
+        ];
     }
 
     /**
