@@ -1782,20 +1782,8 @@ class AnnotationGenerator
         $attributes = [];
         $attributesPosition = 0;
         $childLines = [];
-        $elementValues = [];
-        // Merged sibling rows arrive as a list, so walk every entry of each row rather than only its first
-        $entries = [];
-        foreach ($values as $key => $value) {
-            if (!is_string($key) && is_array($value)) {
-                foreach ($value as $childKey => $childValue) {
-                    $entries[] = [$childKey, $childValue];
-                }
-                continue;
-            }
-            $entries[] = [$key, $value];
-        }
         // Recursively check if any of the children are arrays
-        foreach ($entries as [$key, $value]) {
+        foreach ($values as $key => $value) {
             // If it's not an array, or it is an unnamed list of scalars, skip
             if (!is_array($value) || (!is_string($key) && !is_array(reset($value)))) {
                 continue;
@@ -1821,14 +1809,7 @@ class AnnotationGenerator
                 continue;
             }
 
-            // Hold the element's place by name until the values of every sibling that repeats it are known
-            if (!isset($elementValues[$key])) {
-                $childLines[] = $key;
-            }
-            $elementValues[$key][] = $value;
-        }
-        foreach ($childLines as $index => $name) {
-            $childLines[$index] = $this->buildPropertyAnnotationFromXmlExample($name, $this->mergeXmlSiblingValues(...$elementValues[$name]));
+            $childLines[] = $this->buildPropertyAnnotationFromXmlExample($key, $value);
         }
         if ($hasAttributes) {
             array_splice($childLines, $attributesPosition, 0, $this->buildXmlAttributeSchemaLines($attributes));
