@@ -4,6 +4,7 @@
 - Fixed the daily API specification task logging errors, and so failing scheduled archiving, for XML responses that list values keyed by ID, such as FormAnalytics.getAllGoals
 - Fixed the XML response schema for rows that combine attributes with nested elements, which lost the attributes, repeated the elements or made the daily task log an error
 - Fixed the XML response schema leaving out nested attributes and elements that only some rows have, such as the sub-widgets of API.getReportPagesMetadata
+- Fixed the plugin cards on the API Reference page picking up the Marketplace's card style, and the API method panels staying light in dark mode
 
 6.0.1 - 2026-08-31
 - Hardened OpenAPI example generation so that it only ever queries read-only endpoints, and only anonymously
