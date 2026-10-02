@@ -492,7 +492,12 @@ export default defineComponent({
   font-style: italic;
 }
 
+/* display to cursor, and the :hover rules, undo Marketplace's global .pluginCard card style. */
 .pluginCard {
+  display: block;
+  padding: 0;
+  min-height: 0;
+  cursor: auto;
   background: var(--theme-color-background-contrast, #fff);
   border: 1px solid var(--theme-color-border, #d9e2ec);
   border-radius: 4px;
@@ -501,7 +506,14 @@ export default defineComponent({
   transition: border-color 180ms ease;
 }
 
-.pluginCard--expanded {
+.pluginCard:hover {
+  border-color: var(--theme-color-border, #d9e2ec);
+  box-shadow: none;
+  transform: none;
+}
+
+.pluginCard--expanded,
+.pluginCard--expanded:hover {
   border-color: var(--theme-color-border, #cfd8e3);
   transform-origin: top center;
 }

@@ -541,8 +541,8 @@ export default defineComponent({
 .swaggerMount :deep(.swagger-ui input[disabled]),
 .swaggerMount :deep(.swagger-ui select[disabled]),
 .swaggerMount :deep(.swagger-ui textarea[disabled]) {
-  background: var(--theme-color-background-tint, #f2f4f7);
-  border-color: var(--theme-color-border-subtle, #c5ced8);
+  background: var(--matomo-swagger-input-disabled-background);
+  border-color: var(--matomo-swagger-input-disabled-border);
   border-style: dashed;
   color: var(--theme-color-text-lighter, #98a2b3);
   cursor: not-allowed;
