@@ -1,7 +1,22 @@
 {
     "ApiReference": {
-        "ReportingApiMoreInformation": "Matomo API yazılımları hakkında ayrıntılı bilgi almak için %1$s Matomo API Yazılımları%2$s ve %3$s Matomo API Referansı %4$s belgelerine bakabilirsiniz.",
-        "ReportingApiReference": "Rapor API referansı",
-        "UserAuthentication": "Kullanıcı kimlik doğrulaması"
+        "LookingForLegacyApiReference": "Eski API referansını mı arıyorsunuz? Yeni API belgelerini geliştirmeyi sürdürürken %1$seski API referansı%2$s sayfası kullanılabilir. Bu yeni sürümde eksik veya beklenmedik bir şekilde davranan bir şey varsa, deneyimi geliştirebilmemiz için %3$slütfen bize bildirin%4$s.",
+        "ReportingApiMoreInformation": "Matomo API yazılımları ile ilgili ayrıntılı bilgi almak için %1$s Matomo API giriş%2$s ve %3$s Matomo API referansı %4$s belgelerine bakabilirsiniz.",
+        "ReportingApiReference": "Raporlama API referansı",
+        "ReportingApiSummary": "Matomo üzerindeki tüm veriler basit API yazılımları aracılığıyla kullanılabilir.",
+        "SwaggerPageConnectToken": "Bir Matomo API kodu ile kimlik doğrulaması yapın",
+        "SwaggerPagePluginEmpty": "ApiReference izin verilenler listesinde hiçbir eklenti yapılandırılmamış.",
+        "SwaggerPageRemoveToken": "Kodu kaldır",
+        "SwaggerPageRequestFailed": "Eklenti izin verilenler listesi yüklenemedi.",
+        "SwaggerPageSearchNoResults": "Aramanız ile eşleşen bir eklenti yok.",
+        "SwaggerPageSearchPlaceholder": "Eklenti adı ile ara",
+        "SwaggerPageSpecLoadFailed": "Bu eklenti için OpenAPI teknik özellikleri yüklenemedi.",
+        "SwaggerPageSpecNotAvailable": "Bu eklenti için OpenAPI teknik özellikleri henüz yok. %1$sAyrıntılı bilgi alın%2$s",
+        "SwaggerPageTokenConnected": "Kod bağlandı",
+        "SwaggerPageTokenConnectedHeading": "Matomo API kodu bağlandı",
+        "UseTryItOutForLiveResponse": "Örnek yanıtlar için Süper Kullanıcı yetkisi gereklidir. Canlı bir yanıt görmek için Deneyin düğmesini kullanın.",
+        "UserAuthentication": "Kullanıcı kimlik doğrulaması",
+        "UserAuthenticationManageTokens": "Kimlik doğrulama kodlarınızı güvenlik sayfanızda yönetebilirsiniz.",
+        "UserAuthenticationUsingTokenAuth": "Bir komut dosyası, bir zamanlanmış görev vb. içinden veri isteğinde bulunmak istiyorsanız, kimlik doğrulama gerektiren adresler için API çağrılarına '%3$s' adres parametresini eklemelisiniz."
     }
 }
