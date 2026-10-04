@@ -28,6 +28,7 @@ jobs:
     uses: matomo-org/plugin-ci-workflows/.github/workflows/plugin-vendored-deps-update.yml@main
     with:
       branch: ${{ matrix.branch }}
+      platform-php: '8.2.0'
     secrets:
       # Not GITHUB_TOKEN: a pull request opened with it starts no CI. This org token can push and
       # open pull requests, and its pull requests start CI.
