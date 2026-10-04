@@ -18,9 +18,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 5.x-dev is left out until its composer.json pins config.platform.php, which the
-        # called workflow requires.
-        branch: ['6.x-dev']
+        # Each branch names the PHP its dependencies resolve against. 5.x-dev is not listed yet.
+        include:
+          - branch: '6.x-dev'
+            platform-php: '8.2.0'
     # Granted here because a called workflow can only reduce permissions, never elevate them.
     permissions:
       contents: write
@@ -28,7 +29,7 @@ jobs:
     uses: matomo-org/plugin-ci-workflows/.github/workflows/plugin-vendored-deps-update.yml@main
     with:
       branch: ${{ matrix.branch }}
-      platform-php: '8.2.0'
+      platform-php: ${{ matrix.platform-php }}
     secrets:
       # Not GITHUB_TOKEN: a pull request opened with it starts no CI. This org token can push and
       # open pull requests, and its pull requests start CI.
