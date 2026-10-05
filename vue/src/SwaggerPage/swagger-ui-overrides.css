@@ -15,11 +15,34 @@
     --matomo-swagger-link: var(--theme-color-link, #3152A0);
     --matomo-swagger-code: var(--theme-color-code, #A93552);
     --matomo-swagger-code-background: var(--theme-color-code-background, rgba(0, 0, 0, 0.05));
+    --matomo-swagger-input-disabled-background: var(--theme-color-background-tint, #f2f4f7);
+    --matomo-swagger-input-disabled-border: var(--theme-color-border-subtle, #c5ced8);
     border-radius: 5px;
     color: var(--matomo-swagger-text);
     font-size: 14px;
     line-height: 1.4;
     padding-top: 10px;
+}
+
+/* Core defines none of the --theme-color-api-*, background-tint or border-subtle variables yet, so dark mode needs its own fallbacks; a value core adds later still wins. */
+[data-theme-mode="dark"]:root .swaggerMount .swagger-ui {
+    --matomo-swagger-get-background: var(--theme-color-api-get-background, color-mix(in srgb, var(--matomo-swagger-get-main) 8%, var(--matomo-swagger-panel-background)));
+    --matomo-swagger-get-header-background: var(--theme-color-api-get-header-background, color-mix(in srgb, var(--matomo-swagger-get-main) 14%, var(--matomo-swagger-panel-background)));
+    --matomo-swagger-post-background: var(--theme-color-api-post-background, color-mix(in srgb, var(--matomo-swagger-post-main) 8%, var(--matomo-swagger-panel-background)));
+    --matomo-swagger-post-header-background: var(--theme-color-api-post-header-background, color-mix(in srgb, var(--matomo-swagger-post-main) 14%, var(--matomo-swagger-panel-background)));
+    --matomo-swagger-input-disabled-background: var(--theme-color-background-tint, var(--matomo-swagger-panel-background-subtle));
+    --matomo-swagger-input-disabled-border: var(--theme-color-border-subtle, var(--matomo-swagger-border));
+}
+
+@media (prefers-color-scheme: dark) {
+    [data-theme-mode="auto"]:root .swaggerMount .swagger-ui {
+        --matomo-swagger-get-background: var(--theme-color-api-get-background, color-mix(in srgb, var(--matomo-swagger-get-main) 8%, var(--matomo-swagger-panel-background)));
+        --matomo-swagger-get-header-background: var(--theme-color-api-get-header-background, color-mix(in srgb, var(--matomo-swagger-get-main) 14%, var(--matomo-swagger-panel-background)));
+        --matomo-swagger-post-background: var(--theme-color-api-post-background, color-mix(in srgb, var(--matomo-swagger-post-main) 8%, var(--matomo-swagger-panel-background)));
+        --matomo-swagger-post-header-background: var(--theme-color-api-post-header-background, color-mix(in srgb, var(--matomo-swagger-post-main) 14%, var(--matomo-swagger-panel-background)));
+        --matomo-swagger-input-disabled-background: var(--theme-color-background-tint, var(--matomo-swagger-panel-background-subtle));
+        --matomo-swagger-input-disabled-border: var(--theme-color-border-subtle, var(--matomo-swagger-border));
+    }
 }
 
 .swaggerMount .swagger-ui :is(
@@ -233,7 +256,7 @@
 }
 
 .swaggerMount .swagger-ui .parameters-col_description input {
-    background: #fff;
+    background: var(--matomo-swagger-panel-background);
 }
 
 .swaggerMount .swagger-ui :is(

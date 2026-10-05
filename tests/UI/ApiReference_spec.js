@@ -118,4 +118,42 @@ describe('ApiReference', function () {
 
         expect(await page.screenshotSelector('.searchBar,.pluginList')).to.matchImage('expanded_plugin');
     });
+
+    const openMethodSelector = '.pluginCard--expanded .opblock.opblock-get.is-open';
+
+    // The mode lives only on the current page; the next page.goto starts from the server-rendered one again.
+    async function setThemeMode(themeMode) {
+        await page.evaluate((mode) => {
+            window.piwik.setThemeMode(mode);
+        }, themeMode);
+        await page.waitForFunction((mode) => window.piwik.getThemeMode() === mode, {}, themeMode);
+    }
+
+    async function openFirstGetMethodInDarkMode() {
+        await loadSwaggerPage();
+        await setThemeMode('dark');
+        await searchFor('bandwidth');
+        await waitForSingleVisiblePlugin(targetPlugin);
+        await expandPlugin(targetPlugin);
+        await page.click('.pluginCard--expanded .opblock.opblock-get .opblock-summary');
+        await page.waitForSelector(`${openMethodSelector} .parameters`);
+        await page.evaluate(() => document.activeElement?.blur());
+        await waitForUiToSettle();
+        await moveMouseAway();
+    }
+
+    it('should show a method panel with disabled parameter inputs in dark mode', async function () {
+        await openFirstGetMethodInDarkMode();
+
+        expect(await page.screenshotSelector(openMethodSelector)).to.matchImage('dark_mode_method');
+    });
+
+    it('should show editable parameter inputs after Try it out in dark mode', async function () {
+        await openFirstGetMethodInDarkMode();
+        await page.click(`${openMethodSelector} .try-out__btn`);
+        await page.waitForSelector(`${openMethodSelector} .parameters input:not([disabled])`);
+        await moveMouseAway();
+
+        expect(await page.screenshotSelector(openMethodSelector)).to.matchImage('dark_mode_method_try_it_out');
+    });
 });
