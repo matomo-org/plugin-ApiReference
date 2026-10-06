@@ -1,5 +1,8 @@
 ## Changelog
 
+6.0.3 - 2026-10-12
+- Fixed API requests with `format=yaml` failing with an error on production builds
+
 6.0.2 - 2026-10-05
 - Fixed the daily API specification task logging errors, and so failing scheduled archiving, for XML responses that list values keyed by ID, such as FormAnalytics.getAllGoals
 - Fixed the XML response schema for rows that combine attributes with nested elements, which lost the attributes, repeated the elements or made the daily task log an error
