@@ -9,9 +9,9 @@
 
 namespace Piwik\Plugins\ApiReference\Renderer;
 
+use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Yaml as SymfonyYaml;
 use Piwik\API\ApiRenderer;
 use Piwik\Common;
-use Symfony\Component\Yaml\Yaml as SymfonyYaml;
 
 class Yaml extends ApiRenderer
 {
