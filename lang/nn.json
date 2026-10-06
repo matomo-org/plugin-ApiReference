@@ -1,1 +1,22 @@
-{}
+{
+    "ApiReference": {
+        "LookingForLegacyApiReference": "Ser du etter den gamle API-referansen? Sida med %1$sden gamle API-referansen%2$s er framleis tilgjengeleg medan vi held fram med å forbetre den nye API-dokumentasjonen. Viss noko manglar eller ikkje fungerer som venta i den nye versjonen, %3$sgi oss beskjed%4$s, så vi kan gjere opplevinga betre.",
+        "ReportingApiMoreInformation": "Meir informasjon om API-a til Matomo finn du i %1$sIntroduksjon til Matomo-API-et%2$s og %3$sMatomo API-referansen%4$s.",
+        "ReportingApiReference": "Referanse for rapporterings-API-et",
+        "ReportingApiSummary": "Alle dataa i Matomo er tilgjengelege gjennom enkle API-ar.",
+        "SwaggerPageConnectToken": "Autentiser med eit API-token for Matomo",
+        "SwaggerPagePluginEmpty": "Ingen innstikk er sette opp i kvitlista for ApiReference.",
+        "SwaggerPageRemoveToken": "Fjern tokenet",
+        "SwaggerPageRequestFailed": "Kvitlista for innstikk kunne ikkje lastast.",
+        "SwaggerPageSearchNoResults": "Ingen innstikk samsvarer med søket ditt.",
+        "SwaggerPageSearchPlaceholder": "Søk etter innstikknamn",
+        "SwaggerPageSpecLoadFailed": "OpenAPI-spesifikasjonen kunne ikkje lastast for dette innstikket.",
+        "SwaggerPageSpecNotAvailable": "OpenAPI-spesifikasjonen er ikkje tilgjengeleg for dette innstikket enno. %1$sLær meir%2$s",
+        "SwaggerPageTokenConnected": "Tokenet er kopla til",
+        "SwaggerPageTokenConnectedHeading": "API-tokenet for Matomo er kopla til",
+        "UseTryItOutForLiveResponse": "Døme på svar krev superbrukartilgang. Bruk «Try it out» for å sjå eit verkeleg svar.",
+        "UserAuthentication": "Brukarautentisering",
+        "UserAuthenticationManageTokens": "Du kan administrere autentiseringstokena dine på tryggleikssida.",
+        "UserAuthenticationUsingTokenAuth": "Viss du vil hente data i eit skript, ein crontab osb., må du leggje til URL-parameteren «%3$s» i API-kalla for URL-ar som krev autentisering."
+    }
+}
