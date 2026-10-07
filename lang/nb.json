@@ -1,6 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "Ser du etter den gamle API-referansen? Siden med %1$sden gamle API-referansen%2$s er fortsatt tilgjengelig mens vi forbedrer den nye API-dokumentasjonen. Hvis noe mangler eller oppfører seg uventet i den nye versjonen, %3$sgi oss beskjed%4$s, så vi kan gjøre den bedre.",
+        "ReportingApiMoreInformation": "Mer informasjon om API-ene i Matomo finner du i %1$sIntroduksjon til Matomo-API-et%2$s og %3$sMatomo API-referansen%4$s.",
         "ReportingApiReference": "Referanse for rapporterings-API",
-        "UserAuthentication": "Brukerautentisering"
+        "ReportingApiSummary": "Alle dataene i Matomo er tilgjengelige gjennom enkle API-er.",
+        "SwaggerPageConnectToken": "Autentiser med et API-token for Matomo",
+        "SwaggerPagePluginEmpty": "Ingen tillegg er satt opp i godkjenningslisten for ApiReference.",
+        "SwaggerPageRemoveToken": "Fjern token",
+        "SwaggerPageRequestFailed": "Godkjenningslisten for tillegg kunne ikke lastes inn.",
+        "SwaggerPageSearchNoResults": "Ingen tillegg samsvarer med søket ditt.",
+        "SwaggerPageSearchPlaceholder": "Søk etter navn på tillegg",
+        "SwaggerPageSpecLoadFailed": "OpenAPI-spesifikasjonen for dette tillegget kunne ikke lastes inn.",
+        "SwaggerPageSpecNotAvailable": "OpenAPI-spesifikasjonen er ikke tilgjengelig for dette tillegget ennå. %1$sLes mer%2$s",
+        "SwaggerPageTokenConnected": "Token tilkoblet",
+        "SwaggerPageTokenConnectedHeading": "API-token for Matomo er tilkoblet",
+        "UseTryItOutForLiveResponse": "Eksempelsvar krever superbrukertilgang. Bruk «Try it out» for å se et svar i sanntid.",
+        "UserAuthentication": "Brukerautentisering",
+        "UserAuthenticationManageTokens": "Du kan administrere autentiseringstokenene dine på sikkerhetssiden.",
+        "UserAuthenticationUsingTokenAuth": "Hvis du vil hente data i et skript, en crontab osv., må du legge til URL-parameteren «%3$s» i API-kallene for URL-er som krever autentisering."
     }
 }
