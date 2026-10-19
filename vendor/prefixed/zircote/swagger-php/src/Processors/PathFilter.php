@@ -19,18 +19,9 @@ use Matomo\Dependencies\ApiReference\OpenApi\Processors\Concerns\AnnotationTrait
 class PathFilter
 {
     use AnnotationTrait;
-    /**
-     * @var mixed[]
-     */
-    protected $tags;
-    /**
-     * @var mixed[]
-     */
-    protected $paths;
-    /**
-     * @var bool
-     */
-    protected $recurseCleanup;
+    protected array $tags;
+    protected array $paths;
+    protected bool $recurseCleanup;
     public function __construct(array $tags = [], array $paths = [], bool $recurseCleanup = \false)
     {
         $this->tags = $tags;

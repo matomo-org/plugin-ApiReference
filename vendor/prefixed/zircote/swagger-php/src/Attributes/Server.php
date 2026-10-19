@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
 class Server extends OA\Server
 {
@@ -18,13 +18,13 @@ class Server extends OA\Server
      */
     public function __construct(
         ?string $url = null,
-        ?string $description = null,
+        ?string $description = Generator::UNDEFINED,
         ?array $variables = null,
         // annotation
         ?array $x = null,
         ?array $attachables = null
     )
     {
-        parent::__construct(['url' => $url ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($variables)]);
+        parent::__construct(['url' => $url ?? Generator::UNDEFINED, 'description' => $description, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($variables)]);
     }
 }

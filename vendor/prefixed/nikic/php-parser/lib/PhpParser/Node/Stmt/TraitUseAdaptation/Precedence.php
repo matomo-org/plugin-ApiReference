@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Precedence extends Node\Stmt\TraitUseAdaptation
 {
     /** @var Node\Name[] Overwritten traits */
-    public $insteadof;
+    public array $insteadof;
     /**
      * Constructs a trait use precedence adaptation node.
      *

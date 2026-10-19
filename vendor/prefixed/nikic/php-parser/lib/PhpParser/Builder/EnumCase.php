@@ -12,14 +12,11 @@ class EnumCase implements PhpParser\Builder
 {
     /** @var Identifier|string */
     protected $name;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Expr|null
-     */
-    protected $value;
+    protected ?Node\Expr $value = null;
     /** @var array<string, mixed> */
-    protected $attributes = [];
+    protected array $attributes = [];
     /** @var list<Node\AttributeGroup> */
-    protected $attributeGroups = [];
+    protected array $attributeGroups = [];
     /**
      * Creates an enum case builder.
      *

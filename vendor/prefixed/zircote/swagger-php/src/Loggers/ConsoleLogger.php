@@ -17,10 +17,7 @@ class ConsoleLogger extends AbstractLogger implements LoggerInterface
     private const LOG_LEVELS_UP_TO_NOTICE = [LogLevel::DEBUG, LogLevel::INFO, LogLevel::NOTICE];
     /** @var bool */
     protected $loggedMessageAboveNotice = \false;
-    /**
-     * @var bool
-     */
-    protected $debug;
+    protected bool $debug;
     public function __construct(bool $debug = \false)
     {
         $this->debug = $debug;

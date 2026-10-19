@@ -13,9 +13,9 @@ class String_ extends Scalar
     public const KIND_HEREDOC = 3;
     public const KIND_NOWDOC = 4;
     /** @var string String value */
-    public $value;
+    public string $value;
     /** @var array<string, string> Escaped character to its decoded value */
-    protected static $replacements = ['\\' => '\\', '$' => '$', 'n' => "\n", 'r' => "\r", 't' => "\t", 'f' => "\f", 'v' => "\v", 'e' => "\x1b"];
+    protected static array $replacements = ['\\' => '\\', '$' => '$', 'n' => "\n", 'r' => "\r", 't' => "\t", 'f' => "\f", 'v' => "\v", 'e' => "\x1b"];
     /**
      * Constructs a string scalar node.
      *
@@ -93,11 +93,12 @@ class String_ extends Scalar
                 return chr(hexdec(substr($str, 1)));
             }
             if ('u' === $str[0]) {
-                $dec = hexdec($matches[2]);
+                // PHP 8.6 warns when hexdec() produces a float.
+                $dec = @hexdec($matches[2]);
                 // If it overflowed to float, treat as INT_MAX, it will throw an error anyway.
                 return self::codePointToUtf8(\is_int($dec) ? $dec : \PHP_INT_MAX);
             } else {
-                return chr(octdec($str));
+                return chr(octdec($str) & 255);
             }
         }, $str);
     }
@@ -119,7 +120,7 @@ class String_ extends Scalar
         if ($num <= 0xffff) {
             return chr(($num >> 12) + 0xe0) . chr(($num >> 6 & 0x3f) + 0x80) . chr(($num & 0x3f) + 0x80);
         }
-        if ($num <= 0x1fffff) {
+        if ($num <= 0x10ffff) {
             return chr(($num >> 18) + 0xf0) . chr(($num >> 12 & 0x3f) + 0x80) . chr(($num >> 6 & 0x3f) + 0x80) . chr(($num & 0x3f) + 0x80);
         }
         throw new Error('Invalid UTF-8 codepoint escape sequence: Codepoint too large');

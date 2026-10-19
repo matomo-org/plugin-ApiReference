@@ -38,28 +38,13 @@ use const E_USER_DEPRECATED;
  */
 final class Method extends BaseTag implements Factory\StaticMethod
 {
-    /**
-     * @var string
-     */
-    protected $name = 'method';
-    /**
-     * @var string
-     */
-    private $methodName;
-    /**
-     * @var bool
-     */
-    private $isStatic;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type
-     */
-    private $returnType;
-    /**
-     * @var bool
-     */
-    private $returnsReference;
+    protected string $name = 'method';
+    private string $methodName;
+    private bool $isStatic;
+    private Type $returnType;
+    private bool $returnsReference;
     /** @var MethodParameter[] */
-    private $parameters;
+    private array $parameters;
     /**
      * @param array<int, array<string, Type|string>> $arguments
      * @param MethodParameter[] $parameters

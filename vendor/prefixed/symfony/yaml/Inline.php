@@ -23,30 +23,12 @@ use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Tag\TaggedValue;
 class Inline
 {
     public const REGEX_QUOTED_STRING = '(?:"([^"\\\\]*+(?:\\\\.[^"\\\\]*+)*+)"|\'([^\']*+(?:\'\'[^\']*+)*+)\')';
-    /**
-     * @var int
-     */
-    public static $parsedLineNumber = -1;
-    /**
-     * @var string|null
-     */
-    public static $parsedFilename;
-    /**
-     * @var bool
-     */
-    private static $exceptionOnInvalidType = \false;
-    /**
-     * @var bool
-     */
-    private static $objectSupport = \false;
-    /**
-     * @var bool
-     */
-    private static $objectForMap = \false;
-    /**
-     * @var bool
-     */
-    private static $constantSupport = \false;
+    public static int $parsedLineNumber = -1;
+    public static ?string $parsedFilename = null;
+    private static bool $exceptionOnInvalidType = \false;
+    private static bool $objectSupport = \false;
+    private static bool $objectForMap = \false;
+    private static bool $constantSupport = \false;
     public static function initialize(int $flags, ?int $parsedLineNumber = null, ?string $parsedFilename = null) : void
     {
         self::$exceptionOnInvalidType = (bool) (Yaml::PARSE_EXCEPTION_ON_INVALID_TYPE & $flags);
@@ -65,12 +47,11 @@ class Inline
      * @param array $references Mapping of variable names to values
      *
      * @throws ParseException
-     * @return mixed
      */
-    public static function parse(string $value, int $flags = 0, array &$references = [], ?ParserState $state = null)
+    public static function parse(string $value, int $flags = 0, array &$references = [], ?ParserState $state = null) : mixed
     {
         self::initialize($flags);
-        $state = $state ?? new ParserState();
+        $state ??= new ParserState();
         $value = trim($value);
         if ('' === $value) {
             return '';
@@ -78,6 +59,13 @@ class Inline
         $i = 0;
         $isQuoted = null;
         $tag = self::parseTag($value, $i, $flags);
+        // a tag without value, possibly followed by a comment
+        if (null !== $tag && '' !== $tag && (!isset($value[$i]) || '#' === $value[$i])) {
+            if (str_starts_with($tag, 'php/')) {
+                throw new ParseException(\sprintf('Missing value for tag "%s".', $tag), self::$parsedLineNumber + 1, $value, self::$parsedFilename);
+            }
+            return new TaggedValue($tag, '');
+        }
         switch ($value[$i]) {
             case '[':
                 $result = self::parseSequence($state, $value, $flags, $i, $references);
@@ -107,7 +95,7 @@ class Inline
      *
      * @throws DumpException When trying to dump PHP resource
      */
-    public static function dump($value, int $flags = 0, bool $rootLevel = \false) : string
+    public static function dump(mixed $value, int $flags = 0, bool $rootLevel = \false) : string
     {
         switch (\true) {
             case \is_resource($value):
@@ -116,18 +104,13 @@ class Inline
                 }
                 return self::dumpNull($flags);
             case $value instanceof \DateTimeInterface:
-                return $value->format((function () use ($value) {
-                    switch (\true) {
-                        case !($length = \strlen(rtrim($value->format('u'), '0'))):
-                            return 'c';
-                        case $length < 4:
-                            return 'Y-m-d\\TH:i:s.vP';
-                        default:
-                            return 'Y-m-d\\TH:i:s.uP';
-                    }
-                })());
+                return $value->format(match (\true) {
+                    !($length = \strlen(rtrim($value->format('u'), '0'))) => 'c',
+                    $length < 4 => 'Y-m-d\\TH:i:s.vP',
+                    default => 'Y-m-d\\TH:i:s.uP',
+                });
             case $value instanceof \UnitEnum:
-                return \sprintf('!php/enum %s::%s', get_class($value), $value->name);
+                return \sprintf('!php/enum %s::%s', $value::class, $value->name);
             case \is_object($value):
                 if ($value instanceof TaggedValue) {
                     return '!' . $value->getTag() . ' ' . self::dump($value->getValue(), $flags);
@@ -152,6 +135,8 @@ class Inline
                 return 'false';
             case \is_int($value):
                 return $value;
+            case \is_float($value) && is_nan($value):
+                return '.NaN';
             case is_numeric($value) && \false === strpbrk($value, "\f\n\r\t\v"):
                 $locale = setlocale(\LC_NUMERIC, 0);
                 if (\false !== $locale) {
@@ -163,7 +148,7 @@ class Inline
                         $repr = str_ireplace('INF', '.Inf', $repr);
                     } elseif (floor($value) == $value && $repr == $value) {
                         // Preserve float data type since storing a whole number will result in integer value.
-                        if (strpos($repr, 'E') === false) {
+                        if (!str_contains($repr, 'E')) {
                             $repr .= '.0';
                         }
                     }
@@ -183,13 +168,14 @@ class Inline
                 return Escaper::escapeWithDoubleQuotes($value);
             case Escaper::requiresSingleQuoting($value):
                 $singleQuoted = Escaper::escapeWithSingleQuotes($value);
-                if (strpos($value, "'") === false) {
+                if (!str_contains($value, "'")) {
                     return $singleQuoted;
                 }
                 // Attempt double-quoting the string instead to see if it's more efficient.
                 $doubleQuoted = Escaper::escapeWithDoubleQuotes($value);
                 return \strlen($doubleQuoted) < \strlen($singleQuoted) ? $doubleQuoted : $singleQuoted;
-            case Parser::preg_match('{^[0-9]+[_0-9]*$}', $value):
+            case Parser::preg_match('{^[+-]?[0-9][0-9_]*(\\.[0-9_]+)?$}', $value):
+            case Parser::preg_match('{^[+-]?0o[0-7_]++$}', $value):
             case Parser::preg_match(self::getHexRegex(), $value):
             case Parser::preg_match(self::getTimestampRegex(), $value):
                 return Escaper::escapeWithSingleQuotes($value);
@@ -199,9 +185,8 @@ class Inline
     }
     /**
      * Check if given array is hash or just normal indexed array.
-     * @param mixed[]|\ArrayObject|\stdClass $value
      */
-    public static function isHash($value) : bool
+    public static function isHash(array|\ArrayObject|\stdClass $value) : bool
     {
         if ($value instanceof \stdClass || $value instanceof \ArrayObject) {
             return \true;
@@ -238,7 +223,7 @@ class Inline
      * @param array|\ArrayObject|\stdClass $value The hash array to dump
      * @param int                          $flags A bit field of Yaml::DUMP_* constants to customize the dumped YAML string
      */
-    private static function dumpHashArray($value, int $flags) : string
+    private static function dumpHashArray(array|\ArrayObject|\stdClass $value, int $flags) : string
     {
         $output = [];
         $keyFlags = $flags & ~Yaml::DUMP_FORCE_DOUBLE_QUOTES_ON_VALUES;
@@ -264,9 +249,8 @@ class Inline
      * Parses a YAML scalar.
      *
      * @throws ParseException When malformed inline YAML string is parsed
-     * @return mixed
      */
-    public static function parseScalar(string $scalar, int $flags = 0, ?array $delimiters = null, int &$i = 0, bool $evaluate = \true, array &$references = [], ?bool &$isQuoted = null, ?ParserState $state = null)
+    public static function parseScalar(string $scalar, int $flags = 0, ?array $delimiters = null, int &$i = 0, bool $evaluate = \true, array &$references = [], ?bool &$isQuoted = null, ?ParserState $state = null) : mixed
     {
         if (\in_array($scalar[$i], ['"', "'"], \true)) {
             // quoted scalar
@@ -303,7 +287,7 @@ class Inline
                 throw new ParseException(\sprintf('The reserved indicator "%s" cannot start a plain scalar; you need to quote the scalar.', $output[0]), self::$parsedLineNumber + 1, $output, self::$parsedFilename);
             }
             if ($evaluate) {
-                $state = $state ?? new ParserState();
+                $state ??= new ParserState();
                 $output = self::evaluateScalar($state, $output, $flags, $references, $isQuoted);
             }
         }
@@ -371,6 +355,9 @@ class Inline
                     $lastToken = 'value';
                     continue;
                 }
+                if (!isset($sequence[$i])) {
+                    break;
+                }
                 switch ($sequence[$i]) {
                     case '[':
                         // nested sequence
@@ -383,7 +370,7 @@ class Inline
                     default:
                         $value = self::parseScalar($sequence, $flags, [',', ']'], $i, null === $tag, $references, $isQuoted, $state);
                         // the value can be an array if a reference has been resolved to an array var
-                        if (\is_string($value) && !$isQuoted && strpos($value, ': ') !== false) {
+                        if (\is_string($value) && !$isQuoted && str_contains($value, ': ')) {
                             // embedded mapping?
                             $j = $i;
                             $mappingValue = $value;
@@ -432,9 +419,8 @@ class Inline
      * Parses a YAML mapping.
      *
      * @throws ParseException When malformed inline YAML string is parsed
-     * @return mixed[]|\stdClass
      */
-    private static function parseMapping(ParserState $state, string $mapping, int $flags, int &$i = 0, array &$references = [])
+    private static function parseMapping(ParserState $state, string $mapping, int $flags, int &$i = 0, array &$references = []) : array|\stdClass
     {
         $state->enterNestingLevel(self::$parsedLineNumber + 1, null, self::$parsedFilename);
         $output = [];
@@ -467,19 +453,23 @@ class Inline
                     $key .= ' ' . self::parseScalar($mapping, $flags, ['(?<!:):(?!:)'], $i, \false);
                     $key = self::evaluateScalar($state, $key, $flags);
                 }
+                if (self::$objectForMap && \is_string($key) && str_starts_with($key, "\x00")) {
+                    throw new ParseException('Mapping keys starting with a NUL byte are not supported with the "Yaml::PARSE_OBJECT_FOR_MAP" flag.', self::$parsedLineNumber + 1, $mapping);
+                }
                 if (\false === ($i = strpos($mapping, ':', $i))) {
                     break;
                 }
                 if (!$isKeyQuoted) {
                     $evaluatedKey = self::evaluateScalar($state, $key, $flags, $references);
-                    if ('' !== $key && $evaluatedKey !== $key && !\is_string($evaluatedKey) && !\is_int($evaluatedKey)) {
+                    if ('' !== $key && $evaluatedKey !== $key && (!\is_string($evaluatedKey) || '!' === $key[0]) && !\is_int($evaluatedKey)) {
                         throw new ParseException('Implicit casting of incompatible mapping keys to strings is not supported. Quote your evaluable mapping keys instead.', self::$parsedLineNumber + 1, $mapping);
                     }
                 }
                 if (!$isKeyQuoted && (!isset($mapping[$i + 1]) || !\in_array($mapping[$i + 1], [' ', ',', '[', ']', '{', '}', "\n"], \true))) {
                     throw new ParseException('Colons must be followed by a space or an indication character (i.e. " ", ",", "[", "]", "{", "}").', self::$parsedLineNumber + 1, $mapping);
                 }
-                if ('<<' === $key) {
+                $isMergeKey = !$isKeyQuoted && '<<' === $key;
+                if ($isMergeKey) {
                     $allowOverwrite = \true;
                 }
                 while ($i < $len) {
@@ -495,7 +485,7 @@ class Inline
                     if (null !== $anchorRef && (!isset($mapping[$i]) || \in_array($mapping[$i], [',', '}', "\n"], \true))) {
                         $value = null;
                         $references[$anchorRef] = $value;
-                        if ('<<' !== $key) {
+                        if (!$isMergeKey) {
                             if ($allowOverwrite || !isset($output[$key])) {
                                 $output[$key] = null !== $tag ? new TaggedValue($tag, $value) : $value;
                             } elseif (isset($output[$key])) {
@@ -503,6 +493,9 @@ class Inline
                             }
                         }
                         continue 2;
+                    }
+                    if (!isset($mapping[$i])) {
+                        break;
                     }
                     switch ($mapping[$i]) {
                         case '[':
@@ -515,8 +508,14 @@ class Inline
                             // Parser cannot abort this mapping earlier, since lines
                             // are processed sequentially.
                             // But overwriting is allowed when a merge node is used in current block.
-                            if ('<<' === $key) {
+                            if ($isMergeKey) {
                                 foreach ($value as $parsedValue) {
+                                    if (self::$objectForMap && $parsedValue instanceof \stdClass) {
+                                        $parsedValue = (array) $parsedValue;
+                                    }
+                                    if (!\is_array($parsedValue)) {
+                                        throw new ParseException('Merge items must be arrays.', self::$parsedLineNumber + 1, $mapping);
+                                    }
                                     $output += $parsedValue;
                                 }
                             } elseif ($allowOverwrite || !isset($output[$key])) {
@@ -539,8 +538,8 @@ class Inline
                             // Parser cannot abort this mapping earlier, since lines
                             // are processed sequentially.
                             // But overwriting is allowed when a merge node is used in current block.
-                            if ('<<' === $key) {
-                                $output += $value;
+                            if ($isMergeKey) {
+                                $output += (array) $value;
                             } elseif ($allowOverwrite || !isset($output[$key])) {
                                 if (null !== $tag) {
                                     $output[$key] = new TaggedValue($tag, $value);
@@ -560,7 +559,13 @@ class Inline
                             // Parser cannot abort this mapping earlier, since lines
                             // are processed sequentially.
                             // But overwriting is allowed when a merge node is used in current block.
-                            if ('<<' === $key) {
+                            if ($isMergeKey) {
+                                if (self::$objectForMap && $value instanceof \stdClass) {
+                                    $value = (array) $value;
+                                }
+                                if (!\is_array($value)) {
+                                    throw new ParseException('YAML merge keys used with a scalar value instead of an array.', self::$parsedLineNumber + 1, $mapping);
+                                }
                                 $output += $value;
                             } elseif ($allowOverwrite || !isset($output[$key])) {
                                 if (null !== $tag) {
@@ -586,17 +591,16 @@ class Inline
      * Evaluates scalars and replaces magic values.
      *
      * @throws ParseException when object parsing support was disabled and the parser detected a PHP object or when a reference could not be resolved
-     * @return mixed
      */
-    private static function evaluateScalar(ParserState $state, string $scalar, int $flags, array &$references = [], ?bool &$isQuotedString = null)
+    private static function evaluateScalar(ParserState $state, string $scalar, int $flags, array &$references = [], ?bool &$isQuotedString = null) : mixed
     {
         $isQuotedString = \false;
         $scalar = trim($scalar);
-        if (strncmp($scalar, '*', strlen('*')) === 0) {
-            if (\false !== ($pos = strpos($scalar, '#'))) {
-                $value = substr($scalar, 1, $pos - 2);
-            } else {
-                $value = substr($scalar, 1);
+        if (str_starts_with($scalar, '*')) {
+            $value = substr($scalar, 1);
+            // remove comments
+            if (Parser::preg_match('/[ \\t]+#/', $value, $match, \PREG_OFFSET_CAPTURE)) {
+                $value = substr($value, 0, $match[0][1]);
             }
             // an unquoted *
             if ('' === $value) {
@@ -620,16 +624,19 @@ class Inline
                 return \false;
             case '!' === $scalar[0]:
                 switch (\true) {
-                    case strncmp($scalar, '!!str ', strlen('!!str ')) === 0:
+                    case '!!str' === $scalar:
+                    case '!!binary' === $scalar:
+                        return '';
+                    case str_starts_with($scalar, '!!str '):
                         $s = substr($scalar, 6);
                         if (\in_array($s[0] ?? '', ['"', "'"], \true)) {
                             $isQuotedString = \true;
                             $s = self::parseQuotedScalar($s);
                         }
                         return $s;
-                    case strncmp($scalar, '! ', strlen('! ')) === 0:
+                    case str_starts_with($scalar, '! '):
                         return substr($scalar, 2);
-                    case strncmp($scalar, '!php/object', strlen('!php/object')) === 0:
+                    case str_starts_with($scalar, '!php/object'):
                         if (self::$objectSupport) {
                             if (!isset($scalar[12])) {
                                 throw new ParseException('Missing value for tag "!php/object".', self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
@@ -640,7 +647,7 @@ class Inline
                             throw new ParseException('Object support when parsing a YAML file has been disabled.', self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
                         }
                         return null;
-                    case strncmp($scalar, '!php/const', strlen('!php/const')) === 0:
+                    case str_starts_with($scalar, '!php/const'):
                         if (self::$constantSupport) {
                             if (!isset($scalar[11])) {
                                 throw new ParseException('Missing value for tag "!php/const".', self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
@@ -655,22 +662,22 @@ class Inline
                             throw new ParseException(\sprintf('The string "%s" could not be parsed as a constant. Did you forget to pass the "Yaml::PARSE_CONSTANT" flag to the parser?', $scalar), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
                         }
                         return null;
-                    case strncmp($scalar, '!php/enum', strlen('!php/enum')) === 0:
+                    case str_starts_with($scalar, '!php/enum'):
                         if (self::$constantSupport) {
                             if (!isset($scalar[11])) {
                                 throw new ParseException('Missing value for tag "!php/enum".', self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
                             }
                             $i = 0;
                             $enumName = self::parseScalar(substr($scalar, 10), 0, null, $i, \false);
-                            $useName = strpos($enumName, '::') !== false;
+                            $useName = str_contains($enumName, '::');
                             $enum = $useName ? strstr($enumName, '::', \true) : $enumName;
-                            if (!class_exists($enum)) {
+                            if (!enum_exists($enum)) {
                                 throw new ParseException(\sprintf('The enum "%s" is not defined.', $enum), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
                             }
                             if (!$useName) {
                                 return $enum::cases();
                             }
-                            if ($useValue = substr_compare($enumName, '->value', -strlen('->value')) === 0) {
+                            if ($useValue = str_ends_with($enumName, '->value')) {
                                 $enumName = substr($enumName, 0, -7);
                             }
                             if (!\defined($enumName)) {
@@ -689,9 +696,9 @@ class Inline
                             throw new ParseException(\sprintf('The string "%s" could not be parsed as an enum. Did you forget to pass the "Yaml::PARSE_CONSTANT" flag to the parser?', $scalar), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
                         }
                         return null;
-                    case strncmp($scalar, '!!float ', strlen('!!float ')) === 0:
+                    case str_starts_with($scalar, '!!float '):
                         return (float) substr($scalar, 8);
-                    case strncmp($scalar, '!!binary ', strlen('!!binary ')) === 0:
+                    case str_starts_with($scalar, '!!binary '):
                         return self::evaluateBinaryScalar(substr($scalar, 9));
                 }
                 throw new ParseException(\sprintf('The string "%s" could not be parsed as it uses an unsupported built-in tag.', $scalar), self::$parsedLineNumber, $scalar, self::$parsedFilename);
@@ -704,6 +711,9 @@ class Inline
             case \in_array($scalar[0], ['+', '-', '.'], \true) || is_numeric($scalar[0]):
                 if (Parser::preg_match('{^[+-]?[0-9][0-9_]*$}', $scalar)) {
                     $scalar = str_replace('_', '', $scalar);
+                    if ('+' === $scalar[0]) {
+                        $scalar = substr($scalar, 1);
+                    }
                 }
                 switch (\true) {
                     case ctype_digit($scalar):
@@ -718,8 +728,9 @@ class Inline
                         $scalar = str_replace('_', '', $scalar);
                         return '0x' === $scalar[0] . $scalar[1] ? hexdec($scalar) : (float) $scalar;
                     case '.inf' === $scalarLower:
-                    case '.nan' === $scalarLower:
                         return -log(0);
+                    case '.nan' === $scalarLower:
+                        return \NAN;
                     case '-.inf' === $scalarLower:
                         return log(0);
                     case Parser::preg_match('/^(-|\\+)?[0-9][0-9_]*(\\.[0-9_]+)?$/', $scalar):
@@ -736,13 +747,13 @@ class Inline
                             return $time;
                         }
                         if ('' !== rtrim($time->format('u'), '0')) {
-                            return (float) $time->format('U.u');
+                            return $time->format('U') + $time->format('u') / 1000000.0;
                         }
                         try {
                             if (\false !== ($scalar = $time->getTimestamp())) {
                                 return $scalar;
                             }
-                        } catch (\Matomo\Dependencies\ApiReference\DateRangeError|\ValueError $exception) {
+                        } catch (\Matomo\Dependencies\ApiReference\DateRangeError|\ValueError) {
                             // no-op
                         }
                         return $time->format('U');
@@ -783,9 +794,6 @@ class Inline
         if ('' !== $tag && '!' === $tag[0]) {
             throw new ParseException(\sprintf('The built-in tag "!%s" is not implemented.', $tag), self::$parsedLineNumber + 1, $value, self::$parsedFilename);
         }
-        if ('' !== $tag && !isset($value[$i])) {
-            throw new ParseException(\sprintf('Missing value for tag "%s".', $tag), self::$parsedLineNumber + 1, $value, self::$parsedFilename);
-        }
         if ('' === $tag || Yaml::PARSE_CUSTOM_TAGS & $flags) {
             return $tag;
         }
@@ -793,7 +801,10 @@ class Inline
     }
     public static function evaluateBinaryScalar(string $scalar) : string
     {
-        $parsedBinaryData = self::parseScalar(preg_replace('/\\s/', '', $scalar));
+        $parsedBinaryData = preg_replace('/\\s/', '', $scalar);
+        if ('' === $parsedBinaryData || '' === ($parsedBinaryData = self::parseScalar($parsedBinaryData))) {
+            return '';
+        }
         if (!\is_scalar($parsedBinaryData ?? '') && !$parsedBinaryData instanceof \Stringable) {
             throw new ParseException(\sprintf('The "!!binary" tag only supports a base64 encoded string, got "%s".', get_debug_type($parsedBinaryData)), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
         }
@@ -837,6 +848,6 @@ EOF;
      */
     private static function getHexRegex() : string
     {
-        return '~^0x[0-9a-f_]++$~i';
+        return '~^0x[0-9a-fA-F_]++$~';
     }
 }

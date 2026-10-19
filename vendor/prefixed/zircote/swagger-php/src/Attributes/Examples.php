@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class Examples extends OA\Examples
 {
@@ -15,20 +15,19 @@ class Examples extends OA\Examples
      * @param string|class-string|object|null $ref
      * @param array<string,mixed>|null        $x
      * @param Attachable[]|null               $attachables
-     * @param int|string|mixed[]|null $value
      */
     public function __construct(
         ?string $example = null,
-        ?string $summary = null,
-        ?string $description = null,
-        $value = null,
+        ?string $summary = Generator::UNDEFINED,
+        ?string $description = Generator::UNDEFINED,
+        int|string|array|null $value = null,
         ?string $externalValue = null,
-        $ref = null,
+        string|object|null $ref = null,
         // annotation
         ?array $x = null,
         ?array $attachables = null
     )
     {
-        parent::__construct(['example' => $example ?? Generator::UNDEFINED, 'summary' => $summary ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'value' => $value ?? Generator::UNDEFINED, 'externalValue' => $externalValue ?? Generator::UNDEFINED, 'ref' => $ref ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED]);
+        parent::__construct(['example' => $example ?? Generator::UNDEFINED, 'summary' => $summary, 'description' => $description, 'value' => $value ?? Generator::UNDEFINED, 'externalValue' => $externalValue ?? Generator::UNDEFINED, 'ref' => $ref ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED]);
     }
 }

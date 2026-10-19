@@ -16,12 +16,17 @@ use InvalidArgumentException;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\ArrayShape;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\ArrayShapeItem;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\CallableString;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\Conditional;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\ConditionalForParameter;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\ConstExpression;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\False_;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\FloatValue;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\HtmlEscapedString;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\IntegerRange;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\IntegerValue;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\IntMask;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\IntMaskOf;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\KeyOf;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\List_;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\ListShape;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\ListShapeItem;
@@ -36,10 +41,12 @@ use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\Numeri
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\NumericString;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\ObjectShape;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\ObjectShapeItem;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\OffsetAccess;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\PositiveInteger;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\StringValue;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\TraitString;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\True_;
+use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\PseudoTypes\ValueOf;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\AggregatedType;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\Array_;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Types\ArrayKey;
@@ -109,6 +116,7 @@ use function in_array;
 use function sprintf;
 use function strpos;
 use function strtolower;
+use function substr;
 use function trim;
 final class TypeResolver
 {
@@ -191,7 +199,7 @@ final class TypeResolver
                 switch ($type->kind) {
                     case ArrayShapeNode::KIND_ARRAY:
                         return new ArrayShape(...array_map(function (ArrayShapeItemNode $item) use($context) : ArrayShapeItem {
-                            return new ArrayShapeItem((string) $item->keyName, $this->createType($item->valueType, $context), $item->optional);
+                            return new ArrayShapeItem($item->keyName !== null ? (string) $item->keyName : null, $this->createType($item->valueType, $context), $item->optional);
                         }, $type->items));
                     case ArrayShapeNode::KIND_LIST:
                         return new ListShape(...array_map(function (ArrayShapeItemNode $item) use($context) : ListShapeItem {
@@ -234,8 +242,11 @@ final class TypeResolver
             case ThisTypeNode::class:
                 return new This();
             case ConditionalTypeNode::class:
+                return new Conditional($type->negated, $this->createType($type->subjectType, $context), $this->createType($type->targetType, $context), $this->createType($type->if, $context), $this->createType($type->else, $context));
             case ConditionalTypeForParameterNode::class:
+                return new ConditionalForParameter($type->negated, substr($type->parameterName, 1), $this->createType($type->targetType, $context), $this->createType($type->if, $context), $this->createType($type->else, $context));
             case OffsetAccessTypeNode::class:
+                return new OffsetAccess($this->createType($type->type, $context), $this->createType($type->offset, $context));
             default:
                 return new Mixed_();
         }
@@ -267,17 +278,25 @@ final class TypeResolver
                 }
                 return new IntegerRange((string) $type->genericTypes[0], (string) $type->genericTypes[1]);
             case 'iterable':
-                return new Iterable_(...array_reverse(array_map(function (TypeNode $genericType) use($context) : Type {
-                    return $this->createType($genericType, $context);
-                }, $type->genericTypes)));
+                return new Iterable_(...array_reverse($this->createTypesByTypeNodes($type->genericTypes, $context)));
+            case 'key-of':
+                return new KeyOf($this->createType($type->genericTypes[0], $context));
+            case 'value-of':
+                return new ValueOf($this->createType($type->genericTypes[0], $context));
+            case 'int-mask':
+                return new IntMask(...$this->createTypesByTypeNodes($type->genericTypes, $context));
+            case 'int-mask-of':
+                return new IntMaskOf($this->createType($type->genericTypes[0], $context));
+            case 'static':
+                return new Static_(...$this->createTypesByTypeNodes($type->genericTypes, $context));
+            case 'self':
+                return new Self_(...$this->createTypesByTypeNodes($type->genericTypes, $context));
             default:
                 $collectionType = $this->createType($type->type, $context);
                 if ($collectionType instanceof Object_ === \false) {
                     throw new RuntimeException(sprintf('%s is not a collection', (string) $collectionType));
                 }
-                return new Collection($collectionType->getFqsen(), ...array_reverse(array_map(function (TypeNode $genericType) use($context) : Type {
-                    return $this->createType($genericType, $context);
-                }, $type->genericTypes)));
+                return new Collection($collectionType->getFqsen(), ...array_reverse($this->createTypesByTypeNodes($type->genericTypes, $context)));
         }
     }
     private function createFromCallable(CallableTypeNode $type, Context $context) : Callable_
@@ -398,9 +417,7 @@ final class TypeResolver
     /** @param TypeNode[] $typeNodes */
     private function createArray(array $typeNodes, Context $context) : Array_
     {
-        $types = array_reverse(array_map(function (TypeNode $node) use($context) : Type {
-            return $this->createType($node, $context);
-        }, $typeNodes));
+        $types = array_reverse($this->createTypesByTypeNodes($typeNodes, $context));
         if (isset($types[1]) === \false) {
             return new Array_(...$types);
         }
@@ -456,5 +473,16 @@ final class TypeResolver
             }
         }
         return $type;
+    }
+    /**
+     * @param TypeNode[] $nodes
+     *
+     * @return Type[]
+     */
+    private function createTypesByTypeNodes(array $nodes, Context $context) : array
+    {
+        return array_map(function (TypeNode $node) use($context) : Type {
+            return $this->createType($node, $context);
+        }, $nodes);
     }
 }

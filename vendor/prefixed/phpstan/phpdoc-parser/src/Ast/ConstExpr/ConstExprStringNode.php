@@ -18,10 +18,7 @@ class ConstExprStringNode implements ConstExprNode
     public const SINGLE_QUOTED = 1;
     public const DOUBLE_QUOTED = 2;
     use NodeAttributes;
-    /**
-     * @var string
-     */
-    public $value;
+    public string $value;
     /** @var self::SINGLE_QUOTED|self::DOUBLE_QUOTED */
     public $quoteType;
     /**
@@ -67,5 +64,18 @@ class ConstExprStringNode implements ConstExprNode
             $hex = dechex(ord($matches[0]));
             return '\\x' . str_pad($hex, 2, '0', STR_PAD_LEFT);
         }, $escaped);
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['value'], $properties['quoteType']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

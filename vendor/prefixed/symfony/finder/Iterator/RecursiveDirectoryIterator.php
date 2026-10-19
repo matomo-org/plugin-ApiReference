@@ -21,27 +21,12 @@ use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\SplFileInfo;
  */
 class RecursiveDirectoryIterator extends \RecursiveDirectoryIterator
 {
-    /**
-     * @var bool
-     */
-    private $ignoreUnreadableDirs;
-    /**
-     * @var bool
-     */
-    private $ignoreFirstRewind = \true;
+    private bool $ignoreUnreadableDirs;
+    private bool $ignoreFirstRewind = \true;
     // these 3 properties take part of the performance optimization to avoid redoing the same work in all iterations
-    /**
-     * @var string
-     */
-    private $rootPath;
-    /**
-     * @var string
-     */
-    private $subPath;
-    /**
-     * @var string
-     */
-    private $directorySeparator = '/';
+    private string $rootPath;
+    private string $subPath;
+    private string $directorySeparator = '/';
     /**
      * @throws \RuntimeException
      */
@@ -72,12 +57,12 @@ class RecursiveDirectoryIterator extends \RecursiveDirectoryIterator
         }
         $subPathname .= $this->getFilename();
         $basePath = $this->rootPath;
-        if ('/' !== $basePath && substr_compare($basePath, $this->directorySeparator, -strlen($this->directorySeparator)) !== 0 && substr_compare($basePath, '/', -strlen('/')) !== 0) {
+        if ('/' !== $basePath && !str_ends_with($basePath, $this->directorySeparator) && !str_ends_with($basePath, '/')) {
             $basePath .= $this->directorySeparator;
         }
         return new SplFileInfo($basePath . $subPathname, $this->subPath, $subPathname);
     }
-    public function hasChildren($allowLinks = \false) : bool
+    public function hasChildren(bool $allowLinks = \false) : bool
     {
         $hasChildren = parent::hasChildren($allowLinks);
         if (!$hasChildren || !$this->ignoreUnreadableDirs) {
@@ -86,7 +71,7 @@ class RecursiveDirectoryIterator extends \RecursiveDirectoryIterator
         try {
             parent::getChildren();
             return \true;
-        } catch (\UnexpectedValueException $exception) {
+        } catch (\UnexpectedValueException) {
             // If directory is unreadable and finder is set to ignore it, skip children
             return \false;
         }

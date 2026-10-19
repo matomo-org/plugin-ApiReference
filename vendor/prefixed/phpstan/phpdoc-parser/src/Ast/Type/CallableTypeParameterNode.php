@@ -9,24 +9,12 @@ use function trim;
 class CallableTypeParameterNode implements Node
 {
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $type;
-    /**
-     * @var bool
-     */
-    public $isReference;
-    /**
-     * @var bool
-     */
-    public $isVariadic;
+    public TypeNode $type;
+    public bool $isReference;
+    public bool $isVariadic;
     /** @var string (may be empty) */
-    public $parameterName;
-    /**
-     * @var bool
-     */
-    public $isOptional;
+    public string $parameterName;
+    public bool $isOptional;
     public function __construct(TypeNode $type, bool $isReference, bool $isVariadic, string $parameterName, bool $isOptional)
     {
         $this->type = $type;
@@ -42,5 +30,18 @@ class CallableTypeParameterNode implements Node
         $isVariadic = $this->isVariadic ? '...' : '';
         $isOptional = $this->isOptional ? '=' : '';
         return trim("{$type}{$isReference}{$isVariadic}{$this->parameterName}") . $isOptional;
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['type'], $properties['isReference'], $properties['isVariadic'], $properties['parameterName'], $properties['isOptional']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

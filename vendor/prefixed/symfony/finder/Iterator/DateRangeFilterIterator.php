@@ -20,10 +20,7 @@ use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Comparator\DateCom
  */
 class DateRangeFilterIterator extends \FilterIterator
 {
-    /**
-     * @var mixed[]
-     */
-    private $comparators = [];
+    private array $comparators = [];
     /**
      * @param \Iterator<string, \SplFileInfo> $iterator
      * @param DateComparator[]                $comparators

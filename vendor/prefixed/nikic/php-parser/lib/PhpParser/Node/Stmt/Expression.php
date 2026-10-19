@@ -10,7 +10,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Expression extends Node\Stmt
 {
     /** @var Node\Expr Expression */
-    public $expr;
+    public Node\Expr $expr;
     /**
      * Constructs an expression statement.
      *

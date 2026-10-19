@@ -20,7 +20,7 @@ use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
  *
  * @psalm-immutable
  */
-final class ArrayKey extends AggregatedType implements PseudoType
+class ArrayKey extends AggregatedType implements PseudoType
 {
     public function __construct()
     {

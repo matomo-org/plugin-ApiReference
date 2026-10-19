@@ -14,30 +14,12 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt\Use_;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\UseItem;
 class NodeDumper
 {
-    /**
-     * @var bool
-     */
-    private $dumpComments;
-    /**
-     * @var bool
-     */
-    private $dumpPositions;
-    /**
-     * @var bool
-     */
-    private $dumpOtherAttributes;
-    /**
-     * @var string|null
-     */
-    private $code;
-    /**
-     * @var string
-     */
-    private $res;
-    /**
-     * @var string
-     */
-    private $nl;
+    private bool $dumpComments;
+    private bool $dumpPositions;
+    private bool $dumpOtherAttributes;
+    private ?string $code;
+    private string $res;
+    private string $nl;
     private const IGNORE_ATTRIBUTES = ['comments' => \true, 'startLine' => \true, 'endLine' => \true, 'startFilePos' => \true, 'endFilePos' => \true, 'startTokenPos' => \true, 'endTokenPos' => \true];
     /**
      * Constructs a NodeDumper.

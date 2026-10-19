@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 class Header extends OA\Header
 {
@@ -17,9 +17,9 @@ class Header extends OA\Header
      * @param Attachable[]|null               $attachables
      */
     public function __construct(
-        $ref = null,
+        string|object|null $ref = null,
         ?string $header = null,
-        ?string $description = null,
+        ?string $description = Generator::UNDEFINED,
         ?bool $required = null,
         ?Schema $schema = null,
         ?bool $deprecated = null,
@@ -29,6 +29,6 @@ class Header extends OA\Header
         ?array $attachables = null
     )
     {
-        parent::__construct(['ref' => $ref ?? Generator::UNDEFINED, 'header' => $header ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'required' => $required ?? Generator::UNDEFINED, 'deprecated' => $deprecated ?? Generator::UNDEFINED, 'allowEmptyValue' => $allowEmptyValue ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($schema)]);
+        parent::__construct(['ref' => $ref ?? Generator::UNDEFINED, 'header' => $header ?? Generator::UNDEFINED, 'description' => $description, 'required' => $required ?? Generator::UNDEFINED, 'deprecated' => $deprecated ?? Generator::UNDEFINED, 'allowEmptyValue' => $allowEmptyValue ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($schema)]);
     }
 }

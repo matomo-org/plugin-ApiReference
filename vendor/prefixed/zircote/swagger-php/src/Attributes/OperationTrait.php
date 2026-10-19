@@ -20,8 +20,8 @@ trait OperationTrait
     public function __construct(
         ?string $path = null,
         ?string $operationId = null,
-        ?string $description = null,
-        ?string $summary = null,
+        ?string $description = Generator::UNDEFINED,
+        ?string $summary = Generator::UNDEFINED,
         ?array $security = null,
         ?array $servers = null,
         ?RequestBody $requestBody = null,
@@ -36,6 +36,6 @@ trait OperationTrait
         ?array $attachables = null
     )
     {
-        parent::__construct(['path' => $path ?? Generator::UNDEFINED, 'operationId' => $operationId ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'summary' => $summary ?? Generator::UNDEFINED, 'security' => $security ?? Generator::UNDEFINED, 'servers' => $servers ?? Generator::UNDEFINED, 'tags' => $tags ?? Generator::UNDEFINED, 'callbacks' => $callbacks ?? Generator::UNDEFINED, 'deprecated' => $deprecated ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($requestBody, $responses, $parameters, $externalDocs)]);
+        parent::__construct(['path' => $path ?? Generator::UNDEFINED, 'operationId' => $operationId ?? Generator::UNDEFINED, 'description' => $description, 'summary' => $summary, 'security' => $security ?? Generator::UNDEFINED, 'servers' => $servers ?? Generator::UNDEFINED, 'tags' => $tags ?? Generator::UNDEFINED, 'callbacks' => $callbacks ?? Generator::UNDEFINED, 'deprecated' => $deprecated ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($requestBody, $responses, $parameters, $externalDocs)]);
     }
 }

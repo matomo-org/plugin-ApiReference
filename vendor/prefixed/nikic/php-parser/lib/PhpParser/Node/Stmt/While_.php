@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class While_ extends Node\Stmt
 {
     /** @var Node\Expr Condition */
-    public $cond;
+    public Node\Expr $cond;
     /** @var Node\Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /**
      * Constructs a while node.
      *

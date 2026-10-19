@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Throw_ extends Node\Expr
 {
     /** @var Node\Expr Expression */
-    public $expr;
+    public Node\Expr $expr;
     /**
      * Constructs a throw expression node.
      *

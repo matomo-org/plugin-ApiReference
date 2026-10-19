@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class Yield_ extends Expr
 {
     /** @var null|Expr Key expression */
-    public $key;
+    public ?Expr $key;
     /** @var null|Expr Value expression */
-    public $value;
+    public ?Expr $value;
     /**
      * Constructs a yield expression node.
      *

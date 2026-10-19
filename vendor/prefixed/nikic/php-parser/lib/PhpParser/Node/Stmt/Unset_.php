@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Unset_ extends Node\Stmt
 {
     /** @var Node\Expr[] Variables to unset */
-    public $vars;
+    public array $vars;
     /**
      * Constructs an unset node.
      *

@@ -9,28 +9,13 @@ use function trim;
 class AssertTagPropertyValueNode implements PhpDocTagValueNode
 {
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $type;
-    /**
-     * @var string
-     */
-    public $parameter;
-    /**
-     * @var string
-     */
-    public $property;
-    /**
-     * @var bool
-     */
-    public $isNegated;
-    /**
-     * @var bool
-     */
-    public $isEquality;
+    public TypeNode $type;
+    public string $parameter;
+    public string $property;
+    public bool $isNegated;
+    public bool $isEquality;
     /** @var string (may be empty) */
-    public $description;
+    public string $description;
     public function __construct(TypeNode $type, string $parameter, string $property, bool $isNegated, string $description, bool $isEquality)
     {
         $this->type = $type;
@@ -45,5 +30,18 @@ class AssertTagPropertyValueNode implements PhpDocTagValueNode
         $isNegated = $this->isNegated ? '!' : '';
         $isEquality = $this->isEquality ? '=' : '';
         return trim("{$isNegated}{$isEquality}{$this->type} {$this->parameter}->{$this->property} {$this->description}");
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['type'], $properties['parameter'], $properties['property'], $properties['isNegated'], $properties['description'], $properties['isEquality']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

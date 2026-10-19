@@ -13,26 +13,17 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\ComplexType;
 class Property implements PhpParser\Builder
 {
-    /**
-     * @var string
-     */
-    protected $name;
-    /**
-     * @var int
-     */
-    protected $flags = 0;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Expr|null
-     */
-    protected $default;
+    protected string $name;
+    protected int $flags = 0;
+    protected ?Node\Expr $default = null;
     /** @var array<string, mixed> */
-    protected $attributes = [];
+    protected array $attributes = [];
     /** @var null|Identifier|Name|ComplexType */
-    protected $type;
+    protected ?Node $type = null;
     /** @var list<Node\AttributeGroup> */
-    protected $attributeGroups = [];
+    protected array $attributeGroups = [];
     /** @var list<Node\PropertyHook> */
-    protected $hooks = [];
+    protected array $hooks = [];
     /**
      * Creates a property builder.
      *

@@ -9,21 +9,21 @@ use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class Param extends NodeAbstract
 {
     /** @var null|Identifier|Name|ComplexType Type declaration */
-    public $type;
+    public ?Node $type;
     /** @var bool Whether parameter is passed by reference */
-    public $byRef;
+    public bool $byRef;
     /** @var bool Whether this is a variadic argument */
-    public $variadic;
+    public bool $variadic;
     /** @var Expr\Variable|Expr\Error Parameter variable */
-    public $var;
+    public Expr $var;
     /** @var null|Expr Default value */
-    public $default;
+    public ?Expr $default;
     /** @var int Optional visibility flags */
-    public $flags;
+    public int $flags;
     /** @var AttributeGroup[] PHP attribute groups */
-    public $attrGroups;
+    public array $attrGroups;
     /** @var PropertyHook[] Property hooks for promoted properties */
-    public $hooks;
+    public array $hooks;
     /**
      * Constructs a parameter node.
      *
@@ -63,6 +63,10 @@ class Param extends NodeAbstract
     public function isPromoted() : bool
     {
         return $this->flags !== 0 || $this->hooks !== [];
+    }
+    public function isFinal() : bool
+    {
+        return (bool) ($this->flags & Modifiers::FINAL);
     }
     public function isPublic() : bool
     {

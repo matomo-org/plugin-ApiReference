@@ -7,11 +7,11 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class Ternary extends Expr
 {
     /** @var Expr Condition */
-    public $cond;
+    public Expr $cond;
     /** @var null|Expr Expression for true */
-    public $if;
+    public ?Expr $if;
     /** @var Expr Expression for false */
-    public $else;
+    public Expr $else;
     /**
      * Constructs a ternary operator node.
      *

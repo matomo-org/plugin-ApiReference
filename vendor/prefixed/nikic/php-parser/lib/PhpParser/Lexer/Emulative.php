@@ -10,6 +10,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\AsymmetricVis
 use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\AttributeEmulator;
 use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\EnumTokenEmulator;
 use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\ExplicitOctalEmulator;
+use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\FnTokenEmulator;
 use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\MatchTokenEmulator;
 use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\NullsafeTokenEmulator;
 use Matomo\Dependencies\ApiReference\PhpParser\Lexer\TokenEmulator\PipeOperatorEmulator;
@@ -24,17 +25,11 @@ use Matomo\Dependencies\ApiReference\PhpParser\Token;
 class Emulative extends Lexer
 {
     /** @var array{int, string, string}[] Patches used to reverse changes introduced in the code */
-    private $patches = [];
+    private array $patches = [];
     /** @var list<TokenEmulator> */
-    private $emulators = [];
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\PhpVersion
-     */
-    private $targetPhpVersion;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\PhpVersion
-     */
-    private $hostPhpVersion;
+    private array $emulators = [];
+    private PhpVersion $targetPhpVersion;
+    private PhpVersion $hostPhpVersion;
     /**
      * @param PhpVersion|null $phpVersion PHP version to emulate. Defaults to newest supported.
      */
@@ -42,7 +37,7 @@ class Emulative extends Lexer
     {
         $this->targetPhpVersion = $phpVersion ?? PhpVersion::getNewestSupported();
         $this->hostPhpVersion = PhpVersion::getHostVersion();
-        $emulators = [new MatchTokenEmulator(), new NullsafeTokenEmulator(), new AttributeEmulator(), new EnumTokenEmulator(), new ReadonlyTokenEmulator(), new ExplicitOctalEmulator(), new ReadonlyFunctionTokenEmulator(), new PropertyTokenEmulator(), new AsymmetricVisibilityTokenEmulator(), new PipeOperatorEmulator(), new VoidCastEmulator()];
+        $emulators = [new FnTokenEmulator(), new MatchTokenEmulator(), new NullsafeTokenEmulator(), new AttributeEmulator(), new EnumTokenEmulator(), new ReadonlyTokenEmulator(), new ExplicitOctalEmulator(), new ReadonlyFunctionTokenEmulator(), new PropertyTokenEmulator(), new AsymmetricVisibilityTokenEmulator(), new PipeOperatorEmulator(), new VoidCastEmulator()];
         // Collect emulators that are relevant for the PHP version we're running
         // and the PHP version we're targeting for emulation.
         foreach ($emulators as $emulator) {

@@ -10,7 +10,7 @@ class DoctrineArray implements Node
 {
     use NodeAttributes;
     /** @var list<DoctrineArrayItem> */
-    public $items;
+    public array $items;
     /**
      * @param list<DoctrineArrayItem> $items
      */
@@ -22,5 +22,18 @@ class DoctrineArray implements Node
     {
         $items = implode(', ', $this->items);
         return '{' . $items . '}';
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['items']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

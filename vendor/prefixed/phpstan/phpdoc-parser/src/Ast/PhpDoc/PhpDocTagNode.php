@@ -9,14 +9,8 @@ use function trim;
 class PhpDocTagNode implements PhpDocChildNode
 {
     use NodeAttributes;
-    /**
-     * @var string
-     */
-    public $name;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagValueNode
-     */
-    public $value;
+    public string $name;
+    public PhpDocTagValueNode $value;
     public function __construct(string $name, PhpDocTagValueNode $value)
     {
         $this->name = $name;
@@ -28,5 +22,18 @@ class PhpDocTagNode implements PhpDocChildNode
             return (string) $this->value;
         }
         return trim("{$this->name} {$this->value}");
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['name'], $properties['value']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

@@ -9,14 +9,8 @@ use function sprintf;
 class ArrayShapeUnsealedTypeNode implements Node
 {
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $valueType;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode|null
-     */
-    public $keyType;
+    public TypeNode $valueType;
+    public ?TypeNode $keyType = null;
     public function __construct(TypeNode $valueType, ?TypeNode $keyType)
     {
         $this->valueType = $valueType;
@@ -28,5 +22,18 @@ class ArrayShapeUnsealedTypeNode implements Node
             return sprintf('<%s, %s>', $this->keyType, $this->valueType);
         }
         return sprintf('<%s>', $this->valueType);
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['valueType'], $properties['keyType']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

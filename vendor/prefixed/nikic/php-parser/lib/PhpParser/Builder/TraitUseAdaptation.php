@@ -13,28 +13,13 @@ class TraitUseAdaptation implements Builder
     private const TYPE_UNDEFINED = 0;
     private const TYPE_ALIAS = 1;
     private const TYPE_PRECEDENCE = 2;
-    /**
-     * @var int
-     */
-    protected $type;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Name|null
-     */
-    protected $trait;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier
-     */
-    protected $method;
-    /**
-     * @var int|null
-     */
-    protected $modifier;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier|null
-     */
-    protected $alias;
+    protected int $type;
+    protected ?Node\Name $trait;
+    protected Node\Identifier $method;
+    protected ?int $modifier = null;
+    protected ?Node\Identifier $alias = null;
     /** @var Node\Name[] */
-    protected $insteadof = [];
+    protected array $insteadof = [];
     /**
      * Creates a trait use adaptation builder.
      *

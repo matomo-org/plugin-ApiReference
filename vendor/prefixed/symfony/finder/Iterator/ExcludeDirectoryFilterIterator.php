@@ -23,19 +23,13 @@ use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\SplFileInfo;
 class ExcludeDirectoryFilterIterator extends \FilterIterator implements \RecursiveIterator
 {
     /** @var \Iterator<string, SplFileInfo> */
-    private $iterator;
-    /**
-     * @var bool
-     */
-    private $isRecursive;
+    private \Iterator $iterator;
+    private bool $isRecursive;
     /** @var array<string, true> */
-    private $excludedDirs = [];
-    /**
-     * @var string|null
-     */
-    private $excludedPattern;
+    private array $excludedDirs = [];
+    private ?string $excludedPattern = null;
     /** @var list<callable(SplFileInfo):bool> */
-    private $pruneFilters = [];
+    private array $pruneFilters = [];
     /**
      * @param \Iterator<string, SplFileInfo>          $iterator    The Iterator to filter
      * @param list<string|callable(SplFileInfo):bool> $directories An array of directories to exclude
@@ -54,7 +48,7 @@ class ExcludeDirectoryFilterIterator extends \FilterIterator implements \Recursi
                 continue;
             }
             $directory = rtrim($directory, '/');
-            if (!$this->isRecursive || strpos($directory, '/') !== false) {
+            if (!$this->isRecursive || str_contains($directory, '/')) {
                 $patterns[] = preg_quote($directory, '#');
             } else {
                 $this->excludedDirs[$directory] = \true;
@@ -70,13 +64,15 @@ class ExcludeDirectoryFilterIterator extends \FilterIterator implements \Recursi
      */
     public function accept() : bool
     {
-        if ($this->isRecursive && isset($this->excludedDirs[$this->getFilename()]) && $this->isDir()) {
+        if ($this->isRecursive && isset($this->excludedDirs[$this->current()->getFilename()]) && $this->current()->isDir()) {
             return \false;
         }
         if ($this->excludedPattern) {
-            $path = $this->isDir() ? $this->current()->getRelativePathname() : $this->current()->getRelativePath();
+            $path = $this->current()->isDir() ? $this->current()->getRelativePathname() : $this->current()->getRelativePath();
             $path = str_replace('\\', '/', $path);
-            return !preg_match($this->excludedPattern, $path);
+            if (preg_match($this->excludedPattern, $path)) {
+                return \false;
+            }
         }
         if ($this->pruneFilters && $this->hasChildren()) {
             foreach ($this->pruneFilters as $pruneFilter) {
@@ -96,6 +92,7 @@ class ExcludeDirectoryFilterIterator extends \FilterIterator implements \Recursi
         $children = new self($this->iterator->getChildren(), []);
         $children->excludedDirs = $this->excludedDirs;
         $children->excludedPattern = $this->excludedPattern;
+        $children->pruneFilters = $this->pruneFilters;
         return $children;
     }
 }

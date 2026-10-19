@@ -13,17 +13,11 @@ class ArrayShapeNode implements TypeNode
     public const KIND_NON_EMPTY_LIST = 'non-empty-list';
     use NodeAttributes;
     /** @var ArrayShapeItemNode[] */
-    public $items;
-    /**
-     * @var bool
-     */
-    public $sealed;
+    public array $items;
+    public bool $sealed;
     /** @var self::KIND_* */
     public $kind;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\ArrayShapeUnsealedTypeNode|null
-     */
-    public $unsealedType;
+    public ?ArrayShapeUnsealedTypeNode $unsealedType = null;
     /**
      * @param ArrayShapeItemNode[] $items
      * @param self::KIND_* $kind
@@ -58,5 +52,18 @@ class ArrayShapeNode implements TypeNode
             $items[] = '...' . $this->unsealedType;
         }
         return $this->kind . '{' . implode(', ', $items) . '}';
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['items'], $properties['sealed'], $properties['unsealedType'], $properties['kind']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

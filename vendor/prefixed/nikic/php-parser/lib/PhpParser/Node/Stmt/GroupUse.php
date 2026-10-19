@@ -11,11 +11,11 @@ class GroupUse extends Stmt
     /**
      * @var Use_::TYPE_* Type of group use
      */
-    public $type;
+    public int $type;
     /** @var Name Prefix for uses */
-    public $prefix;
+    public Name $prefix;
     /** @var UseItem[] Uses */
-    public $uses;
+    public array $uses;
     /**
      * Constructs a group use node.
      *

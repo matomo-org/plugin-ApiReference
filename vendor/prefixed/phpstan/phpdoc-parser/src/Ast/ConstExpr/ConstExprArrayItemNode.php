@@ -8,14 +8,8 @@ use function sprintf;
 class ConstExprArrayItemNode implements ConstExprNode
 {
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprNode|null
-     */
-    public $key;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprNode
-     */
-    public $value;
+    public ?ConstExprNode $key = null;
+    public ConstExprNode $value;
     public function __construct(?ConstExprNode $key, ConstExprNode $value)
     {
         $this->key = $key;
@@ -27,5 +21,18 @@ class ConstExprArrayItemNode implements ConstExprNode
             return sprintf('%s => %s', $this->key, $this->value);
         }
         return (string) $this->value;
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['key'], $properties['value']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

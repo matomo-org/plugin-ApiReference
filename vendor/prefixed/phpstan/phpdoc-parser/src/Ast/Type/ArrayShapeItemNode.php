@@ -14,14 +14,8 @@ class ArrayShapeItemNode implements Node
     use NodeAttributes;
     /** @var ConstExprIntegerNode|ConstExprStringNode|ConstFetchNode|IdentifierTypeNode|null */
     public $keyName;
-    /**
-     * @var bool
-     */
-    public $optional;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $valueType;
+    public bool $optional;
+    public TypeNode $valueType;
     /**
      * @param ConstExprIntegerNode|ConstExprStringNode|ConstFetchNode|IdentifierTypeNode|null $keyName
      */
@@ -37,5 +31,18 @@ class ArrayShapeItemNode implements Node
             return sprintf('%s%s: %s', (string) $this->keyName, $this->optional ? '?' : '', (string) $this->valueType);
         }
         return (string) $this->valueType;
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['keyName'], $properties['optional'], $properties['valueType']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

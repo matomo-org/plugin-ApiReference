@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::TARGET_PARAMETER | \Attribute::TARGET_CLASS_CONSTANT | \Attribute::IS_REPEATABLE)]
 class Property extends OA\Property
 {
@@ -24,51 +24,49 @@ class Property extends OA\Property
      * @param array<Schema|OA\Schema>                                       $oneOf
      * @param array<string,mixed>|null                                      $x
      * @param Attachable[]|null                                             $attachables
-     * @param bool|int|float|null $exclusiveMaximum
-     * @param bool|int|float|null $exclusiveMinimum
-     * @param \Matomo\Dependencies\ApiReference\OpenApi\Attributes\AdditionalProperties|bool|null $additionalProperties
-     * @param mixed $default
-     * @param mixed $example
      */
     public function __construct(
         ?string $property = null,
         // schema
-        $ref = null,
+        string|object|null $ref = null,
         ?string $schema = null,
         ?string $title = null,
-        ?string $description = null,
+        ?string $description = Generator::UNDEFINED,
         ?int $maxProperties = null,
         ?int $minProperties = null,
         ?array $required = null,
         ?array $properties = null,
-        $type = null,
+        string|array|null $type = null,
         ?string $format = null,
         ?Items $items = null,
         ?string $collectionFormat = null,
-        $default = Generator::UNDEFINED,
+        mixed $default = Generator::UNDEFINED,
         $maximum = null,
-        $exclusiveMaximum = null,
+        bool|int|float|null $exclusiveMaximum = null,
         $minimum = null,
-        $exclusiveMinimum = null,
+        bool|int|float|null $exclusiveMinimum = null,
         ?int $maxLength = null,
         ?int $minLength = null,
         ?int $maxItems = null,
         ?int $minItems = null,
         ?bool $uniqueItems = null,
         ?string $pattern = null,
-        $enum = null,
+        array|string|null $enum = null,
         ?Discriminator $discriminator = null,
         ?bool $readOnly = null,
         ?bool $writeOnly = null,
         ?Xml $xml = null,
         ?ExternalDocumentation $externalDocs = null,
-        $example = Generator::UNDEFINED,
+        mixed $example = Generator::UNDEFINED,
         ?bool $nullable = null,
         ?bool $deprecated = null,
         ?array $allOf = null,
         ?array $anyOf = null,
         ?array $oneOf = null,
-        $additionalProperties = null,
+        AdditionalProperties|bool|null $additionalProperties = null,
+        ?array $patternProperties = null,
+        ?array $unevaluatedProperties = null,
+        ?Encoding $encoding = null,
         // annotation
         ?array $x = null,
         ?array $attachables = null
@@ -80,7 +78,7 @@ class Property extends OA\Property
             'ref' => $ref ?? Generator::UNDEFINED,
             'schema' => $schema ?? Generator::UNDEFINED,
             'title' => $title ?? Generator::UNDEFINED,
-            'description' => $description ?? Generator::UNDEFINED,
+            'description' => $description,
             'maxProperties' => $maxProperties ?? Generator::UNDEFINED,
             'minProperties' => $minProperties ?? Generator::UNDEFINED,
             'required' => $required ?? Generator::UNDEFINED,
@@ -110,6 +108,9 @@ class Property extends OA\Property
             'anyOf' => $anyOf ?? Generator::UNDEFINED,
             'oneOf' => $oneOf ?? Generator::UNDEFINED,
             'additionalProperties' => $additionalProperties ?? Generator::UNDEFINED,
+            'patternProperties' => $patternProperties ?? Generator::UNDEFINED,
+            'unevaluatedProperties' => $unevaluatedProperties ?? Generator::UNDEFINED,
+            'encoding' => $encoding ?? Generator::UNDEFINED,
             // annotation
             'x' => $x ?? Generator::UNDEFINED,
             'attachables' => $attachables ?? Generator::UNDEFINED,

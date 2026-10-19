@@ -12,9 +12,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Token;
 class TokenStream
 {
     /** @var Token[] Tokens (in PhpToken::tokenize() format) */
-    private $tokens;
+    private array $tokens;
     /** @var int[] Map from position to indentation */
-    private $indentMap;
+    private array $indentMap;
     /**
      * Create token stream instance.
      *

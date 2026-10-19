@@ -25,14 +25,8 @@ use function explode;
  */
 final class Covers extends BaseTag implements Factory\StaticMethod
 {
-    /**
-     * @var string
-     */
-    protected $name = 'covers';
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Fqsen
-     */
-    private $refers;
+    protected string $name = 'covers';
+    private Fqsen $refers;
     /**
      * Initializes this tag.
      */

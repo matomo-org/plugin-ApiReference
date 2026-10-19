@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class Empty_ extends Expr
 {
     /** @var Expr Expression */
-    public $expr;
+    public Expr $expr;
     /**
      * Constructs an empty() node.
      *

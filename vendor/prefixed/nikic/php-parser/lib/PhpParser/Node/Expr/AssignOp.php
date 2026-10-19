@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 abstract class AssignOp extends Expr
 {
     /** @var Expr Variable */
-    public $var;
+    public Expr $var;
     /** @var Expr Expression */
-    public $expr;
+    public Expr $expr;
     /**
      * Constructs a compound assignment operation node.
      *

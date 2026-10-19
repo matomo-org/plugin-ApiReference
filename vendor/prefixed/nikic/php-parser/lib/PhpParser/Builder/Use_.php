@@ -9,16 +9,10 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 class Use_ implements Builder
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Name
-     */
-    protected $name;
+    protected Node\Name $name;
     /** @var Stmt\Use_::TYPE_* */
-    protected $type;
-    /**
-     * @var string|null
-     */
-    protected $alias;
+    protected int $type;
+    protected ?string $alias = null;
     /**
      * Creates a name use (alias) builder.
      *

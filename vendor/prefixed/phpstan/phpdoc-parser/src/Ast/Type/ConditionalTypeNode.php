@@ -8,26 +8,11 @@ use function sprintf;
 class ConditionalTypeNode implements TypeNode
 {
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $subjectType;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $targetType;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $if;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $else;
-    /**
-     * @var bool
-     */
-    public $negated;
+    public TypeNode $subjectType;
+    public TypeNode $targetType;
+    public TypeNode $if;
+    public TypeNode $else;
+    public bool $negated;
     public function __construct(TypeNode $subjectType, TypeNode $targetType, TypeNode $if, TypeNode $else, bool $negated)
     {
         $this->subjectType = $subjectType;
@@ -38,6 +23,29 @@ class ConditionalTypeNode implements TypeNode
     }
     public function __toString() : string
     {
-        return sprintf('(%s %s %s ? %s : %s)', $this->subjectType, $this->negated ? 'is not' : 'is', $this->targetType, $this->if, $this->else);
+        return sprintf(
+            '(%s %s %s ? %s : %s)',
+            // "?Foo is Bar ? ... : ..." reads as a nullable type followed by
+            // something else, so the subject keeps the parentheses it was read
+            // with
+            $this->subjectType instanceof NullableTypeNode ? '(' . $this->subjectType . ')' : $this->subjectType,
+            $this->negated ? 'is not' : 'is',
+            $this->targetType,
+            $this->if,
+            $this->else
+        );
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['subjectType'], $properties['targetType'], $properties['if'], $properties['else'], $properties['negated']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

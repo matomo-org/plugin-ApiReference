@@ -24,22 +24,10 @@ use function trim;
 class PhpDocParser
 {
     private const DISALLOWED_DESCRIPTION_START_TOKENS = [Lexer::TOKEN_UNION, Lexer::TOKEN_INTERSECTION];
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig
-     */
-    private $config;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\TypeParser
-     */
-    private $typeParser;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\ConstExprParser
-     */
-    private $constantExprParser;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\ConstExprParser
-     */
-    private $doctrineConstantExprParser;
+    private ParserConfig $config;
+    private TypeParser $typeParser;
+    private ConstExprParser $constantExprParser;
+    private ConstExprParser $doctrineConstantExprParser;
     public function __construct(ParserConfig $config, TypeParser $typeParser, ConstExprParser $constantExprParser)
     {
         $this->config = $config;
@@ -280,6 +268,10 @@ class PhpDocParser
                 case '@phpstan-pure-unless-callable-is-impure':
                     $tagValue = $this->parsePureUnlessCallableIsImpureTagValue($tokens);
                     break;
+                case '@pure-unless-parameter-passed':
+                case '@phpstan-pure-unless-parameter-passed':
+                    $tagValue = $this->parsePureUnlessParameterIsPassed($tokens);
+                    break;
                 case '@var':
                 case '@phpstan-var':
                 case '@psalm-var':
@@ -346,9 +338,7 @@ class PhpDocParser
                 case '@template-contravariant':
                 case '@phpstan-template-contravariant':
                 case '@psalm-template-contravariant':
-                    $tagValue = $this->typeParser->parseTemplateTagValue($tokens, function ($tokens) {
-                        return $this->parseOptionalDescription($tokens, \true);
-                    });
+                    $tagValue = $this->typeParser->parseTemplateTagValue($tokens, fn($tokens) => $this->parseOptionalDescription($tokens, \true));
                     break;
                 case '@extends':
                 case '@phpstan-extends':
@@ -627,6 +617,12 @@ class PhpDocParser
         $parameterName = $this->parseRequiredVariableName($tokens);
         $description = $this->parseOptionalDescription($tokens, \false);
         return new Ast\PhpDoc\PureUnlessCallableIsImpureTagValueNode($parameterName, $description);
+    }
+    private function parsePureUnlessParameterIsPassed(TokenIterator $tokens) : Ast\PhpDoc\PureUnlessParameterIsPassedTagValueNode
+    {
+        $parameterName = $this->parseRequiredVariableName($tokens);
+        $description = $this->parseOptionalDescription($tokens, \false);
+        return new Ast\PhpDoc\PureUnlessParameterIsPassedTagValueNode($parameterName, $description);
     }
     private function parseVarTagValue(TokenIterator $tokens) : Ast\PhpDoc\VarTagValueNode
     {

@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 class Tag extends OA\Tag
 {
@@ -17,13 +17,16 @@ class Tag extends OA\Tag
      */
     public function __construct(
         ?string $name = null,
-        ?string $description = null,
+        ?string $description = Generator::UNDEFINED,
+        ?string $summary = Generator::UNDEFINED,
+        ?string $parent = null,
+        ?string $kind = null,
         ?ExternalDocumentation $externalDocs = null,
         // annotation
         ?array $x = null,
         ?array $attachables = null
     )
     {
-        parent::__construct(['name' => $name ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($externalDocs)]);
+        parent::__construct(['name' => $name ?? Generator::UNDEFINED, 'description' => $description, 'summary' => $summary, 'parent' => $parent ?? Generator::UNDEFINED, 'kind' => $kind ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($externalDocs)]);
     }
 }

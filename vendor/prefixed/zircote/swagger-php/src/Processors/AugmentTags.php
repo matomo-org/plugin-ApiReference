@@ -15,10 +15,12 @@ use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 class AugmentTags
 {
     /** @var array<string> */
-    protected $whitelist = [];
-    public function __construct(array $whitelist = [])
+    protected array $whitelist;
+    protected bool $withDescription;
+    public function __construct(array $whitelist = [], bool $withDescription = \true)
     {
         $this->whitelist = $whitelist;
+        $this->withDescription = $withDescription;
     }
     /**
      * Whitelist tags to keep even if not used. <code>*</code> may be used to keep all unused.
@@ -26,6 +28,14 @@ class AugmentTags
     public function setWhitelist(array $whitelist) : AugmentTags
     {
         $this->whitelist = $whitelist;
+        return $this;
+    }
+    /**
+     * Enables/disables generation of default tag descriptions.
+     */
+    public function setWithDescription(bool $withDescription) : AugmentTags
+    {
+        $this->withDescription = $withDescription;
         return $this;
     }
     public function __invoke(Analysis $analysis) : void
@@ -54,8 +64,14 @@ class AugmentTags
             $declatedTagNames = array_keys($declaredTags);
             foreach ($usedTagNames as $tagName) {
                 if (!in_array($tagName, $declatedTagNames)) {
-                    $analysis->openapi->merge([new OA\Tag(['name' => $tagName, 'description' => $tagName])]);
+                    $analysis->openapi->merge([new OA\Tag(['name' => $tagName, 'description' => $this->withDescription ? $tagName : Generator::UNDEFINED])]);
                 }
+            }
+        }
+        // clear invalid parents
+        foreach ($declaredTags as $tag) {
+            if (!array_key_exists($tag->parent, $declaredTags)) {
+                $tag->parent = Generator::UNDEFINED;
             }
         }
         $this->removeUnusedTags($usedTagNames, $declaredTags, $analysis);
@@ -69,7 +85,7 @@ class AugmentTags
         foreach ($declaredTags as $tag) {
             if (!in_array($tag->name, $tagsToKeep)) {
                 if (\false !== ($index = array_search($tag, $analysis->openapi->tags, \true))) {
-                    $analysis->annotations->detach($tag);
+                    $analysis->annotations->offsetUnset($tag);
                     unset($analysis->openapi->tags[$index]);
                     $analysis->openapi->tags = array_values($analysis->openapi->tags);
                 }

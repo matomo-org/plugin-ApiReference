@@ -32,13 +32,14 @@ class MergeJsonContent
             if (Generator::isDefault($parent->content)) {
                 $parent->content = [];
             }
-            $parent->content['application/json'] = $mediaType = new OA\MediaType(['schema' => $jsonContent, 'example' => $jsonContent->example, 'examples' => $jsonContent->examples, '_context' => new Context(['generated' => \true], $jsonContent->_context)]);
+            $parent->content['application/json'] = $mediaType = new OA\MediaType(['schema' => $jsonContent, 'example' => $jsonContent->example, 'examples' => $jsonContent->examples, 'encoding' => $jsonContent->encoding, '_context' => new Context(['generated' => \true], $jsonContent->_context)]);
             $analysis->addAnnotation($mediaType, $mediaType->_context);
             if (!$parent instanceof OA\Parameter) {
                 $parent->content['application/json']->mediaType = 'application/json';
             }
             $jsonContent->example = Generator::UNDEFINED;
             $jsonContent->examples = Generator::UNDEFINED;
+            $jsonContent->encoding = Generator::UNDEFINED;
             $index = array_search($jsonContent, $parent->_unmerged, \true);
             if ($index !== \false) {
                 array_splice($parent->_unmerged, $index, 1);

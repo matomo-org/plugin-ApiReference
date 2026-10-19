@@ -13,15 +13,15 @@ use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class PropertyHook extends NodeAbstract implements FunctionLike
 {
     /** @var AttributeGroup[] PHP attribute groups */
-    public $attrGroups;
+    public array $attrGroups;
     /** @var int Modifiers */
-    public $flags;
+    public int $flags;
     /** @var bool Whether hook returns by reference */
-    public $byRef;
+    public bool $byRef;
     /** @var Identifier Hook name */
-    public $name;
+    public Identifier $name;
     /** @var Param[] Parameters */
-    public $params;
+    public array $params;
     /** @var null|Expr|Stmt[] Hook body */
     public $body;
     /**

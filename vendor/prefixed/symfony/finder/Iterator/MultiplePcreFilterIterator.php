@@ -22,14 +22,8 @@ namespace Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator;
  */
 abstract class MultiplePcreFilterIterator extends \FilterIterator
 {
-    /**
-     * @var mixed[]
-     */
-    protected $matchRegexps = [];
-    /**
-     * @var mixed[]
-     */
-    protected $noMatchRegexps = [];
+    protected array $matchRegexps = [];
+    protected array $noMatchRegexps = [];
     /**
      * @param \Iterator<TKey, TValue> $iterator        The Iterator to filter
      * @param string[]                $matchPatterns   An array of patterns that need to match
