@@ -13,10 +13,7 @@ use Matomo\Dependencies\ApiReference\OpenApi\GeneratorAwareTrait;
 class DocBlockAnnotationFactory implements AnnotationFactoryInterface
 {
     use GeneratorAwareTrait;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\OpenApi\Analysers\DocBlockParser|null
-     */
-    protected $docBlockParser;
+    protected ?DocBlockParser $docBlockParser = null;
     public function __construct(?DocBlockParser $docBlockParser = null)
     {
         $this->docBlockParser = $docBlockParser ?: new DocBlockParser();

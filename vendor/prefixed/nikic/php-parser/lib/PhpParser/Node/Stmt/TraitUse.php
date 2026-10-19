@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class TraitUse extends Node\Stmt
 {
     /** @var Node\Name[] Traits */
-    public $traits;
+    public array $traits;
     /** @var TraitUseAdaptation[] Adaptations */
-    public $adaptations;
+    public array $adaptations;
     /**
      * Constructs a trait use node.
      *

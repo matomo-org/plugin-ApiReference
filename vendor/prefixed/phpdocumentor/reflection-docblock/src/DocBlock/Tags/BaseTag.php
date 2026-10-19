@@ -19,9 +19,9 @@ use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Descripti
 abstract class BaseTag implements DocBlock\Tag
 {
     /** @var string Name of the tag */
-    protected $name = '';
+    protected string $name = '';
     /** @var Description|null Description of the tag. */
-    protected $description;
+    protected ?Description $description = null;
     /**
      * Gets the name of this tag.
      *

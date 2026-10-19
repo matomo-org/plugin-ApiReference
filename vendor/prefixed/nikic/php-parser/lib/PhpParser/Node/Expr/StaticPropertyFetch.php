@@ -10,9 +10,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\VarLikeIdentifier;
 class StaticPropertyFetch extends Expr
 {
     /** @var Name|Expr Class name */
-    public $class;
+    public Node $class;
     /** @var VarLikeIdentifier|Expr Property name */
-    public $name;
+    public Node $name;
     /**
      * Constructs a static property fetch node.
      *

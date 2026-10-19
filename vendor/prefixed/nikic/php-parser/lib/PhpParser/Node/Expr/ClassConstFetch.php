@@ -10,9 +10,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Name;
 class ClassConstFetch extends Expr
 {
     /** @var Name|Expr Class name */
-    public $class;
+    public Node $class;
     /** @var Identifier|Expr|Error Constant name */
-    public $name;
+    public Node $name;
     /**
      * Constructs a class const fetch node.
      *

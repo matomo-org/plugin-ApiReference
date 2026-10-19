@@ -1,5 +1,8 @@
 ## Changelog
 
+6.0.4
+- Updated dependencies
+
 6.0.3 - 2026-10-12
 - Fixed API requests with `format=yaml` failing with an error on production builds
 

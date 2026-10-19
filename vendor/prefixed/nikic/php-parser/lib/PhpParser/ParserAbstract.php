@@ -39,92 +39,93 @@ abstract class ParserAbstract implements Parser
 {
     private const SYMBOL_NONE = -1;
     /** @var Lexer Lexer that is used when parsing */
-    protected $lexer;
+    protected Lexer $lexer;
     /** @var PhpVersion PHP version to target on a best-effort basis */
-    protected $phpVersion;
+    protected PhpVersion $phpVersion;
     /*
      * The following members will be filled with generated parsing data:
      */
     /** @var int Size of $tokenToSymbol map */
-    protected $tokenToSymbolMapSize;
+    protected int $tokenToSymbolMapSize;
     /** @var int Size of $action table */
-    protected $actionTableSize;
+    protected int $actionTableSize;
     /** @var int Size of $goto table */
-    protected $gotoTableSize;
+    protected int $gotoTableSize;
     /** @var int Symbol number signifying an invalid token */
-    protected $invalidSymbol;
+    protected int $invalidSymbol;
     /** @var int Symbol number of error recovery token */
-    protected $errorSymbol;
+    protected int $errorSymbol;
     /** @var int Action number signifying default action */
-    protected $defaultAction;
+    protected int $defaultAction;
     /** @var int Rule number signifying that an unexpected token was encountered */
-    protected $unexpectedTokenRule;
-    /**
-     * @var int
-     */
-    protected $YY2TBLSTATE;
+    protected int $unexpectedTokenRule;
+    protected int $YY2TBLSTATE;
     /** @var int Number of non-leaf states */
-    protected $numNonLeafStates;
+    protected int $numNonLeafStates;
     /** @var int[] Map of PHP token IDs to internal symbols */
-    protected $phpTokenToSymbol;
+    protected array $phpTokenToSymbol;
     /** @var array<int, bool> Map of PHP token IDs to drop */
-    protected $dropTokens;
+    protected array $dropTokens;
     /** @var int[] Map of external symbols (static::T_*) to internal symbols */
-    protected $tokenToSymbol;
+    protected array $tokenToSymbol;
     /** @var string[] Map of symbols to their names */
-    protected $symbolToName;
+    protected array $symbolToName;
     /** @var array<int, string> Names of the production rules (only necessary for debugging) */
-    protected $productions;
+    protected array $productions;
     /** @var int[] Map of states to a displacement into the $action table. The corresponding action for this
      *             state/symbol pair is $action[$actionBase[$state] + $symbol]. If $actionBase[$state] is 0, the
      *             action is defaulted, i.e. $actionDefault[$state] should be used instead. */
-    protected $actionBase;
+    protected array $actionBase;
     /** @var int[] Table of actions. Indexed according to $actionBase comment. */
-    protected $action;
+    protected array $action;
     /** @var int[] Table indexed analogously to $action. If $actionCheck[$actionBase[$state] + $symbol] != $symbol
      *             then the action is defaulted, i.e. $actionDefault[$state] should be used instead. */
-    protected $actionCheck;
+    protected array $actionCheck;
     /** @var int[] Map of states to their default action */
-    protected $actionDefault;
+    protected array $actionDefault;
     /** @var callable[] Semantic action callbacks */
-    protected $reduceCallbacks;
+    protected array $reduceCallbacks;
     /** @var int[] Map of non-terminals to a displacement into the $goto table. The corresponding goto state for this
      *             non-terminal/state pair is $goto[$gotoBase[$nonTerminal] + $state] (unless defaulted) */
-    protected $gotoBase;
+    protected array $gotoBase;
     /** @var int[] Table of states to goto after reduction. Indexed according to $gotoBase comment. */
-    protected $goto;
+    protected array $goto;
     /** @var int[] Table indexed analogously to $goto. If $gotoCheck[$gotoBase[$nonTerminal] + $state] != $nonTerminal
      *             then the goto state is defaulted, i.e. $gotoDefault[$nonTerminal] should be used. */
-    protected $gotoCheck;
+    protected array $gotoCheck;
     /** @var int[] Map of non-terminals to the default state to goto after their reduction */
-    protected $gotoDefault;
+    protected array $gotoDefault;
     /** @var int[] Map of rules to the non-terminal on their left-hand side, i.e. the non-terminal to use for
      *             determining the state to goto after reduction. */
-    protected $ruleToNonTerminal;
+    protected array $ruleToNonTerminal;
     /** @var int[] Map of rules to the length of their right-hand side, which is the number of elements that have to
      *             be popped from the stack(s) on reduction. */
-    protected $ruleToLength;
+    protected array $ruleToLength;
     /*
      * The following members are part of the parser state:
      */
     /** @var mixed Temporary value containing the result of last semantic action (reduction) */
     protected $semValue;
     /** @var mixed[] Semantic value stack (contains values of tokens and semantic action results) */
-    protected $semStack;
+    protected array $semStack;
     /** @var int[] Token start position stack */
-    protected $tokenStartStack;
+    protected array $tokenStartStack;
     /** @var int[] Token end position stack */
-    protected $tokenEndStack;
+    protected array $tokenEndStack;
     /** @var ErrorHandler Error handler */
-    protected $errorHandler;
+    protected ErrorHandler $errorHandler;
     /** @var int Error state, used to avoid error floods */
-    protected $errorState;
+    protected int $errorState;
     /** @var \SplObjectStorage<Array_, null>|null Array nodes created during parsing, for postprocessing of empty elements. */
-    protected $createdArrays;
+    protected ?\SplObjectStorage $createdArrays;
+    /** @var \SplObjectStorage<Expr\ArrowFunction, null>|null
+     *       Arrow functions that are wrapped in parentheses, to enforce the pipe operator parentheses requirements.
+     */
+    protected ?\SplObjectStorage $parenthesizedArrowFunctions;
     /** @var Token[] Tokens for the current parse */
-    protected $tokens;
+    protected array $tokens;
     /** @var int Current position in token array */
-    protected $tokenPos;
+    protected int $tokenPos;
     /**
      * Initialize $reduceCallbacks map.
      */
@@ -167,6 +168,7 @@ abstract class ParserAbstract implements Parser
     {
         $this->errorHandler = $errorHandler ?: new ErrorHandler\Throwing();
         $this->createdArrays = new \SplObjectStorage();
+        $this->parenthesizedArrowFunctions = new \SplObjectStorage();
         $this->tokens = $this->lexer->tokenize($code, $this->errorHandler);
         $result = $this->doParse();
         // Report errors for any empty elements used inside arrays. This is delayed until after the main parse,
@@ -186,6 +188,7 @@ abstract class ParserAbstract implements Parser
         $this->semStack = [];
         $this->semValue = null;
         $this->createdArrays = null;
+        $this->parenthesizedArrowFunctions = null;
         if ($result !== null) {
             $traverser = new NodeTraverser(new CommentAnnotatingVisitor($this->tokens));
             $traverser->traverse($result);
@@ -901,6 +904,9 @@ abstract class ParserAbstract implements Parser
         if ($node->variadic && null !== $node->default) {
             $this->emitError(new Error('Variadic parameter cannot have a default value', $node->default->getAttributes()));
         }
+        if ($node->type instanceof Identifier && $node->type->name === 'void') {
+            $this->emitError(new Error('void cannot be used as a parameter type', $node->type->getAttributes()));
+        }
     }
     protected function checkTryCatch(TryCatch $node) : void
     {
@@ -1025,6 +1031,12 @@ abstract class ParserAbstract implements Parser
             $this->emitError(new Error('Cannot use attributes on multiple constants at once', $node->getAttributes()));
         }
     }
+    protected function checkPipeOperatorParentheses(Expr $node) : void
+    {
+        if ($node instanceof Expr\ArrowFunction && !$this->parenthesizedArrowFunctions->offsetExists($node)) {
+            $this->emitError(new Error('Arrow functions on the right hand side of |> must be parenthesized', $node->getAttributes()));
+        }
+    }
     /**
      * @param Property|Param $node
      */
@@ -1039,7 +1051,7 @@ abstract class ParserAbstract implements Parser
             $hook->setAttribute('propertyName', $name);
         }
     }
-    /** @param array<Node\Arg|Node\VariadicPlaceholder> $args */
+    /** @param array<Node\Arg|Node\VariadicPlaceholder|Node\ArgPlaceholder> $args */
     private function isSimpleExit(array $args) : bool
     {
         if (\count($args) === 0) {
@@ -1052,7 +1064,7 @@ abstract class ParserAbstract implements Parser
         return \false;
     }
     /**
-     * @param array<Node\Arg|Node\VariadicPlaceholder> $args
+     * @param array<Node\Arg|Node\VariadicPlaceholder|Node\ArgPlaceholder> $args
      * @param array<string, mixed> $attrs
      */
     protected function createExitExpr(string $name, int $namePos, array $args, array $attrs) : Expr

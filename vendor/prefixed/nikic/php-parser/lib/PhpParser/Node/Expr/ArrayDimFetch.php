@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class ArrayDimFetch extends Expr
 {
     /** @var Expr Variable */
-    public $var;
+    public Expr $var;
     /** @var null|Expr Array index / dim */
-    public $dim;
+    public ?Expr $dim;
     /**
      * Constructs an array index fetch node.
      *

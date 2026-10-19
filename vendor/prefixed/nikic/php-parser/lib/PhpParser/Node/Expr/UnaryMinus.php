@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class UnaryMinus extends Expr
 {
     /** @var Expr Expression */
-    public $expr;
+    public Expr $expr;
     /**
      * Constructs a unary minus node.
      *

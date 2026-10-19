@@ -18,22 +18,12 @@ namespace Matomo\Dependencies\ApiReference\Symfony\Component\Finder;
 class SplFileInfo extends \SplFileInfo
 {
     /**
-     * @var string
-     */
-    private $relativePath;
-    /**
-     * @var string
-     */
-    private $relativePathname;
-    /**
      * @param string $file             The file name
      * @param string $relativePath     The relative path
      * @param string $relativePathname The relative path name
      */
-    public function __construct(string $file, string $relativePath, string $relativePathname)
+    public function __construct(string $file, private string $relativePath, private string $relativePathname)
     {
-        $this->relativePath = $relativePath;
-        $this->relativePathname = $relativePathname;
         parent::__construct($file);
     }
     /**
@@ -66,7 +56,7 @@ class SplFileInfo extends \SplFileInfo
      */
     public function getContents() : string
     {
-        set_error_handler(function ($type, $msg) use(&$error) {
+        set_error_handler(static function ($type, $msg) use(&$error) {
             $error = $msg;
         });
         try {

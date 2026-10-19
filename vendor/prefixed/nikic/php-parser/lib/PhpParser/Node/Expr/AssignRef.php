@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class AssignRef extends Expr
 {
     /** @var Expr Variable reference is assigned to */
-    public $var;
+    public Expr $var;
     /** @var Expr Variable which is referenced */
-    public $expr;
+    public Expr $expr;
     /**
      * Constructs an assignment node.
      *

@@ -12,15 +12,15 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\PropertyItem;
 class Property extends Node\Stmt
 {
     /** @var int Modifiers */
-    public $flags;
+    public int $flags;
     /** @var PropertyItem[] Properties */
-    public $props;
+    public array $props;
     /** @var null|Identifier|Name|ComplexType Type declaration */
-    public $type;
+    public ?Node $type;
     /** @var Node\AttributeGroup[] PHP attribute groups */
-    public $attrGroups;
+    public array $attrGroups;
     /** @var Node\PropertyHook[] Property hooks */
-    public $hooks;
+    public array $hooks;
     /**
      * Constructs a class property list node.
      *

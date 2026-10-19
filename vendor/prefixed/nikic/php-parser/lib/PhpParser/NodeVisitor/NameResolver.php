@@ -14,11 +14,11 @@ use Matomo\Dependencies\ApiReference\PhpParser\NodeVisitorAbstract;
 class NameResolver extends NodeVisitorAbstract
 {
     /** @var NameContext Naming context */
-    protected $nameContext;
+    protected NameContext $nameContext;
     /** @var bool Whether to preserve original names */
-    protected $preserveOriginalNames;
+    protected bool $preserveOriginalNames;
     /** @var bool Whether to replace resolved nodes in place, or to add resolvedNode attributes */
-    protected $replaceNodes;
+    protected bool $replaceNodes;
     /**
      * Constructs a name resolution visitor.
      *

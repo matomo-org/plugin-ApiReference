@@ -8,19 +8,19 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\FunctionLike;
 class Function_ extends Node\Stmt implements FunctionLike
 {
     /** @var bool Whether function returns by reference */
-    public $byRef;
+    public bool $byRef;
     /** @var Node\Identifier Name */
-    public $name;
+    public Node\Identifier $name;
     /** @var Node\Param[] Parameters */
-    public $params;
+    public array $params;
     /** @var null|Node\Identifier|Node\Name|Node\ComplexType Return type */
-    public $returnType;
+    public ?Node $returnType;
     /** @var Node\Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /** @var Node\AttributeGroup[] PHP attribute groups */
-    public $attrGroups;
+    public array $attrGroups;
     /** @var Node\Name|null Namespaced name (if using NameResolver) */
-    public $namespacedName;
+    public ?Node\Name $namespacedName;
     /**
      * Constructs a function node.
      *

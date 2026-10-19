@@ -15,39 +15,28 @@ use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
  */
 class Analysis
 {
-    /**
-     * @var \SplObjectStorage
-     */
-    public $annotations;
+    public \SplObjectStorage $annotations;
     /**
      * Class definitions.
-     * @var mixed[]
      */
-    public $classes = [];
+    public array $classes = [];
     /**
      * Interface definitions.
-     * @var mixed[]
      */
-    public $interfaces = [];
+    public array $interfaces = [];
     /**
      * Trait definitions.
-     * @var mixed[]
      */
-    public $traits = [];
+    public array $traits = [];
     /**
      * Enum definitions.
-     * @var mixed[]
      */
-    public $enums = [];
+    public array $enums = [];
     /**
      * The target OpenApi annotation.
-     * @var OA\OpenApi|null
      */
-    public $openapi;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\OpenApi\Context|null
-     */
-    public $context;
+    public ?OA\OpenApi $openapi = null;
+    public ?Context $context = null;
     public function __construct(array $annotations = [], ?Context $context = null)
     {
         $this->annotations = new \SplObjectStorage();
@@ -56,7 +45,7 @@ class Analysis
     }
     public function addAnnotation(object $annotation, Context $context) : void
     {
-        if ($this->annotations->contains($annotation)) {
+        if ($this->annotations->offsetExists($annotation)) {
             return;
         }
         $context->ensureRoot($this->context);
@@ -70,7 +59,7 @@ class Analysis
                 $context->annotations[] = $annotation;
             }
         }
-        $this->annotations->attach($annotation, $context);
+        $this->annotations->offsetSet($annotation, $context);
         $blacklist = property_exists($annotation, '_blacklist') ? $annotation::$_blacklist : [];
         foreach ($annotation as $property => $value) {
             if (in_array($property, $blacklist)) {
@@ -258,10 +247,12 @@ class Analysis
         return $definitions;
     }
     /**
-     * @param class-string|array<class-string> $classes one or more class names
-     * @param bool                             $strict  in non-strict mode child classes are also detected
+     * @template T extends OA\AbstractAnnotation
      *
-     * @return OA\AbstractAnnotation[]
+     * @param class-string<T>|array<class-string<T>> $classes one or more class names
+     * @param bool                                   $strict  in non-strict mode child classes are also detected
+     *
+     * @return array<T>
      */
     public function getAnnotationsOfType($classes, bool $strict = \false) : array
     {
@@ -270,8 +261,8 @@ class Analysis
         foreach ((array) $classes as $class) {
             /** @var OA\AbstractAnnotation $annotation */
             foreach ($this->annotations as $annotation) {
-                if ($annotation instanceof $class && (!$strict || $annotation->isRoot($class) && !$unique->contains($annotation))) {
-                    $unique->attach($annotation);
+                if ($annotation instanceof $class && (!$strict || $annotation->isRoot($class) && !$unique->offsetExists($annotation))) {
+                    $unique->offsetSet($annotation);
                     $annotations[] = $annotation;
                 }
             }
@@ -280,6 +271,7 @@ class Analysis
     }
     /**
      * @param string $fqdn the source class/interface/trait
+     * @deprecated use getAnnotationForSource() instead
      */
     public function getSchemaForSource(string $fqdn) : ?OA\Schema
     {
@@ -288,11 +280,11 @@ class Analysis
     /**
      * @template T of OA\AbstractAnnotation
      *
-     * @param  string          $fqdn  the source class/interface/trait
-     * @param  class-string<T> $class
+     * @param  string          $fqdn        the source class/interface/trait
+     * @param  class-string<T> $sourceClass
      * @return T|null
      */
-    public function getAnnotationForSource(string $fqdn, string $class) : ?OA\AbstractAnnotation
+    public function getAnnotationForSource(string $fqdn, string $sourceClass = OA\Schema::class) : ?OA\AbstractAnnotation
     {
         $fqdn = '\\' . ltrim($fqdn, '\\');
         foreach ([$this->classes, $this->interfaces, $this->traits, $this->enums] as $definitions) {
@@ -301,7 +293,7 @@ class Analysis
                 if (is_iterable($definition['context']->annotations)) {
                     /** @var OA\AbstractAnnotation $annotation */
                     foreach (array_reverse($definition['context']->annotations) as $annotation) {
-                        if ($annotation instanceof $class && $annotation->isRoot($class) && !$annotation->_context->is('generated')) {
+                        if ($annotation instanceof $sourceClass && $annotation->isRoot($sourceClass) && !$annotation->_context->is('generated')) {
                             return $annotation;
                         }
                     }
@@ -315,7 +307,7 @@ class Analysis
         if ($annotation instanceof OA\AbstractAnnotation) {
             return $annotation->_context;
         }
-        if ($this->annotations->contains($annotation) === \false) {
+        if ($this->annotations->offsetExists($annotation) === \false) {
             throw new OpenApiException('Annotation not found');
         }
         $context = $this->annotations[$annotation];
@@ -357,8 +349,8 @@ class Analysis
         $result->merged = $this->merged();
         $result->unmerged = new Analysis([], $this->context);
         foreach ($this->annotations as $annotation) {
-            if ($result->merged->annotations->contains($annotation) === \false) {
-                $result->unmerged->annotations->attach($annotation, $this->annotations[$annotation]);
+            if ($result->merged->annotations->offsetExists($annotation) === \false) {
+                $result->unmerged->annotations->offsetSet($annotation, $this->annotations[$annotation]);
             }
         }
         return $result;
@@ -367,6 +359,7 @@ class Analysis
      * Apply the processor(s).
      *
      * @param callable|array<callable> $processors One or more processors
+     * @deprecated use Generator::withProcessorPipeline() instead
      */
     public function process($processors = null) : void
     {

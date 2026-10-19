@@ -17,7 +17,7 @@ use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
  *
  * @psalm-immutable
  */
-final class Mixed_ implements Type
+class Mixed_ implements Type
 {
     /**
      * Returns a rendered output of the Type as it would be used in a DocBlock.

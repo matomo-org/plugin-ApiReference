@@ -5,23 +5,24 @@ namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 
 use Matomo\Dependencies\ApiReference\PhpParser\Node;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\Arg;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\ArgPlaceholder;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\VariadicPlaceholder;
 class StaticCall extends CallLike
 {
     /** @var Node\Name|Expr Class name */
-    public $class;
+    public Node $class;
     /** @var Identifier|Expr Method name */
-    public $name;
-    /** @var array<Arg|VariadicPlaceholder> Arguments */
-    public $args;
+    public Node $name;
+    /** @var array<Arg|VariadicPlaceholder|ArgPlaceholder> Arguments */
+    public array $args;
     /**
      * Constructs a static method call node.
      *
      * @param Node\Name|Expr $class Class name
      * @param string|Identifier|Expr $name Method name
-     * @param array<Arg|VariadicPlaceholder> $args Arguments
+     * @param array<Arg|VariadicPlaceholder|ArgPlaceholder> $args Arguments
      * @param array<string, mixed> $attributes Additional attributes
      */
     public function __construct(Node $class, $name, array $args = [], array $attributes = [])

@@ -20,11 +20,8 @@ final class ParentConnectingVisitor extends NodeVisitorAbstract
     /**
      * @var Node[]
      */
-    private $stack = [];
-    /**
-     * @var bool
-     */
-    private $weakReferences;
+    private array $stack = [];
+    private bool $weakReferences;
     public function __construct(bool $weakReferences = \false)
     {
         $this->weakReferences = $weakReferences;

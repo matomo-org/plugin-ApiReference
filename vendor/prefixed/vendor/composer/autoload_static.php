@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
+class ComposerStaticInit34a627dd3a287412fd877ff944899fc9
 {
     public static $files = array (
         '66cfd3a7190309803b5cc0fea03a4cdc' => __DIR__ . '/../..' . '/symfony/deprecation-contracts/function.php',
@@ -53,6 +53,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\CookieParameter' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/CookieParameter.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Delete' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Delete.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Discriminator' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Discriminator.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Encoding' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Encoding.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Examples' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Examples.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\ExternalDocumentation' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/ExternalDocumentation.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Flow' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Flow.php',
@@ -76,6 +77,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Post' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Post.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Property' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Property.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Put' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Put.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Query' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Query.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\QueryParameter' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/QueryParameter.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\RequestBody' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/RequestBody.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Annotations\\Response' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Annotations/Response.php',
@@ -95,6 +97,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\CookieParameter' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/CookieParameter.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Delete' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Delete.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Discriminator' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Discriminator.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Encoding' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Encoding.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Examples' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Examples.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\ExternalDocumentation' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/ExternalDocumentation.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Flow' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Flow.php',
@@ -119,6 +122,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Post' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Post.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Property' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Property.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Put' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Put.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Query' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Query.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\QueryParameter' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/QueryParameter.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\RequestBody' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/RequestBody.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Attributes\\Response' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Attributes/Response.php',
@@ -140,6 +144,8 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\OpenApiException' => __DIR__ . '/../..' . '/zircote/swagger-php/src/OpenApiException.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Pipeline' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Pipeline.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\AugmentDiscriminators' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/AugmentDiscriminators.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\AugmentItems' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/AugmentItems.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\AugmentMediaType' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/AugmentMediaType.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\AugmentParameters' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/AugmentParameters.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\AugmentProperties' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/AugmentProperties.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\AugmentRefs' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/AugmentRefs.php',
@@ -153,7 +159,6 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\Concerns\\DocblockTrait' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/Concerns/DocblockTrait.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\Concerns\\MergePropertiesTrait' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/Concerns/MergePropertiesTrait.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\Concerns\\RefTrait' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/Concerns/RefTrait.php',
-        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\Concerns\\TypesTrait' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/Concerns/TypesTrait.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\DocBlockDescriptions' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/DocBlockDescriptions.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\ExpandClasses' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/ExpandClasses.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\ExpandEnums' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/ExpandEnums.php',
@@ -166,6 +171,10 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\OperationId' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/OperationId.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Processors\\PathFilter' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Processors/PathFilter.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Serializer' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Serializer.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\TypeResolverInterface' => __DIR__ . '/../..' . '/zircote/swagger-php/src/TypeResolverInterface.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Type\\AbstractTypeResolver' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Type/AbstractTypeResolver.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Type\\LegacyTypeResolver' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Type/LegacyTypeResolver.php',
+        'Matomo\\Dependencies\\ApiReference\\OpenApi\\Type\\TypeInfoTypeResolver' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Type/TypeInfoTypeResolver.php',
         'Matomo\\Dependencies\\ApiReference\\OpenApi\\Util' => __DIR__ . '/../..' . '/zircote/swagger-php/src/Util.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\AbstractNodeVisitor' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/AbstractNodeVisitor.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Attribute' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Attribute.php',
@@ -214,6 +223,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\PhpDoc\\PhpDocTextNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/PhpDocTextNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\PhpDoc\\PropertyTagValueNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/PropertyTagValueNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\PhpDoc\\PureUnlessCallableIsImpureTagValueNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/PureUnlessCallableIsImpureTagValueNode.php',
+        'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\PhpDoc\\PureUnlessParameterIsPassedTagValueNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/PureUnlessParameterIsPassedTagValueNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\PhpDoc\\RequireExtendsTagValueNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/RequireExtendsTagValueNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\PhpDoc\\RequireImplementsTagValueNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/RequireImplementsTagValueNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\PhpDoc\\ReturnTagValueNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/PhpDoc/ReturnTagValueNode.php',
@@ -296,6 +306,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\AttributeEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/AttributeEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\EnumTokenEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/EnumTokenEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\ExplicitOctalEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/ExplicitOctalEmulator.php',
+        'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\FnTokenEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/FnTokenEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\KeywordEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/KeywordEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\MatchTokenEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/MatchTokenEmulator.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Lexer\\TokenEmulator\\NullsafeTokenEmulator' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Lexer/TokenEmulator/NullsafeTokenEmulator.php',
@@ -324,6 +335,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\NodeVisitor\\NodeConnectingVisitor' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/NodeVisitor/NodeConnectingVisitor.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\NodeVisitor\\ParentConnectingVisitor' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/NodeVisitor/ParentConnectingVisitor.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Node\\Arg' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Node/Arg.php',
+        'Matomo\\Dependencies\\ApiReference\\PhpParser\\Node\\ArgPlaceholder' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Node/ArgPlaceholder.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Node\\ArrayItem' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Node/ArrayItem.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Node\\Attribute' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Node/Attribute.php',
         'Matomo\\Dependencies\\ApiReference\\PhpParser\\Node\\AttributeGroup' => __DIR__ . '/../..' . '/nikic/php-parser/lib/PhpParser/Node/AttributeGroup.php',
@@ -567,8 +579,10 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\Symfony\\Component\\Yaml\\Yaml' => __DIR__ . '/../..' . '/symfony/yaml/Yaml.php',
         'Matomo\\Dependencies\\ApiReference\\Symfony\\Polyfill\\Ctype\\Ctype' => __DIR__ . '/../..' . '/symfony/polyfill-ctype/Ctype.php',
         'Matomo\\Dependencies\\ApiReference\\Webmozart\\Assert\\Assert' => __DIR__ . '/../..' . '/webmozart/assert/src/Assert.php',
+        'Matomo\\Dependencies\\ApiReference\\Webmozart\\Assert\\HasAssert' => __DIR__ . '/../..' . '/webmozart/assert/src/HasAssert.php',
         'Matomo\\Dependencies\\ApiReference\\Webmozart\\Assert\\InvalidArgumentException' => __DIR__ . '/../..' . '/webmozart/assert/src/InvalidArgumentException.php',
         'Matomo\\Dependencies\\ApiReference\\Webmozart\\Assert\\Mixin' => __DIR__ . '/../..' . '/webmozart/assert/src/Mixin.php',
+        'Matomo\\Dependencies\\ApiReference\\Webmozart\\Assert\\PsalmPlugin' => __DIR__ . '/../..' . '/webmozart/assert/src/PsalmPlugin.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\DocBlock' => __DIR__ . '/../..' . '/phpdocumentor/reflection-docblock/src/DocBlock.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\DocBlockFactory' => __DIR__ . '/../..' . '/phpdocumentor/reflection-docblock/src/DocBlockFactory.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\DocBlockFactoryInterface' => __DIR__ . '/../..' . '/phpdocumentor/reflection-docblock/src/DocBlockFactoryInterface.php',
@@ -644,12 +658,17 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ArrayShape' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ArrayShape.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ArrayShapeItem' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ArrayShapeItem.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\CallableString' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/CallableString.php',
+        'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\Conditional' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/Conditional.php',
+        'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ConditionalForParameter' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ConditionalForParameter.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ConstExpression' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ConstExpression.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\False_' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/False_.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\FloatValue' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/FloatValue.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\HtmlEscapedString' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/HtmlEscapedString.php',
+        'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\IntMask' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/IntMask.php',
+        'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\IntMaskOf' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/IntMaskOf.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\IntegerRange' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/IntegerRange.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\IntegerValue' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/IntegerValue.php',
+        'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\KeyOf' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/KeyOf.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ListShape' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ListShape.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ListShapeItem' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ListShapeItem.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\List_' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/List_.php',
@@ -664,11 +683,13 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\Numeric_' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/Numeric_.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ObjectShape' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ObjectShape.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ObjectShapeItem' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ObjectShapeItem.php',
+        'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\OffsetAccess' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/OffsetAccess.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\PositiveInteger' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/PositiveInteger.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ShapeItem' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ShapeItem.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\StringValue' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/StringValue.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\TraitString' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/TraitString.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\True_' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/True_.php',
+        'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\PseudoTypes\\ValueOf' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/PseudoTypes/ValueOf.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\Type' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/Type.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\TypeResolver' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/TypeResolver.php',
         'Matomo\\Dependencies\\ApiReference\\phpDocumentor\\Reflection\\Types\\AbstractList' => __DIR__ . '/../..' . '/phpdocumentor/type-resolver/src/Types/AbstractList.php',
@@ -708,7 +729,7 @@ class ComposerStaticInit5e8075107e43bdf6291719e5720b5514
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit5e8075107e43bdf6291719e5720b5514::$classMap;
+            $loader->classMap = ComposerStaticInit34a627dd3a287412fd877ff944899fc9::$classMap;
 
         }, null, ClassLoader::class);
     }

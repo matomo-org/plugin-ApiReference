@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class Info extends OA\Info
 {
@@ -17,7 +17,7 @@ class Info extends OA\Info
      */
     public function __construct(
         ?string $version = null,
-        ?string $description = null,
+        ?string $description = Generator::UNDEFINED,
         ?string $title = null,
         ?string $termsOfService = null,
         ?Contact $contact = null,
@@ -27,6 +27,6 @@ class Info extends OA\Info
         ?array $attachables = null
     )
     {
-        parent::__construct(['version' => $version ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'title' => $title ?? Generator::UNDEFINED, 'termsOfService' => $termsOfService ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($contact, $license)]);
+        parent::__construct(['version' => $version ?? Generator::UNDEFINED, 'description' => $description, 'title' => $title ?? Generator::UNDEFINED, 'termsOfService' => $termsOfService ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($contact, $license)]);
     }
 }

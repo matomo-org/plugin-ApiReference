@@ -11,10 +11,7 @@ use function substr;
 class DoctrineConstExprStringNode extends ConstExprStringNode
 {
     use NodeAttributes;
-    /**
-     * @var string
-     */
-    public $value;
+    public string $value;
     public function __construct(string $value)
     {
         parent::__construct($value, self::DOUBLE_QUOTED);
@@ -33,5 +30,18 @@ class DoctrineConstExprStringNode extends ConstExprStringNode
     {
         // from https://github.com/phpstan/phpdoc-parser/issues/205#issuecomment-1662323656
         return sprintf('"%s"', str_replace('"', '""', $value));
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['value']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

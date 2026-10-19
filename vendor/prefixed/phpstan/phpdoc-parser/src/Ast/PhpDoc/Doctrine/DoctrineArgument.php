@@ -13,10 +13,7 @@ use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\IdentifierTyp
 class DoctrineArgument implements Node
 {
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode|null
-     */
-    public $key;
+    public ?IdentifierTypeNode $key = null;
     /** @var ValueType */
     public $value;
     /**
@@ -33,5 +30,18 @@ class DoctrineArgument implements Node
             return (string) $this->value;
         }
         return $this->key . '=' . $this->value;
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['key'], $properties['value']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

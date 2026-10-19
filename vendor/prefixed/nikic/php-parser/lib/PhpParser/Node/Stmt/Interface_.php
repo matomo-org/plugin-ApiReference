@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Interface_ extends ClassLike
 {
     /** @var Node\Name[] Extended interfaces */
-    public $extends;
+    public array $extends;
     /**
      * Constructs a class node.
      *

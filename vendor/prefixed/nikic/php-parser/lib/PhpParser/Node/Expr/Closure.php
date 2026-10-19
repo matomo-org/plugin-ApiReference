@@ -10,19 +10,19 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\FunctionLike;
 class Closure extends Expr implements FunctionLike
 {
     /** @var bool Whether the closure is static */
-    public $static;
+    public bool $static;
     /** @var bool Whether to return by reference */
-    public $byRef;
+    public bool $byRef;
     /** @var Node\Param[] Parameters */
-    public $params;
+    public array $params;
     /** @var ClosureUse[] use()s */
-    public $uses;
+    public array $uses;
     /** @var null|Node\Identifier|Node\Name|Node\ComplexType Return type */
-    public $returnType;
+    public ?Node $returnType;
     /** @var Node\Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /** @var Node\AttributeGroup[] PHP attribute groups */
-    public $attrGroups;
+    public array $attrGroups;
     /**
      * Constructs a lambda function node.
      *

@@ -9,9 +9,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Name;
 class Instanceof_ extends Expr
 {
     /** @var Expr Expression */
-    public $expr;
+    public Expr $expr;
     /** @var Name|Expr Class name */
-    public $class;
+    public Node $class;
     /**
      * Constructs an instanceof check node.
      *

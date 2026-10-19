@@ -10,24 +10,15 @@ use function implode;
 class MethodTagValueNode implements PhpDocTagValueNode
 {
     use NodeAttributes;
-    /**
-     * @var bool
-     */
-    public $isStatic;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode|null
-     */
-    public $returnType;
-    /**
-     * @var string
-     */
-    public $methodName;
+    public bool $isStatic;
+    public ?TypeNode $returnType = null;
+    public string $methodName;
     /** @var TemplateTagValueNode[] */
-    public $templateTypes;
+    public array $templateTypes;
     /** @var MethodTagValueParameterNode[] */
-    public $parameters;
+    public array $parameters;
     /** @var string (may be empty) */
-    public $description;
+    public string $description;
     /**
      * @param MethodTagValueParameterNode[] $parameters
      * @param TemplateTagValueNode[] $templateTypes
@@ -49,5 +40,18 @@ class MethodTagValueNode implements PhpDocTagValueNode
         $description = $this->description !== '' ? " {$this->description}" : '';
         $templateTypes = count($this->templateTypes) > 0 ? '<' . implode(', ', $this->templateTypes) . '>' : '';
         return "{$static}{$returnType}{$this->methodName}{$templateTypes}({$parameters}){$description}";
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['isStatic'], $properties['returnType'], $properties['methodName'], $properties['parameters'], $properties['description'], $properties['templateTypes']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

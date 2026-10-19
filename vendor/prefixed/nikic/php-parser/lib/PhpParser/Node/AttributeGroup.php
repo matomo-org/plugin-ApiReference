@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class AttributeGroup extends NodeAbstract
 {
     /** @var Attribute[] Attributes */
-    public $attrs;
+    public array $attrs;
     /**
      * @param Attribute[] $attrs PHP attributes
      * @param array<string, mixed> $attributes Additional node attributes

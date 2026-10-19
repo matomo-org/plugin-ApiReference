@@ -37,6 +37,10 @@ abstract class AbstractList implements Type
         $this->defaultKeyType = new Compound([new String_(), new Integer()]);
         $this->keyType = $keyType;
     }
+    public function getOriginalKeyType() : ?Type
+    {
+        return $this->keyType;
+    }
     /**
      * Returns the type for the keys of this array.
      */

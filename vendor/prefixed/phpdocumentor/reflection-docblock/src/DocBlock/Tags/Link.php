@@ -21,14 +21,8 @@ use Matomo\Dependencies\ApiReference\Webmozart\Assert\Assert;
  */
 final class Link extends BaseTag implements Factory\StaticMethod
 {
-    /**
-     * @var string
-     */
-    protected $name = 'link';
-    /**
-     * @var string
-     */
-    private $link;
+    protected string $name = 'link';
+    private string $link;
     /**
      * Initializes a link to a URL.
      */

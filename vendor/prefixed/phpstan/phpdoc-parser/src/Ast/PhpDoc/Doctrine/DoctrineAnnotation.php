@@ -9,12 +9,9 @@ use function implode;
 class DoctrineAnnotation implements Node
 {
     use NodeAttributes;
-    /**
-     * @var string
-     */
-    public $name;
+    public string $name;
     /** @var list<DoctrineArgument> */
-    public $arguments;
+    public array $arguments;
     /**
      * @param list<DoctrineArgument> $arguments
      */
@@ -27,5 +24,18 @@ class DoctrineAnnotation implements Node
     {
         $arguments = implode(', ', $this->arguments);
         return $this->name . '(' . $arguments . ')';
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['name'], $properties['arguments']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

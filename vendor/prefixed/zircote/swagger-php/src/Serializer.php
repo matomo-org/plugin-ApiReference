@@ -13,10 +13,7 @@ use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Yaml;
  */
 class Serializer
 {
-    /**
-     * @var mixed[]
-     */
-    private static $VALID_ANNOTATIONS = [OA\AdditionalProperties::class, OA\Attachable::class, OA\Components::class, OA\Contact::class, OA\Delete::class, OA\Discriminator::class, OA\Examples::class, OA\ExternalDocumentation::class, OA\Flow::class, OA\Get::class, OA\Head::class, OA\Header::class, OA\Info::class, OA\Items::class, OA\JsonContent::class, OA\License::class, OA\Link::class, OA\MediaType::class, OA\OpenApi::class, OA\Operation::class, OA\Options::class, OA\Parameter::class, OA\PathParameter::class, OA\QueryParameter::class, OA\CookieParameter::class, OA\HeaderParameter::class, OA\Patch::class, OA\PathItem::class, OA\Post::class, OA\Property::class, OA\Put::class, OA\RequestBody::class, OA\Response::class, OA\Schema::class, OA\SecurityScheme::class, OA\Server::class, OA\ServerVariable::class, OA\Tag::class, OA\Trace::class, OA\Webhook::class, OA\Xml::class, OA\XmlContent::class];
+    private static array $VALID_ANNOTATIONS = [OA\AdditionalProperties::class, OA\Attachable::class, OA\Components::class, OA\Contact::class, OA\Delete::class, OA\Discriminator::class, OA\Encoding::class, OA\Examples::class, OA\ExternalDocumentation::class, OA\Flow::class, OA\Get::class, OA\Head::class, OA\Header::class, OA\Info::class, OA\Items::class, OA\JsonContent::class, OA\License::class, OA\Link::class, OA\MediaType::class, OA\OpenApi::class, OA\Operation::class, OA\Options::class, OA\Parameter::class, OA\PathParameter::class, OA\QueryParameter::class, OA\CookieParameter::class, OA\HeaderParameter::class, OA\Patch::class, OA\PathItem::class, OA\Post::class, OA\Property::class, OA\Put::class, OA\Query::class, OA\RequestBody::class, OA\Response::class, OA\Schema::class, OA\SecurityScheme::class, OA\Server::class, OA\ServerVariable::class, OA\Tag::class, OA\Trace::class, OA\Webhook::class, OA\Xml::class, OA\XmlContent::class];
     protected static function isValidAnnotationClass(string $className) : bool
     {
         return in_array($className, self::$VALID_ANNOTATIONS);
@@ -24,17 +21,17 @@ class Serializer
     /**
      * Deserialize a string.
      */
-    public function deserialize(string $jsonString, string $className) : OA\AbstractAnnotation
+    public function deserialize(string $jsonString, string $className, ?Context $context = null) : OA\AbstractAnnotation
     {
         if (!static::isValidAnnotationClass($className)) {
             throw new OpenApiException($className . ' is not defined in OpenApi PHP Annotations');
         }
-        return $this->doDeserialize(json_decode($jsonString), $className, new Context(['generated' => \true]));
+        return $this->doDeserialize(json_decode($jsonString), $className, $context ?? new Context(['generated' => \true]));
     }
     /**
      * Deserialize a file.
      */
-    public function deserializeFile(string $filename, string $format = 'json', string $className = OA\OpenApi::class) : OA\AbstractAnnotation
+    public function deserializeFile(string $filename, string $format = 'json', string $className = OA\OpenApi::class, ?Context $context = null) : OA\AbstractAnnotation
     {
         if (!static::isValidAnnotationClass($className)) {
             throw new OpenApiException($className . ' is not a valid OpenApi PHP Annotations');
@@ -44,7 +41,7 @@ class Serializer
         if ('yaml' === $format || in_array($ext, ['yml', 'yaml'])) {
             $contents = json_encode(Yaml::parse($contents));
         }
-        return $this->doDeserialize(json_decode($contents), $className, new Context(['generated' => \true]));
+        return $this->doDeserialize(json_decode($contents), $className, $context ?? new Context(['generated' => \true]));
     }
     /**
      * Do deserialization.

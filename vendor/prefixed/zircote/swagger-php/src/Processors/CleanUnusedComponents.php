@@ -15,10 +15,7 @@ use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 class CleanUnusedComponents
 {
     use Concerns\AnnotationTrait;
-    /**
-     * @var bool
-     */
-    protected $enabled;
+    protected bool $enabled;
     public function __construct(bool $enabled = \false)
     {
         $this->enabled = $enabled;
@@ -105,6 +102,6 @@ class CleanUnusedComponents
                 }
             }
         }
-        return 0 != count($unusedRefs);
+        return [] !== $unusedRefs;
     }
 }

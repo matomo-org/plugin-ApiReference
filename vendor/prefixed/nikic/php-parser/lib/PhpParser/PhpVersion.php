@@ -9,7 +9,7 @@ namespace Matomo\Dependencies\ApiReference\PhpParser;
 class PhpVersion
 {
     /** @var int Version ID in PHP_VERSION_ID format */
-    public $id;
+    public int $id;
     /** @var int[] Minimum versions for builtin types */
     private const BUILTIN_TYPE_VERSIONS = ['array' => 50100, 'callable' => 50400, 'bool' => 70000, 'int' => 70000, 'float' => 70000, 'string' => 70000, 'iterable' => 70100, 'void' => 70100, 'object' => 70200, 'null' => 80000, 'false' => 80000, 'mixed' => 80000, 'never' => 80100, 'true' => 80200];
     private function __construct(int $id)
@@ -153,5 +153,9 @@ class PhpVersion
     public function supportsAttributes() : bool
     {
         return $this->id >= 80000;
+    }
+    public function supportsNewDereferenceWithoutParentheses() : bool
+    {
+        return $this->id >= 80400;
     }
 }

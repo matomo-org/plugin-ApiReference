@@ -34,31 +34,16 @@ use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Yaml;
 #[AsCommand(name: 'lint:yaml', description: 'Lint a YAML file and outputs encountered errors')]
 class LintCommand extends Command
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Parser
-     */
-    private $parser;
-    /**
-     * @var string|null
-     */
-    private $format;
-    /**
-     * @var bool
-     */
-    private $displayCorrectFiles;
-    /**
-     * @var \Closure|null
-     */
-    private $directoryIteratorProvider;
-    /**
-     * @var \Closure|null
-     */
-    private $isReadableProvider;
+    private Parser $parser;
+    private ?string $format = null;
+    private bool $displayCorrectFiles;
+    private ?\Closure $directoryIteratorProvider;
+    private ?\Closure $isReadableProvider;
     public function __construct(?string $name = null, ?callable $directoryIteratorProvider = null, ?callable $isReadableProvider = null)
     {
         parent::__construct($name);
-        $this->directoryIteratorProvider = null === $directoryIteratorProvider ? null : \Closure::fromCallable($directoryIteratorProvider);
-        $this->isReadableProvider = null === $isReadableProvider ? null : \Closure::fromCallable($isReadableProvider);
+        $this->directoryIteratorProvider = null === $directoryIteratorProvider ? null : $directoryIteratorProvider(...);
+        $this->isReadableProvider = null === $isReadableProvider ? null : $isReadableProvider(...);
     }
     protected function configure() : void
     {
@@ -140,16 +125,12 @@ EOF
     }
     private function display(SymfonyStyle $io, array $files) : int
     {
-        switch ($this->format) {
-            case 'txt':
-                return $this->displayTxt($io, $files);
-            case 'json':
-                return $this->displayJson($io, $files);
-            case 'github':
-                return $this->displayTxt($io, $files, \true);
-            default:
-                throw new InvalidArgumentException(\sprintf('Supported formats are "%s".', implode('", "', $this->getAvailableFormatOptions())));
-        }
+        return match ($this->format) {
+            'txt' => $this->displayTxt($io, $files),
+            'json' => $this->displayJson($io, $files),
+            'github' => $this->displayTxt($io, $files, \true),
+            default => throw new InvalidArgumentException(\sprintf('Supported formats are "%s".', implode('", "', $this->getAvailableFormatOptions()))),
+        };
     }
     private function displayTxt(SymfonyStyle $io, array $filesInfo, bool $errorAsGithubAnnotations = \false) : int
     {
@@ -166,7 +147,7 @@ EOF
                 ++$erroredFiles;
                 $io->text('<error> ERROR </error>' . ($info['file'] ? \sprintf(' in %s', $info['file']) : ''));
                 $io->text(\sprintf('<error> >> %s</error>', $info['message']));
-                if (strpos($info['message'], 'PARSE_CUSTOM_TAGS') !== false) {
+                if (str_contains($info['message'], 'PARSE_CUSTOM_TAGS')) {
                     $suggestTagOption = \true;
                 }
                 if ($errorAsGithubAnnotations) {
@@ -189,7 +170,7 @@ EOF
             if (!$v['valid']) {
                 ++$errors;
             }
-            if (isset($v['message']) && strpos($v['message'], 'PARSE_CUSTOM_TAGS') !== false) {
+            if (isset($v['message']) && str_contains($v['message'], 'PARSE_CUSTOM_TAGS')) {
                 $v['message'] .= ' Use the --parse-tags option if you want parse custom tags.';
             }
         });
@@ -211,13 +192,11 @@ EOF
     }
     private function getParser() : Parser
     {
-        return $this->parser = $this->parser ?? new Parser();
+        return $this->parser ??= new Parser();
     }
     private function getDirectoryIterator(string $directory) : iterable
     {
-        $default = static function ($directory) {
-            return new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS), \RecursiveIteratorIterator::LEAVES_ONLY);
-        };
+        $default = static fn($directory) => new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS), \RecursiveIteratorIterator::LEAVES_ONLY);
         if (null !== $this->directoryIteratorProvider) {
             return ($this->directoryIteratorProvider)($directory, $default);
         }
@@ -225,7 +204,7 @@ EOF
     }
     private function isReadable(string $fileOrDirectory) : bool
     {
-        $default = \Closure::fromCallable('is_readable');
+        $default = is_readable(...);
         if (null !== $this->isReadableProvider) {
             return ($this->isReadableProvider)($fileOrDirectory, $default);
         }

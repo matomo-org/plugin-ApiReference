@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class ClosureUse extends NodeAbstract
 {
     /** @var Expr\Variable Variable to use */
-    public $var;
+    public Expr\Variable $var;
     /** @var bool Whether to use by reference */
-    public $byRef;
+    public bool $byRef;
     /**
      * Constructs a closure use node.
      *

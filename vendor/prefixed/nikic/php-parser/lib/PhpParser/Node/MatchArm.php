@@ -8,11 +8,8 @@ use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class MatchArm extends NodeAbstract
 {
     /** @var null|list<Node\Expr> */
-    public $conds;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Expr
-     */
-    public $body;
+    public ?array $conds;
+    public Expr $body;
     /**
      * @param null|list<Node\Expr> $conds
      */

@@ -14,10 +14,7 @@ use Matomo\Dependencies\ApiReference\OpenApi\Generator;
  */
 class OperationId
 {
-    /**
-     * @var bool
-     */
-    protected $hash;
+    protected bool $hash;
     public function __construct(bool $hash = \true)
     {
         $this->hash = $hash;

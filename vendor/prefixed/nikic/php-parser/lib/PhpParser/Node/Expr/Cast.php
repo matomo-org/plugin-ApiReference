@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 abstract class Cast extends Expr
 {
     /** @var Expr Expression */
-    public $expr;
+    public Expr $expr;
     /**
      * Constructs a cast node.
      *

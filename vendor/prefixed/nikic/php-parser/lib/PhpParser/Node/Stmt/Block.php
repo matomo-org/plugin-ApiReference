@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 class Block extends Stmt
 {
     /** @var Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /**
      * A block of statements.
      *

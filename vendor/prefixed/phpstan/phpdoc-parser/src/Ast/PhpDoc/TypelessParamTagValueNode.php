@@ -8,20 +8,11 @@ use function trim;
 class TypelessParamTagValueNode implements PhpDocTagValueNode
 {
     use NodeAttributes;
-    /**
-     * @var bool
-     */
-    public $isReference;
-    /**
-     * @var bool
-     */
-    public $isVariadic;
-    /**
-     * @var string
-     */
-    public $parameterName;
+    public bool $isReference;
+    public bool $isVariadic;
+    public string $parameterName;
     /** @var string (may be empty) */
-    public $description;
+    public string $description;
     public function __construct(bool $isVariadic, string $parameterName, string $description, bool $isReference)
     {
         $this->isReference = $isReference;
@@ -34,5 +25,18 @@ class TypelessParamTagValueNode implements PhpDocTagValueNode
         $reference = $this->isReference ? '&' : '';
         $variadic = $this->isVariadic ? '...' : '';
         return trim("{$reference}{$variadic}{$this->parameterName} {$this->description}");
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['isVariadic'], $properties['parameterName'], $properties['description'], $properties['isReference']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

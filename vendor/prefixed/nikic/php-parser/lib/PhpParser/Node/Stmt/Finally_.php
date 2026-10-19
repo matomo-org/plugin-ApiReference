@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Finally_ extends Node\Stmt
 {
     /** @var Node\Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /**
      * Constructs a finally node.
      *

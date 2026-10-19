@@ -15,22 +15,10 @@ use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Fact
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
 final class MethodParameter
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type
-     */
-    private $type;
-    /**
-     * @var bool
-     */
-    private $isReference;
-    /**
-     * @var bool
-     */
-    private $isVariadic;
-    /**
-     * @var string
-     */
-    private $name;
+    private Type $type;
+    private bool $isReference;
+    private bool $isVariadic;
+    private string $name;
     /** @var mixed */
     private $defaultValue;
     public const NO_DEFAULT_VALUE = '__NO_VALUE__';

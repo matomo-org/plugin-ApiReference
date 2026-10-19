@@ -6,22 +6,21 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class MediaType extends OA\MediaType
 {
     /**
      * @param array<Examples>          $examples
-     * @param array<string,mixed>      $encoding
+     * @param Encoding[]               $encoding
      * @param array<string,mixed>|null $x
      * @param Attachable[]|null        $attachables
-     * @param mixed $example
      */
     public function __construct(
         ?string $mediaType = null,
         ?Schema $schema = null,
-        $example = Generator::UNDEFINED,
+        mixed $example = Generator::UNDEFINED,
         ?array $examples = null,
         ?array $encoding = null,
         // annotation
@@ -29,6 +28,6 @@ class MediaType extends OA\MediaType
         ?array $attachables = null
     )
     {
-        parent::__construct(['mediaType' => $mediaType ?? Generator::UNDEFINED, 'example' => $example, 'encoding' => $encoding ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($schema, $examples)]);
+        parent::__construct(['mediaType' => $mediaType ?? Generator::UNDEFINED, 'example' => $example, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($schema, $examples, $this->encodingCompat($encoding, fn(array $args): Encoding => new Encoding(...$args)))]);
     }
 }

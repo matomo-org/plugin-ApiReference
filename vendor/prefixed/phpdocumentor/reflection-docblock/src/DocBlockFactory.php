@@ -45,14 +45,8 @@ use function substr;
 use function trim;
 final class DocBlockFactory implements DocBlockFactoryInterface
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory
-     */
-    private $descriptionFactory;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\TagFactory
-     */
-    private $tagFactory;
+    private DocBlock\DescriptionFactory $descriptionFactory;
+    private TagFactory $tagFactory;
     /**
      * Initializes this factory with the required subcontractors.
      */

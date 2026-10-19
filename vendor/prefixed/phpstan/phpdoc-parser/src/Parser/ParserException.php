@@ -13,30 +13,12 @@ use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 class ParserException extends Exception
 {
-    /**
-     * @var string
-     */
-    private $currentTokenValue;
-    /**
-     * @var int
-     */
-    private $currentTokenType;
-    /**
-     * @var int
-     */
-    private $currentOffset;
-    /**
-     * @var int
-     */
-    private $expectedTokenType;
-    /**
-     * @var string|null
-     */
-    private $expectedTokenValue;
-    /**
-     * @var int|null
-     */
-    private $currentTokenLine;
+    private string $currentTokenValue;
+    private int $currentTokenType;
+    private int $currentOffset;
+    private int $expectedTokenType;
+    private ?string $expectedTokenValue;
+    private ?int $currentTokenLine;
     public function __construct(string $currentTokenValue, int $currentTokenType, int $currentOffset, int $expectedTokenType, ?string $expectedTokenValue, ?int $currentTokenLine)
     {
         $this->currentTokenValue = $currentTokenValue;

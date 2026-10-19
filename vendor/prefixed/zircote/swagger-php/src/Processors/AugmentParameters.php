@@ -8,20 +8,19 @@ namespace Matomo\Dependencies\ApiReference\OpenApi\Processors;
 
 use Matomo\Dependencies\ApiReference\OpenApi\Analysis;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Context;
 use Matomo\Dependencies\ApiReference\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\GeneratorAwareInterface;
+use Matomo\Dependencies\ApiReference\OpenApi\GeneratorAwareTrait;
 use Matomo\Dependencies\ApiReference\OpenApi\Processors\Concerns\DocblockTrait;
-use Matomo\Dependencies\ApiReference\OpenApi\Processors\Concerns\TypesTrait;
 /**
  * Augments shared and operations parameters from docblock comments.
  */
-class AugmentParameters
+class AugmentParameters implements GeneratorAwareInterface
 {
     use DocblockTrait;
-    use TypesTrait;
-    /**
-     * @var bool
-     */
-    protected $augmentOperationParameters;
+    use GeneratorAwareTrait;
+    protected bool $augmentOperationParameters;
     public function __construct(bool $augmentOperationParameters = \true)
     {
         $this->augmentOperationParameters = $augmentOperationParameters;
@@ -40,9 +39,31 @@ class AugmentParameters
     }
     public function __invoke(Analysis $analysis) : void
     {
+        $this->augmentParameters($analysis);
         $this->augmentSharedParameters($analysis);
         if ($this->augmentOperationParameters) {
             $this->augmentOperationParameters($analysis);
+        }
+    }
+    protected function augmentParameters(Analysis $analysis) : void
+    {
+        $parameters = $analysis->getAnnotationsOfType(OA\Parameter::class);
+        foreach ($parameters as $parameter) {
+            $context = $parameter->_context;
+            if (Generator::isDefault($parameter->name) && null !== $context->reflector && method_exists($context->reflector, 'getName')) {
+                $parameter->name = $context->reflector->getName();
+            }
+            if ($context->reflector instanceof \ReflectionParameter) {
+                $schema = Generator::isDefault($parameter->schema) ? new OA\Schema(['_context' => new Context(['generated' => \true, 'reflector' => $context->reflector], $context)]) : $parameter->schema;
+                $this->generator->getTypeResolver()->augmentSchemaType($analysis, $schema);
+                $parameter->merge([new OA\Schema(['type' => $schema->type, 'format' => $schema->format, 'items' => $schema->items, 'oneOf' => $schema->oneOf, 'allOf' => $schema->allOf, 'anyOf' => $schema->anyOf, 'ref' => $schema->ref, '_context' => new Context(['nested' => $this, 'comment' => null, 'reflector' => $context->reflector], $context)])]);
+                if (Generator::isDefault($parameter->required)) {
+                    $parameter->required = !$schema->isNullable();
+                }
+            }
+            if (!Generator::isDefault($parameter->schema)) {
+                $this->generator->getTypeResolver()->mapNativeType($parameter->schema, $parameter->schema->type);
+            }
         }
     }
     /**
@@ -76,7 +97,7 @@ class AugmentParameters
         foreach ($operations as $operation) {
             if (!Generator::isDefault($operation->parameters)) {
                 $tags = [];
-                $this->extractContent($operation->_context->comment, $tags);
+                $this->parseDocblock($operation->_context->comment, $tags);
                 $docblockParams = $tags['param'] ?? [];
                 foreach ($operation->parameters as $parameter) {
                     if (Generator::isDefault($parameter->description)) {
@@ -86,9 +107,8 @@ class AugmentParameters
                                 $parameter->description = $details['description'];
                             }
                         }
-                    }
-                    if (!Generator::isDefault($parameter->schema)) {
-                        $this->mapNativeType($parameter->schema, $parameter->schema->type);
+                    } elseif (null === $parameter->description) {
+                        $parameter->description = Generator::UNDEFINED;
                     }
                 }
             }

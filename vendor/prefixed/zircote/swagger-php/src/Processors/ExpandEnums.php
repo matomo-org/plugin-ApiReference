@@ -9,19 +9,18 @@ namespace Matomo\Dependencies\ApiReference\OpenApi\Processors;
 use Matomo\Dependencies\ApiReference\OpenApi\Analysis;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
 use Matomo\Dependencies\ApiReference\OpenApi\Generator;
+use Matomo\Dependencies\ApiReference\OpenApi\GeneratorAwareInterface;
+use Matomo\Dependencies\ApiReference\OpenApi\GeneratorAwareTrait;
 use Matomo\Dependencies\ApiReference\OpenApi\OpenApiException;
 /**
  * Expands PHP enums.
  *
  * Determines <code>schema</code>, <code>enum</code> and <code>type</code>.
  */
-class ExpandEnums
+class ExpandEnums implements GeneratorAwareInterface
 {
-    use Concerns\TypesTrait;
-    /**
-     * @var string|null
-     */
-    protected $enumNames;
+    use GeneratorAwareTrait;
+    protected ?string $enumNames;
     public function __construct(?string $enumNames = null)
     {
         $this->enumNames = $enumNames;
@@ -71,19 +70,15 @@ class ExpandEnums
                     }
                 }
                 // no (or invalid) schema type means name
-                $useName = Generator::isDefault($schemaType) || $enumType && $this->native2spec($enumType) != $schemaType;
-                $schema->enum = array_map(function (\ReflectionEnumUnitCase $case) use ($useName) {
-                    return $useName || !$case instanceof \ReflectionEnumBackedCase ? $case->name : $case->getBackingValue();
-                }, $re->getCases());
+                $useName = Generator::isDefault($schemaType) || $enumType && $this->generator->getTypeResolver()->native2spec($enumType) != $schemaType;
+                $schema->enum = array_map(fn(\ReflectionEnumUnitCase $case) => $useName || !$case instanceof \ReflectionEnumBackedCase ? $case->name : $case->getBackingValue(), $re->getCases());
                 if ($this->enumNames !== null && !$useName) {
                     $schemaX = Generator::isDefault($schema->x) ? [] : $schema->x;
-                    $schemaX[$this->enumNames] = array_map(function (\ReflectionEnumUnitCase $case) : string {
-                        return $case->name;
-                    }, $re->getCases());
+                    $schemaX[$this->enumNames] = array_map(fn(\ReflectionEnumUnitCase $case): string => $case->name, $re->getCases());
                     $schema->x = $schemaX;
                 }
                 $schema->type = $useName ? 'string' : $enumType;
-                $this->mapNativeType($schema, $schemaType);
+                $this->generator->getTypeResolver()->mapNativeType($schema, $schemaType);
             }
         }
     }
@@ -109,7 +104,7 @@ class ExpandEnums
                 // transform \UnitEnum into individual cases
                 /** @var string|class-string<\UnitEnum> $enum */
                 foreach ($schema->enum as $enum) {
-                    if (is_string($enum) && function_exists('enum_exists') && class_exists($enum)) {
+                    if (is_string($enum) && function_exists('enum_exists') && enum_exists($enum)) {
                         foreach ($enum::cases() as $case) {
                             $cases[] = $case;
                         }

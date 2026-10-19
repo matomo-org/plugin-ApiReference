@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Else_ extends Node\Stmt
 {
     /** @var Node\Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /**
      * Constructs an else node.
      *
