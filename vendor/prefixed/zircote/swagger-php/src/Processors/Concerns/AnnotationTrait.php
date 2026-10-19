@@ -17,9 +17,9 @@ trait AnnotationTrait
     public function collectAnnotations($root) : \SplObjectStorage
     {
         $storage = new \SplObjectStorage();
-        $this->traverseAnnotations($root, function ($item) use(&$storage) : void {
-            if ($item instanceof OA\AbstractAnnotation && !$storage->contains($item)) {
-                $storage->attach($item);
+        $this->traverseAnnotations($root, static function ($item) use(&$storage) : void {
+            if ($item instanceof OA\AbstractAnnotation && !$storage->offsetExists($item)) {
+                $storage->offsetSet($item);
             }
         });
         return $storage;
@@ -30,10 +30,10 @@ trait AnnotationTrait
     public function removeAnnotation(iterable $root, OA\AbstractAnnotation $annotation, bool $recurse = \true) : void
     {
         $remove = $this->collectAnnotations($annotation);
-        $this->traverseAnnotations($root, function ($item) use($remove) : void {
+        $this->traverseAnnotations($root, static function ($item) use($remove) : void {
             if ($item instanceof \SplObjectStorage) {
                 foreach ($remove as $annotation) {
-                    $item->detach($annotation);
+                    $item->offsetUnset($annotation);
                 }
             }
         }, $recurse);

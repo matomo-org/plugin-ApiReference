@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
 class Link extends OA\Link
 {
@@ -16,22 +16,21 @@ class Link extends OA\Link
      * @param array<string,mixed>             $parameters
      * @param array<string,mixed>|null        $x
      * @param Attachable[]|null               $attachables
-     * @param mixed $requestBody
      */
     public function __construct(
         ?string $link = null,
         ?string $operationRef = null,
-        $ref = null,
+        string|object|null $ref = null,
         ?string $operationId = null,
         ?array $parameters = null,
-        $requestBody = null,
-        ?string $description = null,
+        mixed $requestBody = null,
+        ?string $description = Generator::UNDEFINED,
         ?Server $server = null,
         // annotation
         ?array $x = null,
         ?array $attachables = null
     )
     {
-        parent::__construct(['link' => $link ?? Generator::UNDEFINED, 'operationRef' => $operationRef ?? Generator::UNDEFINED, 'ref' => $ref ?? Generator::UNDEFINED, 'operationId' => $operationId ?? Generator::UNDEFINED, 'parameters' => $parameters ?? Generator::UNDEFINED, 'requestBody' => $requestBody ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($server)]);
+        parent::__construct(['link' => $link ?? Generator::UNDEFINED, 'operationRef' => $operationRef ?? Generator::UNDEFINED, 'ref' => $ref ?? Generator::UNDEFINED, 'operationId' => $operationId ?? Generator::UNDEFINED, 'parameters' => $parameters ?? Generator::UNDEFINED, 'requestBody' => $requestBody ?? Generator::UNDEFINED, 'description' => $description, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($server)]);
     }
 }

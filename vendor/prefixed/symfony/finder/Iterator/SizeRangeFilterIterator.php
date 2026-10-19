@@ -20,10 +20,7 @@ use Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Comparator\NumberC
  */
 class SizeRangeFilterIterator extends \FilterIterator
 {
-    /**
-     * @var mixed[]
-     */
-    private $comparators = [];
+    private array $comparators = [];
     /**
      * @param \Iterator<string, \SplFileInfo> $iterator
      * @param NumberComparator[]              $comparators

@@ -5,34 +5,13 @@ namespace Matomo\Dependencies\ApiReference\PhpParser;
 
 class Comment implements \JsonSerializable
 {
-    /**
-     * @var string
-     */
-    protected $text;
-    /**
-     * @var int
-     */
-    protected $startLine;
-    /**
-     * @var int
-     */
-    protected $startFilePos;
-    /**
-     * @var int
-     */
-    protected $startTokenPos;
-    /**
-     * @var int
-     */
-    protected $endLine;
-    /**
-     * @var int
-     */
-    protected $endFilePos;
-    /**
-     * @var int
-     */
-    protected $endTokenPos;
+    protected string $text;
+    protected int $startLine;
+    protected int $startFilePos;
+    protected int $startTokenPos;
+    protected int $endLine;
+    protected int $endFilePos;
+    protected int $endTokenPos;
     /**
      * Constructs a comment node.
      *

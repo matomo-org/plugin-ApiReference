@@ -5,6 +5,7 @@ namespace Matomo\Dependencies\ApiReference\Doctrine\Common\Lexer;
 
 use ReflectionClass;
 use UnitEnum;
+use function count;
 use function implode;
 use function preg_split;
 use function sprintf;
@@ -16,49 +17,46 @@ use const PREG_SPLIT_OFFSET_CAPTURE;
  * Base class for writing simple lexers, i.e. for creating small DSLs.
  *
  * @template T of UnitEnum|string|int
- * @template V of string|int
+ * @template V of string|int|float|bool
  */
 abstract class AbstractLexer
 {
     /**
      * Lexer original input string.
-     * @var string
      */
-    private $input;
+    private string $input;
     /**
      * Array of scanned tokens.
      *
      * @var list<Token<T, V>>
      */
-    private $tokens = [];
+    private array $tokens = [];
     /**
      * Current lexer position in input string.
-     * @var int
      */
-    private $position = 0;
+    private int $position = 0;
     /**
      * Current peek of current lexer position.
-     * @var int
      */
-    private $peek = 0;
+    private int $peek = 0;
     /**
      * The next token in the input.
      *
      * @var Token<T, V>|null
      */
-    public $lookahead;
+    public Token|null $lookahead;
     /**
      * The last matched/seen token.
      *
      * @var Token<T, V>|null
      */
-    public $token;
+    public Token|null $token;
     /**
      * Composed regex for input parsing.
      *
      * @var non-empty-string|null
      */
-    private $regex = null;
+    private string|null $regex = null;
     /**
      * Sets the input data to be tokenized.
      *
@@ -100,13 +98,29 @@ abstract class AbstractLexer
     /**
      * Resets the lexer position on the input to the given position.
      *
-     * @param int $position Position to place the lexical scanner.
+     * @param int $position Character offset into the input, as found in
+     *                      Token::$position.
      *
      * @return void
      */
     public function resetPosition(int $position = 0)
     {
-        $this->position = $position;
+        $this->position = $this->findTokenIndexAtOrAfterOffset($position);
+    }
+    /**
+     * Finds the index of the first token at or after the given offset.
+     *
+     * Token offsets are strictly increasing, so a linear scan suffices.
+     * Returns one past the end when there is no such token.
+     */
+    private function findTokenIndexAtOrAfterOffset(int $offset) : int
+    {
+        foreach ($this->tokens as $index => $token) {
+            if ($token->position >= $offset) {
+                return $index;
+            }
+        }
+        return count($this->tokens);
     }
     /**
      * Retrieve the original lexer's input until a given position.
@@ -120,13 +134,13 @@ abstract class AbstractLexer
     /**
      * Checks whether a given token matches the current lookahead.
      *
-     * @param int|string|\UnitEnum $type
+     * @param T $type
      *
      * @return bool
      *
-     * @psalm-assert-if-true !=null $this->lookahead
+     * @phpstan-assert-if-true !=null $this->lookahead
      */
-    public function isNextToken($type)
+    public function isNextToken(int|string|UnitEnum $type)
     {
         return $this->lookahead !== null && $this->lookahead->isA($type);
     }
@@ -137,7 +151,7 @@ abstract class AbstractLexer
      *
      * @return bool
      *
-     * @psalm-assert-if-true !=null $this->lookahead
+     * @phpstan-assert-if-true !=null $this->lookahead
      */
     public function isNextTokenAny(array $types)
     {
@@ -148,7 +162,8 @@ abstract class AbstractLexer
      *
      * @return bool
      *
-     * @psalm-assert-if-true !null $this->lookahead
+     * @phpstan-impure
+     * @phpstan-assert-if-true !null $this->lookahead
      */
     public function moveNext()
     {
@@ -160,11 +175,11 @@ abstract class AbstractLexer
     /**
      * Tells the lexer to skip input tokens until it sees a token with the given value.
      *
-     * @param int|string|\UnitEnum $type The token type to skip until.
+     * @param T $type The token type to skip until.
      *
      * @return void
      */
-    public function skipUntil($type)
+    public function skipUntil(int|string|UnitEnum $type)
     {
         while ($this->lookahead !== null && !$this->lookahead->isA($type)) {
             $this->moveNext();
@@ -174,9 +189,8 @@ abstract class AbstractLexer
      * Checks if given value is identical to the given token.
      *
      * @return bool
-     * @param int|string|\UnitEnum $token
      */
-    public function isA(string $value, $token)
+    public function isA(string $value, int|string|UnitEnum $token)
     {
         return $this->getType($value) === $token;
     }
@@ -196,6 +210,8 @@ abstract class AbstractLexer
      * Peeks at the next token, returns it and immediately resets the peek.
      *
      * @return Token<T, V>|null The next token or NULL if there are no more tokens ahead.
+     *
+     * @phpstan-impure
      */
     public function glimpse()
     {
@@ -231,14 +247,14 @@ abstract class AbstractLexer
     /**
      * Gets the literal for a given token.
      *
-     * @param int|string|\UnitEnum $token
+     * @param T $token
      *
      * @return int|string
      */
-    public function getLiteral($token)
+    public function getLiteral(int|string|UnitEnum $token)
     {
         if ($token instanceof UnitEnum) {
-            return get_class($token) . '::' . $token->name;
+            return $token::class . '::' . $token->name;
         }
         $className = static::class;
         $reflClass = new ReflectionClass($className);

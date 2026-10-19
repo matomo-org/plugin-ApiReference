@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class ExternalDocumentation extends OA\ExternalDocumentation
 {
@@ -16,13 +16,13 @@ class ExternalDocumentation extends OA\ExternalDocumentation
      * @param Attachable[]|null        $attachables
      */
     public function __construct(
-        ?string $description = null,
+        ?string $description = Generator::UNDEFINED,
         ?string $url = null,
         // annotation
         ?array $x = null,
         ?array $attachables = null
     )
     {
-        parent::__construct(['description' => $description ?? Generator::UNDEFINED, 'url' => $url ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED]);
+        parent::__construct(['description' => $description, 'url' => $url ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED]);
     }
 }

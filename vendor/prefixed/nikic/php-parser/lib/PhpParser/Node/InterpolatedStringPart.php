@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class InterpolatedStringPart extends NodeAbstract
 {
     /** @var string String value */
-    public $value;
+    public string $value;
     /**
      * Constructs a node representing a string part of an interpolated string.
      *

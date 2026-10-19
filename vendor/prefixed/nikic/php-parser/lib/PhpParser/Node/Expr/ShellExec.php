@@ -8,7 +8,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\InterpolatedStringPart;
 class ShellExec extends Expr
 {
     /** @var (Expr|InterpolatedStringPart)[] Interpolated string array */
-    public $parts;
+    public array $parts;
     /**
      * Constructs a shell exec (backtick) node.
      *

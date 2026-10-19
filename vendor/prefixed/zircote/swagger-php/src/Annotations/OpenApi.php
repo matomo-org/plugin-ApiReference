@@ -21,8 +21,9 @@ class OpenApi extends AbstractAnnotation
 {
     public const VERSION_3_0_0 = '3.0.0';
     public const VERSION_3_1_0 = '3.1.0';
+    public const VERSION_3_2_0 = '3.2.0';
     public const DEFAULT_VERSION = self::VERSION_3_0_0;
-    public const SUPPORTED_VERSIONS = [self::VERSION_3_0_0, '3.0.1', '3.0.2', '3.0.3', '3.0.4', self::VERSION_3_1_0, '3.1.1'];
+    public const SUPPORTED_VERSIONS = [self::VERSION_3_0_0, '3.0.1', '3.0.2', '3.0.3', '3.0.4', self::VERSION_3_1_0, '3.1.1', '3.1.2', self::VERSION_3_2_0];
     /**
      * The semantic version number of the OpenAPI Specification version that the OpenAPI document uses.
      *
@@ -92,6 +93,7 @@ class OpenApi extends AbstractAnnotation
     /**
      * The available webhooks for the API.
      *
+     * @since OpenAPI 3.1.0
      * @var Webhook[]
      */
     public $webhooks = Generator::UNDEFINED;
@@ -142,13 +144,11 @@ class OpenApi extends AbstractAnnotation
     public static function versionMatch(string $version1, string $version2) : bool
     {
         $expand = function (string $v) : array {
-            if (substr_compare($v, '.x', -strlen('.x')) !== 0) {
+            if (!str_ends_with($v, '.x')) {
                 return [$v];
             }
             $minor = str_replace('.x', '', $v);
-            return array_filter(self::SUPPORTED_VERSIONS, function (string $sv) use ($minor) : bool {
-                return strncmp($sv, $minor, strlen($minor)) === 0;
-            });
+            return array_filter(self::SUPPORTED_VERSIONS, fn(string $sv): bool => str_starts_with($sv, $minor));
         };
         $versions1 = $expand($version1);
         $versions2 = $expand($version2);
@@ -170,12 +170,11 @@ class OpenApi extends AbstractAnnotation
     /**
      * Look up an annotation with a $ref url.
      *
-     * @param string $ref The $ref value, for example: "#/components/schemas/Product"
+     * @param string $ref The $ref value; example: "#/components/schemas/Product"
      */
     public function ref(string $ref)
     {
         if (substr($ref, 0, 2) !== '#/') {
-            // @todo Add support for external (http) refs?
             throw new OpenApiException('Unsupported $ref "' . $ref . '", it should start with "#/"');
         }
         return self::resolveRef($ref, '#/', $this, []);
@@ -239,7 +238,7 @@ class OpenApi extends AbstractAnnotation
     public function jsonSerialize()
     {
         $data = parent::jsonSerialize();
-        if (!$this->_context->isVersion('3.1.x')) {
+        if ($this->_context->isVersion('3.0.x')) {
             unset($data->webhooks);
         }
         return $data;

@@ -17,26 +17,11 @@ use Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Tag\TaggedValue;
  */
 final class ParserState
 {
-    /**
-     * @var int
-     */
-    public $maxNestingLevel = Parser::DEFAULT_MAX_NESTING_LEVEL;
-    /**
-     * @var int
-     */
-    public $currentNestingLevel = 0;
-    /**
-     * @var int
-     */
-    public $maxAliasesForCollections = Parser::DEFAULT_MAX_ALIASES_FOR_COLLECTIONS;
-    /**
-     * @var int
-     */
-    public $collectionAliasCount = 0;
-    /**
-     * @var bool
-     */
-    public $aliasesEnabled = \true;
+    public int $maxNestingLevel = Parser::DEFAULT_MAX_NESTING_LEVEL;
+    public int $currentNestingLevel = 0;
+    public int $maxAliasesForCollections = Parser::DEFAULT_MAX_ALIASES_FOR_COLLECTIONS;
+    public int $collectionAliasCount = 0;
+    public bool $aliasesEnabled = \true;
     public function reset() : void
     {
         $this->currentNestingLevel = 0;
@@ -56,10 +41,7 @@ final class ParserState
             --$this->currentNestingLevel;
         }
     }
-    /**
-     * @param mixed $refValue
-     */
-    public function countAlias($refValue, int $line, ?string $snippet, ?string $filename) : void
+    public function countAlias(mixed $refValue, int $line, ?string $snippet, ?string $filename) : void
     {
         if (!$this->aliasesEnabled) {
             throw new ParseException('Aliases are disabled.', $line, $snippet, $filename);

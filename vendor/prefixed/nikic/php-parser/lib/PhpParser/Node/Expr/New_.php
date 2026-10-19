@@ -5,19 +5,20 @@ namespace Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 
 use Matomo\Dependencies\ApiReference\PhpParser\Node;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\Arg;
+use Matomo\Dependencies\ApiReference\PhpParser\Node\ArgPlaceholder;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 use Matomo\Dependencies\ApiReference\PhpParser\Node\VariadicPlaceholder;
 class New_ extends CallLike
 {
     /** @var Node\Name|Expr|Node\Stmt\Class_ Class name */
-    public $class;
-    /** @var array<Arg|VariadicPlaceholder> Arguments */
-    public $args;
+    public Node $class;
+    /** @var array<Arg|VariadicPlaceholder|ArgPlaceholder> Arguments */
+    public array $args;
     /**
      * Constructs a function call node.
      *
      * @param Node\Name|Expr|Node\Stmt\Class_ $class Class name (or class node for anonymous classes)
-     * @param array<Arg|VariadicPlaceholder> $args Arguments
+     * @param array<Arg|VariadicPlaceholder|ArgPlaceholder> $args Arguments
      * @param array<string, mixed> $attributes Additional attributes
      */
     public function __construct(Node $class, array $args = [], array $attributes = [])

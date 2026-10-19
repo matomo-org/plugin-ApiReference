@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class Clone_ extends Expr
 {
     /** @var Expr Expression */
-    public $expr;
+    public Expr $expr;
     /**
      * Constructs a clone node.
      *

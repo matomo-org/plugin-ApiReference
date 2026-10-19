@@ -8,9 +8,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\MatchArm;
 class Match_ extends Node\Expr
 {
     /** @var Node\Expr Condition */
-    public $cond;
+    public Node\Expr $cond;
     /** @var MatchArm[] */
-    public $arms;
+    public array $arms;
     /**
      * @param Node\Expr $cond Condition
      * @param MatchArm[] $arms

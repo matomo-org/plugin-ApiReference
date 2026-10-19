@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class SecurityScheme extends OA\SecurityScheme
 {
@@ -19,10 +19,10 @@ class SecurityScheme extends OA\SecurityScheme
      * @param Attachable[]|null                   $attachables
      */
     public function __construct(
-        $ref = null,
+        string|object|null $ref = null,
         ?string $securityScheme = null,
-        $type = null,
-        ?string $description = null,
+        string|array|null $type = null,
+        ?string $description = Generator::UNDEFINED,
         ?string $name = null,
         ?string $in = null,
         ?string $bearerFormat = null,
@@ -34,6 +34,6 @@ class SecurityScheme extends OA\SecurityScheme
         ?array $attachables = null
     )
     {
-        parent::__construct(['ref' => $ref ?? Generator::UNDEFINED, 'securityScheme' => $securityScheme ?? Generator::UNDEFINED, 'type' => $type ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'name' => $name ?? Generator::UNDEFINED, 'in' => $in ?? Generator::UNDEFINED, 'bearerFormat' => $bearerFormat ?? Generator::UNDEFINED, 'scheme' => $scheme ?? Generator::UNDEFINED, 'openIdConnectUrl' => $openIdConnectUrl ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($flows)]);
+        parent::__construct(['ref' => $ref ?? Generator::UNDEFINED, 'securityScheme' => $securityScheme ?? Generator::UNDEFINED, 'type' => $type ?? Generator::UNDEFINED, 'description' => $description, 'name' => $name ?? Generator::UNDEFINED, 'in' => $in ?? Generator::UNDEFINED, 'bearerFormat' => $bearerFormat ?? Generator::UNDEFINED, 'scheme' => $scheme ?? Generator::UNDEFINED, 'openIdConnectUrl' => $openIdConnectUrl ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($flows)]);
     }
 }

@@ -16,26 +16,26 @@ trait ParameterTrait
      * @param array<MediaType>|JsonContent|XmlContent|Attachable|null $content
      * @param array<string,mixed>|null                                $x
      * @param Attachable[]|null                                       $attachables
-     * @param mixed $example
      */
     public function __construct(
         ?string $parameter = null,
         ?string $name = null,
-        ?string $description = null,
+        ?string $description = Generator::UNDEFINED,
         ?string $in = null,
         ?bool $required = null,
         ?bool $deprecated = null,
         ?bool $allowEmptyValue = null,
-        $ref = null,
+        string|object|null $ref = null,
         ?Schema $schema = null,
-        $example = Generator::UNDEFINED,
+        mixed $example = Generator::UNDEFINED,
         ?array $examples = null,
-        $content = null,
+        array|JsonContent|XmlContent|Attachable|null $content = null,
         ?string $style = null,
         ?bool $explode = null,
         ?bool $allowReserved = null,
         ?array $spaceDelimited = null,
         ?array $pipeDelimited = null,
+        mixed $deepObject = null,
         // annotation
         ?array $x = null,
         ?array $attachables = null
@@ -44,7 +44,7 @@ trait ParameterTrait
         parent::__construct([
             'parameter' => $parameter ?? Generator::UNDEFINED,
             'name' => $name ?? Generator::UNDEFINED,
-            'description' => $description ?? Generator::UNDEFINED,
+            'description' => $description,
             // next two are special as we override the default value for specific Parameter subclasses
             'in' => $in ?? (Generator::isDefault($this->in) ? Generator::UNDEFINED : $this->in),
             'required' => $required ?? (Generator::isDefault($this->required) ? Generator::UNDEFINED : $this->required),
@@ -57,6 +57,7 @@ trait ParameterTrait
             'allowReserved' => $allowReserved ?? Generator::UNDEFINED,
             'spaceDelimited' => $spaceDelimited ?? Generator::UNDEFINED,
             'pipeDelimited' => $pipeDelimited ?? Generator::UNDEFINED,
+            'deepObject' => $deepObject ?? Generator::UNDEFINED,
             'x' => $x ?? Generator::UNDEFINED,
             'attachables' => $attachables ?? Generator::UNDEFINED,
             'value' => $this->combine($schema, $examples, $content),

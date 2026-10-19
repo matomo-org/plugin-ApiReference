@@ -7,11 +7,11 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class TryCatch extends Node\Stmt
 {
     /** @var Node\Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /** @var Catch_[] Catches */
-    public $catches;
+    public array $catches;
     /** @var null|Finally_ Optional finally node */
-    public $finally;
+    public ?Finally_ $finally;
     /**
      * Constructs a try catch node.
      *

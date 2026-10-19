@@ -12,7 +12,10 @@ use Matomo\Dependencies\ApiReference\OpenApi\Analysers\DocBlockAnnotationFactory
 use Matomo\Dependencies\ApiReference\OpenApi\Analysers\ReflectionAnalyser;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
 use Matomo\Dependencies\ApiReference\OpenApi\Loggers\DefaultLogger;
+use Matomo\Dependencies\ApiReference\OpenApi\Type\LegacyTypeResolver;
+use Matomo\Dependencies\ApiReference\OpenApi\Type\TypeInfoTypeResolver;
 use Psr\Log\LoggerInterface;
+use Radebatz\TypeInfoExtras\TypeResolver\StringTypeResolver;
 /**
  * OpenApi spec generator.
  *
@@ -25,9 +28,8 @@ class Generator
 {
     /**
      * Allows Annotation classes to know the context of the annotation that is being processed.
-     * @var \Matomo\Dependencies\ApiReference\OpenApi\Context|null
      */
-    public static $context;
+    public static ?Context $context = null;
     /** @var string Magic value to differentiate between null and undefined. */
     public const UNDEFINED = '@OA\\Generator::UNDEFINED🙈';
     /** @var array<string,string> */
@@ -35,23 +37,15 @@ class Generator
     /** @var array<string> */
     public const DEFAULT_NAMESPACES = ['OpenApi\\Annotations\\'];
     /** @var array<string,string> Map of namespace aliases to be supported by doctrine. */
-    protected $aliases;
+    protected array $aliases;
     /** @var array<string>|null List of annotation namespaces to be autoloaded by doctrine. */
-    protected $namespaces;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\OpenApi\Analysers\AnalyserInterface|null
-     */
-    protected $analyser;
+    protected ?array $namespaces;
+    protected ?AnalyserInterface $analyser = null;
     /** @var array<string,mixed> */
-    protected $config = [];
-    /**
-     * @var \Matomo\Dependencies\ApiReference\OpenApi\Pipeline|null
-     */
-    protected $processorPipeline;
-    /**
-     * @var \Psr\Log\LoggerInterface|null
-     */
-    protected $logger;
+    protected array $config = [];
+    protected ?Pipeline $processorPipeline = null;
+    protected ?TypeResolverInterface $typeResolver = null;
+    protected ?LoggerInterface $logger = null;
     /**
      * OpenApi version override.
      *
@@ -59,18 +53,22 @@ class Generator
      *
      * Due to the order of processing, any conditional code using this (via <code>Context::$version</code>)
      * must come only after the analysis is finished.
-     * @var string|null
      */
-    protected $version;
+    protected ?string $version = null;
     public function __construct(?LoggerInterface $logger = null)
     {
         $this->logger = $logger;
         $this->setAliases(self::DEFAULT_ALIASES);
         $this->setNamespaces(self::DEFAULT_NAMESPACES);
     }
-    public static function isDefault($value) : bool
+    public static function isDefault(...$value) : bool
     {
-        return $value === Generator::UNDEFINED;
+        foreach ($value as $v) {
+            if ($v !== Generator::UNDEFINED) {
+                return \false;
+            }
+        }
+        return \true;
     }
     /**
      * @return array<string>
@@ -133,7 +131,7 @@ class Generator
         foreach ($config as $key => $value) {
             if (is_numeric($key)) {
                 $token = explode('=', $value);
-                if (2 == count($token)) {
+                if (2 === count($token)) {
                     // 'operationId.hash=false'
                     [$key, $value] = $token;
                 }
@@ -145,7 +143,7 @@ class Generator
                 $key = substr($key, 0, -2);
             }
             $token = explode('.', $key);
-            if (2 == count($token)) {
+            if (2 === count($token)) {
                 // 'operationId.hash' => false
                 // namespaced / processor
                 if ($isList) {
@@ -176,7 +174,7 @@ class Generator
     public function getProcessorPipeline() : Pipeline
     {
         if (!$this->processorPipeline instanceof Pipeline) {
-            $this->processorPipeline = new Pipeline([new Processors\DocBlockDescriptions(), new Processors\MergeIntoOpenApi(), new Processors\MergeIntoComponents(), new Processors\ExpandClasses(), new Processors\ExpandInterfaces(), new Processors\ExpandTraits(), new Processors\ExpandEnums(), new Processors\AugmentSchemas(), new Processors\AugmentRequestBody(), new Processors\AugmentProperties(), new Processors\AugmentDiscriminators(), new Processors\BuildPaths(), new Processors\AugmentParameters(), new Processors\AugmentRefs(), new Processors\MergeJsonContent(), new Processors\MergeXmlContent(), new Processors\OperationId(), new Processors\CleanUnmerged(), new Processors\PathFilter(), new Processors\CleanUnusedComponents(), new Processors\AugmentTags()]);
+            $this->processorPipeline = new Pipeline([new Processors\DocBlockDescriptions(), new Processors\MergeIntoOpenApi(), new Processors\MergeIntoComponents(), new Processors\ExpandClasses(), new Processors\ExpandInterfaces(), new Processors\ExpandTraits(), new Processors\ExpandEnums(), new Processors\AugmentSchemas(), new Processors\AugmentRequestBody(), new Processors\AugmentProperties(), new Processors\AugmentDiscriminators(), new Processors\BuildPaths(), new Processors\AugmentParameters(), new Processors\AugmentRefs(), new Processors\AugmentItems(), new Processors\MergeJsonContent(), new Processors\MergeXmlContent(), new Processors\AugmentMediaType(), new Processors\OperationId(), new Processors\CleanUnmerged(), new Processors\PathFilter(), new Processors\CleanUnusedComponents(), new Processors\AugmentTags()]);
         }
         $config = $this->getConfig();
         $walker = function (callable $pipe) use($config) : void {
@@ -191,12 +189,23 @@ class Generator
                     }
                 }
             }
+            if (is_a($pipe, GeneratorAwareInterface::class)) {
+                $pipe->setGenerator($this);
+            }
         };
         return $this->processorPipeline->walk($walker);
     }
     public function setProcessorPipeline(?Pipeline $processor) : Generator
     {
         $this->processorPipeline = $processor;
+        $walker = function (callable $pipe) : void {
+            if (is_a($pipe, GeneratorAwareInterface::class)) {
+                $pipe->setGenerator($this);
+            }
+        };
+        if ($this->processorPipeline) {
+            $this->processorPipeline->walk($walker);
+        }
         return $this;
     }
     /**
@@ -216,9 +225,20 @@ class Generator
     {
         return $this->withProcessorPipeline($with);
     }
+    public function setTypeResolver(?TypeResolverInterface $typeResolver) : Generator
+    {
+        $this->typeResolver = $typeResolver;
+        return $this;
+    }
+    public function getTypeResolver() : TypeResolverInterface
+    {
+        $this->typeResolver ??= class_exists(StringTypeResolver::class) ? new TypeInfoTypeResolver() : new LegacyTypeResolver();
+        return $this->typeResolver;
+    }
     public function getLogger() : ?LoggerInterface
     {
-        return $this->logger ?: new DefaultLogger();
+        $this->logger ??= new DefaultLogger();
+        return $this->logger;
     }
     public function getVersion() : ?string
     {

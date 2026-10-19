@@ -15,14 +15,8 @@ use function strpos;
 use function substr_compare;
 class TypeParser
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig
-     */
-    private $config;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\ConstExprParser
-     */
-    private $constExprParser;
+    private ParserConfig $config;
+    private ConstExprParser $constExprParser;
     public function __construct(ParserConfig $config, ConstExprParser $constExprParser)
     {
         $this->config = $config;
@@ -344,6 +338,11 @@ class TypeParser
         $type = new Ast\Type\GenericTypeNode($baseType, $genericTypes, $variances);
         if ($startLine !== null && $startIndex !== null) {
             $type = $this->enrichWithAttributes($tokens, $type, $startLine, $startIndex);
+        } else {
+            // The comments read between the arguments have to be given away
+            // even where the node is not placed, or they would still be waiting
+            // for a node once the whole PHPDoc has been read
+            $tokens->flushComments();
         }
         $tokens->consumeTokenType(Lexer::TOKEN_CLOSE_ANGLE_BRACKET);
         return $type;

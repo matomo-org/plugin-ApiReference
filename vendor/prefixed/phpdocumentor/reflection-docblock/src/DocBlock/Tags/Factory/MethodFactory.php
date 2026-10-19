@@ -23,14 +23,8 @@ use function trim;
  */
 final class MethodFactory implements PHPStanFactory
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\DescriptionFactory
-     */
-    private $descriptionFactory;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\TypeResolver
-     */
-    private $typeResolver;
+    private DescriptionFactory $descriptionFactory;
+    private TypeResolver $typeResolver;
     public function __construct(TypeResolver $typeResolver, DescriptionFactory $descriptionFactory)
     {
         $this->descriptionFactory = $descriptionFactory;

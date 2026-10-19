@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Const_ extends Node\Stmt
 {
     /** @var Node\Const_[] Constant declarations */
-    public $consts;
+    public array $consts;
     /** @var Node\AttributeGroup[] PHP attribute groups */
-    public $attrGroups;
+    public array $attrGroups;
     /**
      * Constructs a const list node.
      *

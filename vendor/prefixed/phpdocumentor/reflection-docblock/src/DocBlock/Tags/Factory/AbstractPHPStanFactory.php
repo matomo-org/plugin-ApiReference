@@ -36,16 +36,10 @@ use function rtrim;
  */
 class AbstractPHPStanFactory implements Factory
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Parser\PhpDocParser
-     */
-    private $parser;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Lexer\Lexer
-     */
-    private $lexer;
+    private PhpDocParser $parser;
+    private Lexer $lexer;
     /** @var PHPStanFactory[] */
-    private $factories;
+    private array $factories;
     public function __construct(PHPStanFactory ...$factories)
     {
         if (class_exists(ParserConfig::class)) {

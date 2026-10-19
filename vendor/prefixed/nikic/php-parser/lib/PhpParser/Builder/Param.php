@@ -9,30 +9,15 @@ use Matomo\Dependencies\ApiReference\PhpParser\Modifiers;
 use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Param implements PhpParser\Builder
 {
-    /**
-     * @var string
-     */
-    protected $name;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PhpParser\Node\Expr|null
-     */
-    protected $default;
+    protected string $name;
+    protected ?Node\Expr $default = null;
     /** @var Node\Identifier|Node\Name|Node\ComplexType|null */
-    protected $type;
-    /**
-     * @var bool
-     */
-    protected $byRef = \false;
-    /**
-     * @var int
-     */
-    protected $flags = 0;
-    /**
-     * @var bool
-     */
-    protected $variadic = \false;
+    protected ?Node $type = null;
+    protected bool $byRef = \false;
+    protected int $flags = 0;
+    protected bool $variadic = \false;
     /** @var list<Node\AttributeGroup> */
-    protected $attributeGroups = [];
+    protected array $attributeGroups = [];
     /**
      * Creates a parameter builder.
      *

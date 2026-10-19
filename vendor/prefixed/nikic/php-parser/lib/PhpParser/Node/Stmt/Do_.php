@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Do_ extends Node\Stmt
 {
     /** @var Node\Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /** @var Node\Expr Condition */
-    public $cond;
+    public Node\Expr $cond;
     /**
      * Constructs a do while node.
      *

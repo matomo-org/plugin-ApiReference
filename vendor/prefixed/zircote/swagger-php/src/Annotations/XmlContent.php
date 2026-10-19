@@ -7,6 +7,7 @@ declare (strict_types=1);
 namespace Matomo\Dependencies\ApiReference\OpenApi\Annotations;
 
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 /**
  * Shorthand for a xml response.
  *
@@ -17,11 +18,17 @@ use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
 class XmlContent extends Schema
 {
     /**
+     * A map between a property name and its encoding information.
+     *
+     * @var Encoding[]
+     */
+    public $encoding = Generator::UNDEFINED;
+    /**
      * @inheritdoc
      */
     public static $_parents = [];
     /**
      * @inheritdoc
      */
-    public static $_nested = [Discriminator::class => 'discriminator', Items::class => 'items', Property::class => ['properties', 'property'], ExternalDocumentation::class => 'externalDocs', Xml::class => 'xml', AdditionalProperties::class => 'additionalProperties', Examples::class => ['examples', 'example'], Attachable::class => ['attachables']];
+    public static $_nested = [Discriminator::class => 'discriminator', Items::class => 'items', Property::class => ['properties', 'property'], ExternalDocumentation::class => 'externalDocs', Xml::class => 'xml', AdditionalProperties::class => 'additionalProperties', Encoding::class => ['encoding', 'property'], Examples::class => ['examples', 'example'], Attachable::class => ['attachables']];
 }

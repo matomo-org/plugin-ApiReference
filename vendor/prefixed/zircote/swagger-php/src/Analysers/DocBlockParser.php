@@ -15,10 +15,7 @@ use Matomo\Dependencies\ApiReference\OpenApi\Generator;
  */
 class DocBlockParser
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\Doctrine\Common\Annotations\DocParser
-     */
-    protected $docParser;
+    protected DocParser $docParser;
     /**
      * @param array<string, class-string> $aliases
      */

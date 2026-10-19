@@ -5,18 +5,9 @@ namespace Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser;
 
 class ParserConfig
 {
-    /**
-     * @var bool
-     */
-    public $useLinesAttributes;
-    /**
-     * @var bool
-     */
-    public $useIndexAttributes;
-    /**
-     * @var bool
-     */
-    public $useCommentsAttributes;
+    public bool $useLinesAttributes;
+    public bool $useIndexAttributes;
+    public bool $useCommentsAttributes;
     /**
      * @param array{lines?: bool, indexes?: bool, comments?: bool} $usedAttributes
      */

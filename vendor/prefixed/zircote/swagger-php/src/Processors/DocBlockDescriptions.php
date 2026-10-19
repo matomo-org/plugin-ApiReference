@@ -13,7 +13,8 @@ use Matomo\Dependencies\ApiReference\OpenApi\Generator;
  * Checks if the annotation has a summary and/or description property
  * and uses the text in the comment block (above the annotations) as summary and/or description.
  *
- * Use <code>null</code>, for example: <code>@Annotation(description=null)</code>, if you don't want the annotation to have a description.
+ * Use <code>null</code>, for example <code>@Annotation(description=null)</code>,
+ * if you don't want the annotation to have a description.
  */
 class DocBlockDescriptions
 {
@@ -26,8 +27,12 @@ class DocBlockDescriptions
                 // only annotations with context
                 continue;
             }
-            if (!$this->isRoot($annotation)) {
+            if (!$this->isDocblockRoot($annotation)) {
                 // only top-level annotations
+                continue;
+            }
+            if ($annotation instanceof OA\Parameter || $annotation instanceof OA\Property) {
+                // they have their dedicated processor
                 continue;
             }
             $hasSummary = property_exists($annotation, 'summary');
@@ -53,7 +58,7 @@ class DocBlockDescriptions
             }
             return;
         }
-        $annotation->description = $this->extractContent($annotation->_context->comment);
+        $annotation->description = $this->parseDocblock($annotation->_context->comment);
     }
     /**
      * @param OA\Operation|OA\Property|OA\Parameter|OA\Schema $annotation
@@ -73,13 +78,14 @@ class DocBlockDescriptions
         if ($ignoreSummary && $ignoreDescription) {
             return;
         }
+        $content = $this->parseDocblock($annotation->_context->comment);
         if ($ignoreSummary) {
-            $annotation->description = $this->extractContent($annotation->_context->comment);
+            $annotation->description = $content;
         } elseif ($ignoreDescription) {
-            $annotation->summary = $this->extractContent($annotation->_context->comment);
+            $annotation->summary = $content;
         } else {
-            $annotation->summary = $this->extractSummary($annotation->_context->comment);
-            $annotation->description = $this->extractDescription($annotation->_context->comment);
+            $annotation->summary = $this->extractCommentSummary($content);
+            $annotation->description = $this->extractCommentDescription($content);
         }
     }
 }

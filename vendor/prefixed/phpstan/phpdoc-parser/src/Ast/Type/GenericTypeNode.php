@@ -13,14 +13,11 @@ class GenericTypeNode implements TypeNode
     public const VARIANCE_CONTRAVARIANT = 'contravariant';
     public const VARIANCE_BIVARIANT = 'bivariant';
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode
-     */
-    public $type;
+    public IdentifierTypeNode $type;
     /** @var TypeNode[] */
-    public $genericTypes;
+    public array $genericTypes;
     /** @var (self::VARIANCE_*)[] */
-    public $variances;
+    public array $variances;
     /**
      * @param TypeNode[] $genericTypes
      * @param (self::VARIANCE_*)[] $variances
@@ -45,5 +42,18 @@ class GenericTypeNode implements TypeNode
             }
         }
         return $this->type . '<' . implode(', ', $genericTypes) . '>';
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['type'], $properties['genericTypes'], $properties['variances'] ?? []);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

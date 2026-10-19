@@ -9,9 +9,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Identifier;
 class PropertyFetch extends Expr
 {
     /** @var Expr Variable holding object */
-    public $var;
+    public Expr $var;
     /** @var Identifier|Expr Property name */
-    public $name;
+    public Node $name;
     /**
      * Constructs a function call node.
      *

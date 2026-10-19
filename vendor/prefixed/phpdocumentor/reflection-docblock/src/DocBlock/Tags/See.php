@@ -29,14 +29,8 @@ use function preg_match;
  */
 final class See extends BaseTag implements Factory\StaticMethod
 {
-    /**
-     * @var string
-     */
-    protected $name = 'see';
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Reference\Reference
-     */
-    protected $refers;
+    protected string $name = 'see';
+    protected Reference $refers;
     /**
      * Initializes this tag.
      */

@@ -9,18 +9,12 @@ use function implode;
 class CallableTypeNode implements TypeNode
 {
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode
-     */
-    public $identifier;
+    public IdentifierTypeNode $identifier;
     /** @var TemplateTagValueNode[] */
-    public $templateTypes;
+    public array $templateTypes;
     /** @var CallableTypeParameterNode[] */
-    public $parameters;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $returnType;
+    public array $parameters;
+    public TypeNode $returnType;
     /**
      * @param CallableTypeParameterNode[] $parameters
      * @param TemplateTagValueNode[]  $templateTypes
@@ -41,5 +35,18 @@ class CallableTypeNode implements TypeNode
         $template = $this->templateTypes !== [] ? '<' . implode(', ', $this->templateTypes) . '>' : '';
         $parameters = implode(', ', $this->parameters);
         return "{$this->identifier}{$template}({$parameters}): {$returnType}";
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['identifier'], $properties['parameters'], $properties['returnType'], $properties['templateTypes']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

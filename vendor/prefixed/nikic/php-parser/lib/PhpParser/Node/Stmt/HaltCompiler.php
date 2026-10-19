@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Stmt;
 class HaltCompiler extends Stmt
 {
     /** @var string Remaining text after halt compiler statement. */
-    public $remaining;
+    public string $remaining;
     /**
      * Constructs a __halt_compiler node.
      *

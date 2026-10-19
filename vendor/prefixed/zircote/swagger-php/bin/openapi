@@ -162,7 +162,7 @@ foreach ($options["processor"] as $processor) {
     }
     $generator->getProcessorPipeline()->add($processor);
 }
-$analyser = new ReflectionAnalyser([new DocBlockAnnotationFactory(), new AttributeAnnotationFactory()]);
+$analyser = new ReflectionAnalyser([new AttributeAnnotationFactory(), new DocBlockAnnotationFactory()]);
 $analyser->setGenerator($generator);
 $openapi = $generator->setVersion($options['version'])->setConfig($options['config'])->setAnalyser($analyser)->generate(Util::finder($paths, $exclude, $pattern));
 if ($options['output'] === \false) {

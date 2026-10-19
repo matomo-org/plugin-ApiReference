@@ -15,18 +15,10 @@ namespace Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Comparator;
  */
 class Comparator
 {
-    /**
-     * @var string
-     */
-    private $target;
-    /**
-     * @var string
-     */
-    private $operator;
-    public function __construct(string $target, string $operator = '==')
+    private string $operator;
+    public function __construct(private string $target, string $operator = '==')
     {
-        $this->target = $target;
-        if (!\in_array($operator, ['>', '<', '>=', '<=', '==', '!='])) {
+        if (!\in_array($operator, ['>', '<', '>=', '<=', '==', '!='], \true)) {
             throw new \InvalidArgumentException(\sprintf('Invalid operator "%s".', $operator));
         }
         $this->operator = $operator;
@@ -47,23 +39,16 @@ class Comparator
     }
     /**
      * Tests against the target.
-     * @param mixed $test
      */
-    public function test($test) : bool
+    public function test(mixed $test) : bool
     {
-        switch ($this->operator) {
-            case '>':
-                return $test > $this->target;
-            case '>=':
-                return $test >= $this->target;
-            case '<':
-                return $test < $this->target;
-            case '<=':
-                return $test <= $this->target;
-            case '!=':
-                return $test != $this->target;
-            default:
-                return $test == $this->target;
-        }
+        return match ($this->operator) {
+            '>' => $test > $this->target,
+            '>=' => $test >= $this->target,
+            '<' => $test < $this->target,
+            '<=' => $test <= $this->target,
+            '!=' => $test != $this->target,
+            default => $test == $this->target,
+        };
     }
 }

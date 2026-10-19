@@ -10,11 +10,11 @@ use Matomo\Dependencies\ApiReference\PhpParser\Token;
 class CommentAnnotatingVisitor extends NodeVisitorAbstract
 {
     /** @var int Last seen token start position */
-    private $pos = 0;
+    private int $pos = 0;
     /** @var Token[] Token array */
-    private $tokens;
+    private array $tokens;
     /** @var list<int> Token positions of comments */
-    private $commentPositions = [];
+    private array $commentPositions = [];
     /**
      * Create a comment annotation visitor.
      *

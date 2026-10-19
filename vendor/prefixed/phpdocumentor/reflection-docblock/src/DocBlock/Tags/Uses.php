@@ -25,14 +25,8 @@ use function explode;
  */
 final class Uses extends BaseTag implements Factory\StaticMethod
 {
-    /**
-     * @var string
-     */
-    protected $name = 'uses';
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Fqsen
-     */
-    protected $refers;
+    protected string $name = 'uses';
+    protected Fqsen $refers;
     /**
      * Initializes this tag.
      */

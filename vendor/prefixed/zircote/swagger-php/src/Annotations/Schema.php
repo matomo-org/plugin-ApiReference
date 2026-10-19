@@ -303,8 +303,7 @@ class Schema extends AbstractAnnotation
      * The examples object is mutually exclusive of the example object.
      * Furthermore, if referencing a schema which contains an example, the examples value shall override the example provided by the schema.
      *
-     * @since 3.1.0
-     *
+     * @since OpenAPI 3.1.0
      * @var array<Examples>
      */
     public $examples = Generator::UNDEFINED;
@@ -368,8 +367,14 @@ class Schema extends AbstractAnnotation
     public $contains = Generator::UNDEFINED;
     /**
      * http://json-schema.org/latest/json-schema-validation.html#rfc.section.6.19.
+     *
+     * @var array
      */
     public $patternProperties = Generator::UNDEFINED;
+    /**
+     * @var array
+     */
+    public $unevaluatedProperties = Generator::UNDEFINED;
     /**
      * http://json-schema.org/latest/json-schema-validation.html#rfc.section.6.21.
      */
@@ -380,12 +385,28 @@ class Schema extends AbstractAnnotation
     public $propertyNames = Generator::UNDEFINED;
     /**
      * http://json-schema.org/draft/2020-12/json-schema-validation.html#rfc.section.6.1.3.
+     *
+     * @since OpenAPI 3.1.0
      */
     public $const = Generator::UNDEFINED;
     /**
+     * https://spec.openapis.org/oas/v3.1.0.html#considerations-for-file-uploads
+     * https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.8.3.
+     *
+     * @var string
+     */
+    public $contentEncoding = Generator::UNDEFINED;
+    /**
+     * https://spec.openapis.org/oas/v3.1.0.html#considerations-for-file-uploads
+     * https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.8.4.
+     *
+     * @var string
+     */
+    public $contentMediaType = Generator::UNDEFINED;
+    /**
      * @inheritdoc
      */
-    public static $_types = ['title' => 'string', 'description' => 'string', 'required' => '[string]', 'format' => 'string', 'collectionFormat' => ['csv', 'ssv', 'tsv', 'pipes', 'multi'], 'maximum' => 'number', 'exclusiveMaximum' => 'boolean|integer|number', 'minimum' => 'number', 'exclusiveMinimum' => 'boolean|integer|number', 'maxLength' => 'integer', 'minLength' => 'integer', 'pattern' => 'string', 'maxItems' => 'integer', 'minItems' => 'integer', 'uniqueItems' => 'boolean', 'multipleOf' => 'integer', 'allOf' => '[' . Schema::class . ']', 'oneOf' => '[' . Schema::class . ']', 'anyOf' => '[' . Schema::class . ']'];
+    public static $_types = ['title' => 'string', 'description' => 'string', 'required' => '[string]', 'format' => 'string', 'collectionFormat' => ['csv', 'ssv', 'tsv', 'pipes', 'multi'], 'maximum' => 'number', 'exclusiveMaximum' => 'boolean|integer|number', 'minimum' => 'number', 'exclusiveMinimum' => 'boolean|integer|number', 'maxLength' => 'integer', 'minLength' => 'integer', 'pattern' => 'string', 'maxItems' => 'integer', 'minItems' => 'integer', 'uniqueItems' => 'boolean', 'multipleOf' => 'integer', 'allOf' => '[' . Schema::class . ']', 'oneOf' => '[' . Schema::class . ']', 'anyOf' => '[' . Schema::class . ']', 'contentEncoding' => 'string', 'contentMediaType' => 'string'];
     /**
      * @inheritdoc
      */
@@ -394,6 +415,22 @@ class Schema extends AbstractAnnotation
      * @inheritdoc
      */
     public static $_parents = [Components::class, Parameter::class, PathParameter::class, MediaType::class, Header::class];
+    /**
+     * Type safe nullable check.
+     *
+     * Defaults to `false` when nullable is not set.
+     */
+    public function isNullable() : bool
+    {
+        return !Generator::isDefault($this->nullable) && $this->nullable;
+    }
+    /**
+     * Check if the given type is valid for this schema.
+     */
+    public function hasType(string $type) : bool
+    {
+        return in_array($type, (array) $this->type, \true);
+    }
     /**
      * @inheritdoc
      */
@@ -415,13 +452,13 @@ class Schema extends AbstractAnnotation
      */
     public function validate(array $stack = [], array $skip = [], string $ref = '', ?object $context = null) : bool
     {
-        if ($this->type === 'array' && Generator::isDefault($this->items)) {
+        if ($this->hasType('array') && Generator::isDefault($this->items)) {
             $this->_context->logger->warning('@OA\\Items() is required when ' . $this->identity() . ' has type "array" in ' . $this->_context);
             return \false;
         }
         if ($this->_context->isVersion('3.0.x')) {
             if (!Generator::isDefault($this->examples)) {
-                $this->_context->logger->warning($this->identity() . ' is only allowed for 3.1.x');
+                $this->_context->logger->warning($this->identity() . ' is only allowed as of 3.1.0');
                 return \false;
             }
         }

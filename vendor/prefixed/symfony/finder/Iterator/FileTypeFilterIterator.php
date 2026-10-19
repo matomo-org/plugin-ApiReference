@@ -19,19 +19,14 @@ namespace Matomo\Dependencies\ApiReference\Symfony\Component\Finder\Iterator;
  */
 class FileTypeFilterIterator extends \FilterIterator
 {
-    /**
-     * @var int
-     */
-    private $mode;
     public const ONLY_FILES = 1;
     public const ONLY_DIRECTORIES = 2;
     /**
      * @param \Iterator<string, \SplFileInfo> $iterator The Iterator to filter
      * @param int                             $mode     The mode (self::ONLY_FILES or self::ONLY_DIRECTORIES)
      */
-    public function __construct(\Iterator $iterator, int $mode)
+    public function __construct(\Iterator $iterator, private int $mode)
     {
-        $this->mode = $mode;
         parent::__construct($iterator);
     }
     /**
@@ -45,6 +40,6 @@ class FileTypeFilterIterator extends \FilterIterator
         } elseif (self::ONLY_FILES === (self::ONLY_FILES & $this->mode) && $fileinfo->isDir()) {
             return \false;
         }
-        return \true;
+        return !$fileinfo->isLink() || $fileinfo->isFile() || $fileinfo->isDir();
     }
 }

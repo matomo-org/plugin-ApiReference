@@ -21,13 +21,10 @@ use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type;
 final class Template extends BaseTag
 {
     /** @var non-empty-string */
-    private $templateName;
+    private string $templateName;
     /** @var ?Type The real type */
-    private $bound;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\Type|null
-     */
-    private $default;
+    private ?Type $bound;
+    private ?Type $default;
     /** @param non-empty-string $templateName */
     public function __construct(string $templateName, ?Type $bound = null, ?Type $default = null, ?Description $description = null)
     {

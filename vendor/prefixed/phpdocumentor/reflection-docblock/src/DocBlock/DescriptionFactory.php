@@ -43,10 +43,7 @@ use const PREG_SPLIT_DELIM_CAPTURE;
  */
 class DescriptionFactory
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory
-     */
-    private $tagFactory;
+    private Factory $tagFactory;
     /**
      * Initializes this factory with the means to construct (inline) tags.
      */
@@ -89,8 +86,9 @@ class DescriptionFactory
             return [$contents];
         }
         return Utils::pregSplit('/\\{
-                # "{@}" is not a valid inline tag. This ensures that we do not treat it as one, but treat it literally.
-                (?!@\\})
+                # "{@}" and "{@*}" are not a valid inline tags. This ensures that we do not treat them as one, but treat
+                # them literally.
+                (?!(?:@\\}|@\\*\\}) )
                 # We want to capture the whole tag line, but without the inline tag delimiters.
                 (\\@
                     # Match everything up to the next delimiter.

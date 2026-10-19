@@ -21,15 +21,12 @@ final class NodeConnectingVisitor extends NodeVisitorAbstract
     /**
      * @var Node[]
      */
-    private $stack = [];
+    private array $stack = [];
     /**
      * @var ?Node
      */
     private $previous;
-    /**
-     * @var bool
-     */
-    private $weakReferences;
+    private bool $weakReferences;
     public function __construct(bool $weakReferences = \false)
     {
         $this->weakReferences = $weakReferences;

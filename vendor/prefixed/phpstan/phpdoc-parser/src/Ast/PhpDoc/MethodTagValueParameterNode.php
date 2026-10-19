@@ -10,26 +10,11 @@ use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode;
 class MethodTagValueParameterNode implements Node
 {
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode|null
-     */
-    public $type;
-    /**
-     * @var bool
-     */
-    public $isReference;
-    /**
-     * @var bool
-     */
-    public $isVariadic;
-    /**
-     * @var string
-     */
-    public $parameterName;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprNode|null
-     */
-    public $defaultValue;
+    public ?TypeNode $type = null;
+    public bool $isReference;
+    public bool $isVariadic;
+    public string $parameterName;
+    public ?ConstExprNode $defaultValue = null;
     public function __construct(?TypeNode $type, bool $isReference, bool $isVariadic, string $parameterName, ?ConstExprNode $defaultValue)
     {
         $this->type = $type;
@@ -45,5 +30,18 @@ class MethodTagValueParameterNode implements Node
         $isVariadic = $this->isVariadic ? '...' : '';
         $default = $this->defaultValue !== null ? " = {$this->defaultValue}" : '';
         return "{$type}{$isReference}{$isVariadic}{$this->parameterName}{$default}";
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['type'], $properties['isReference'], $properties['isVariadic'], $properties['parameterName'], $properties['defaultValue']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

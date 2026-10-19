@@ -8,10 +8,7 @@ namespace Matomo\Dependencies\ApiReference\OpenApi;
 
 trait GeneratorAwareTrait
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\OpenApi\Generator|null
-     */
-    protected $generator;
+    protected ?Generator $generator = null;
     public function setGenerator(Generator $generator)
     {
         $this->generator = $generator;

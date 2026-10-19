@@ -10,14 +10,8 @@ use function str_replace;
 use function strtolower;
 class ConstExprParser
 {
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\ParserConfig
-     */
-    private $config;
-    /**
-     * @var bool
-     */
-    private $parseDoctrineStrings;
+    private ParserConfig $config;
+    private bool $parseDoctrineStrings;
     public function __construct(ParserConfig $config)
     {
         $this->config = $config;

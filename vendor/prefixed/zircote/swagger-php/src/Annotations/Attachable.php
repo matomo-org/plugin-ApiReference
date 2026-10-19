@@ -18,7 +18,7 @@ class Attachable extends AbstractAnnotation
     /**
      * @inheritdoc
      */
-    public static $_parents = [AdditionalProperties::class, Components::class, Contact::class, Delete::class, Discriminator::class, Examples::class, ExternalDocumentation::class, Flow::class, Get::class, Head::class, Header::class, Info::class, Items::class, JsonContent::class, License::class, Link::class, MediaType::class, OpenApi::class, Operation::class, Options::class, Parameter::class, Patch::class, PathItem::class, PathParameter::class, Post::class, Property::class, Put::class, RequestBody::class, Response::class, Schema::class, SecurityScheme::class, Server::class, ServerVariable::class, Tag::class, Trace::class, Webhook::class, Xml::class, XmlContent::class];
+    public static $_parents = [AdditionalProperties::class, Components::class, Contact::class, Delete::class, Discriminator::class, Encoding::class, Examples::class, ExternalDocumentation::class, Flow::class, Get::class, Head::class, Header::class, Info::class, Items::class, JsonContent::class, License::class, Link::class, MediaType::class, OpenApi::class, Operation::class, Options::class, Parameter::class, Patch::class, PathItem::class, PathParameter::class, Post::class, Property::class, Put::class, RequestBody::class, Response::class, Schema::class, SecurityScheme::class, Server::class, ServerVariable::class, Tag::class, Trace::class, Webhook::class, Xml::class, XmlContent::class];
     /**
      * Allows to type-hint a specific parent annotation class.
      *

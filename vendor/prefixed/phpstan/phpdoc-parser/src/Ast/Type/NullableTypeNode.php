@@ -7,16 +7,31 @@ use Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\NodeAttributes;
 class NullableTypeNode implements TypeNode
 {
     use NodeAttributes;
-    /**
-     * @var \Matomo\Dependencies\ApiReference\PHPStan\PhpDocParser\Ast\Type\TypeNode
-     */
-    public $type;
+    public TypeNode $type;
     public function __construct(TypeNode $type)
     {
         $this->type = $type;
     }
     public function __toString() : string
     {
+        if ($this->type instanceof self) {
+            // "??Foo" is no type at all, so the one written inside keeps the
+            // parentheses it was read with
+            return '?(' . $this->type . ')';
+        }
         return '?' . $this->type;
+    }
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public static function __set_state(array $properties) : self
+    {
+        $instance = new self($properties['type']);
+        if (isset($properties['attributes'])) {
+            foreach ($properties['attributes'] as $key => $value) {
+                $instance->setAttribute($key, $value);
+            }
+        }
+        return $instance;
     }
 }

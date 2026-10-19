@@ -18,20 +18,20 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class PrintableNewAnonClassNode extends Expr
 {
     /** @var Node\AttributeGroup[] PHP attribute groups */
-    public $attrGroups;
+    public array $attrGroups;
     /** @var int Modifiers */
-    public $flags;
-    /** @var (Node\Arg|Node\VariadicPlaceholder)[] Arguments */
-    public $args;
+    public int $flags;
+    /** @var (Node\Arg|Node\VariadicPlaceholder|Node\ArgPlaceholder)[] Arguments */
+    public array $args;
     /** @var null|Node\Name Name of extended class */
-    public $extends;
+    public ?Node\Name $extends;
     /** @var Node\Name[] Names of implemented interfaces */
-    public $implements;
+    public array $implements;
     /** @var Node\Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /**
      * @param Node\AttributeGroup[] $attrGroups PHP attribute groups
-     * @param (Node\Arg|Node\VariadicPlaceholder)[] $args Arguments
+     * @param (Node\Arg|Node\VariadicPlaceholder|Node\ArgPlaceholder)[] $args Arguments
      * @param Node\Name|null $extends Name of extended class
      * @param Node\Name[] $implements Names of implemented interfaces
      * @param Node\Stmt[] $stmts Statements

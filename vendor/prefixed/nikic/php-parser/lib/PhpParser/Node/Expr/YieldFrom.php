@@ -7,7 +7,7 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\Expr;
 class YieldFrom extends Expr
 {
     /** @var Expr Expression to yield from */
-    public $expr;
+    public Expr $expr;
     /**
      * Constructs an "yield from" node.
      *

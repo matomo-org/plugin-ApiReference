@@ -8,9 +8,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\NodeAbstract;
 class PropertyItem extends NodeAbstract
 {
     /** @var Node\VarLikeIdentifier Name */
-    public $name;
+    public VarLikeIdentifier $name;
     /** @var null|Node\Expr Default */
-    public $default;
+    public ?Expr $default;
     /**
      * Constructs a class property item node.
      *

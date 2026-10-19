@@ -6,8 +6,8 @@ declare (strict_types=1);
  */
 namespace Matomo\Dependencies\ApiReference\OpenApi\Attributes;
 
-use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 use Matomo\Dependencies\ApiReference\OpenApi\Annotations as OA;
+use Matomo\Dependencies\ApiReference\OpenApi\Generator;
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::TARGET_PARAMETER | \Attribute::IS_REPEATABLE)]
 class RequestBody extends OA\RequestBody
 {
@@ -18,16 +18,16 @@ class RequestBody extends OA\RequestBody
      * @param Attachable[]|null                                                                        $attachables
      */
     public function __construct(
-        $ref = null,
+        string|object|null $ref = null,
         ?string $request = null,
-        ?string $description = null,
+        ?string $description = Generator::UNDEFINED,
         ?bool $required = null,
-        $content = null,
+        array|MediaType|JsonContent|XmlContent|Attachable|null $content = null,
         // annotation
         ?array $x = null,
         ?array $attachables = null
     )
     {
-        parent::__construct(['ref' => $ref ?? Generator::UNDEFINED, 'request' => $request ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'required' => $required ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($content)]);
+        parent::__construct(['ref' => $ref ?? Generator::UNDEFINED, 'request' => $request ?? Generator::UNDEFINED, 'description' => $description, 'required' => $required ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($content)]);
     }
 }

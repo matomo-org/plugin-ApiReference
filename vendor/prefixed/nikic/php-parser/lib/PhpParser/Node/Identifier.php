@@ -13,9 +13,9 @@ class Identifier extends NodeAbstract
      * @psalm-var non-empty-string
      * @var string Identifier as string
      */
-    public $name;
+    public string $name;
     /** @var array<string, bool> */
-    private static $specialClassNames = ['self' => \true, 'parent' => \true, 'static' => \true];
+    private static array $specialClassNames = ['self' => \true, 'parent' => \true, 'static' => \true];
     /**
      * Constructs an identifier node.
      *

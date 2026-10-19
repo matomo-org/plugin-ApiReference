@@ -16,30 +16,14 @@ namespace Matomo\Dependencies\ApiReference\Symfony\Component\Yaml\Tag;
  */
 final class TaggedValue
 {
-    /**
-     * @var string
-     */
-    private $tag;
-    /**
-     * @var mixed
-     */
-    private $value;
-    /**
-     * @param mixed $value
-     */
-    public function __construct(string $tag, $value)
+    public function __construct(private string $tag, private mixed $value)
     {
-        $this->tag = $tag;
-        $this->value = $value;
     }
     public function getTag() : string
     {
         return $this->tag;
     }
-    /**
-     * @return mixed
-     */
-    public function getValue()
+    public function getValue() : mixed
     {
         return $this->value;
     }

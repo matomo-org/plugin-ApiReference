@@ -9,17 +9,17 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node\FunctionLike;
 class ArrowFunction extends Expr implements FunctionLike
 {
     /** @var bool Whether the closure is static */
-    public $static;
+    public bool $static;
     /** @var bool Whether to return by reference */
-    public $byRef;
+    public bool $byRef;
     /** @var Node\Param[] */
-    public $params = [];
+    public array $params = [];
     /** @var null|Node\Identifier|Node\Name|Node\ComplexType */
-    public $returnType;
+    public ?Node $returnType;
     /** @var Expr Expression body */
-    public $expr;
+    public Expr $expr;
     /** @var Node\AttributeGroup[] */
-    public $attrGroups;
+    public array $attrGroups;
     /**
      * @param array{
      *     expr: Expr,

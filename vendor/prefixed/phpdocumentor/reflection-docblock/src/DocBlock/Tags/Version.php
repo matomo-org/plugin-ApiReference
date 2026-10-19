@@ -21,10 +21,7 @@ use function preg_match;
  */
 final class Version extends BaseTag implements Factory\StaticMethod
 {
-    /**
-     * @var string
-     */
-    protected $name = 'version';
+    protected string $name = 'version';
     /**
      * PCRE regular expression matching a version vector.
      * Assumes the "x" modifier.
@@ -41,7 +38,7 @@ final class Version extends BaseTag implements Factory\StaticMethod
         [^\\s\\:]+\\:\\s*\\$[^\\$]+\\$
     )';
     /** @var string|null The version vector. */
-    private $version;
+    private ?string $version = null;
     public function __construct(?string $version = null, ?Description $description = null)
     {
         Assert::nullOrStringNotEmpty($version);

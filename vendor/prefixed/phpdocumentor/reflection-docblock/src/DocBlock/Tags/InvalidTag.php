@@ -17,6 +17,7 @@ use function is_array;
 use function is_object;
 use function is_resource;
 use function sprintf;
+use const PHP_VERSION_ID;
 /**
  * This class represents an exception during the tag creation
  *
@@ -29,18 +30,9 @@ use function sprintf;
  */
 final class InvalidTag implements Tag
 {
-    /**
-     * @var string
-     */
-    private $name;
-    /**
-     * @var string
-     */
-    private $body;
-    /**
-     * @var \Throwable|null
-     */
-    private $throwable;
+    private string $name;
+    private string $body;
+    private ?Throwable $throwable = null;
     private function __construct(string $name, string $body)
     {
         $this->name = $name;
@@ -74,7 +66,7 @@ final class InvalidTag implements Tag
     private function flattenExceptionBacktrace(Throwable $exception) : void
     {
         $traceProperty = (new ReflectionClass(Exception::class))->getProperty('trace');
-        if (\PHP_VERSION_ID < 80100) {
+        if (PHP_VERSION_ID < 80100) {
             $traceProperty->setAccessible(\true);
         }
         do {
@@ -88,9 +80,10 @@ final class InvalidTag implements Tag
             $traceProperty->setValue($exception, $trace);
             $exception = $exception->getPrevious();
         } while ($exception !== null);
-        if (\PHP_VERSION_ID < 80100) {
-            $traceProperty->setAccessible(\false);
+        if (PHP_VERSION_ID >= 80100) {
+            return;
         }
+        $traceProperty->setAccessible(\false);
     }
     /**
      * @param mixed $value

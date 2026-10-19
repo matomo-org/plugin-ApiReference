@@ -7,9 +7,9 @@ use Matomo\Dependencies\ApiReference\PhpParser\Node;
 class Case_ extends Node\Stmt
 {
     /** @var null|Node\Expr Condition (null for default) */
-    public $cond;
+    public ?Node\Expr $cond;
     /** @var Node\Stmt[] Statements */
-    public $stmts;
+    public array $stmts;
     /**
      * Constructs a case node.
      *

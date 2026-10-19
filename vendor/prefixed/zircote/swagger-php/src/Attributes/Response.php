@@ -18,20 +18,19 @@ class Response extends OA\Response
      * @param Link[]                                                                                         $links
      * @param array<string,mixed>|null                                                                       $x
      * @param Attachable[]|null                                                                              $attachables
-     * @param int|string|null $response
      */
     public function __construct(
-        $ref = null,
-        $response = null,
-        ?string $description = null,
+        string|object|null $ref = null,
+        int|string|null $response = null,
+        ?string $description = Generator::UNDEFINED,
         ?array $headers = null,
-        $content = null,
+        MediaType|JsonContent|XmlContent|Attachable|array|null $content = null,
         ?array $links = null,
         // annotation
         ?array $x = null,
         ?array $attachables = null
     )
     {
-        parent::__construct(['ref' => $ref ?? Generator::UNDEFINED, 'response' => $response ?? Generator::UNDEFINED, 'description' => $description ?? Generator::UNDEFINED, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($headers, $content, $links)]);
+        parent::__construct(['ref' => $ref ?? Generator::UNDEFINED, 'response' => $response ?? Generator::UNDEFINED, 'description' => $description, 'x' => $x ?? Generator::UNDEFINED, 'attachables' => $attachables ?? Generator::UNDEFINED, 'value' => $this->combine($headers, $content, $links)]);
     }
 }
