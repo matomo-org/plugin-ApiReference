@@ -1,6 +1,6 @@
 ## Changelog
 
-5.0.9 - 2026-10-12
+5.0.9 - 2026-10-19
 - Fixed the plugin cards on the API Reference page picking up the Marketplace's card style, and the API method panels staying light in dark mode
 
 5.0.8 - 2026-10-05
