@@ -1663,7 +1663,8 @@ class AnnotationGenerator
         foreach ($values as $key => $value) {
             // If it's not an array, add a simple property string and skip to the next child
             if (!is_array($value)) {
-                $typesString = '{"string", "number", "integer", "boolean", "array", "object", "null"}';
+                // No "array": swagger-php warns about it without items, and adding items turns the type into only "array"
+                $typesString = '{"string", "number", "integer", "boolean", "object", "null"}';
                 if (is_string($value)) {
                     $typesString = '"string"';
                 } elseif (is_int($value)) {
