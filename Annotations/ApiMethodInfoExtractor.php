@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace Piwik\Plugins\ApiReference\Annotations;
 
-use Piwik\Exception\PluginNotFoundException;
 use Piwik\API\Proxy;
 use Piwik\API\Request;
 use Piwik\Plugin\Manager;
+use Piwik\Plugins\ApiReference\ApiReference;
 use Piwik\Plugins\ApiReference\Artifact\ArtifactWriter;
 use Piwik\Plugins\ApiReference\Specs\PathResolver;
 use Piwik\Validators\BaseValidator;
@@ -59,7 +59,7 @@ class ApiMethodInfoExtractor
         foreach ($pluginNames as $plugin) {
             BaseValidator::check('pluginName', $plugin, [new NotEmpty()]);
             if (!Manager::getInstance()->isPluginInFilesystem($plugin)) {
-                throw new PluginNotFoundException($plugin);
+                ApiReference::throwPluginNotFound($plugin);
             }
 
             $className = Request::getClassNameAPI($plugin);
