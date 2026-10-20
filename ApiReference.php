@@ -9,6 +9,8 @@
 
 namespace Piwik\Plugins\ApiReference;
 
+use Piwik\Exception\PluginNotFoundException;
+
 class ApiReference extends \Piwik\Plugin
 {
     public const DEFAULT_SPEC_VERSION = '1.0.0';
@@ -60,5 +62,18 @@ class ApiReference extends \Piwik\Plugin
     {
         $config = new Configuration();
         $config->uninstall();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public static function throwPluginNotFound(string $pluginName): void
+    {
+        // PluginNotFoundException only exists from Matomo 5.7.0.
+        if (class_exists(PluginNotFoundException::class)) {
+            throw new PluginNotFoundException($pluginName);
+        }
+
+        throw new \Exception("The plugin $pluginName was not found.", 404);
     }
 }

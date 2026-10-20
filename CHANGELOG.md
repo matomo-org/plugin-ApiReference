@@ -1,5 +1,8 @@
 ## Changelog
 
+5.0.10
+- Fixed generating the API spec or annotations for a plugin that is not installed failing with a missing class error, rather than reporting the plugin as not found, on Matomo versions before 5.7.0
+
 5.0.9 - 2026-10-19
 - Fixed the plugin cards on the API Reference page picking up the Marketplace's card style, and the API method panels staying light in dark mode
 

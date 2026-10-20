@@ -15,7 +15,6 @@ use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Descripti
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\Param;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlock\Tags\TagWithType;
 use Matomo\Dependencies\ApiReference\phpDocumentor\Reflection\DocBlockFactory;
-use Piwik\Exception\PluginNotFoundException;
 use Piwik\API\DocumentationGenerator;
 use Piwik\API\NoDefaultValue;
 use Piwik\API\Proxy;
@@ -148,7 +147,7 @@ class AnnotationGenerator
      *
      * @return string[]|array[] The collection of all the lines which make up the generated annotations for the public API
      * endpoints defined by the plugin.
-     * @throws PluginNotFoundException If the plugin is not present in the filesystem.
+     * @throws \Exception If the plugin is not present in the filesystem.
      * @throws \Throwable
      */
     public function generatePluginApiAnnotations(string $pluginName, bool $writeToFile = false): array
@@ -160,7 +159,7 @@ class AnnotationGenerator
         }
 
         if (!Manager::getInstance()->isPluginInFilesystem($pluginName)) {
-            throw new PluginNotFoundException($pluginName);
+            ApiReference::throwPluginNotFound($pluginName);
         }
 
         // Posted so that existing subscribers keep being called for the rest of the 5.x cycle. The result is
