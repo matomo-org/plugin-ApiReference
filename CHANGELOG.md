@@ -2,6 +2,7 @@
 
 6.0.4
 - Updated dependencies
+- Response values that can be of several types, such as decimal metrics, are no longer documented as possibly being arrays, which the updated dependencies would otherwise log warnings for during the daily API specification task
 
 6.0.3 - 2026-10-12
 - Fixed API requests with `format=yaml` failing with an error on production builds
