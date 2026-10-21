@@ -1,8 +1,8 @@
 {
     "ApiReference": {
         "LookingForLegacyApiReference": "Ψάχνετε για την αναφορά στο παρωχημένο API; Η σελίδα της %1$sαναφοράς του παρωχημένου API%2$s είναι ακόμη διαθέσιμη καθώς συνεχίζουμε να βελτιώνουμε την τεκμηρίωση για το νέο API. Αν κάτι λείπει ή δεν συμπεριφέρεται όπως αναμένεται στη νέα έκδοση, %3$sενημερώστε μας%4$ ώστε να βελτιώσουμε την εμπειρία.",
-        "ReportingApiMoreInformation": "Για περισσότερες πληροφορίες σχετικά με τα APIs του Matomo, δείτε στην %1$sΕισαγωγή για το Matomo API%2$s και στην %3$sΠηγή για το Matomo API%4$s.",
-        "ReportingApiReference": "Παραπομπή στο API Αναφορών",
+        "ReportingApiMoreInformation": "Για περισσότερες πληροφορίες σχετικά με τα APIs του Matomo, δείτε την %1$sΕισαγωγή για το Matomo API%2$s και την %3$sΠηγή για το Matomo API%4$s.",
+        "ReportingApiReference": "Πηγή για το API Αναφορών",
         "ReportingApiSummary": "Όλα τα δεδομένα στο Matomo είναι διαθέσιμα μέσω απλών API.",
         "SwaggerPageConnectToken": "Κάντε αυθεντικοποίηση με ένα τεκμήριο Matomo API",
         "SwaggerPagePluginEmpty": "Δεν έχουν παραμετροποιηθεί πρόσθετα στην επιτρεπόμενη λίστα ApiReference.",
