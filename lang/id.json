@@ -1,7 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "Mencari referensi API versi lama? Halaman %1$sreferensi API versi lama%2$s masih tersedia sementara kami terus menyempurnakan dokumentasi API yang baru. Jika ada yang belum tersedia atau tidak berfungsi sebagaimana mestinya dalam versi baru ini, %3$sberi tahu kami%4$s agar kami dapat meningkatkan pengalaman pengguna.",
         "ReportingApiMoreInformation": "Info lebih lanjut tentang Matomo API tersedia di %1$sPengantar Matomo API%2$s dan %3$sReferensi Matomo API%4$s.",
-        "ReportingApiReference": "Referensi Pelaporan API",
-        "UserAuthentication": "Autentikasi pengguna"
+        "ReportingApiReference": "Referensi API Pelaporan",
+        "ReportingApiSummary": "Semua data di Matomo tersedia melalui API yang sederhana.",
+        "SwaggerPageConnectToken": "Autentikasi dengan token API Matomo",
+        "SwaggerPagePluginEmpty": "Tidak ada plugin yang dikonfigurasi dalam daftar yang diizinkan ApiReference.",
+        "SwaggerPageRemoveToken": "Hapus token",
+        "SwaggerPageRequestFailed": "Daftar plugin yang diizinkan tidak dapat dimuat.",
+        "SwaggerPageSearchNoResults": "Tidak ada plugin yang cocok dengan pencarian Anda.",
+        "SwaggerPageSearchPlaceholder": "Cari berdasarkan nama plugin",
+        "SwaggerPageSpecLoadFailed": "Spesifikasi OpenAPI untuk plugin ini tidak dapat dimuat.",
+        "SwaggerPageSpecNotAvailable": "Spesifikasi OpenAPI belum tersedia untuk plugin ini. %1$sPelajari lebih lanjut%2$s",
+        "SwaggerPageTokenConnected": "Token terhubung",
+        "SwaggerPageTokenConnectedHeading": "Token API Matomo terhubung",
+        "UseTryItOutForLiveResponse": "Contoh respons memerlukan akses Pengguna Super. Gunakan Coba untuk melihat respons langsung.",
+        "UserAuthentication": "Autentikasi pengguna",
+        "UserAuthenticationManageTokens": "Anda dapat mengelola token autentikasi di halaman keamanan Anda.",
+        "UserAuthenticationUsingTokenAuth": "Jika Anda ingin meminta data melalui skrip, crontab, dan sebagainya, Anda perlu menambahkan parameter URL '%3$s' ke panggilan API untuk URL yang memerlukan autentikasi."
     }
 }
