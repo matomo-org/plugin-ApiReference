@@ -26,6 +26,8 @@ jobs:
       contents: write
       pull-requests: write
     uses: matomo-org/plugin-ci-workflows/.github/workflows/plugin-dev-release.yml@main
+    secrets:
+      approver-token: ${{ secrets.TESTS_ACCESS_TOKEN }}
 
   # A dispatched run must not dispatch again, or the branches would keep dispatching each other.
   other-branches:
