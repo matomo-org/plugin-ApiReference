@@ -1,5 +1,8 @@
 ## Changelog
 
+6.0.5
+- Updated dependencies
+
 6.0.4 - 2026-10-26
 - Updated dependencies
 - Response values that can be of several types, such as decimal metrics, are no longer documented as possibly being arrays, which the updated dependencies would otherwise log warnings for during the daily API specification task
