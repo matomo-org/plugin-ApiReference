@@ -1,6 +1,6 @@
 ## Changelog
 
-5.0.10
+5.0.10 - 2026-10-26
 - Fixed generating the API spec or annotations for a plugin that is not installed failing with a missing class error, rather than reporting the plugin as not found, on Matomo versions before 5.7.0
 
 5.0.9 - 2026-10-19
