@@ -9,6 +9,8 @@
 
 namespace Piwik\Plugins\ApiReference;
 
+use Piwik\Exception\ThingNotFoundException;
+use Piwik\Http\BadRequestException;
 use Piwik\Piwik;
 use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
 use Piwik\Plugin\Manager;
@@ -66,11 +68,12 @@ class API extends \Piwik\Plugin\API
 
         $this->validateJsonFormat($format);
 
-        if (
-            !Manager::getInstance()->isValidPluginName($pluginName)
-            || !Manager::getInstance()->isPluginInFilesystem($pluginName)
-        ) {
-            throw new \Exception('Invalid plugin name: ' . $pluginName);
+        if (!Manager::getInstance()->isValidPluginName($pluginName)) {
+            throw new BadRequestException('Invalid plugin name: ' . $pluginName);
+        }
+
+        if (!Manager::getInstance()->isPluginInFilesystem($pluginName)) {
+            throw new ThingNotFoundException('Invalid plugin name: ' . $pluginName);
         }
 
         $filePath = $this->getSpecFilePath($pluginName);
@@ -174,7 +177,6 @@ class API extends \Piwik\Plugin\API
     }
 
     /**
-     * @param string $filePath
      * @return string|false
      */
     protected function readSpecFile(string $filePath)
@@ -185,7 +187,7 @@ class API extends \Piwik\Plugin\API
     protected function validateJsonFormat(string $format): void
     {
         if (strtolower($format) !== 'json') {
-            throw new \Exception(
+            throw new BadRequestException(
                 Piwik::translate(
                     'General_ExceptionInvalidReportRendererFormat',
                     [$format, 'json']

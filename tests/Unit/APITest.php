@@ -16,6 +16,8 @@ require_once PIWIK_INCLUDE_PATH . '/plugins/ApiReference/vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 use Piwik\Access;
 use Piwik\Container\StaticContainer;
+use Piwik\Exception\ThingNotFoundException;
+use Piwik\Http\BadRequestException;
 use Piwik\Piwik;
 use Piwik\Plugins\ApiReference\API;
 use Piwik\Plugins\ApiReference\Generation\PluginListProvider;
@@ -228,7 +230,8 @@ class APITest extends TestCase
     {
         $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', true, '{}');
 
-        $this->expectException(\Exception::class);
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionCode(400);
         $this->expectExceptionMessage(
             Piwik::translate('General_ExceptionInvalidReportRendererFormat', ['yaml', 'json'])
         );
@@ -240,10 +243,22 @@ class APITest extends TestCase
     {
         $api = new API();
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ThingNotFoundException::class);
+        $this->expectExceptionCode(404);
         $this->expectExceptionMessage('Invalid plugin name: DefinitelyNotARealPlugin');
 
         $api->getOpenApiSpec('DefinitelyNotARealPlugin');
+    }
+
+    public function testGetOpenApiSpecRejectsAMalformedPluginName(): void
+    {
+        $api = new API();
+
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionCode(400);
+        $this->expectExceptionMessage('Invalid plugin name: ../CustomAlerts');
+
+        $api->getOpenApiSpec('../CustomAlerts');
     }
 
     public function testGetSpecFilePathDelegatesToPathResolver()
@@ -352,7 +367,6 @@ class APITest extends TestCase
 
     /**
      * @param object $object
-     * @param string $methodName
      * @param array<int, mixed> $arguments
      * @return mixed
      */
