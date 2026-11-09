@@ -352,6 +352,10 @@ export default defineComponent({
         message = error;
       } else if (typeof error === 'object' && error && 'message' in error) {
         message = String((error as { message: unknown }).message);
+      } else if (typeof error === 'object' && error && 'responseJSON' in error) {
+        // Matomo before 6.1 rejects a 4xx API error with the raw jqXHR instead of its message
+        const response = (error as { responseJSON?: { message?: unknown } }).responseJSON;
+        message = String(response?.message ?? '');
       }
 
       return message.includes('OpenAPI spec file was not found.');

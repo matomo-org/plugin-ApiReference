@@ -73,12 +73,12 @@ class API extends \Piwik\Plugin\API
         }
 
         if (!Manager::getInstance()->isPluginInFilesystem($pluginName)) {
-            throw new ThingNotFoundException('Invalid plugin name: ' . $pluginName);
+            throw new ThingNotFoundException('Plugin not found: ' . $pluginName);
         }
 
         $filePath = $this->getSpecFilePath($pluginName);
         if (!$this->isSpecFileReadable($filePath)) {
-            throw new \Exception('OpenAPI spec file was not found. Generate it first via apireference:generate-spec-file.');
+            throw new ThingNotFoundException('OpenAPI spec file was not found. Generate it first via apireference:generate-spec-file.');
         }
 
         $specContents = $this->readSpecFile($filePath);

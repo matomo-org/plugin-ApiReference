@@ -210,7 +210,8 @@ class APITest extends TestCase
     {
         $api = $this->buildApiMock('/tmp/CustomAlerts_openapi_spec_v1.0.0.json', false);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ThingNotFoundException::class);
+        $this->expectExceptionCode(404);
         $this->expectExceptionMessage('OpenAPI spec file was not found');
 
         $api->getOpenApiSpec('CustomAlerts');
@@ -245,7 +246,7 @@ class APITest extends TestCase
 
         $this->expectException(ThingNotFoundException::class);
         $this->expectExceptionCode(404);
-        $this->expectExceptionMessage('Invalid plugin name: DefinitelyNotARealPlugin');
+        $this->expectExceptionMessage('Plugin not found: DefinitelyNotARealPlugin');
 
         $api->getOpenApiSpec('DefinitelyNotARealPlugin');
     }
