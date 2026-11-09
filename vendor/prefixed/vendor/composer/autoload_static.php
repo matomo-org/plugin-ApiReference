@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit1bababa5ec2047f5b9e9a86c2d2e7099
+class ComposerStaticInit5f370cf93fb2c64bcb319daf026eddd5
 {
     public static $files = array (
         '66cfd3a7190309803b5cc0fea03a4cdc' => __DIR__ . '/../..' . '/symfony/deprecation-contracts/function.php',
@@ -245,14 +245,18 @@ class ComposerStaticInit1bababa5ec2047f5b9e9a86c2d2e7099
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\ConditionalTypeForParameterNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/ConditionalTypeForParameterNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\ConditionalTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/ConditionalTypeNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\ConstTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/ConstTypeNode.php',
+        'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\FullyQualifiedNameNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/FullyQualifiedNameNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\GenericTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/GenericTypeNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\IdentifierTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/IdentifierTypeNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\IntersectionTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/IntersectionTypeNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\InvalidTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/InvalidTypeNode.php',
+        'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\NameNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/NameNode.php',
+        'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\NameNodeTrait' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/NameNodeTrait.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\NullableTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/NullableTypeNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\ObjectShapeItemNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/ObjectShapeItemNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\ObjectShapeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/ObjectShapeNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\OffsetAccessTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/OffsetAccessTypeNode.php',
+        'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\RelativeNameNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/RelativeNameNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\ThisTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/ThisTypeNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\TypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/TypeNode.php',
         'Matomo\\Dependencies\\ApiReference\\PHPStan\\PhpDocParser\\Ast\\Type\\UnionTypeNode' => __DIR__ . '/../..' . '/phpstan/phpdoc-parser/src/Ast/Type/UnionTypeNode.php',
@@ -729,7 +733,7 @@ class ComposerStaticInit1bababa5ec2047f5b9e9a86c2d2e7099
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit1bababa5ec2047f5b9e9a86c2d2e7099::$classMap;
+            $loader->classMap = ComposerStaticInit5f370cf93fb2c64bcb319daf026eddd5::$classMap;
 
         }, null, ClassLoader::class);
     }

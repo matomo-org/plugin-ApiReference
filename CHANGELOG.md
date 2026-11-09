@@ -1,7 +1,10 @@
 ## Changelog
 
-6.0.6
-- OpenAPI spec requests for an unknown plugin now return HTTP 404, and invalid ones HTTP 400
+6.0.7
+- OpenAPI spec requests for an unknown plugin, or one whose spec has not been generated yet, now return HTTP 404, and invalid ones HTTP 400
+
+6.0.6 - 2026-11-09
+- Updated dependencies
 
 6.0.5 - 2026-11-02
 - Updated dependencies
