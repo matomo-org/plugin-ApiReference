@@ -1,7 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "¿Busca la referencia de la API antigua? La página de la %1$sreferencia de la API antigua%2$s sigue disponible mientras seguimos mejorando la nueva documentación de la API. Si falta algo o algo no funciona como se espera en esta nueva versión, %3$sinfórmenos%4$s para que podamos mejorar la experiencia.",
         "ReportingApiMoreInformation": "Más información sobre las APIs de Matomo disponible en %1$sIntroducción a la API de Matomo%2$s y la %3$sReferencia de la API de Matomo%4$s.",
         "ReportingApiReference": "Informando Referencia API",
-        "UserAuthentication": "Autenticación de usuario"
+        "ReportingApiSummary": "Todos los datos de Matomo están disponibles mediante API sencillas.",
+        "SwaggerPageConnectToken": "Autenticarse con un token de API de Matomo",
+        "SwaggerPagePluginEmpty": "No hay ningún complemento configurado en la lista blanca de ApiReference.",
+        "SwaggerPageRemoveToken": "Quitar el token",
+        "SwaggerPageRequestFailed": "No se ha podido cargar la lista blanca de complementos.",
+        "SwaggerPageSearchNoResults": "Ningún complemento coincide con su búsqueda.",
+        "SwaggerPageSearchPlaceholder": "Buscar por nombre de complemento",
+        "SwaggerPageSpecLoadFailed": "No se ha podido cargar la especificación OpenAPI de este complemento.",
+        "SwaggerPageSpecNotAvailable": "La especificación OpenAPI todavía no está disponible para este complemento. %1$sObtenga más información%2$s",
+        "SwaggerPageTokenConnected": "Token conectado",
+        "SwaggerPageTokenConnectedHeading": "Token de API de Matomo conectado",
+        "UseTryItOutForLiveResponse": "Las respuestas de ejemplo requieren acceso de superusuario. Use Try it out para ver una respuesta real.",
+        "UserAuthentication": "Autenticación de usuario",
+        "UserAuthenticationManageTokens": "Puede gestionar sus tokens de autenticación en su página de seguridad.",
+        "UserAuthenticationUsingTokenAuth": "Si desea solicitar datos desde un script, un crontab, etc., debe añadir el parámetro de URL «%3$s» a las llamadas a la API de las URL que requieren autenticación."
     }
 }
