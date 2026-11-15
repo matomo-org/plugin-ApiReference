@@ -2,6 +2,7 @@
 
 6.0.7
 - OpenAPI spec requests for an unknown plugin, or one whose spec has not been generated yet, now return HTTP 404, and ones with a malformed plugin name or unsupported format HTTP 400
+- Updated dependencies
 
 6.0.6 - 2026-11-09
 - Updated dependencies
