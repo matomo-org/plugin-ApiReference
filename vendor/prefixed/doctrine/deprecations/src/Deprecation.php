@@ -36,6 +36,8 @@ use const E_USER_DEPRECATED;
  *
  * Packages that trigger deprecations should use the `trigger()` or
  * `triggerIfCalledFromOutside()` methods.
+ *
+ * @final since 1.2
  */
 class Deprecation
 {
@@ -44,17 +46,15 @@ class Deprecation
     private const TYPE_TRIGGER_ERROR = 2;
     private const TYPE_PSR_LOGGER = 4;
     /** @var int-mask-of<self::TYPE_*>|null */
-    private static $type;
-    /** @var LoggerInterface|null */
-    private static $logger;
+    private static ?int $type = null;
+    private static ?LoggerInterface $logger = null;
     /** @var array<string,bool> */
-    private static $ignoredPackages = [];
+    private static array $ignoredPackages = [];
     /** @var array<string,int> */
-    private static $triggeredDeprecations = [];
+    private static array $triggeredDeprecations = [];
     /** @var array<string,bool> */
-    private static $ignoredLinks = [];
-    /** @var bool */
-    private static $deduplication = \true;
+    private static array $ignoredLinks = [];
+    private static ?bool $deduplication = null;
     /**
      * Trigger a deprecation for the given package and identfier.
      *
@@ -78,7 +78,7 @@ class Deprecation
         } else {
             self::$triggeredDeprecations[$link] = 1;
         }
-        if (self::$deduplication === \true && self::$triggeredDeprecations[$link] > 1) {
+        if ((self::$deduplication ?? self::getDeduplicationFromEnv()) === \true && self::$triggeredDeprecations[$link] > 1) {
             return;
         }
         if (isset(self::$ignoredPackages[$package])) {
@@ -132,7 +132,7 @@ class Deprecation
         } else {
             self::$triggeredDeprecations[$link] = 1;
         }
-        if (self::$deduplication === \true && self::$triggeredDeprecations[$link] > 1) {
+        if ((self::$deduplication ?? self::getDeduplicationFromEnv()) === \true && self::$triggeredDeprecations[$link] > 1) {
             return;
         }
         if (isset(self::$ignoredPackages[$package])) {
@@ -169,17 +169,17 @@ class Deprecation
     }
     public static function enableTrackingDeprecations() : void
     {
-        self::$type = self::$type ?? self::getTypeFromEnv();
+        self::$type ??= self::getTypeFromEnv();
         self::$type |= self::TYPE_TRACK_DEPRECATIONS;
     }
     public static function enableWithTriggerError() : void
     {
-        self::$type = self::$type ?? self::getTypeFromEnv();
+        self::$type ??= self::getTypeFromEnv();
         self::$type |= self::TYPE_TRIGGER_ERROR;
     }
     public static function enableWithPsrLogger(LoggerInterface $logger) : void
     {
-        self::$type = self::$type ?? self::getTypeFromEnv();
+        self::$type ??= self::getTypeFromEnv();
         self::$type |= self::TYPE_PSR_LOGGER;
         self::$logger = $logger;
     }
@@ -191,7 +191,7 @@ class Deprecation
     {
         self::$type = self::TYPE_NONE;
         self::$logger = null;
-        self::$deduplication = \true;
+        self::$deduplication = null;
         self::$ignoredLinks = [];
         foreach (self::$triggeredDeprecations as $link => $count) {
             self::$triggeredDeprecations[$link] = 0;
@@ -237,5 +237,13 @@ class Deprecation
                 break;
         }
         return self::$type;
+    }
+    private static function getDeduplicationFromEnv() : bool
+    {
+        $envValue = $_SERVER['DOCTRINE_DEPRECATIONS_DEDUPLICATION'] ?? $_ENV['DOCTRINE_DEPRECATIONS_DEDUPLICATION'] ?? null;
+        if ($envValue === 'false' || $envValue === '0') {
+            return self::$deduplication = \false;
+        }
+        return self::$deduplication = \true;
     }
 }
