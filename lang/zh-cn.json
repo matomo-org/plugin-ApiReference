@@ -1,7 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "在找旧版 API 参考吗？在我们继续改进新 API 文档期间，%1$s旧版 API 参考%2$s页面仍然可用。如果此新版本中有任何缺失或异常，%3$s请告诉我们%4$s，以便我们改进体验。",
         "ReportingApiMoreInformation": "有关 Matomo API 的更多信息，请参阅 %1$sMatomo API 简介%2$s 和 %3$sMatomo API 参考%4$s。",
         "ReportingApiReference": "報表 API 參考資料",
-        "UserAuthentication": "使用者驗證"
+        "ReportingApiSummary": "Matomo 中的所有数据都可以通过简单的 API 获取。",
+        "SwaggerPageConnectToken": "使用 Matomo API 令牌进行身份验证",
+        "SwaggerPagePluginEmpty": "ApiReference 白名单中未配置任何插件。",
+        "SwaggerPageRemoveToken": "移除令牌",
+        "SwaggerPageRequestFailed": "无法加载插件白名单。",
+        "SwaggerPageSearchNoResults": "没有与您的搜索匹配的插件。",
+        "SwaggerPageSearchPlaceholder": "按插件名称搜索",
+        "SwaggerPageSpecLoadFailed": "无法加载此插件的 OpenAPI 规范。",
+        "SwaggerPageSpecNotAvailable": "此插件的 OpenAPI 规范尚不可用。%1$s了解更多%2$s",
+        "SwaggerPageTokenConnected": "令牌已连接",
+        "SwaggerPageTokenConnectedHeading": "Matomo API 令牌已连接",
+        "UseTryItOutForLiveResponse": "示例响应需要超级用户访问权限。请使用 Try it out 查看实时响应。",
+        "UserAuthentication": "使用者驗證",
+        "UserAuthenticationManageTokens": "您可以在安全页面上管理您的验证令牌。",
+        "UserAuthenticationUsingTokenAuth": "如果您想在脚本、crontab 等中请求数据，则需要在调用需要身份验证的网址的 API 时添加“%3$s”网址参数。"
     }
 }
