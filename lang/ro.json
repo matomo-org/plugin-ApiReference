@@ -14,7 +14,7 @@
         "SwaggerPageSpecNotAvailable": "Specificația OpenAPI nu este încă disponibilă pentru acest plugin. %1$sAflați mai multe%2$s",
         "SwaggerPageTokenConnected": "Token conectat",
         "SwaggerPageTokenConnectedHeading": "Token API Matomo conectat",
-        "UseTryItOutForLiveResponse": "Exemplele de răspuns necesită acces de super utilizator. Folosiți Try it out pentru a vedea un răspuns în timp real.",
+        "UseTryItOutForLiveResponse": "Exemplele de răspuns necesită acces de superutilizator. Folosiți Try it out pentru a vedea un răspuns în timp real.",
         "UserAuthentication": "Identificare utilizator",
         "UserAuthenticationManageTokens": "Vă puteți gestiona tokenurile de autentificare pe pagina de securitate.",
         "UserAuthenticationUsingTokenAuth": "Dacă doriți să solicitați date dintr-un script, un crontab etc., trebuie să adăugați parametrul URL '%3$s' la apelurile API pentru URL-urile care necesită autentificare."
