@@ -1,6 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "Căutați vechea referință API? Pagina %1$svechea referință API%2$s este încă disponibilă cât timp continuăm să îmbunătățim noua documentație API. Dacă lipsește ceva sau ceva nu funcționează conform așteptărilor în această versiune nouă, %3$svă rugăm să ne anunțați%4$s pentru a putea îmbunătăți experiența.",
+        "ReportingApiMoreInformation": "Mai multe informații despre API-urile Matomo sunt disponibile în %1$sIntroducere în API-ul Matomo%2$s și în %3$sReferința API Matomo%4$s.",
         "ReportingApiReference": "Referinţe API de raportare",
-        "UserAuthentication": "Identificare utilizator"
+        "ReportingApiSummary": "Toate datele din Matomo sunt disponibile prin API-uri simple.",
+        "SwaggerPageConnectToken": "Autentificare cu un token API Matomo",
+        "SwaggerPagePluginEmpty": "Niciun plugin nu este configurat în lista albă ApiReference.",
+        "SwaggerPageRemoveToken": "Eliminare token",
+        "SwaggerPageRequestFailed": "Lista albă de pluginuri nu a putut fi încărcată.",
+        "SwaggerPageSearchNoResults": "Niciun plugin nu corespunde căutării.",
+        "SwaggerPageSearchPlaceholder": "Căutare după numele pluginului",
+        "SwaggerPageSpecLoadFailed": "Specificația OpenAPI nu a putut fi încărcată pentru acest plugin.",
+        "SwaggerPageSpecNotAvailable": "Specificația OpenAPI nu este încă disponibilă pentru acest plugin. %1$sAflați mai multe%2$s",
+        "SwaggerPageTokenConnected": "Token conectat",
+        "SwaggerPageTokenConnectedHeading": "Token API Matomo conectat",
+        "UseTryItOutForLiveResponse": "Exemplele de răspuns necesită acces de superutilizator. Folosiți Try it out pentru a vedea un răspuns în timp real.",
+        "UserAuthentication": "Identificare utilizator",
+        "UserAuthenticationManageTokens": "Vă puteți gestiona tokenurile de autentificare pe pagina de securitate.",
+        "UserAuthenticationUsingTokenAuth": "Dacă doriți să solicitați date dintr-un script, un crontab etc., trebuie să adăugați parametrul URL '%3$s' la apelurile API pentru URL-urile care necesită autentificare."
     }
 }

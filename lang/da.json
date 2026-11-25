@@ -1,6 +1,22 @@
 {
     "ApiReference": {
+        "LookingForLegacyApiReference": "Leder du efter den gamle API-reference? Siden med den %1$sgamle API-reference%2$s er stadig tilgængelig, mens vi fortsætter med at forbedre den nye API-dokumentation. Hvis noget mangler eller ikke fungerer som forventet i den nye version, %3$så giv os besked%4$s, så vi kan forbedre oplevelsen.",
+        "ReportingApiMoreInformation": "Mere information om Matomo API'er findes på %1$sIntroduktion til Matomo API%2$s og %3$sMatomo API Reference%4$s.",
         "ReportingApiReference": "Rapporterings API Reference",
-        "UserAuthentication": "Brugergodkendelse"
+        "ReportingApiSummary": "Alle data i Matomo er tilgængelige gennem enkle API'er.",
+        "SwaggerPageConnectToken": "Godkend med et Matomo API-token",
+        "SwaggerPagePluginEmpty": "Der er ikke konfigureret nogen udvidelsesmoduler i ApiReference-hvidlisten.",
+        "SwaggerPageRemoveToken": "Fjern token",
+        "SwaggerPageRequestFailed": "Hvidlisten over udvidelsesmoduler kunne ikke indlæses.",
+        "SwaggerPageSearchNoResults": "Ingen udvidelsesmoduler matcher din søgning.",
+        "SwaggerPageSearchPlaceholder": "Søg efter navn på udvidelsesmodul",
+        "SwaggerPageSpecLoadFailed": "OpenAPI-specifikationen kunne ikke indlæses for dette udvidelsesmodul.",
+        "SwaggerPageSpecNotAvailable": "OpenAPI-specifikationen er endnu ikke tilgængelig for dette udvidelsesmodul. %1$sLæs mere%2$s",
+        "SwaggerPageTokenConnected": "Token forbundet",
+        "SwaggerPageTokenConnectedHeading": "Matomo API-token forbundet",
+        "UseTryItOutForLiveResponse": "Eksempelsvar kræver superbrugeradgang. Brug Try it out for at se et live-svar.",
+        "UserAuthentication": "Brugergodkendelse",
+        "UserAuthenticationManageTokens": "Du kan administrere dine autentificeringstokens på din sikkerhedsside.",
+        "UserAuthenticationUsingTokenAuth": "Hvis du vil hente data i et script, et crontab osv., skal du tilføje URL-parameteren '%3$s' til API-kaldene for URL'er, der kræver godkendelse."
     }
 }
